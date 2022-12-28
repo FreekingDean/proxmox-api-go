@@ -1,3 +1,5 @@
 proxmox-api-go
 .vagrant/
 .vscode
+tmp/
+bin/
