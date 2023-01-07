@@ -20,27 +20,28 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexRequest struct {
-	Full    *bool `url:"full,omitempty",json:"full,omitempty"`
-	Enabled *bool `url:"enabled,omitempty",json:"enabled,omitempty"`
-}
+type IndexRequest map[string]interface{}
 
 type IndexResponse []*struct {
-	Lastname  *string `url:"lastname,omitempty",json:"lastname,omitempty"`
-	RealmType *string `url:"realm-type,omitempty",json:"realm-type,omitempty"`
+	Userid string `url:"userid",json:"userid"` // User ID
+
+	// The following parameters are optional
 	Comment   *string `url:"comment,omitempty",json:"comment,omitempty"`
 	Email     *string `url:"email,omitempty",json:"email,omitempty"`
-	Enable    *bool   `url:"enable,omitempty",json:"enable,omitempty"`
-	Expire    *int    `url:"expire,omitempty",json:"expire,omitempty"`
+	Enable    *bool   `url:"enable,omitempty",json:"enable,omitempty"` // Enable the account (default). You can set this to '0' to disable the account
+	Expire    *int    `url:"expire,omitempty",json:"expire,omitempty"` // Account expiration date (seconds since epoch). '0' means no expiration date.
 	Firstname *string `url:"firstname,omitempty",json:"firstname,omitempty"`
 	Groups    *string `url:"groups,omitempty",json:"groups,omitempty"`
-	Userid    string  `url:"userid",json:"userid"`
-	Keys      *string `url:"keys,omitempty",json:"keys,omitempty"`
+	Keys      *string `url:"keys,omitempty",json:"keys,omitempty"` // Keys for two factor auth (yubico).
+	Lastname  *string `url:"lastname,omitempty",json:"lastname,omitempty"`
+	RealmType *string `url:"realm-type,omitempty",json:"realm-type,omitempty"` // The type of the users realm
 	Tokens    []*struct {
+		Tokenid string `url:"tokenid",json:"tokenid"` // User-specific token identifier.
+
+		// The following parameters are optional
 		Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-		Expire  *int    `url:"expire,omitempty",json:"expire,omitempty"`
-		Privsep *bool   `url:"privsep,omitempty",json:"privsep,omitempty"`
-		Tokenid string  `url:"tokenid",json:"tokenid"`
+		Expire  *int    `url:"expire,omitempty",json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+		Privsep *bool   `url:"privsep,omitempty",json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 	} `url:"tokens,omitempty",json:"tokens,omitempty"`
 }
 
@@ -53,16 +54,18 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type CreateRequest struct {
-	Lastname  *string `url:"lastname,omitempty",json:"lastname,omitempty"`
-	Password  *string `url:"password,omitempty",json:"password,omitempty"`
-	Firstname *string `url:"firstname,omitempty",json:"firstname,omitempty"`
-	Groups    *string `url:"groups,omitempty",json:"groups,omitempty"`
-	Keys      *string `url:"keys,omitempty",json:"keys,omitempty"`
-	Expire    *int    `url:"expire,omitempty",json:"expire,omitempty"`
-	Userid    string  `url:"userid",json:"userid"`
+	Userid string `url:"userid",json:"userid"` // User ID
+
+	// The following parameters are optional
 	Comment   *string `url:"comment,omitempty",json:"comment,omitempty"`
 	Email     *string `url:"email,omitempty",json:"email,omitempty"`
-	Enable    *bool   `url:"enable,omitempty",json:"enable,omitempty"`
+	Enable    *bool   `url:"enable,omitempty",json:"enable,omitempty"` // Enable the account (default). You can set this to '0' to disable the account
+	Expire    *int    `url:"expire,omitempty",json:"expire,omitempty"` // Account expiration date (seconds since epoch). '0' means no expiration date.
+	Firstname *string `url:"firstname,omitempty",json:"firstname,omitempty"`
+	Groups    *string `url:"groups,omitempty",json:"groups,omitempty"`
+	Keys      *string `url:"keys,omitempty",json:"keys,omitempty"` // Keys for two factor auth (yubico).
+	Lastname  *string `url:"lastname,omitempty",json:"lastname,omitempty"`
+	Password  *string `url:"password,omitempty",json:"password,omitempty"` // Initial password.
 }
 
 type CreateResponse map[string]interface{}
@@ -76,20 +79,11 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FindRequest struct {
-	Userid string `url:"userid",json:"userid"`
+	Userid string `url:"userid",json:"userid"` // User ID
+
 }
 
-type FindResponse struct {
-	Comment   *string                `url:"comment,omitempty",json:"comment,omitempty"`
-	Email     *string                `url:"email,omitempty",json:"email,omitempty"`
-	Expire    *int                   `url:"expire,omitempty",json:"expire,omitempty"`
-	Firstname *string                `url:"firstname,omitempty",json:"firstname,omitempty"`
-	Groups    []string               `url:"groups,omitempty",json:"groups,omitempty"`
-	Lastname  *string                `url:"lastname,omitempty",json:"lastname,omitempty"`
-	Tokens    map[string]interface{} `url:"tokens,omitempty",json:"tokens,omitempty"`
-	Enable    *bool                  `url:"enable,omitempty",json:"enable,omitempty"`
-	Keys      *string                `url:"keys,omitempty",json:"keys,omitempty"`
-}
+type FindResponse map[string]interface{}
 
 // Find Get user configuration.
 func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
@@ -100,16 +94,18 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type UpdateRequest struct {
-	Enable    *bool   `url:"enable,omitempty",json:"enable,omitempty"`
-	Firstname *string `url:"firstname,omitempty",json:"firstname,omitempty"`
-	Groups    *string `url:"groups,omitempty",json:"groups,omitempty"`
-	Lastname  *string `url:"lastname,omitempty",json:"lastname,omitempty"`
+	Userid string `url:"userid",json:"userid"` // User ID
+
+	// The following parameters are optional
 	Append    *bool   `url:"append,omitempty",json:"append,omitempty"`
 	Comment   *string `url:"comment,omitempty",json:"comment,omitempty"`
 	Email     *string `url:"email,omitempty",json:"email,omitempty"`
-	Expire    *int    `url:"expire,omitempty",json:"expire,omitempty"`
-	Keys      *string `url:"keys,omitempty",json:"keys,omitempty"`
-	Userid    string  `url:"userid",json:"userid"`
+	Enable    *bool   `url:"enable,omitempty",json:"enable,omitempty"` // Enable the account (default). You can set this to '0' to disable the account
+	Expire    *int    `url:"expire,omitempty",json:"expire,omitempty"` // Account expiration date (seconds since epoch). '0' means no expiration date.
+	Firstname *string `url:"firstname,omitempty",json:"firstname,omitempty"`
+	Groups    *string `url:"groups,omitempty",json:"groups,omitempty"`
+	Keys      *string `url:"keys,omitempty",json:"keys,omitempty"` // Keys for two factor auth (yubico).
+	Lastname  *string `url:"lastname,omitempty",json:"lastname,omitempty"`
 }
 
 type UpdateResponse map[string]interface{}
@@ -123,7 +119,8 @@ func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateRespons
 }
 
 type DeleteRequest struct {
-	Userid string `url:"userid",json:"userid"`
+	Userid string `url:"userid",json:"userid"` // User ID
+
 }
 
 type DeleteResponse map[string]interface{}
@@ -137,15 +134,13 @@ func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteRespons
 }
 
 type ReadUserTfaTypeTfaRequest struct {
-	Multiple *bool  `url:"multiple,omitempty",json:"multiple,omitempty"`
-	Userid   string `url:"userid",json:"userid"`
+	Userid string `url:"userid",json:"userid"` // User ID
+
+	// The following parameters are optional
+	Multiple *bool `url:"multiple,omitempty",json:"multiple,omitempty"` // Request all entries as an array.
 }
 
-type ReadUserTfaTypeTfaResponse struct {
-	User  *string  `url:"user,omitempty",json:"user,omitempty"`
-	Realm *string  `url:"realm,omitempty",json:"realm,omitempty"`
-	Types []string `url:"types,omitempty",json:"types,omitempty"`
-}
+type ReadUserTfaTypeTfaResponse map[string]interface{}
 
 // ReadUserTfaTypeTfa Get user TFA types (Personal and Realm).
 func (c *Client) ReadUserTfaTypeTfa(ctx context.Context, req *ReadUserTfaTypeTfaRequest) (*ReadUserTfaTypeTfaResponse, error) {

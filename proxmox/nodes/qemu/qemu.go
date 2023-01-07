@@ -21,24 +21,28 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"`
-	Full *bool  `url:"full,omitempty",json:"full,omitempty"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+	// The following parameters are optional
+	Full *bool `url:"full,omitempty",json:"full,omitempty"` // Determine the full status of active VMs.
 }
 
 type IndexResponse []*struct {
-	Pid            *int     `url:"pid,omitempty",json:"pid,omitempty"`
-	Tags           *string  `url:"tags,omitempty",json:"tags,omitempty"`
-	Uptime         *int     `url:"uptime,omitempty",json:"uptime,omitempty"`
-	Cpus           *float64 `url:"cpus,omitempty",json:"cpus,omitempty"`
-	Maxdisk        *int     `url:"maxdisk,omitempty",json:"maxdisk,omitempty"`
-	Maxmem         *int     `url:"maxmem,omitempty",json:"maxmem,omitempty"`
-	Name           *string  `url:"name,omitempty",json:"name,omitempty"`
-	Qmpstatus      *string  `url:"qmpstatus,omitempty",json:"qmpstatus,omitempty"`
-	RunningMachine *string  `url:"running-machine,omitempty",json:"running-machine,omitempty"`
-	RunningQemu    *string  `url:"running-qemu,omitempty",json:"running-qemu,omitempty"`
-	Status         string   `url:"status",json:"status"`
-	Lock           *string  `url:"lock,omitempty",json:"lock,omitempty"`
-	Vmid           int      `url:"vmid",json:"vmid"`
+	Status string `url:"status",json:"status"` // Qemu process status.
+	Vmid   int    `url:"vmid",json:"vmid"`     // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Cpus           *float64 `url:"cpus,omitempty",json:"cpus,omitempty"`                       // Maximum usable CPUs.
+	Lock           *string  `url:"lock,omitempty",json:"lock,omitempty"`                       // The current config lock, if any.
+	Maxdisk        *int     `url:"maxdisk,omitempty",json:"maxdisk,omitempty"`                 // Root disk size in bytes.
+	Maxmem         *int     `url:"maxmem,omitempty",json:"maxmem,omitempty"`                   // Maximum memory in bytes.
+	Name           *string  `url:"name,omitempty",json:"name,omitempty"`                       // VM name.
+	Pid            *int     `url:"pid,omitempty",json:"pid,omitempty"`                         // PID of running qemu process.
+	Qmpstatus      *string  `url:"qmpstatus,omitempty",json:"qmpstatus,omitempty"`             // Qemu QMP agent status.
+	RunningMachine *string  `url:"running-machine,omitempty",json:"running-machine,omitempty"` // The currently running machine type (if running).
+	RunningQemu    *string  `url:"running-qemu,omitempty",json:"running-qemu,omitempty"`       // The currently running QEMU version (if running).
+	Tags           *string  `url:"tags,omitempty",json:"tags,omitempty"`                       // The current configured tags, if any
+	Uptime         *int     `url:"uptime,omitempty",json:"uptime,omitempty"`                   // Uptime.
 }
 
 // Index Virtual machine index (per node).
@@ -50,92 +54,94 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type CreateRequest struct {
-	Scsihw            *string  `url:"scsihw,omitempty",json:"scsihw,omitempty"`
-	Tags              *string  `url:"tags,omitempty",json:"tags,omitempty"`
-	Bootdisk          *string  `url:"bootdisk,omitempty",json:"bootdisk,omitempty"`
-	Cpu               *string  `url:"cpu,omitempty",json:"cpu,omitempty"`
-	Protection        *bool    `url:"protection,omitempty",json:"protection,omitempty"`
-	Rng0              *string  `url:"rng0,omitempty",json:"rng0,omitempty"`
-	Numan             *string  `url:"numa[n],omitempty",json:"numa[n],omitempty"`
-	Arch              *string  `url:"arch,omitempty",json:"arch,omitempty"`
-	Args              *string  `url:"args,omitempty",json:"args,omitempty"`
-	Keyboard          *string  `url:"keyboard,omitempty",json:"keyboard,omitempty"`
-	LiveRestore       *bool    `url:"live-restore,omitempty",json:"live-restore,omitempty"`
-	Description       *string  `url:"description,omitempty",json:"description,omitempty"`
-	Ipconfign         *string  `url:"ipconfig[n],omitempty",json:"ipconfig[n],omitempty"`
-	Kvm               *bool    `url:"kvm,omitempty",json:"kvm,omitempty"`
-	Storage           *string  `url:"storage,omitempty",json:"storage,omitempty"`
-	Agent             *string  `url:"agent,omitempty",json:"agent,omitempty"`
-	Efidisk0          *string  `url:"efidisk0,omitempty",json:"efidisk0,omitempty"`
-	Memory            *int     `url:"memory,omitempty",json:"memory,omitempty"`
-	Reboot            *bool    `url:"reboot,omitempty",json:"reboot,omitempty"`
-	Smp               *int     `url:"smp,omitempty",json:"smp,omitempty"`
-	Vmgenid           *string  `url:"vmgenid,omitempty",json:"vmgenid,omitempty"`
-	Netn              *string  `url:"net[n],omitempty",json:"net[n],omitempty"`
-	Satan             *string  `url:"sata[n],omitempty",json:"sata[n],omitempty"`
-	Tdf               *bool    `url:"tdf,omitempty",json:"tdf,omitempty"`
-	Tpmstate0         *string  `url:"tpmstate0,omitempty",json:"tpmstate0,omitempty"`
-	Citype            *string  `url:"citype,omitempty",json:"citype,omitempty"`
-	Cpulimit          *float64 `url:"cpulimit,omitempty",json:"cpulimit,omitempty"`
-	Hugepages         *string  `url:"hugepages,omitempty",json:"hugepages,omitempty"`
-	Localtime         *bool    `url:"localtime,omitempty",json:"localtime,omitempty"`
-	Node              string   `url:"node",json:"node"`
-	Onboot            *bool    `url:"onboot,omitempty",json:"onboot,omitempty"`
-	Pool              *string  `url:"pool,omitempty",json:"pool,omitempty"`
-	Archive           *string  `url:"archive,omitempty",json:"archive,omitempty"`
-	Cipassword        *string  `url:"cipassword,omitempty",json:"cipassword,omitempty"`
-	Cpuunits          *int     `url:"cpuunits,omitempty",json:"cpuunits,omitempty"`
-	Lock              *string  `url:"lock,omitempty",json:"lock,omitempty"`
-	Acpi              *bool    `url:"acpi,omitempty",json:"acpi,omitempty"`
-	Bios              *string  `url:"bios,omitempty",json:"bios,omitempty"`
-	Serialn           *string  `url:"serial[n],omitempty",json:"serial[n],omitempty"`
-	Tablet            *bool    `url:"tablet,omitempty",json:"tablet,omitempty"`
-	Ciuser            *string  `url:"ciuser,omitempty",json:"ciuser,omitempty"`
-	Cores             *int     `url:"cores,omitempty",json:"cores,omitempty"`
-	Iden              *string  `url:"ide[n],omitempty",json:"ide[n],omitempty"`
-	Nameserver        *string  `url:"nameserver,omitempty",json:"nameserver,omitempty"`
-	Affinity          *string  `url:"affinity,omitempty",json:"affinity,omitempty"`
-	Audio0            *string  `url:"audio0,omitempty",json:"audio0,omitempty"`
-	Balloon           *int     `url:"balloon,omitempty",json:"balloon,omitempty"`
-	Cicustom          *string  `url:"cicustom,omitempty",json:"cicustom,omitempty"`
-	Vga               *string  `url:"vga,omitempty",json:"vga,omitempty"`
-	Virtion           *string  `url:"virtio[n],omitempty",json:"virtio[n],omitempty"`
-	Vmstatestorage    *string  `url:"vmstatestorage,omitempty",json:"vmstatestorage,omitempty"`
-	Watchdog          *string  `url:"watchdog,omitempty",json:"watchdog,omitempty"`
-	Searchdomain      *string  `url:"searchdomain,omitempty",json:"searchdomain,omitempty"`
-	Template          *bool    `url:"template,omitempty",json:"template,omitempty"`
-	Unusedn           *string  `url:"unused[n],omitempty",json:"unused[n],omitempty"`
-	Vcpus             *int     `url:"vcpus,omitempty",json:"vcpus,omitempty"`
-	Force             *bool    `url:"force,omitempty",json:"force,omitempty"`
-	Shares            *int     `url:"shares,omitempty",json:"shares,omitempty"`
-	Keephugepages     *bool    `url:"keephugepages,omitempty",json:"keephugepages,omitempty"`
-	MigrateSpeed      *int     `url:"migrate_speed,omitempty",json:"migrate_speed,omitempty"`
-	SpiceEnhancements *string  `url:"spice_enhancements,omitempty",json:"spice_enhancements,omitempty"`
-	Numa              *bool    `url:"numa,omitempty",json:"numa,omitempty"`
-	Ostype            *string  `url:"ostype,omitempty",json:"ostype,omitempty"`
-	Cdrom             *string  `url:"cdrom,omitempty",json:"cdrom,omitempty"`
-	Hotplug           *string  `url:"hotplug,omitempty",json:"hotplug,omitempty"`
-	Ivshmem           *string  `url:"ivshmem,omitempty",json:"ivshmem,omitempty"`
-	MigrateDowntime   *float64 `url:"migrate_downtime,omitempty",json:"migrate_downtime,omitempty"`
-	Start             *bool    `url:"start,omitempty",json:"start,omitempty"`
-	Boot              *string  `url:"boot,omitempty",json:"boot,omitempty"`
-	Paralleln         *string  `url:"parallel[n],omitempty",json:"parallel[n],omitempty"`
-	Scsin             *string  `url:"scsi[n],omitempty",json:"scsi[n],omitempty"`
-	Smbios1           *string  `url:"smbios1,omitempty",json:"smbios1,omitempty"`
-	Vmid              int      `url:"vmid",json:"vmid"`
-	Bwlimit           *int     `url:"bwlimit,omitempty",json:"bwlimit,omitempty"`
-	Hostpcin          *string  `url:"hostpci[n],omitempty",json:"hostpci[n],omitempty"`
-	Name              *string  `url:"name,omitempty",json:"name,omitempty"`
-	Startdate         *string  `url:"startdate,omitempty",json:"startdate,omitempty"`
-	Usbn              *string  `url:"usb[n],omitempty",json:"usb[n],omitempty"`
-	Autostart         *bool    `url:"autostart,omitempty",json:"autostart,omitempty"`
-	Machine           *string  `url:"machine,omitempty",json:"machine,omitempty"`
-	Sshkeys           *string  `url:"sshkeys,omitempty",json:"sshkeys,omitempty"`
-	Startup           *string  `url:"startup,omitempty",json:"startup,omitempty"`
-	Freeze            *bool    `url:"freeze,omitempty",json:"freeze,omitempty"`
-	Hookscript        *string  `url:"hookscript,omitempty",json:"hookscript,omitempty"`
-	Sockets           *int     `url:"sockets,omitempty",json:"sockets,omitempty"`
-	Unique            *bool    `url:"unique,omitempty",json:"unique,omitempty"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Acpi              *bool    `url:"acpi,omitempty",json:"acpi,omitempty"`                             // Enable/disable ACPI.
+	Affinity          *string  `url:"affinity,omitempty",json:"affinity,omitempty"`                     // List of host cores used to execute guest processes, for example: 0,5,8-11
+	Agent             *string  `url:"agent,omitempty",json:"agent,omitempty"`                           // Enable/disable communication with the Qemu Guest Agent and its properties.
+	Arch              *string  `url:"arch,omitempty",json:"arch,omitempty"`                             // Virtual processor architecture. Defaults to the host.
+	Archive           *string  `url:"archive,omitempty",json:"archive,omitempty"`                       // The backup archive. Either the file system path to a .tar or .vma file (use '-' to pipe data from stdin) or a proxmox storage backup volume identifier.
+	Args              *string  `url:"args,omitempty",json:"args,omitempty"`                             // Arbitrary arguments passed to kvm.
+	Audio0            *string  `url:"audio0,omitempty",json:"audio0,omitempty"`                         // Configure a audio device, useful in combination with QXL/Spice.
+	Autostart         *bool    `url:"autostart,omitempty",json:"autostart,omitempty"`                   // Automatic restart after crash (currently ignored).
+	Balloon           *int     `url:"balloon,omitempty",json:"balloon,omitempty"`                       // Amount of target RAM for the VM in MB. Using zero disables the ballon driver.
+	Bios              *string  `url:"bios,omitempty",json:"bios,omitempty"`                             // Select BIOS implementation.
+	Boot              *string  `url:"boot,omitempty",json:"boot,omitempty"`                             // Specify guest boot order. Use the 'order=' sub-property as usage with no key or 'legacy=' is deprecated.
+	Bootdisk          *string  `url:"bootdisk,omitempty",json:"bootdisk,omitempty"`                     // Enable booting from specified disk. Deprecated: Use 'boot: order=foo;bar' instead.
+	Bwlimit           *int     `url:"bwlimit,omitempty",json:"bwlimit,omitempty"`                       // Override I/O bandwidth limit (in KiB/s).
+	Cdrom             *string  `url:"cdrom,omitempty",json:"cdrom,omitempty"`                           // This is an alias for option -ide2
+	Cicustom          *string  `url:"cicustom,omitempty",json:"cicustom,omitempty"`                     // cloud-init: Specify custom files to replace the automatically generated ones at start.
+	Cipassword        *string  `url:"cipassword,omitempty",json:"cipassword,omitempty"`                 // cloud-init: Password to assign the user. Using this is generally not recommended. Use ssh keys instead. Also note that older cloud-init versions do not support hashed passwords.
+	Citype            *string  `url:"citype,omitempty",json:"citype,omitempty"`                         // Specifies the cloud-init configuration format. The default depends on the configured operating system type (`ostype`. We use the `nocloud` format for Linux, and `configdrive2` for windows.
+	Ciuser            *string  `url:"ciuser,omitempty",json:"ciuser,omitempty"`                         // cloud-init: User name to change ssh keys and password for instead of the image's configured default user.
+	Cores             *int     `url:"cores,omitempty",json:"cores,omitempty"`                           // The number of cores per socket.
+	Cpu               *string  `url:"cpu,omitempty",json:"cpu,omitempty"`                               // Emulated CPU type.
+	Cpulimit          *float64 `url:"cpulimit,omitempty",json:"cpulimit,omitempty"`                     // Limit of CPU usage.
+	Cpuunits          *int     `url:"cpuunits,omitempty",json:"cpuunits,omitempty"`                     // CPU weight for a VM, will be clamped to [1, 10000] in cgroup v2.
+	Description       *string  `url:"description,omitempty",json:"description,omitempty"`               // Description for the VM. Shown in the web-interface VM's summary. This is saved as comment inside the configuration file.
+	Efidisk0          *string  `url:"efidisk0,omitempty",json:"efidisk0,omitempty"`                     // Configure a Disk for storing EFI vars. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Note that SIZE_IN_GiB is ignored here and that the default EFI vars are copied to the volume instead. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+	Force             *bool    `url:"force,omitempty",json:"force,omitempty"`                           // Allow to overwrite existing VM.
+	Freeze            *bool    `url:"freeze,omitempty",json:"freeze,omitempty"`                         // Freeze CPU at startup (use 'c' monitor command to start execution).
+	Hookscript        *string  `url:"hookscript,omitempty",json:"hookscript,omitempty"`                 // Script that will be executed during various steps in the vms lifetime.
+	Hostpcin          *string  `url:"hostpci[n],omitempty",json:"hostpci[n],omitempty"`                 // Map host PCI devices into guest.
+	Hotplug           *string  `url:"hotplug,omitempty",json:"hotplug,omitempty"`                       // Selectively enable hotplug features. This is a comma separated list of hotplug features: 'network', 'disk', 'cpu', 'memory', 'usb' and 'cloudinit'. Use '0' to disable hotplug completely. Using '1' as value is an alias for the default `network,disk,usb`. USB hotplugging is possible for guests with machine version >= 7.1 and ostype l26 or windows > 7.
+	Hugepages         *string  `url:"hugepages,omitempty",json:"hugepages,omitempty"`                   // Enable/disable hugepages memory.
+	Iden              *string  `url:"ide[n],omitempty",json:"ide[n],omitempty"`                         // Use volume as IDE hard disk or CD-ROM (n is 0 to 3). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+	Ipconfign         *string  `url:"ipconfig[n],omitempty",json:"ipconfig[n],omitempty"`               // cloud-init: Specify IP addresses and gateways for the corresponding interface.IP addresses use CIDR notation, gateways are optional but need an IP of the same type specified.The special string 'dhcp' can be used for IP addresses to use DHCP, in which case no explicitgateway should be provided.For IPv6 the special string 'auto' can be used to use stateless autoconfiguration. This requirescloud-init 19.4 or newer.If cloud-init is enabled and neither an IPv4 nor an IPv6 address is specified, it defaults to usingdhcp on IPv4.
+	Ivshmem           *string  `url:"ivshmem,omitempty",json:"ivshmem,omitempty"`                       // Inter-VM shared memory. Useful for direct communication between VMs, or to the host.
+	Keephugepages     *bool    `url:"keephugepages,omitempty",json:"keephugepages,omitempty"`           // Use together with hugepages. If enabled, hugepages will not not be deleted after VM shutdown and can be used for subsequent starts.
+	Keyboard          *string  `url:"keyboard,omitempty",json:"keyboard,omitempty"`                     // Keyboard layout for VNC server. This option is generally not required and is often better handled from within the guest OS.
+	Kvm               *bool    `url:"kvm,omitempty",json:"kvm,omitempty"`                               // Enable/disable KVM hardware virtualization.
+	LiveRestore       *bool    `url:"live-restore,omitempty",json:"live-restore,omitempty"`             // Start the VM immediately from the backup and restore in background. PBS only.
+	Localtime         *bool    `url:"localtime,omitempty",json:"localtime,omitempty"`                   // Set the real time clock (RTC) to local time. This is enabled by default if the `ostype` indicates a Microsoft Windows OS.
+	Lock              *string  `url:"lock,omitempty",json:"lock,omitempty"`                             // Lock/unlock the VM.
+	Machine           *string  `url:"machine,omitempty",json:"machine,omitempty"`                       // Specifies the Qemu machine type.
+	Memory            *int     `url:"memory,omitempty",json:"memory,omitempty"`                         // Amount of RAM for the VM in MB. This is the maximum available memory when you use the balloon device.
+	MigrateDowntime   *float64 `url:"migrate_downtime,omitempty",json:"migrate_downtime,omitempty"`     // Set maximum tolerated downtime (in seconds) for migrations.
+	MigrateSpeed      *int     `url:"migrate_speed,omitempty",json:"migrate_speed,omitempty"`           // Set maximum speed (in MB/s) for migrations. Value 0 is no limit.
+	Name              *string  `url:"name,omitempty",json:"name,omitempty"`                             // Set a name for the VM. Only used on the configuration web interface.
+	Nameserver        *string  `url:"nameserver,omitempty",json:"nameserver,omitempty"`                 // cloud-init: Sets DNS server IP address for a container. Create will automatically use the setting from the host if neither searchdomain nor nameserver are set.
+	Netn              *string  `url:"net[n],omitempty",json:"net[n],omitempty"`                         // Specify network devices.
+	Numa              *bool    `url:"numa,omitempty",json:"numa,omitempty"`                             // Enable/disable NUMA.
+	Numan             *string  `url:"numa[n],omitempty",json:"numa[n],omitempty"`                       // NUMA topology.
+	Onboot            *bool    `url:"onboot,omitempty",json:"onboot,omitempty"`                         // Specifies whether a VM will be started during system bootup.
+	Ostype            *string  `url:"ostype,omitempty",json:"ostype,omitempty"`                         // Specify guest operating system.
+	Paralleln         *string  `url:"parallel[n],omitempty",json:"parallel[n],omitempty"`               // Map host parallel devices (n is 0 to 2).
+	Pool              *string  `url:"pool,omitempty",json:"pool,omitempty"`                             // Add the VM to the specified pool.
+	Protection        *bool    `url:"protection,omitempty",json:"protection,omitempty"`                 // Sets the protection flag of the VM. This will disable the remove VM and remove disk operations.
+	Reboot            *bool    `url:"reboot,omitempty",json:"reboot,omitempty"`                         // Allow reboot. If set to '0' the VM exit on reboot.
+	Rng0              *string  `url:"rng0,omitempty",json:"rng0,omitempty"`                             // Configure a VirtIO-based Random Number Generator.
+	Satan             *string  `url:"sata[n],omitempty",json:"sata[n],omitempty"`                       // Use volume as SATA hard disk or CD-ROM (n is 0 to 5). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+	Scsihw            *string  `url:"scsihw,omitempty",json:"scsihw,omitempty"`                         // SCSI controller model
+	Scsin             *string  `url:"scsi[n],omitempty",json:"scsi[n],omitempty"`                       // Use volume as SCSI hard disk or CD-ROM (n is 0 to 30). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+	Searchdomain      *string  `url:"searchdomain,omitempty",json:"searchdomain,omitempty"`             // cloud-init: Sets DNS search domains for a container. Create will automatically use the setting from the host if neither searchdomain nor nameserver are set.
+	Serialn           *string  `url:"serial[n],omitempty",json:"serial[n],omitempty"`                   // Create a serial device inside the VM (n is 0 to 3)
+	Shares            *int     `url:"shares,omitempty",json:"shares,omitempty"`                         // Amount of memory shares for auto-ballooning. The larger the number is, the more memory this VM gets. Number is relative to weights of all other running VMs. Using zero disables auto-ballooning. Auto-ballooning is done by pvestatd.
+	Smbios1           *string  `url:"smbios1,omitempty",json:"smbios1,omitempty"`                       // Specify SMBIOS type 1 fields.
+	Smp               *int     `url:"smp,omitempty",json:"smp,omitempty"`                               // The number of CPUs. Please use option -sockets instead.
+	Sockets           *int     `url:"sockets,omitempty",json:"sockets,omitempty"`                       // The number of CPU sockets.
+	SpiceEnhancements *string  `url:"spice_enhancements,omitempty",json:"spice_enhancements,omitempty"` // Configure additional enhancements for SPICE.
+	Sshkeys           *string  `url:"sshkeys,omitempty",json:"sshkeys,omitempty"`                       // cloud-init: Setup public SSH keys (one key per line, OpenSSH format).
+	Start             *bool    `url:"start,omitempty",json:"start,omitempty"`                           // Start VM after it was created successfully.
+	Startdate         *string  `url:"startdate,omitempty",json:"startdate,omitempty"`                   // Set the initial date of the real time clock. Valid format for date are:'now' or '2006-06-17T16:01:21' or '2006-06-17'.
+	Startup           *string  `url:"startup,omitempty",json:"startup,omitempty"`                       // Startup and shutdown behavior. Order is a non-negative number defining the general startup order. Shutdown in done with reverse ordering. Additionally you can set the 'up' or 'down' delay in seconds, which specifies a delay to wait before the next VM is started or stopped.
+	Storage           *string  `url:"storage,omitempty",json:"storage,omitempty"`                       // Default storage.
+	Tablet            *bool    `url:"tablet,omitempty",json:"tablet,omitempty"`                         // Enable/disable the USB tablet device.
+	Tags              *string  `url:"tags,omitempty",json:"tags,omitempty"`                             // Tags of the VM. This is only meta information.
+	Tdf               *bool    `url:"tdf,omitempty",json:"tdf,omitempty"`                               // Enable/disable time drift fix.
+	Template          *bool    `url:"template,omitempty",json:"template,omitempty"`                     // Enable/disable Template.
+	Tpmstate0         *string  `url:"tpmstate0,omitempty",json:"tpmstate0,omitempty"`                   // Configure a Disk for storing TPM state. The format is fixed to 'raw'. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Note that SIZE_IN_GiB is ignored here and 4 MiB will be used instead. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+	Unique            *bool    `url:"unique,omitempty",json:"unique,omitempty"`                         // Assign a unique random ethernet address.
+	Unusedn           *string  `url:"unused[n],omitempty",json:"unused[n],omitempty"`                   // Reference to unused volumes. This is used internally, and should not be modified manually.
+	Usbn              *string  `url:"usb[n],omitempty",json:"usb[n],omitempty"`                         // Configure an USB device (n is 0 to 4, for machine version >= 7.1 and ostype l26 or windows > 7, n can be up to 14).
+	Vcpus             *int     `url:"vcpus,omitempty",json:"vcpus,omitempty"`                           // Number of hotplugged vcpus.
+	Vga               *string  `url:"vga,omitempty",json:"vga,omitempty"`                               // Configure the VGA hardware.
+	Virtion           *string  `url:"virtio[n],omitempty",json:"virtio[n],omitempty"`                   // Use volume as VIRTIO hard disk (n is 0 to 15). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+	Vmgenid           *string  `url:"vmgenid,omitempty",json:"vmgenid,omitempty"`                       // Set VM Generation ID. Use '1' to autogenerate on create or update, pass '0' to disable explicitly.
+	Vmstatestorage    *string  `url:"vmstatestorage,omitempty",json:"vmstatestorage,omitempty"`         // Default storage for VM state volumes/files.
+	Watchdog          *string  `url:"watchdog,omitempty",json:"watchdog,omitempty"`                     // Create a virtual hardware watchdog device.
 }
 
 type CreateResponse string
@@ -149,8 +155,9 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FindRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type FindResponse []*struct {
@@ -166,11 +173,13 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type DeleteRequest struct {
-	DestroyUnreferencedDisks *bool  `url:"destroy-unreferenced-disks,omitempty",json:"destroy-unreferenced-disks,omitempty"`
-	Node                     string `url:"node",json:"node"`
-	Purge                    *bool  `url:"purge,omitempty",json:"purge,omitempty"`
-	Skiplock                 *bool  `url:"skiplock,omitempty",json:"skiplock,omitempty"`
-	Vmid                     int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	DestroyUnreferencedDisks *bool `url:"destroy-unreferenced-disks,omitempty",json:"destroy-unreferenced-disks,omitempty"` // If set, destroy additionally all disks not referenced in the config but with a matching VMID from all enabled storages.
+	Purge                    *bool `url:"purge,omitempty",json:"purge,omitempty"`                                           // Remove VMID from configurations, like backup & replication jobs and HA.
+	Skiplock                 *bool `url:"skiplock,omitempty",json:"skiplock,omitempty"`                                     // Ignore locks - only root is allowed to use this option.
 }
 
 type DeleteResponse string
@@ -184,11 +193,13 @@ func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteRespons
 }
 
 type RrdRequest struct {
-	Cf        *string `url:"cf,omitempty",json:"cf,omitempty"`
-	Ds        string  `url:"ds",json:"ds"`
-	Node      string  `url:"node",json:"node"`
-	Timeframe string  `url:"timeframe",json:"timeframe"`
-	Vmid      int     `url:"vmid",json:"vmid"`
+	Ds        string `url:"ds",json:"ds"`               // The list of datasources you want to display.
+	Node      string `url:"node",json:"node"`           // The cluster node name.
+	Timeframe string `url:"timeframe",json:"timeframe"` // Specify the time frame you are interested in.
+	Vmid      int    `url:"vmid",json:"vmid"`           // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Cf *string `url:"cf,omitempty",json:"cf,omitempty"` // The RRD consolidation function
 }
 
 type RrdResponse struct {
@@ -204,10 +215,12 @@ func (c *Client) Rrd(ctx context.Context, req *RrdRequest) (*RrdResponse, error)
 }
 
 type RrddataRequest struct {
-	Cf        *string `url:"cf,omitempty",json:"cf,omitempty"`
-	Node      string  `url:"node",json:"node"`
-	Timeframe string  `url:"timeframe",json:"timeframe"`
-	Vmid      int     `url:"vmid",json:"vmid"`
+	Node      string `url:"node",json:"node"`           // The cluster node name.
+	Timeframe string `url:"timeframe",json:"timeframe"` // Specify the time frame you are interested in.
+	Vmid      int    `url:"vmid",json:"vmid"`           // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Cf *string `url:"cf,omitempty",json:"cf,omitempty"` // The RRD consolidation function
 }
 
 type RrddataResponse []*map[string]interface{}
@@ -221,90 +234,94 @@ func (c *Client) Rrddata(ctx context.Context, req *RrddataRequest) (*RrddataResp
 }
 
 type VmConfigRequest struct {
-	Snapshot *string `url:"snapshot,omitempty",json:"snapshot,omitempty"`
-	Vmid     int     `url:"vmid",json:"vmid"`
-	Current  *bool   `url:"current,omitempty",json:"current,omitempty"`
-	Node     string  `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Current  *bool   `url:"current,omitempty",json:"current,omitempty"`   // Get current values (instead of pending values).
+	Snapshot *string `url:"snapshot,omitempty",json:"snapshot,omitempty"` // Fetch config values from given snapshot.
 }
 
 type VmConfigResponse struct {
-	Affinity          *string  `url:"affinity,omitempty",json:"affinity,omitempty"`
-	Agent             *string  `url:"agent,omitempty",json:"agent,omitempty"`
-	Cdrom             *string  `url:"cdrom,omitempty",json:"cdrom,omitempty"`
-	Kvm               *bool    `url:"kvm,omitempty",json:"kvm,omitempty"`
-	MigrateDowntime   *float64 `url:"migrate_downtime,omitempty",json:"migrate_downtime,omitempty"`
-	Boot              *string  `url:"boot,omitempty",json:"boot,omitempty"`
-	Cicustom          *string  `url:"cicustom,omitempty",json:"cicustom,omitempty"`
-	Cipassword        *string  `url:"cipassword,omitempty",json:"cipassword,omitempty"`
-	Cpu               *string  `url:"cpu,omitempty",json:"cpu,omitempty"`
-	Ipconfign         *string  `url:"ipconfig[n],omitempty",json:"ipconfig[n],omitempty"`
-	Template          *bool    `url:"template,omitempty",json:"template,omitempty"`
-	Efidisk0          *string  `url:"efidisk0,omitempty",json:"efidisk0,omitempty"`
-	Scsin             *string  `url:"scsi[n],omitempty",json:"scsi[n],omitempty"`
-	Autostart         *bool    `url:"autostart,omitempty",json:"autostart,omitempty"`
-	Description       *string  `url:"description,omitempty",json:"description,omitempty"`
-	Digest            string   `url:"digest",json:"digest"`
-	Hostpcin          *string  `url:"hostpci[n],omitempty",json:"hostpci[n],omitempty"`
-	Memory            *int     `url:"memory,omitempty",json:"memory,omitempty"`
-	Ostype            *string  `url:"ostype,omitempty",json:"ostype,omitempty"`
-	Vmstatestorage    *string  `url:"vmstatestorage,omitempty",json:"vmstatestorage,omitempty"`
-	Bios              *string  `url:"bios,omitempty",json:"bios,omitempty"`
-	Hotplug           *string  `url:"hotplug,omitempty",json:"hotplug,omitempty"`
-	Keephugepages     *bool    `url:"keephugepages,omitempty",json:"keephugepages,omitempty"`
-	Netn              *string  `url:"net[n],omitempty",json:"net[n],omitempty"`
-	Numa              *bool    `url:"numa,omitempty",json:"numa,omitempty"`
-	Audio0            *string  `url:"audio0,omitempty",json:"audio0,omitempty"`
-	Cpuunits          *int     `url:"cpuunits,omitempty",json:"cpuunits,omitempty"`
-	Nameserver        *string  `url:"nameserver,omitempty",json:"nameserver,omitempty"`
-	Args              *string  `url:"args,omitempty",json:"args,omitempty"`
-	Ciuser            *string  `url:"ciuser,omitempty",json:"ciuser,omitempty"`
-	Usbn              *string  `url:"usb[n],omitempty",json:"usb[n],omitempty"`
-	Watchdog          *string  `url:"watchdog,omitempty",json:"watchdog,omitempty"`
-	Bootdisk          *string  `url:"bootdisk,omitempty",json:"bootdisk,omitempty"`
-	Cores             *int     `url:"cores,omitempty",json:"cores,omitempty"`
-	Cpulimit          *float64 `url:"cpulimit,omitempty",json:"cpulimit,omitempty"`
-	Onboot            *bool    `url:"onboot,omitempty",json:"onboot,omitempty"`
-	Tablet            *bool    `url:"tablet,omitempty",json:"tablet,omitempty"`
-	Tags              *string  `url:"tags,omitempty",json:"tags,omitempty"`
-	Unusedn           *string  `url:"unused[n],omitempty",json:"unused[n],omitempty"`
-	Ivshmem           *string  `url:"ivshmem,omitempty",json:"ivshmem,omitempty"`
-	Satan             *string  `url:"sata[n],omitempty",json:"sata[n],omitempty"`
-	Serialn           *string  `url:"serial[n],omitempty",json:"serial[n],omitempty"`
-	Smp               *int     `url:"smp,omitempty",json:"smp,omitempty"`
-	MigrateSpeed      *int     `url:"migrate_speed,omitempty",json:"migrate_speed,omitempty"`
-	Vga               *string  `url:"vga,omitempty",json:"vga,omitempty"`
-	Hookscript        *string  `url:"hookscript,omitempty",json:"hookscript,omitempty"`
-	Rng0              *string  `url:"rng0,omitempty",json:"rng0,omitempty"`
-	Smbios1           *string  `url:"smbios1,omitempty",json:"smbios1,omitempty"`
-	Tdf               *bool    `url:"tdf,omitempty",json:"tdf,omitempty"`
-	Vmgenid           *string  `url:"vmgenid,omitempty",json:"vmgenid,omitempty"`
-	Freeze            *bool    `url:"freeze,omitempty",json:"freeze,omitempty"`
-	Searchdomain      *string  `url:"searchdomain,omitempty",json:"searchdomain,omitempty"`
-	Sshkeys           *string  `url:"sshkeys,omitempty",json:"sshkeys,omitempty"`
-	Balloon           *int     `url:"balloon,omitempty",json:"balloon,omitempty"`
-	Hugepages         *string  `url:"hugepages,omitempty",json:"hugepages,omitempty"`
-	Name              *string  `url:"name,omitempty",json:"name,omitempty"`
-	Paralleln         *string  `url:"parallel[n],omitempty",json:"parallel[n],omitempty"`
-	SpiceEnhancements *string  `url:"spice_enhancements,omitempty",json:"spice_enhancements,omitempty"`
-	Startdate         *string  `url:"startdate,omitempty",json:"startdate,omitempty"`
-	Tpmstate0         *string  `url:"tpmstate0,omitempty",json:"tpmstate0,omitempty"`
-	Acpi              *bool    `url:"acpi,omitempty",json:"acpi,omitempty"`
-	Citype            *string  `url:"citype,omitempty",json:"citype,omitempty"`
-	Machine           *string  `url:"machine,omitempty",json:"machine,omitempty"`
-	Scsihw            *string  `url:"scsihw,omitempty",json:"scsihw,omitempty"`
-	Virtion           *string  `url:"virtio[n],omitempty",json:"virtio[n],omitempty"`
-	Arch              *string  `url:"arch,omitempty",json:"arch,omitempty"`
-	Iden              *string  `url:"ide[n],omitempty",json:"ide[n],omitempty"`
-	Keyboard          *string  `url:"keyboard,omitempty",json:"keyboard,omitempty"`
-	Protection        *bool    `url:"protection,omitempty",json:"protection,omitempty"`
-	Reboot            *bool    `url:"reboot,omitempty",json:"reboot,omitempty"`
-	Shares            *int     `url:"shares,omitempty",json:"shares,omitempty"`
-	Vcpus             *int     `url:"vcpus,omitempty",json:"vcpus,omitempty"`
-	Localtime         *bool    `url:"localtime,omitempty",json:"localtime,omitempty"`
-	Lock              *string  `url:"lock,omitempty",json:"lock,omitempty"`
-	Numan             *string  `url:"numa[n],omitempty",json:"numa[n],omitempty"`
-	Sockets           *int     `url:"sockets,omitempty",json:"sockets,omitempty"`
-	Startup           *string  `url:"startup,omitempty",json:"startup,omitempty"`
+	Digest string `url:"digest",json:"digest"` // SHA1 digest of configuration file. This can be used to prevent concurrent modifications.
+
+	// The following parameters are optional
+	Acpi              *bool    `url:"acpi,omitempty",json:"acpi,omitempty"`                             // Enable/disable ACPI.
+	Affinity          *string  `url:"affinity,omitempty",json:"affinity,omitempty"`                     // List of host cores used to execute guest processes, for example: 0,5,8-11
+	Agent             *string  `url:"agent,omitempty",json:"agent,omitempty"`                           // Enable/disable communication with the Qemu Guest Agent and its properties.
+	Arch              *string  `url:"arch,omitempty",json:"arch,omitempty"`                             // Virtual processor architecture. Defaults to the host.
+	Args              *string  `url:"args,omitempty",json:"args,omitempty"`                             // Arbitrary arguments passed to kvm.
+	Audio0            *string  `url:"audio0,omitempty",json:"audio0,omitempty"`                         // Configure a audio device, useful in combination with QXL/Spice.
+	Autostart         *bool    `url:"autostart,omitempty",json:"autostart,omitempty"`                   // Automatic restart after crash (currently ignored).
+	Balloon           *int     `url:"balloon,omitempty",json:"balloon,omitempty"`                       // Amount of target RAM for the VM in MB. Using zero disables the ballon driver.
+	Bios              *string  `url:"bios,omitempty",json:"bios,omitempty"`                             // Select BIOS implementation.
+	Boot              *string  `url:"boot,omitempty",json:"boot,omitempty"`                             // Specify guest boot order. Use the 'order=' sub-property as usage with no key or 'legacy=' is deprecated.
+	Bootdisk          *string  `url:"bootdisk,omitempty",json:"bootdisk,omitempty"`                     // Enable booting from specified disk. Deprecated: Use 'boot: order=foo;bar' instead.
+	Cdrom             *string  `url:"cdrom,omitempty",json:"cdrom,omitempty"`                           // This is an alias for option -ide2
+	Cicustom          *string  `url:"cicustom,omitempty",json:"cicustom,omitempty"`                     // cloud-init: Specify custom files to replace the automatically generated ones at start.
+	Cipassword        *string  `url:"cipassword,omitempty",json:"cipassword,omitempty"`                 // cloud-init: Password to assign the user. Using this is generally not recommended. Use ssh keys instead. Also note that older cloud-init versions do not support hashed passwords.
+	Citype            *string  `url:"citype,omitempty",json:"citype,omitempty"`                         // Specifies the cloud-init configuration format. The default depends on the configured operating system type (`ostype`. We use the `nocloud` format for Linux, and `configdrive2` for windows.
+	Ciuser            *string  `url:"ciuser,omitempty",json:"ciuser,omitempty"`                         // cloud-init: User name to change ssh keys and password for instead of the image's configured default user.
+	Cores             *int     `url:"cores,omitempty",json:"cores,omitempty"`                           // The number of cores per socket.
+	Cpu               *string  `url:"cpu,omitempty",json:"cpu,omitempty"`                               // Emulated CPU type.
+	Cpulimit          *float64 `url:"cpulimit,omitempty",json:"cpulimit,omitempty"`                     // Limit of CPU usage.
+	Cpuunits          *int     `url:"cpuunits,omitempty",json:"cpuunits,omitempty"`                     // CPU weight for a VM, will be clamped to [1, 10000] in cgroup v2.
+	Description       *string  `url:"description,omitempty",json:"description,omitempty"`               // Description for the VM. Shown in the web-interface VM's summary. This is saved as comment inside the configuration file.
+	Efidisk0          *string  `url:"efidisk0,omitempty",json:"efidisk0,omitempty"`                     // Configure a Disk for storing EFI vars.
+	Freeze            *bool    `url:"freeze,omitempty",json:"freeze,omitempty"`                         // Freeze CPU at startup (use 'c' monitor command to start execution).
+	Hookscript        *string  `url:"hookscript,omitempty",json:"hookscript,omitempty"`                 // Script that will be executed during various steps in the vms lifetime.
+	Hostpcin          *string  `url:"hostpci[n],omitempty",json:"hostpci[n],omitempty"`                 // Map host PCI devices into guest.
+	Hotplug           *string  `url:"hotplug,omitempty",json:"hotplug,omitempty"`                       // Selectively enable hotplug features. This is a comma separated list of hotplug features: 'network', 'disk', 'cpu', 'memory', 'usb' and 'cloudinit'. Use '0' to disable hotplug completely. Using '1' as value is an alias for the default `network,disk,usb`. USB hotplugging is possible for guests with machine version >= 7.1 and ostype l26 or windows > 7.
+	Hugepages         *string  `url:"hugepages,omitempty",json:"hugepages,omitempty"`                   // Enable/disable hugepages memory.
+	Iden              *string  `url:"ide[n],omitempty",json:"ide[n],omitempty"`                         // Use volume as IDE hard disk or CD-ROM (n is 0 to 3).
+	Ipconfign         *string  `url:"ipconfig[n],omitempty",json:"ipconfig[n],omitempty"`               // cloud-init: Specify IP addresses and gateways for the corresponding interface.IP addresses use CIDR notation, gateways are optional but need an IP of the same type specified.The special string 'dhcp' can be used for IP addresses to use DHCP, in which case no explicitgateway should be provided.For IPv6 the special string 'auto' can be used to use stateless autoconfiguration. This requirescloud-init 19.4 or newer.If cloud-init is enabled and neither an IPv4 nor an IPv6 address is specified, it defaults to usingdhcp on IPv4.
+	Ivshmem           *string  `url:"ivshmem,omitempty",json:"ivshmem,omitempty"`                       // Inter-VM shared memory. Useful for direct communication between VMs, or to the host.
+	Keephugepages     *bool    `url:"keephugepages,omitempty",json:"keephugepages,omitempty"`           // Use together with hugepages. If enabled, hugepages will not not be deleted after VM shutdown and can be used for subsequent starts.
+	Keyboard          *string  `url:"keyboard,omitempty",json:"keyboard,omitempty"`                     // Keyboard layout for VNC server. This option is generally not required and is often better handled from within the guest OS.
+	Kvm               *bool    `url:"kvm,omitempty",json:"kvm,omitempty"`                               // Enable/disable KVM hardware virtualization.
+	Localtime         *bool    `url:"localtime,omitempty",json:"localtime,omitempty"`                   // Set the real time clock (RTC) to local time. This is enabled by default if the `ostype` indicates a Microsoft Windows OS.
+	Lock              *string  `url:"lock,omitempty",json:"lock,omitempty"`                             // Lock/unlock the VM.
+	Machine           *string  `url:"machine,omitempty",json:"machine,omitempty"`                       // Specifies the Qemu machine type.
+	Memory            *int     `url:"memory,omitempty",json:"memory,omitempty"`                         // Amount of RAM for the VM in MB. This is the maximum available memory when you use the balloon device.
+	MigrateDowntime   *float64 `url:"migrate_downtime,omitempty",json:"migrate_downtime,omitempty"`     // Set maximum tolerated downtime (in seconds) for migrations.
+	MigrateSpeed      *int     `url:"migrate_speed,omitempty",json:"migrate_speed,omitempty"`           // Set maximum speed (in MB/s) for migrations. Value 0 is no limit.
+	Name              *string  `url:"name,omitempty",json:"name,omitempty"`                             // Set a name for the VM. Only used on the configuration web interface.
+	Nameserver        *string  `url:"nameserver,omitempty",json:"nameserver,omitempty"`                 // cloud-init: Sets DNS server IP address for a container. Create will automatically use the setting from the host if neither searchdomain nor nameserver are set.
+	Netn              *string  `url:"net[n],omitempty",json:"net[n],omitempty"`                         // Specify network devices.
+	Numa              *bool    `url:"numa,omitempty",json:"numa,omitempty"`                             // Enable/disable NUMA.
+	Numan             *string  `url:"numa[n],omitempty",json:"numa[n],omitempty"`                       // NUMA topology.
+	Onboot            *bool    `url:"onboot,omitempty",json:"onboot,omitempty"`                         // Specifies whether a VM will be started during system bootup.
+	Ostype            *string  `url:"ostype,omitempty",json:"ostype,omitempty"`                         // Specify guest operating system.
+	Paralleln         *string  `url:"parallel[n],omitempty",json:"parallel[n],omitempty"`               // Map host parallel devices (n is 0 to 2).
+	Protection        *bool    `url:"protection,omitempty",json:"protection,omitempty"`                 // Sets the protection flag of the VM. This will disable the remove VM and remove disk operations.
+	Reboot            *bool    `url:"reboot,omitempty",json:"reboot,omitempty"`                         // Allow reboot. If set to '0' the VM exit on reboot.
+	Rng0              *string  `url:"rng0,omitempty",json:"rng0,omitempty"`                             // Configure a VirtIO-based Random Number Generator.
+	Satan             *string  `url:"sata[n],omitempty",json:"sata[n],omitempty"`                       // Use volume as SATA hard disk or CD-ROM (n is 0 to 5).
+	Scsihw            *string  `url:"scsihw,omitempty",json:"scsihw,omitempty"`                         // SCSI controller model
+	Scsin             *string  `url:"scsi[n],omitempty",json:"scsi[n],omitempty"`                       // Use volume as SCSI hard disk or CD-ROM (n is 0 to 30).
+	Searchdomain      *string  `url:"searchdomain,omitempty",json:"searchdomain,omitempty"`             // cloud-init: Sets DNS search domains for a container. Create will automatically use the setting from the host if neither searchdomain nor nameserver are set.
+	Serialn           *string  `url:"serial[n],omitempty",json:"serial[n],omitempty"`                   // Create a serial device inside the VM (n is 0 to 3)
+	Shares            *int     `url:"shares,omitempty",json:"shares,omitempty"`                         // Amount of memory shares for auto-ballooning. The larger the number is, the more memory this VM gets. Number is relative to weights of all other running VMs. Using zero disables auto-ballooning. Auto-ballooning is done by pvestatd.
+	Smbios1           *string  `url:"smbios1,omitempty",json:"smbios1,omitempty"`                       // Specify SMBIOS type 1 fields.
+	Smp               *int     `url:"smp,omitempty",json:"smp,omitempty"`                               // The number of CPUs. Please use option -sockets instead.
+	Sockets           *int     `url:"sockets,omitempty",json:"sockets,omitempty"`                       // The number of CPU sockets.
+	SpiceEnhancements *string  `url:"spice_enhancements,omitempty",json:"spice_enhancements,omitempty"` // Configure additional enhancements for SPICE.
+	Sshkeys           *string  `url:"sshkeys,omitempty",json:"sshkeys,omitempty"`                       // cloud-init: Setup public SSH keys (one key per line, OpenSSH format).
+	Startdate         *string  `url:"startdate,omitempty",json:"startdate,omitempty"`                   // Set the initial date of the real time clock. Valid format for date are:'now' or '2006-06-17T16:01:21' or '2006-06-17'.
+	Startup           *string  `url:"startup,omitempty",json:"startup,omitempty"`                       // Startup and shutdown behavior. Order is a non-negative number defining the general startup order. Shutdown in done with reverse ordering. Additionally you can set the 'up' or 'down' delay in seconds, which specifies a delay to wait before the next VM is started or stopped.
+	Tablet            *bool    `url:"tablet,omitempty",json:"tablet,omitempty"`                         // Enable/disable the USB tablet device.
+	Tags              *string  `url:"tags,omitempty",json:"tags,omitempty"`                             // Tags of the VM. This is only meta information.
+	Tdf               *bool    `url:"tdf,omitempty",json:"tdf,omitempty"`                               // Enable/disable time drift fix.
+	Template          *bool    `url:"template,omitempty",json:"template,omitempty"`                     // Enable/disable Template.
+	Tpmstate0         *string  `url:"tpmstate0,omitempty",json:"tpmstate0,omitempty"`                   // Configure a Disk for storing TPM state. The format is fixed to 'raw'.
+	Unusedn           *string  `url:"unused[n],omitempty",json:"unused[n],omitempty"`                   // Reference to unused volumes. This is used internally, and should not be modified manually.
+	Usbn              *string  `url:"usb[n],omitempty",json:"usb[n],omitempty"`                         // Configure an USB device (n is 0 to 4, for machine version >= 7.1 and ostype l26 or windows > 7, n can be up to 14).
+	Vcpus             *int     `url:"vcpus,omitempty",json:"vcpus,omitempty"`                           // Number of hotplugged vcpus.
+	Vga               *string  `url:"vga,omitempty",json:"vga,omitempty"`                               // Configure the VGA hardware.
+	Virtion           *string  `url:"virtio[n],omitempty",json:"virtio[n],omitempty"`                   // Use volume as VIRTIO hard disk (n is 0 to 15).
+	Vmgenid           *string  `url:"vmgenid,omitempty",json:"vmgenid,omitempty"`                       // Set VM Generation ID. Use '1' to autogenerate on create or update, pass '0' to disable explicitly.
+	Vmstatestorage    *string  `url:"vmstatestorage,omitempty",json:"vmstatestorage,omitempty"`         // Default storage for VM state volumes/files.
+	Watchdog          *string  `url:"watchdog,omitempty",json:"watchdog,omitempty"`                     // Create a virtual hardware watchdog device.
 }
 
 // VmConfig Get the virtual machine configuration with pending configuration changes applied. Set the 'current' parameter to get the current configuration instead.
@@ -316,90 +333,92 @@ func (c *Client) VmConfig(ctx context.Context, req *VmConfigRequest) (*VmConfigR
 }
 
 type UpdateVmAsyncConfigRequest struct {
-	Paralleln         *string  `url:"parallel[n],omitempty",json:"parallel[n],omitempty"`
-	Serialn           *string  `url:"serial[n],omitempty",json:"serial[n],omitempty"`
-	Startup           *string  `url:"startup,omitempty",json:"startup,omitempty"`
-	Vmid              int      `url:"vmid",json:"vmid"`
-	Cdrom             *string  `url:"cdrom,omitempty",json:"cdrom,omitempty"`
-	Cipassword        *string  `url:"cipassword,omitempty",json:"cipassword,omitempty"`
-	Cpulimit          *float64 `url:"cpulimit,omitempty",json:"cpulimit,omitempty"`
-	Force             *bool    `url:"force,omitempty",json:"force,omitempty"`
-	Hostpcin          *string  `url:"hostpci[n],omitempty",json:"hostpci[n],omitempty"`
-	Keephugepages     *bool    `url:"keephugepages,omitempty",json:"keephugepages,omitempty"`
-	Startdate         *string  `url:"startdate,omitempty",json:"startdate,omitempty"`
-	Description       *string  `url:"description,omitempty",json:"description,omitempty"`
-	Searchdomain      *string  `url:"searchdomain,omitempty",json:"searchdomain,omitempty"`
-	Skiplock          *bool    `url:"skiplock,omitempty",json:"skiplock,omitempty"`
-	Smp               *int     `url:"smp,omitempty",json:"smp,omitempty"`
-	Keyboard          *string  `url:"keyboard,omitempty",json:"keyboard,omitempty"`
-	Args              *string  `url:"args,omitempty",json:"args,omitempty"`
-	Cicustom          *string  `url:"cicustom,omitempty",json:"cicustom,omitempty"`
-	Ciuser            *string  `url:"ciuser,omitempty",json:"ciuser,omitempty"`
-	Cpu               *string  `url:"cpu,omitempty",json:"cpu,omitempty"`
-	Cpuunits          *int     `url:"cpuunits,omitempty",json:"cpuunits,omitempty"`
-	Hugepages         *string  `url:"hugepages,omitempty",json:"hugepages,omitempty"`
-	Ivshmem           *string  `url:"ivshmem,omitempty",json:"ivshmem,omitempty"`
-	MigrateSpeed      *int     `url:"migrate_speed,omitempty",json:"migrate_speed,omitempty"`
-	Numa              *bool    `url:"numa,omitempty",json:"numa,omitempty"`
-	Vmstatestorage    *string  `url:"vmstatestorage,omitempty",json:"vmstatestorage,omitempty"`
-	Freeze            *bool    `url:"freeze,omitempty",json:"freeze,omitempty"`
-	Onboot            *bool    `url:"onboot,omitempty",json:"onboot,omitempty"`
-	Tpmstate0         *string  `url:"tpmstate0,omitempty",json:"tpmstate0,omitempty"`
-	Unusedn           *string  `url:"unused[n],omitempty",json:"unused[n],omitempty"`
-	Arch              *string  `url:"arch,omitempty",json:"arch,omitempty"`
-	Bootdisk          *string  `url:"bootdisk,omitempty",json:"bootdisk,omitempty"`
-	Delete            *string  `url:"delete,omitempty",json:"delete,omitempty"`
-	MigrateDowntime   *float64 `url:"migrate_downtime,omitempty",json:"migrate_downtime,omitempty"`
-	Netn              *string  `url:"net[n],omitempty",json:"net[n],omitempty"`
-	Tdf               *bool    `url:"tdf,omitempty",json:"tdf,omitempty"`
-	Watchdog          *string  `url:"watchdog,omitempty",json:"watchdog,omitempty"`
-	Boot              *string  `url:"boot,omitempty",json:"boot,omitempty"`
-	Satan             *string  `url:"sata[n],omitempty",json:"sata[n],omitempty"`
-	SpiceEnhancements *string  `url:"spice_enhancements,omitempty",json:"spice_enhancements,omitempty"`
-	Vcpus             *int     `url:"vcpus,omitempty",json:"vcpus,omitempty"`
-	Numan             *string  `url:"numa[n],omitempty",json:"numa[n],omitempty"`
-	Template          *bool    `url:"template,omitempty",json:"template,omitempty"`
-	Nameserver        *string  `url:"nameserver,omitempty",json:"nameserver,omitempty"`
-	Node              string   `url:"node",json:"node"`
-	Acpi              *bool    `url:"acpi,omitempty",json:"acpi,omitempty"`
-	Autostart         *bool    `url:"autostart,omitempty",json:"autostart,omitempty"`
-	BackgroundDelay   *int     `url:"background_delay,omitempty",json:"background_delay,omitempty"`
-	Bios              *string  `url:"bios,omitempty",json:"bios,omitempty"`
-	Hookscript        *string  `url:"hookscript,omitempty",json:"hookscript,omitempty"`
-	Ipconfign         *string  `url:"ipconfig[n],omitempty",json:"ipconfig[n],omitempty"`
-	Scsihw            *string  `url:"scsihw,omitempty",json:"scsihw,omitempty"`
-	Cores             *int     `url:"cores,omitempty",json:"cores,omitempty"`
-	Digest            *string  `url:"digest,omitempty",json:"digest,omitempty"`
-	Usbn              *string  `url:"usb[n],omitempty",json:"usb[n],omitempty"`
-	Balloon           *int     `url:"balloon,omitempty",json:"balloon,omitempty"`
-	Citype            *string  `url:"citype,omitempty",json:"citype,omitempty"`
-	Efidisk0          *string  `url:"efidisk0,omitempty",json:"efidisk0,omitempty"`
-	Ostype            *string  `url:"ostype,omitempty",json:"ostype,omitempty"`
-	Sockets           *int     `url:"sockets,omitempty",json:"sockets,omitempty"`
-	Tags              *string  `url:"tags,omitempty",json:"tags,omitempty"`
-	Virtion           *string  `url:"virtio[n],omitempty",json:"virtio[n],omitempty"`
-	Agent             *string  `url:"agent,omitempty",json:"agent,omitempty"`
-	Audio0            *string  `url:"audio0,omitempty",json:"audio0,omitempty"`
-	Localtime         *bool    `url:"localtime,omitempty",json:"localtime,omitempty"`
-	Machine           *string  `url:"machine,omitempty",json:"machine,omitempty"`
-	Memory            *int     `url:"memory,omitempty",json:"memory,omitempty"`
-	Scsin             *string  `url:"scsi[n],omitempty",json:"scsi[n],omitempty"`
-	Sshkeys           *string  `url:"sshkeys,omitempty",json:"sshkeys,omitempty"`
-	Lock              *string  `url:"lock,omitempty",json:"lock,omitempty"`
-	Revert            *string  `url:"revert,omitempty",json:"revert,omitempty"`
-	Rng0              *string  `url:"rng0,omitempty",json:"rng0,omitempty"`
-	Shares            *int     `url:"shares,omitempty",json:"shares,omitempty"`
-	Hotplug           *string  `url:"hotplug,omitempty",json:"hotplug,omitempty"`
-	Kvm               *bool    `url:"kvm,omitempty",json:"kvm,omitempty"`
-	Name              *string  `url:"name,omitempty",json:"name,omitempty"`
-	Reboot            *bool    `url:"reboot,omitempty",json:"reboot,omitempty"`
-	Tablet            *bool    `url:"tablet,omitempty",json:"tablet,omitempty"`
-	Vga               *string  `url:"vga,omitempty",json:"vga,omitempty"`
-	Affinity          *string  `url:"affinity,omitempty",json:"affinity,omitempty"`
-	Iden              *string  `url:"ide[n],omitempty",json:"ide[n],omitempty"`
-	Protection        *bool    `url:"protection,omitempty",json:"protection,omitempty"`
-	Smbios1           *string  `url:"smbios1,omitempty",json:"smbios1,omitempty"`
-	Vmgenid           *string  `url:"vmgenid,omitempty",json:"vmgenid,omitempty"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Acpi              *bool    `url:"acpi,omitempty",json:"acpi,omitempty"`                             // Enable/disable ACPI.
+	Affinity          *string  `url:"affinity,omitempty",json:"affinity,omitempty"`                     // List of host cores used to execute guest processes, for example: 0,5,8-11
+	Agent             *string  `url:"agent,omitempty",json:"agent,omitempty"`                           // Enable/disable communication with the Qemu Guest Agent and its properties.
+	Arch              *string  `url:"arch,omitempty",json:"arch,omitempty"`                             // Virtual processor architecture. Defaults to the host.
+	Args              *string  `url:"args,omitempty",json:"args,omitempty"`                             // Arbitrary arguments passed to kvm.
+	Audio0            *string  `url:"audio0,omitempty",json:"audio0,omitempty"`                         // Configure a audio device, useful in combination with QXL/Spice.
+	Autostart         *bool    `url:"autostart,omitempty",json:"autostart,omitempty"`                   // Automatic restart after crash (currently ignored).
+	BackgroundDelay   *int     `url:"background_delay,omitempty",json:"background_delay,omitempty"`     // Time to wait for the task to finish. We return 'null' if the task finish within that time.
+	Balloon           *int     `url:"balloon,omitempty",json:"balloon,omitempty"`                       // Amount of target RAM for the VM in MB. Using zero disables the ballon driver.
+	Bios              *string  `url:"bios,omitempty",json:"bios,omitempty"`                             // Select BIOS implementation.
+	Boot              *string  `url:"boot,omitempty",json:"boot,omitempty"`                             // Specify guest boot order. Use the 'order=' sub-property as usage with no key or 'legacy=' is deprecated.
+	Bootdisk          *string  `url:"bootdisk,omitempty",json:"bootdisk,omitempty"`                     // Enable booting from specified disk. Deprecated: Use 'boot: order=foo;bar' instead.
+	Cdrom             *string  `url:"cdrom,omitempty",json:"cdrom,omitempty"`                           // This is an alias for option -ide2
+	Cicustom          *string  `url:"cicustom,omitempty",json:"cicustom,omitempty"`                     // cloud-init: Specify custom files to replace the automatically generated ones at start.
+	Cipassword        *string  `url:"cipassword,omitempty",json:"cipassword,omitempty"`                 // cloud-init: Password to assign the user. Using this is generally not recommended. Use ssh keys instead. Also note that older cloud-init versions do not support hashed passwords.
+	Citype            *string  `url:"citype,omitempty",json:"citype,omitempty"`                         // Specifies the cloud-init configuration format. The default depends on the configured operating system type (`ostype`. We use the `nocloud` format for Linux, and `configdrive2` for windows.
+	Ciuser            *string  `url:"ciuser,omitempty",json:"ciuser,omitempty"`                         // cloud-init: User name to change ssh keys and password for instead of the image's configured default user.
+	Cores             *int     `url:"cores,omitempty",json:"cores,omitempty"`                           // The number of cores per socket.
+	Cpu               *string  `url:"cpu,omitempty",json:"cpu,omitempty"`                               // Emulated CPU type.
+	Cpulimit          *float64 `url:"cpulimit,omitempty",json:"cpulimit,omitempty"`                     // Limit of CPU usage.
+	Cpuunits          *int     `url:"cpuunits,omitempty",json:"cpuunits,omitempty"`                     // CPU weight for a VM, will be clamped to [1, 10000] in cgroup v2.
+	Delete            *string  `url:"delete,omitempty",json:"delete,omitempty"`                         // A list of settings you want to delete.
+	Description       *string  `url:"description,omitempty",json:"description,omitempty"`               // Description for the VM. Shown in the web-interface VM's summary. This is saved as comment inside the configuration file.
+	Digest            *string  `url:"digest,omitempty",json:"digest,omitempty"`                         // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Efidisk0          *string  `url:"efidisk0,omitempty",json:"efidisk0,omitempty"`                     // Configure a Disk for storing EFI vars. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Note that SIZE_IN_GiB is ignored here and that the default EFI vars are copied to the volume instead. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+	Force             *bool    `url:"force,omitempty",json:"force,omitempty"`                           // Force physical removal. Without this, we simple remove the disk from the config file and create an additional configuration entry called 'unused[n]', which contains the volume ID. Unlink of unused[n] always cause physical removal.
+	Freeze            *bool    `url:"freeze,omitempty",json:"freeze,omitempty"`                         // Freeze CPU at startup (use 'c' monitor command to start execution).
+	Hookscript        *string  `url:"hookscript,omitempty",json:"hookscript,omitempty"`                 // Script that will be executed during various steps in the vms lifetime.
+	Hostpcin          *string  `url:"hostpci[n],omitempty",json:"hostpci[n],omitempty"`                 // Map host PCI devices into guest.
+	Hotplug           *string  `url:"hotplug,omitempty",json:"hotplug,omitempty"`                       // Selectively enable hotplug features. This is a comma separated list of hotplug features: 'network', 'disk', 'cpu', 'memory', 'usb' and 'cloudinit'. Use '0' to disable hotplug completely. Using '1' as value is an alias for the default `network,disk,usb`. USB hotplugging is possible for guests with machine version >= 7.1 and ostype l26 or windows > 7.
+	Hugepages         *string  `url:"hugepages,omitempty",json:"hugepages,omitempty"`                   // Enable/disable hugepages memory.
+	Iden              *string  `url:"ide[n],omitempty",json:"ide[n],omitempty"`                         // Use volume as IDE hard disk or CD-ROM (n is 0 to 3). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+	Ipconfign         *string  `url:"ipconfig[n],omitempty",json:"ipconfig[n],omitempty"`               // cloud-init: Specify IP addresses and gateways for the corresponding interface.IP addresses use CIDR notation, gateways are optional but need an IP of the same type specified.The special string 'dhcp' can be used for IP addresses to use DHCP, in which case no explicitgateway should be provided.For IPv6 the special string 'auto' can be used to use stateless autoconfiguration. This requirescloud-init 19.4 or newer.If cloud-init is enabled and neither an IPv4 nor an IPv6 address is specified, it defaults to usingdhcp on IPv4.
+	Ivshmem           *string  `url:"ivshmem,omitempty",json:"ivshmem,omitempty"`                       // Inter-VM shared memory. Useful for direct communication between VMs, or to the host.
+	Keephugepages     *bool    `url:"keephugepages,omitempty",json:"keephugepages,omitempty"`           // Use together with hugepages. If enabled, hugepages will not not be deleted after VM shutdown and can be used for subsequent starts.
+	Keyboard          *string  `url:"keyboard,omitempty",json:"keyboard,omitempty"`                     // Keyboard layout for VNC server. This option is generally not required and is often better handled from within the guest OS.
+	Kvm               *bool    `url:"kvm,omitempty",json:"kvm,omitempty"`                               // Enable/disable KVM hardware virtualization.
+	Localtime         *bool    `url:"localtime,omitempty",json:"localtime,omitempty"`                   // Set the real time clock (RTC) to local time. This is enabled by default if the `ostype` indicates a Microsoft Windows OS.
+	Lock              *string  `url:"lock,omitempty",json:"lock,omitempty"`                             // Lock/unlock the VM.
+	Machine           *string  `url:"machine,omitempty",json:"machine,omitempty"`                       // Specifies the Qemu machine type.
+	Memory            *int     `url:"memory,omitempty",json:"memory,omitempty"`                         // Amount of RAM for the VM in MB. This is the maximum available memory when you use the balloon device.
+	MigrateDowntime   *float64 `url:"migrate_downtime,omitempty",json:"migrate_downtime,omitempty"`     // Set maximum tolerated downtime (in seconds) for migrations.
+	MigrateSpeed      *int     `url:"migrate_speed,omitempty",json:"migrate_speed,omitempty"`           // Set maximum speed (in MB/s) for migrations. Value 0 is no limit.
+	Name              *string  `url:"name,omitempty",json:"name,omitempty"`                             // Set a name for the VM. Only used on the configuration web interface.
+	Nameserver        *string  `url:"nameserver,omitempty",json:"nameserver,omitempty"`                 // cloud-init: Sets DNS server IP address for a container. Create will automatically use the setting from the host if neither searchdomain nor nameserver are set.
+	Netn              *string  `url:"net[n],omitempty",json:"net[n],omitempty"`                         // Specify network devices.
+	Numa              *bool    `url:"numa,omitempty",json:"numa,omitempty"`                             // Enable/disable NUMA.
+	Numan             *string  `url:"numa[n],omitempty",json:"numa[n],omitempty"`                       // NUMA topology.
+	Onboot            *bool    `url:"onboot,omitempty",json:"onboot,omitempty"`                         // Specifies whether a VM will be started during system bootup.
+	Ostype            *string  `url:"ostype,omitempty",json:"ostype,omitempty"`                         // Specify guest operating system.
+	Paralleln         *string  `url:"parallel[n],omitempty",json:"parallel[n],omitempty"`               // Map host parallel devices (n is 0 to 2).
+	Protection        *bool    `url:"protection,omitempty",json:"protection,omitempty"`                 // Sets the protection flag of the VM. This will disable the remove VM and remove disk operations.
+	Reboot            *bool    `url:"reboot,omitempty",json:"reboot,omitempty"`                         // Allow reboot. If set to '0' the VM exit on reboot.
+	Revert            *string  `url:"revert,omitempty",json:"revert,omitempty"`                         // Revert a pending change.
+	Rng0              *string  `url:"rng0,omitempty",json:"rng0,omitempty"`                             // Configure a VirtIO-based Random Number Generator.
+	Satan             *string  `url:"sata[n],omitempty",json:"sata[n],omitempty"`                       // Use volume as SATA hard disk or CD-ROM (n is 0 to 5). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+	Scsihw            *string  `url:"scsihw,omitempty",json:"scsihw,omitempty"`                         // SCSI controller model
+	Scsin             *string  `url:"scsi[n],omitempty",json:"scsi[n],omitempty"`                       // Use volume as SCSI hard disk or CD-ROM (n is 0 to 30). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+	Searchdomain      *string  `url:"searchdomain,omitempty",json:"searchdomain,omitempty"`             // cloud-init: Sets DNS search domains for a container. Create will automatically use the setting from the host if neither searchdomain nor nameserver are set.
+	Serialn           *string  `url:"serial[n],omitempty",json:"serial[n],omitempty"`                   // Create a serial device inside the VM (n is 0 to 3)
+	Shares            *int     `url:"shares,omitempty",json:"shares,omitempty"`                         // Amount of memory shares for auto-ballooning. The larger the number is, the more memory this VM gets. Number is relative to weights of all other running VMs. Using zero disables auto-ballooning. Auto-ballooning is done by pvestatd.
+	Skiplock          *bool    `url:"skiplock,omitempty",json:"skiplock,omitempty"`                     // Ignore locks - only root is allowed to use this option.
+	Smbios1           *string  `url:"smbios1,omitempty",json:"smbios1,omitempty"`                       // Specify SMBIOS type 1 fields.
+	Smp               *int     `url:"smp,omitempty",json:"smp,omitempty"`                               // The number of CPUs. Please use option -sockets instead.
+	Sockets           *int     `url:"sockets,omitempty",json:"sockets,omitempty"`                       // The number of CPU sockets.
+	SpiceEnhancements *string  `url:"spice_enhancements,omitempty",json:"spice_enhancements,omitempty"` // Configure additional enhancements for SPICE.
+	Sshkeys           *string  `url:"sshkeys,omitempty",json:"sshkeys,omitempty"`                       // cloud-init: Setup public SSH keys (one key per line, OpenSSH format).
+	Startdate         *string  `url:"startdate,omitempty",json:"startdate,omitempty"`                   // Set the initial date of the real time clock. Valid format for date are:'now' or '2006-06-17T16:01:21' or '2006-06-17'.
+	Startup           *string  `url:"startup,omitempty",json:"startup,omitempty"`                       // Startup and shutdown behavior. Order is a non-negative number defining the general startup order. Shutdown in done with reverse ordering. Additionally you can set the 'up' or 'down' delay in seconds, which specifies a delay to wait before the next VM is started or stopped.
+	Tablet            *bool    `url:"tablet,omitempty",json:"tablet,omitempty"`                         // Enable/disable the USB tablet device.
+	Tags              *string  `url:"tags,omitempty",json:"tags,omitempty"`                             // Tags of the VM. This is only meta information.
+	Tdf               *bool    `url:"tdf,omitempty",json:"tdf,omitempty"`                               // Enable/disable time drift fix.
+	Template          *bool    `url:"template,omitempty",json:"template,omitempty"`                     // Enable/disable Template.
+	Tpmstate0         *string  `url:"tpmstate0,omitempty",json:"tpmstate0,omitempty"`                   // Configure a Disk for storing TPM state. The format is fixed to 'raw'. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Note that SIZE_IN_GiB is ignored here and 4 MiB will be used instead. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+	Unusedn           *string  `url:"unused[n],omitempty",json:"unused[n],omitempty"`                   // Reference to unused volumes. This is used internally, and should not be modified manually.
+	Usbn              *string  `url:"usb[n],omitempty",json:"usb[n],omitempty"`                         // Configure an USB device (n is 0 to 4, for machine version >= 7.1 and ostype l26 or windows > 7, n can be up to 14).
+	Vcpus             *int     `url:"vcpus,omitempty",json:"vcpus,omitempty"`                           // Number of hotplugged vcpus.
+	Vga               *string  `url:"vga,omitempty",json:"vga,omitempty"`                               // Configure the VGA hardware.
+	Virtion           *string  `url:"virtio[n],omitempty",json:"virtio[n],omitempty"`                   // Use volume as VIRTIO hard disk (n is 0 to 15). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+	Vmgenid           *string  `url:"vmgenid,omitempty",json:"vmgenid,omitempty"`                       // Set VM Generation ID. Use '1' to autogenerate on create or update, pass '0' to disable explicitly.
+	Vmstatestorage    *string  `url:"vmstatestorage,omitempty",json:"vmstatestorage,omitempty"`         // Default storage for VM state volumes/files.
+	Watchdog          *string  `url:"watchdog,omitempty",json:"watchdog,omitempty"`                     // Create a virtual hardware watchdog device.
 }
 
 type UpdateVmAsyncConfigResponse *string
@@ -413,89 +432,91 @@ func (c *Client) UpdateVmAsyncConfig(ctx context.Context, req *UpdateVmAsyncConf
 }
 
 type UpdateVmConfigRequest struct {
-	Hotplug           *string  `url:"hotplug,omitempty",json:"hotplug,omitempty"`
-	Ivshmem           *string  `url:"ivshmem,omitempty",json:"ivshmem,omitempty"`
-	Memory            *int     `url:"memory,omitempty",json:"memory,omitempty"`
-	Paralleln         *string  `url:"parallel[n],omitempty",json:"parallel[n],omitempty"`
-	Vmgenid           *string  `url:"vmgenid,omitempty",json:"vmgenid,omitempty"`
-	Startup           *string  `url:"startup,omitempty",json:"startup,omitempty"`
-	Acpi              *bool    `url:"acpi,omitempty",json:"acpi,omitempty"`
-	Cicustom          *string  `url:"cicustom,omitempty",json:"cicustom,omitempty"`
-	Cpu               *string  `url:"cpu,omitempty",json:"cpu,omitempty"`
-	Cpulimit          *float64 `url:"cpulimit,omitempty",json:"cpulimit,omitempty"`
-	Reboot            *bool    `url:"reboot,omitempty",json:"reboot,omitempty"`
-	Sockets           *int     `url:"sockets,omitempty",json:"sockets,omitempty"`
-	Smbios1           *string  `url:"smbios1,omitempty",json:"smbios1,omitempty"`
-	Searchdomain      *string  `url:"searchdomain,omitempty",json:"searchdomain,omitempty"`
-	Serialn           *string  `url:"serial[n],omitempty",json:"serial[n],omitempty"`
-	Audio0            *string  `url:"audio0,omitempty",json:"audio0,omitempty"`
-	Delete            *string  `url:"delete,omitempty",json:"delete,omitempty"`
-	Hugepages         *string  `url:"hugepages,omitempty",json:"hugepages,omitempty"`
-	Iden              *string  `url:"ide[n],omitempty",json:"ide[n],omitempty"`
-	Numa              *bool    `url:"numa,omitempty",json:"numa,omitempty"`
-	Rng0              *string  `url:"rng0,omitempty",json:"rng0,omitempty"`
-	Usbn              *string  `url:"usb[n],omitempty",json:"usb[n],omitempty"`
-	Ciuser            *string  `url:"ciuser,omitempty",json:"ciuser,omitempty"`
-	Hookscript        *string  `url:"hookscript,omitempty",json:"hookscript,omitempty"`
-	Ipconfign         *string  `url:"ipconfig[n],omitempty",json:"ipconfig[n],omitempty"`
-	Unusedn           *string  `url:"unused[n],omitempty",json:"unused[n],omitempty"`
-	Autostart         *bool    `url:"autostart,omitempty",json:"autostart,omitempty"`
-	Force             *bool    `url:"force,omitempty",json:"force,omitempty"`
-	Netn              *string  `url:"net[n],omitempty",json:"net[n],omitempty"`
-	Node              string   `url:"node",json:"node"`
-	SpiceEnhancements *string  `url:"spice_enhancements,omitempty",json:"spice_enhancements,omitempty"`
-	Keephugepages     *bool    `url:"keephugepages,omitempty",json:"keephugepages,omitempty"`
-	Keyboard          *string  `url:"keyboard,omitempty",json:"keyboard,omitempty"`
-	Affinity          *string  `url:"affinity,omitempty",json:"affinity,omitempty"`
-	Agent             *string  `url:"agent,omitempty",json:"agent,omitempty"`
-	Balloon           *int     `url:"balloon,omitempty",json:"balloon,omitempty"`
-	Cipassword        *string  `url:"cipassword,omitempty",json:"cipassword,omitempty"`
-	Citype            *string  `url:"citype,omitempty",json:"citype,omitempty"`
-	Hostpcin          *string  `url:"hostpci[n],omitempty",json:"hostpci[n],omitempty"`
-	Kvm               *bool    `url:"kvm,omitempty",json:"kvm,omitempty"`
-	Localtime         *bool    `url:"localtime,omitempty",json:"localtime,omitempty"`
-	MigrateSpeed      *int     `url:"migrate_speed,omitempty",json:"migrate_speed,omitempty"`
-	Revert            *string  `url:"revert,omitempty",json:"revert,omitempty"`
-	Vga               *string  `url:"vga,omitempty",json:"vga,omitempty"`
-	Bootdisk          *string  `url:"bootdisk,omitempty",json:"bootdisk,omitempty"`
-	Digest            *string  `url:"digest,omitempty",json:"digest,omitempty"`
-	Freeze            *bool    `url:"freeze,omitempty",json:"freeze,omitempty"`
-	Name              *string  `url:"name,omitempty",json:"name,omitempty"`
-	Shares            *int     `url:"shares,omitempty",json:"shares,omitempty"`
-	Smp               *int     `url:"smp,omitempty",json:"smp,omitempty"`
-	Cdrom             *string  `url:"cdrom,omitempty",json:"cdrom,omitempty"`
-	Cpuunits          *int     `url:"cpuunits,omitempty",json:"cpuunits,omitempty"`
-	Ostype            *string  `url:"ostype,omitempty",json:"ostype,omitempty"`
-	Template          *bool    `url:"template,omitempty",json:"template,omitempty"`
-	Vmid              int      `url:"vmid",json:"vmid"`
-	Boot              *string  `url:"boot,omitempty",json:"boot,omitempty"`
-	Machine           *string  `url:"machine,omitempty",json:"machine,omitempty"`
-	Scsin             *string  `url:"scsi[n],omitempty",json:"scsi[n],omitempty"`
-	Skiplock          *bool    `url:"skiplock,omitempty",json:"skiplock,omitempty"`
-	Tdf               *bool    `url:"tdf,omitempty",json:"tdf,omitempty"`
-	Lock              *string  `url:"lock,omitempty",json:"lock,omitempty"`
-	Nameserver        *string  `url:"nameserver,omitempty",json:"nameserver,omitempty"`
-	Onboot            *bool    `url:"onboot,omitempty",json:"onboot,omitempty"`
-	Satan             *string  `url:"sata[n],omitempty",json:"sata[n],omitempty"`
-	Sshkeys           *string  `url:"sshkeys,omitempty",json:"sshkeys,omitempty"`
-	Vcpus             *int     `url:"vcpus,omitempty",json:"vcpus,omitempty"`
-	Cores             *int     `url:"cores,omitempty",json:"cores,omitempty"`
-	Numan             *string  `url:"numa[n],omitempty",json:"numa[n],omitempty"`
-	Scsihw            *string  `url:"scsihw,omitempty",json:"scsihw,omitempty"`
-	Tpmstate0         *string  `url:"tpmstate0,omitempty",json:"tpmstate0,omitempty"`
-	Virtion           *string  `url:"virtio[n],omitempty",json:"virtio[n],omitempty"`
-	Tablet            *bool    `url:"tablet,omitempty",json:"tablet,omitempty"`
-	Tags              *string  `url:"tags,omitempty",json:"tags,omitempty"`
-	Args              *string  `url:"args,omitempty",json:"args,omitempty"`
-	Description       *string  `url:"description,omitempty",json:"description,omitempty"`
-	Efidisk0          *string  `url:"efidisk0,omitempty",json:"efidisk0,omitempty"`
-	MigrateDowntime   *float64 `url:"migrate_downtime,omitempty",json:"migrate_downtime,omitempty"`
-	Protection        *bool    `url:"protection,omitempty",json:"protection,omitempty"`
-	Startdate         *string  `url:"startdate,omitempty",json:"startdate,omitempty"`
-	Vmstatestorage    *string  `url:"vmstatestorage,omitempty",json:"vmstatestorage,omitempty"`
-	Watchdog          *string  `url:"watchdog,omitempty",json:"watchdog,omitempty"`
-	Arch              *string  `url:"arch,omitempty",json:"arch,omitempty"`
-	Bios              *string  `url:"bios,omitempty",json:"bios,omitempty"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Acpi              *bool    `url:"acpi,omitempty",json:"acpi,omitempty"`                             // Enable/disable ACPI.
+	Affinity          *string  `url:"affinity,omitempty",json:"affinity,omitempty"`                     // List of host cores used to execute guest processes, for example: 0,5,8-11
+	Agent             *string  `url:"agent,omitempty",json:"agent,omitempty"`                           // Enable/disable communication with the Qemu Guest Agent and its properties.
+	Arch              *string  `url:"arch,omitempty",json:"arch,omitempty"`                             // Virtual processor architecture. Defaults to the host.
+	Args              *string  `url:"args,omitempty",json:"args,omitempty"`                             // Arbitrary arguments passed to kvm.
+	Audio0            *string  `url:"audio0,omitempty",json:"audio0,omitempty"`                         // Configure a audio device, useful in combination with QXL/Spice.
+	Autostart         *bool    `url:"autostart,omitempty",json:"autostart,omitempty"`                   // Automatic restart after crash (currently ignored).
+	Balloon           *int     `url:"balloon,omitempty",json:"balloon,omitempty"`                       // Amount of target RAM for the VM in MB. Using zero disables the ballon driver.
+	Bios              *string  `url:"bios,omitempty",json:"bios,omitempty"`                             // Select BIOS implementation.
+	Boot              *string  `url:"boot,omitempty",json:"boot,omitempty"`                             // Specify guest boot order. Use the 'order=' sub-property as usage with no key or 'legacy=' is deprecated.
+	Bootdisk          *string  `url:"bootdisk,omitempty",json:"bootdisk,omitempty"`                     // Enable booting from specified disk. Deprecated: Use 'boot: order=foo;bar' instead.
+	Cdrom             *string  `url:"cdrom,omitempty",json:"cdrom,omitempty"`                           // This is an alias for option -ide2
+	Cicustom          *string  `url:"cicustom,omitempty",json:"cicustom,omitempty"`                     // cloud-init: Specify custom files to replace the automatically generated ones at start.
+	Cipassword        *string  `url:"cipassword,omitempty",json:"cipassword,omitempty"`                 // cloud-init: Password to assign the user. Using this is generally not recommended. Use ssh keys instead. Also note that older cloud-init versions do not support hashed passwords.
+	Citype            *string  `url:"citype,omitempty",json:"citype,omitempty"`                         // Specifies the cloud-init configuration format. The default depends on the configured operating system type (`ostype`. We use the `nocloud` format for Linux, and `configdrive2` for windows.
+	Ciuser            *string  `url:"ciuser,omitempty",json:"ciuser,omitempty"`                         // cloud-init: User name to change ssh keys and password for instead of the image's configured default user.
+	Cores             *int     `url:"cores,omitempty",json:"cores,omitempty"`                           // The number of cores per socket.
+	Cpu               *string  `url:"cpu,omitempty",json:"cpu,omitempty"`                               // Emulated CPU type.
+	Cpulimit          *float64 `url:"cpulimit,omitempty",json:"cpulimit,omitempty"`                     // Limit of CPU usage.
+	Cpuunits          *int     `url:"cpuunits,omitempty",json:"cpuunits,omitempty"`                     // CPU weight for a VM, will be clamped to [1, 10000] in cgroup v2.
+	Delete            *string  `url:"delete,omitempty",json:"delete,omitempty"`                         // A list of settings you want to delete.
+	Description       *string  `url:"description,omitempty",json:"description,omitempty"`               // Description for the VM. Shown in the web-interface VM's summary. This is saved as comment inside the configuration file.
+	Digest            *string  `url:"digest,omitempty",json:"digest,omitempty"`                         // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Efidisk0          *string  `url:"efidisk0,omitempty",json:"efidisk0,omitempty"`                     // Configure a Disk for storing EFI vars. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Note that SIZE_IN_GiB is ignored here and that the default EFI vars are copied to the volume instead. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+	Force             *bool    `url:"force,omitempty",json:"force,omitempty"`                           // Force physical removal. Without this, we simple remove the disk from the config file and create an additional configuration entry called 'unused[n]', which contains the volume ID. Unlink of unused[n] always cause physical removal.
+	Freeze            *bool    `url:"freeze,omitempty",json:"freeze,omitempty"`                         // Freeze CPU at startup (use 'c' monitor command to start execution).
+	Hookscript        *string  `url:"hookscript,omitempty",json:"hookscript,omitempty"`                 // Script that will be executed during various steps in the vms lifetime.
+	Hostpcin          *string  `url:"hostpci[n],omitempty",json:"hostpci[n],omitempty"`                 // Map host PCI devices into guest.
+	Hotplug           *string  `url:"hotplug,omitempty",json:"hotplug,omitempty"`                       // Selectively enable hotplug features. This is a comma separated list of hotplug features: 'network', 'disk', 'cpu', 'memory', 'usb' and 'cloudinit'. Use '0' to disable hotplug completely. Using '1' as value is an alias for the default `network,disk,usb`. USB hotplugging is possible for guests with machine version >= 7.1 and ostype l26 or windows > 7.
+	Hugepages         *string  `url:"hugepages,omitempty",json:"hugepages,omitempty"`                   // Enable/disable hugepages memory.
+	Iden              *string  `url:"ide[n],omitempty",json:"ide[n],omitempty"`                         // Use volume as IDE hard disk or CD-ROM (n is 0 to 3). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+	Ipconfign         *string  `url:"ipconfig[n],omitempty",json:"ipconfig[n],omitempty"`               // cloud-init: Specify IP addresses and gateways for the corresponding interface.IP addresses use CIDR notation, gateways are optional but need an IP of the same type specified.The special string 'dhcp' can be used for IP addresses to use DHCP, in which case no explicitgateway should be provided.For IPv6 the special string 'auto' can be used to use stateless autoconfiguration. This requirescloud-init 19.4 or newer.If cloud-init is enabled and neither an IPv4 nor an IPv6 address is specified, it defaults to usingdhcp on IPv4.
+	Ivshmem           *string  `url:"ivshmem,omitempty",json:"ivshmem,omitempty"`                       // Inter-VM shared memory. Useful for direct communication between VMs, or to the host.
+	Keephugepages     *bool    `url:"keephugepages,omitempty",json:"keephugepages,omitempty"`           // Use together with hugepages. If enabled, hugepages will not not be deleted after VM shutdown and can be used for subsequent starts.
+	Keyboard          *string  `url:"keyboard,omitempty",json:"keyboard,omitempty"`                     // Keyboard layout for VNC server. This option is generally not required and is often better handled from within the guest OS.
+	Kvm               *bool    `url:"kvm,omitempty",json:"kvm,omitempty"`                               // Enable/disable KVM hardware virtualization.
+	Localtime         *bool    `url:"localtime,omitempty",json:"localtime,omitempty"`                   // Set the real time clock (RTC) to local time. This is enabled by default if the `ostype` indicates a Microsoft Windows OS.
+	Lock              *string  `url:"lock,omitempty",json:"lock,omitempty"`                             // Lock/unlock the VM.
+	Machine           *string  `url:"machine,omitempty",json:"machine,omitempty"`                       // Specifies the Qemu machine type.
+	Memory            *int     `url:"memory,omitempty",json:"memory,omitempty"`                         // Amount of RAM for the VM in MB. This is the maximum available memory when you use the balloon device.
+	MigrateDowntime   *float64 `url:"migrate_downtime,omitempty",json:"migrate_downtime,omitempty"`     // Set maximum tolerated downtime (in seconds) for migrations.
+	MigrateSpeed      *int     `url:"migrate_speed,omitempty",json:"migrate_speed,omitempty"`           // Set maximum speed (in MB/s) for migrations. Value 0 is no limit.
+	Name              *string  `url:"name,omitempty",json:"name,omitempty"`                             // Set a name for the VM. Only used on the configuration web interface.
+	Nameserver        *string  `url:"nameserver,omitempty",json:"nameserver,omitempty"`                 // cloud-init: Sets DNS server IP address for a container. Create will automatically use the setting from the host if neither searchdomain nor nameserver are set.
+	Netn              *string  `url:"net[n],omitempty",json:"net[n],omitempty"`                         // Specify network devices.
+	Numa              *bool    `url:"numa,omitempty",json:"numa,omitempty"`                             // Enable/disable NUMA.
+	Numan             *string  `url:"numa[n],omitempty",json:"numa[n],omitempty"`                       // NUMA topology.
+	Onboot            *bool    `url:"onboot,omitempty",json:"onboot,omitempty"`                         // Specifies whether a VM will be started during system bootup.
+	Ostype            *string  `url:"ostype,omitempty",json:"ostype,omitempty"`                         // Specify guest operating system.
+	Paralleln         *string  `url:"parallel[n],omitempty",json:"parallel[n],omitempty"`               // Map host parallel devices (n is 0 to 2).
+	Protection        *bool    `url:"protection,omitempty",json:"protection,omitempty"`                 // Sets the protection flag of the VM. This will disable the remove VM and remove disk operations.
+	Reboot            *bool    `url:"reboot,omitempty",json:"reboot,omitempty"`                         // Allow reboot. If set to '0' the VM exit on reboot.
+	Revert            *string  `url:"revert,omitempty",json:"revert,omitempty"`                         // Revert a pending change.
+	Rng0              *string  `url:"rng0,omitempty",json:"rng0,omitempty"`                             // Configure a VirtIO-based Random Number Generator.
+	Satan             *string  `url:"sata[n],omitempty",json:"sata[n],omitempty"`                       // Use volume as SATA hard disk or CD-ROM (n is 0 to 5). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+	Scsihw            *string  `url:"scsihw,omitempty",json:"scsihw,omitempty"`                         // SCSI controller model
+	Scsin             *string  `url:"scsi[n],omitempty",json:"scsi[n],omitempty"`                       // Use volume as SCSI hard disk or CD-ROM (n is 0 to 30). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+	Searchdomain      *string  `url:"searchdomain,omitempty",json:"searchdomain,omitempty"`             // cloud-init: Sets DNS search domains for a container. Create will automatically use the setting from the host if neither searchdomain nor nameserver are set.
+	Serialn           *string  `url:"serial[n],omitempty",json:"serial[n],omitempty"`                   // Create a serial device inside the VM (n is 0 to 3)
+	Shares            *int     `url:"shares,omitempty",json:"shares,omitempty"`                         // Amount of memory shares for auto-ballooning. The larger the number is, the more memory this VM gets. Number is relative to weights of all other running VMs. Using zero disables auto-ballooning. Auto-ballooning is done by pvestatd.
+	Skiplock          *bool    `url:"skiplock,omitempty",json:"skiplock,omitempty"`                     // Ignore locks - only root is allowed to use this option.
+	Smbios1           *string  `url:"smbios1,omitempty",json:"smbios1,omitempty"`                       // Specify SMBIOS type 1 fields.
+	Smp               *int     `url:"smp,omitempty",json:"smp,omitempty"`                               // The number of CPUs. Please use option -sockets instead.
+	Sockets           *int     `url:"sockets,omitempty",json:"sockets,omitempty"`                       // The number of CPU sockets.
+	SpiceEnhancements *string  `url:"spice_enhancements,omitempty",json:"spice_enhancements,omitempty"` // Configure additional enhancements for SPICE.
+	Sshkeys           *string  `url:"sshkeys,omitempty",json:"sshkeys,omitempty"`                       // cloud-init: Setup public SSH keys (one key per line, OpenSSH format).
+	Startdate         *string  `url:"startdate,omitempty",json:"startdate,omitempty"`                   // Set the initial date of the real time clock. Valid format for date are:'now' or '2006-06-17T16:01:21' or '2006-06-17'.
+	Startup           *string  `url:"startup,omitempty",json:"startup,omitempty"`                       // Startup and shutdown behavior. Order is a non-negative number defining the general startup order. Shutdown in done with reverse ordering. Additionally you can set the 'up' or 'down' delay in seconds, which specifies a delay to wait before the next VM is started or stopped.
+	Tablet            *bool    `url:"tablet,omitempty",json:"tablet,omitempty"`                         // Enable/disable the USB tablet device.
+	Tags              *string  `url:"tags,omitempty",json:"tags,omitempty"`                             // Tags of the VM. This is only meta information.
+	Tdf               *bool    `url:"tdf,omitempty",json:"tdf,omitempty"`                               // Enable/disable time drift fix.
+	Template          *bool    `url:"template,omitempty",json:"template,omitempty"`                     // Enable/disable Template.
+	Tpmstate0         *string  `url:"tpmstate0,omitempty",json:"tpmstate0,omitempty"`                   // Configure a Disk for storing TPM state. The format is fixed to 'raw'. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Note that SIZE_IN_GiB is ignored here and 4 MiB will be used instead. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+	Unusedn           *string  `url:"unused[n],omitempty",json:"unused[n],omitempty"`                   // Reference to unused volumes. This is used internally, and should not be modified manually.
+	Usbn              *string  `url:"usb[n],omitempty",json:"usb[n],omitempty"`                         // Configure an USB device (n is 0 to 4, for machine version >= 7.1 and ostype l26 or windows > 7, n can be up to 14).
+	Vcpus             *int     `url:"vcpus,omitempty",json:"vcpus,omitempty"`                           // Number of hotplugged vcpus.
+	Vga               *string  `url:"vga,omitempty",json:"vga,omitempty"`                               // Configure the VGA hardware.
+	Virtion           *string  `url:"virtio[n],omitempty",json:"virtio[n],omitempty"`                   // Use volume as VIRTIO hard disk (n is 0 to 15). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+	Vmgenid           *string  `url:"vmgenid,omitempty",json:"vmgenid,omitempty"`                       // Set VM Generation ID. Use '1' to autogenerate on create or update, pass '0' to disable explicitly.
+	Vmstatestorage    *string  `url:"vmstatestorage,omitempty",json:"vmstatestorage,omitempty"`         // Default storage for VM state volumes/files.
+	Watchdog          *string  `url:"watchdog,omitempty",json:"watchdog,omitempty"`                     // Create a virtual hardware watchdog device.
 }
 
 type UpdateVmConfigResponse map[string]interface{}
@@ -509,15 +530,18 @@ func (c *Client) UpdateVmConfig(ctx context.Context, req *UpdateVmConfigRequest)
 }
 
 type VmPendingRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type VmPendingResponse []*struct {
-	Delete  *int    `url:"delete,omitempty",json:"delete,omitempty"`
-	Key     string  `url:"key",json:"key"`
-	Pending *string `url:"pending,omitempty",json:"pending,omitempty"`
-	Value   *string `url:"value,omitempty",json:"value,omitempty"`
+	Key string `url:"key",json:"key"` // Configuration option name.
+
+	// The following parameters are optional
+	Delete  *int    `url:"delete,omitempty",json:"delete,omitempty"`   // Indicates a pending delete request if present and not 0. The value 2 indicates a force-delete request.
+	Pending *string `url:"pending,omitempty",json:"pending,omitempty"` // Pending value.
+	Value   *string `url:"value,omitempty",json:"value,omitempty"`     // Current value.
 }
 
 // VmPending Get the virtual machine configuration with both current and pending values.
@@ -529,10 +553,12 @@ func (c *Client) VmPending(ctx context.Context, req *VmPendingRequest) (*VmPendi
 }
 
 type UnlinkRequest struct {
-	Node   string `url:"node",json:"node"`
-	Vmid   int    `url:"vmid",json:"vmid"`
-	Force  *bool  `url:"force,omitempty",json:"force,omitempty"`
-	Idlist string `url:"idlist",json:"idlist"`
+	Idlist string `url:"idlist",json:"idlist"` // A list of disk IDs you want to delete.
+	Node   string `url:"node",json:"node"`     // The cluster node name.
+	Vmid   int    `url:"vmid",json:"vmid"`     // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Force *bool `url:"force,omitempty",json:"force,omitempty"` // Force physical removal. Without this, we simple remove the disk from the config file and create an additional configuration entry called 'unused[n]', which contains the volume ID. Unlink of unused[n] always cause physical removal.
 }
 
 type UnlinkResponse map[string]interface{}
@@ -546,19 +572,23 @@ func (c *Client) Unlink(ctx context.Context, req *UnlinkRequest) (*UnlinkRespons
 }
 
 type VncproxyRequest struct {
-	Vmid             int    `url:"vmid",json:"vmid"`
-	Websocket        *bool  `url:"websocket,omitempty",json:"websocket,omitempty"`
-	GeneratePassword *bool  `url:"generate-password,omitempty",json:"generate-password,omitempty"`
-	Node             string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	GeneratePassword *bool `url:"generate-password,omitempty",json:"generate-password,omitempty"` // Generates a random password to be used as ticket instead of the API ticket.
+	Websocket        *bool `url:"websocket,omitempty",json:"websocket,omitempty"`                 // starts websockify instead of vncproxy
 }
 
 type VncproxyResponse struct {
-	Cert     string  `url:"cert",json:"cert"`
-	Password *string `url:"password,omitempty",json:"password,omitempty"`
-	Port     int     `url:"port",json:"port"`
-	Ticket   string  `url:"ticket",json:"ticket"`
-	Upid     string  `url:"upid",json:"upid"`
-	User     string  `url:"user",json:"user"`
+	Cert   string `url:"cert",json:"cert"`
+	Port   int    `url:"port",json:"port"`
+	Ticket string `url:"ticket",json:"ticket"`
+	Upid   string `url:"upid",json:"upid"`
+	User   string `url:"user",json:"user"`
+
+	// The following parameters are optional
+	Password *string `url:"password,omitempty",json:"password,omitempty"` // Returned if requested with 'generate-password' param. Consists of printable ASCII characters ('!' .. '~').
 }
 
 // Vncproxy Creates a TCP VNC proxy connections.
@@ -570,9 +600,11 @@ func (c *Client) Vncproxy(ctx context.Context, req *VncproxyRequest) (*VncproxyR
 }
 
 type TermproxyRequest struct {
-	Serial *string `url:"serial,omitempty",json:"serial,omitempty"`
-	Vmid   int     `url:"vmid",json:"vmid"`
-	Node   string  `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Serial *string `url:"serial,omitempty",json:"serial,omitempty"` // opens a serial terminal (defaults to display)
 }
 
 type TermproxyResponse struct {
@@ -591,10 +623,11 @@ func (c *Client) Termproxy(ctx context.Context, req *TermproxyRequest) (*Termpro
 }
 
 type VncwebsocketRequest struct {
-	Vncticket string `url:"vncticket",json:"vncticket"`
-	Node      string `url:"node",json:"node"`
-	Port      int    `url:"port",json:"port"`
-	Vmid      int    `url:"vmid",json:"vmid"`
+	Node      string `url:"node",json:"node"`           // The cluster node name.
+	Port      int    `url:"port",json:"port"`           // Port number returned by previous vncproxy call.
+	Vmid      int    `url:"vmid",json:"vmid"`           // The (unique) ID of the VM.
+	Vncticket string `url:"vncticket",json:"vncticket"` // Ticket from previous call to vncproxy.
+
 }
 
 type VncwebsocketResponse struct {
@@ -610,9 +643,11 @@ func (c *Client) Vncwebsocket(ctx context.Context, req *VncwebsocketRequest) (*V
 }
 
 type SpiceproxyRequest struct {
-	Node  string  `url:"node",json:"node"`
-	Proxy *string `url:"proxy,omitempty",json:"proxy,omitempty"`
-	Vmid  int     `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Proxy *string `url:"proxy,omitempty",json:"proxy,omitempty"` // SPICE proxy server. This can be used by the client to specify the proxy server. All nodes in a cluster runs 'spiceproxy', so it is up to the client to choose one. By default, we return the node where the VM is currently running. As reasonable setting is to use same node you use to connect to the API (This is window.location.hostname for the JS GUI).
 }
 
 type SpiceproxyResponse struct {
@@ -632,10 +667,12 @@ func (c *Client) Spiceproxy(ctx context.Context, req *SpiceproxyRequest) (*Spice
 }
 
 type VmSendkeyRequest struct {
-	Key      string `url:"key",json:"key"`
-	Node     string `url:"node",json:"node"`
-	Skiplock *bool  `url:"skiplock,omitempty",json:"skiplock,omitempty"`
-	Vmid     int    `url:"vmid",json:"vmid"`
+	Key  string `url:"key",json:"key"`   // The key (qemu monitor encoding).
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Skiplock *bool `url:"skiplock,omitempty",json:"skiplock,omitempty"` // Ignore locks - only root is allowed to use this option.
 }
 
 type VmSendkeyResponse map[string]interface{}
@@ -649,10 +686,12 @@ func (c *Client) VmSendkey(ctx context.Context, req *VmSendkeyRequest) (*VmSendk
 }
 
 type VmFeatureRequest struct {
-	Feature  string  `url:"feature",json:"feature"`
-	Node     string  `url:"node",json:"node"`
-	Snapname *string `url:"snapname,omitempty",json:"snapname,omitempty"`
-	Vmid     int     `url:"vmid",json:"vmid"`
+	Feature string `url:"feature",json:"feature"` // Feature to check.
+	Node    string `url:"node",json:"node"`       // The cluster node name.
+	Vmid    int    `url:"vmid",json:"vmid"`       // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Snapname *string `url:"snapname,omitempty",json:"snapname,omitempty"` // The name of the snapshot.
 }
 
 type VmFeatureResponse struct {
@@ -669,18 +708,20 @@ func (c *Client) VmFeature(ctx context.Context, req *VmFeatureRequest) (*VmFeatu
 }
 
 type CloneVmCloneRequest struct {
-	Snapname    *string `url:"snapname,omitempty",json:"snapname,omitempty"`
-	Storage     *string `url:"storage,omitempty",json:"storage,omitempty"`
-	Vmid        int     `url:"vmid",json:"vmid"`
-	Format      *string `url:"format,omitempty",json:"format,omitempty"`
-	Name        *string `url:"name,omitempty",json:"name,omitempty"`
-	Pool        *string `url:"pool,omitempty",json:"pool,omitempty"`
-	Newid       int     `url:"newid",json:"newid"`
-	Node        string  `url:"node",json:"node"`
-	Target      *string `url:"target,omitempty",json:"target,omitempty"`
-	Bwlimit     *int    `url:"bwlimit,omitempty",json:"bwlimit,omitempty"`
-	Description *string `url:"description,omitempty",json:"description,omitempty"`
-	Full        *bool   `url:"full,omitempty",json:"full,omitempty"`
+	Newid int    `url:"newid",json:"newid"` // VMID for the clone.
+	Node  string `url:"node",json:"node"`   // The cluster node name.
+	Vmid  int    `url:"vmid",json:"vmid"`   // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Bwlimit     *int    `url:"bwlimit,omitempty",json:"bwlimit,omitempty"`         // Override I/O bandwidth limit (in KiB/s).
+	Description *string `url:"description,omitempty",json:"description,omitempty"` // Description for the new VM.
+	Format      *string `url:"format,omitempty",json:"format,omitempty"`           // Target format for file storage. Only valid for full clone.
+	Full        *bool   `url:"full,omitempty",json:"full,omitempty"`               // Create a full copy of all disks. This is always done when you clone a normal VM. For VM templates, we try to create a linked clone by default.
+	Name        *string `url:"name,omitempty",json:"name,omitempty"`               // Set a name for the new VM.
+	Pool        *string `url:"pool,omitempty",json:"pool,omitempty"`               // Add the new VM to the specified pool.
+	Snapname    *string `url:"snapname,omitempty",json:"snapname,omitempty"`       // The name of the snapshot.
+	Storage     *string `url:"storage,omitempty",json:"storage,omitempty"`         // Target storage for full clone.
+	Target      *string `url:"target,omitempty",json:"target,omitempty"`           // Target node. Only allowed if the original VM is on shared storage.
 }
 
 type CloneVmCloneResponse string
@@ -694,17 +735,19 @@ func (c *Client) CloneVmClone(ctx context.Context, req *CloneVmCloneRequest) (*C
 }
 
 type MoveVmDiskMoveDiskRequest struct {
-	Disk         string  `url:"disk",json:"disk"`
-	Format       *string `url:"format,omitempty",json:"format,omitempty"`
-	Storage      *string `url:"storage,omitempty",json:"storage,omitempty"`
-	Vmid         int     `url:"vmid",json:"vmid"`
-	Bwlimit      *int    `url:"bwlimit,omitempty",json:"bwlimit,omitempty"`
-	Digest       *string `url:"digest,omitempty",json:"digest,omitempty"`
-	TargetDigest *string `url:"target-digest,omitempty",json:"target-digest,omitempty"`
-	TargetDisk   *string `url:"target-disk,omitempty",json:"target-disk,omitempty"`
-	TargetVmid   *int    `url:"target-vmid,omitempty",json:"target-vmid,omitempty"`
-	Delete       *bool   `url:"delete,omitempty",json:"delete,omitempty"`
-	Node         string  `url:"node",json:"node"`
+	Disk string `url:"disk",json:"disk"` // The disk you want to move.
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Bwlimit      *int    `url:"bwlimit,omitempty",json:"bwlimit,omitempty"`             // Override I/O bandwidth limit (in KiB/s).
+	Delete       *bool   `url:"delete,omitempty",json:"delete,omitempty"`               // Delete the original disk after successful copy. By default the original disk is kept as unused disk.
+	Digest       *string `url:"digest,omitempty",json:"digest,omitempty"`               // Prevent changes if current configuration file has different SHA1"		    ." digest. This can be used to prevent concurrent modifications.
+	Format       *string `url:"format,omitempty",json:"format,omitempty"`               // Target Format.
+	Storage      *string `url:"storage,omitempty",json:"storage,omitempty"`             // Target storage.
+	TargetDigest *string `url:"target-digest,omitempty",json:"target-digest,omitempty"` // Prevent changes if the current config file of the target VM has a"		    ." different SHA1 digest. This can be used to detect concurrent modifications.
+	TargetDisk   *string `url:"target-disk,omitempty",json:"target-disk,omitempty"`     // The config key the disk will be moved to on the target VM (for example, ide0 or scsi1). Default is the source disk key.
+	TargetVmid   *int    `url:"target-vmid,omitempty",json:"target-vmid,omitempty"`     // The (unique) ID of the VM.
 }
 
 type MoveVmDiskMoveDiskResponse string
@@ -718,16 +761,18 @@ func (c *Client) MoveVmDiskMoveDisk(ctx context.Context, req *MoveVmDiskMoveDisk
 }
 
 type MigrateVmMigrateRequest struct {
-	MigrationNetwork *string `url:"migration_network,omitempty",json:"migration_network,omitempty"`
-	Node             string  `url:"node",json:"node"`
-	Vmid             int     `url:"vmid",json:"vmid"`
-	WithLocalDisks   *bool   `url:"with-local-disks,omitempty",json:"with-local-disks,omitempty"`
-	Bwlimit          *int    `url:"bwlimit,omitempty",json:"bwlimit,omitempty"`
-	Force            *bool   `url:"force,omitempty",json:"force,omitempty"`
-	MigrationType    *string `url:"migration_type,omitempty",json:"migration_type,omitempty"`
-	Online           *bool   `url:"online,omitempty",json:"online,omitempty"`
-	Target           string  `url:"target",json:"target"`
-	Targetstorage    *string `url:"targetstorage,omitempty",json:"targetstorage,omitempty"`
+	Node   string `url:"node",json:"node"`     // The cluster node name.
+	Target string `url:"target",json:"target"` // Target node.
+	Vmid   int    `url:"vmid",json:"vmid"`     // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Bwlimit          *int    `url:"bwlimit,omitempty",json:"bwlimit,omitempty"`                     // Override I/O bandwidth limit (in KiB/s).
+	Force            *bool   `url:"force,omitempty",json:"force,omitempty"`                         // Allow to migrate VMs which use local devices. Only root may use this option.
+	MigrationNetwork *string `url:"migration_network,omitempty",json:"migration_network,omitempty"` // CIDR of the (sub) network that is used for migration.
+	MigrationType    *string `url:"migration_type,omitempty",json:"migration_type,omitempty"`       // Migration traffic is encrypted using an SSH tunnel by default. On secure, completely private networks this can be disabled to increase performance.
+	Online           *bool   `url:"online,omitempty",json:"online,omitempty"`                       // Use online/live migration if VM is running. Ignored if VM is stopped.
+	Targetstorage    *string `url:"targetstorage,omitempty",json:"targetstorage,omitempty"`         // Mapping from source to target storages. Providing only a single storage ID maps all source storages to that storage. Providing the special value '1' will map each source storage to itself.
+	WithLocalDisks   *bool   `url:"with-local-disks,omitempty",json:"with-local-disks,omitempty"`   // Enable live storage migration for local disk
 }
 
 type MigrateVmMigrateResponse string
@@ -741,17 +786,21 @@ func (c *Client) MigrateVmMigrate(ctx context.Context, req *MigrateVmMigrateRequ
 }
 
 type MigrateVmPreconditionMigrateRequest struct {
-	Target *string `url:"target,omitempty",json:"target,omitempty"`
-	Vmid   int     `url:"vmid",json:"vmid"`
-	Node   string  `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Target *string `url:"target,omitempty",json:"target,omitempty"` // Target node.
 }
 
 type MigrateVmPreconditionMigrateResponse struct {
-	AllowedNodes    []*map[string]interface{} `url:"allowed_nodes,omitempty",json:"allowed_nodes,omitempty"`
-	LocalDisks      []*map[string]interface{} `url:"local_disks",json:"local_disks"`
-	LocalResources  []*map[string]interface{} `url:"local_resources",json:"local_resources"`
-	NotAllowedNodes map[string]interface{}    `url:"not_allowed_nodes,omitempty",json:"not_allowed_nodes,omitempty"`
-	Running         bool                      `url:"running",json:"running"`
+	LocalDisks     []*map[string]interface{} `url:"local_disks",json:"local_disks"`         // List local disks including CD-Rom, unsused and not referenced disks
+	LocalResources []*map[string]interface{} `url:"local_resources",json:"local_resources"` // List local resources e.g. pci, usb
+	Running        bool                      `url:"running",json:"running"`
+
+	// The following parameters are optional
+	AllowedNodes    []*map[string]interface{} `url:"allowed_nodes,omitempty",json:"allowed_nodes,omitempty"`         // List nodes allowed for offline migration, only passed if VM is offline
+	NotAllowedNodes map[string]interface{}    `url:"not_allowed_nodes,omitempty",json:"not_allowed_nodes,omitempty"` // List not allowed nodes with additional informations, only passed if VM is offline
 }
 
 // MigrateVmPreconditionMigrate Get preconditions for migration.
@@ -763,15 +812,17 @@ func (c *Client) MigrateVmPreconditionMigrate(ctx context.Context, req *MigrateV
 }
 
 type RemoteMigrateVmRemoteMigrateRequest struct {
-	Online         *bool  `url:"online,omitempty",json:"online,omitempty"`
-	TargetVmid     *int   `url:"target-vmid,omitempty",json:"target-vmid,omitempty"`
-	Vmid           int    `url:"vmid",json:"vmid"`
-	Delete         *bool  `url:"delete,omitempty",json:"delete,omitempty"`
-	Node           string `url:"node",json:"node"`
-	TargetBridge   string `url:"target-bridge",json:"target-bridge"`
-	TargetEndpoint string `url:"target-endpoint",json:"target-endpoint"`
-	TargetStorage  string `url:"target-storage",json:"target-storage"`
-	Bwlimit        *int   `url:"bwlimit,omitempty",json:"bwlimit,omitempty"`
+	Node           string `url:"node",json:"node"`                       // The cluster node name.
+	TargetBridge   string `url:"target-bridge",json:"target-bridge"`     // Mapping from source to target bridges. Providing only a single bridge ID maps all source bridges to that bridge. Providing the special value '1' will map each source bridge to itself.
+	TargetEndpoint string `url:"target-endpoint",json:"target-endpoint"` // Remote target endpoint
+	TargetStorage  string `url:"target-storage",json:"target-storage"`   // Mapping from source to target storages. Providing only a single storage ID maps all source storages to that storage. Providing the special value '1' will map each source storage to itself.
+	Vmid           int    `url:"vmid",json:"vmid"`                       // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Bwlimit    *int  `url:"bwlimit,omitempty",json:"bwlimit,omitempty"`         // Override I/O bandwidth limit (in KiB/s).
+	Delete     *bool `url:"delete,omitempty",json:"delete,omitempty"`           // Delete the original VM and related data after successful migration. By default the original VM is kept on the source cluster in a stopped state.
+	Online     *bool `url:"online,omitempty",json:"online,omitempty"`           // Use online/live migration if VM is running. Ignored if VM is stopped.
+	TargetVmid *int  `url:"target-vmid,omitempty",json:"target-vmid,omitempty"` // The (unique) ID of the VM.
 }
 
 type RemoteMigrateVmRemoteMigrateResponse string
@@ -785,9 +836,10 @@ func (c *Client) RemoteMigrateVmRemoteMigrate(ctx context.Context, req *RemoteMi
 }
 
 type MonitorRequest struct {
-	Vmid    int    `url:"vmid",json:"vmid"`
-	Command string `url:"command",json:"command"`
-	Node    string `url:"node",json:"node"`
+	Command string `url:"command",json:"command"` // The monitor command.
+	Node    string `url:"node",json:"node"`       // The cluster node name.
+	Vmid    int    `url:"vmid",json:"vmid"`       // The (unique) ID of the VM.
+
 }
 
 type MonitorResponse string
@@ -801,12 +853,14 @@ func (c *Client) Monitor(ctx context.Context, req *MonitorRequest) (*MonitorResp
 }
 
 type ResizeVmResizeRequest struct {
-	Digest   *string `url:"digest,omitempty",json:"digest,omitempty"`
-	Disk     string  `url:"disk",json:"disk"`
-	Node     string  `url:"node",json:"node"`
-	Size     string  `url:"size",json:"size"`
-	Skiplock *bool   `url:"skiplock,omitempty",json:"skiplock,omitempty"`
-	Vmid     int     `url:"vmid",json:"vmid"`
+	Disk string `url:"disk",json:"disk"` // The disk you want to resize.
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Size string `url:"size",json:"size"` // The new size. With the `+` sign the value is added to the actual size of the volume and without it, the value is taken as an absolute one. Shrinking disk size is not supported.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Digest   *string `url:"digest,omitempty",json:"digest,omitempty"`     // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Skiplock *bool   `url:"skiplock,omitempty",json:"skiplock,omitempty"` // Ignore locks - only root is allowed to use this option.
 }
 
 type ResizeVmResizeResponse map[string]interface{}
@@ -820,9 +874,11 @@ func (c *Client) ResizeVmResize(ctx context.Context, req *ResizeVmResizeRequest)
 }
 
 type TemplateRequest struct {
-	Disk *string `url:"disk,omitempty",json:"disk,omitempty"`
-	Node string  `url:"node",json:"node"`
-	Vmid int     `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Disk *string `url:"disk,omitempty",json:"disk,omitempty"` // If you want to convert only 1 disk to base image.
 }
 
 type TemplateResponse string
@@ -836,16 +892,18 @@ func (c *Client) Template(ctx context.Context, req *TemplateRequest) (*TemplateR
 }
 
 type MtunnelRequest struct {
-	Bridges  *string `url:"bridges,omitempty",json:"bridges,omitempty"`
-	Node     string  `url:"node",json:"node"`
-	Storages *string `url:"storages,omitempty",json:"storages,omitempty"`
-	Vmid     int     `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Bridges  *string `url:"bridges,omitempty",json:"bridges,omitempty"`   // List of network bridges to check availability. Will be checked again for actually used bridges during migration.
+	Storages *string `url:"storages,omitempty",json:"storages,omitempty"` // List of storages to check permission and availability. Will be checked again for all actually used storages during migration.
 }
 
 type MtunnelResponse struct {
-	Upid   string `url:"upid",json:"upid"`
 	Socket string `url:"socket",json:"socket"`
 	Ticket string `url:"ticket",json:"ticket"`
+	Upid   string `url:"upid",json:"upid"`
 }
 
 // Mtunnel Migration tunnel endpoint - only for internal use by VM migration.
@@ -857,16 +915,14 @@ func (c *Client) Mtunnel(ctx context.Context, req *MtunnelRequest) (*MtunnelResp
 }
 
 type MtunnelwebsocketRequest struct {
-	Ticket string `url:"ticket",json:"ticket"`
-	Vmid   int    `url:"vmid",json:"vmid"`
-	Node   string `url:"node",json:"node"`
-	Socket string `url:"socket",json:"socket"`
+	Node   string `url:"node",json:"node"`     // The cluster node name.
+	Socket string `url:"socket",json:"socket"` // unix socket to forward to
+	Ticket string `url:"ticket",json:"ticket"` // ticket return by initial 'mtunnel' API call, or retrieved via 'ticket' tunnel command
+	Vmid   int    `url:"vmid",json:"vmid"`     // The (unique) ID of the VM.
+
 }
 
-type MtunnelwebsocketResponse struct {
-	Port   *string `url:"port,omitempty",json:"port,omitempty"`
-	Socket *string `url:"socket,omitempty",json:"socket,omitempty"`
-}
+type MtunnelwebsocketResponse map[string]interface{}
 
 // Mtunnelwebsocket Migration tunnel endpoint for websocket upgrade - only for internal use by VM migration.
 func (c *Client) Mtunnelwebsocket(ctx context.Context, req *MtunnelwebsocketRequest) (*MtunnelwebsocketResponse, error) {

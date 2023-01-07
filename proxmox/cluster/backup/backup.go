@@ -21,7 +21,8 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexResponse []*struct {
-	Id string `url:"id",json:"id"`
+	Id string `url:"id",json:"id"` // The job ID.
+
 }
 
 // Index List vzdump backup schedule.
@@ -32,44 +33,7 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 	return resp, err
 }
 
-type CreateRequest struct {
-	All              *bool   `url:"all,omitempty",json:"all,omitempty"`
-	Enabled          *bool   `url:"enabled,omitempty",json:"enabled,omitempty"`
-	Maxfiles         *int    `url:"maxfiles,omitempty",json:"maxfiles,omitempty"`
-	RepeatMissed     *bool   `url:"repeat-missed,omitempty",json:"repeat-missed,omitempty"`
-	Stopwait         *int    `url:"stopwait,omitempty",json:"stopwait,omitempty"`
-	Storage          *string `url:"storage,omitempty",json:"storage,omitempty"`
-	Bwlimit          *int    `url:"bwlimit,omitempty",json:"bwlimit,omitempty"`
-	Exclude          *string `url:"exclude,omitempty",json:"exclude,omitempty"`
-	Ionice           *int    `url:"ionice,omitempty",json:"ionice,omitempty"`
-	NotesTemplate    *string `url:"notes-template,omitempty",json:"notes-template,omitempty"`
-	Zstd             *int    `url:"zstd,omitempty",json:"zstd,omitempty"`
-	Performance      *string `url:"performance,omitempty",json:"performance,omitempty"`
-	Remove           *bool   `url:"remove,omitempty",json:"remove,omitempty"`
-	Script           *string `url:"script,omitempty",json:"script,omitempty"`
-	Tmpdir           *string `url:"tmpdir,omitempty",json:"tmpdir,omitempty"`
-	Stop             *bool   `url:"stop,omitempty",json:"stop,omitempty"`
-	Vmid             *string `url:"vmid,omitempty",json:"vmid,omitempty"`
-	Comment          *string `url:"comment,omitempty",json:"comment,omitempty"`
-	ExcludePath      *string `url:"exclude-path,omitempty",json:"exclude-path,omitempty"`
-	Mode             *string `url:"mode,omitempty",json:"mode,omitempty"`
-	Protected        *bool   `url:"protected,omitempty",json:"protected,omitempty"`
-	Starttime        *string `url:"starttime,omitempty",json:"starttime,omitempty"`
-	Compress         *string `url:"compress,omitempty",json:"compress,omitempty"`
-	Dumpdir          *string `url:"dumpdir,omitempty",json:"dumpdir,omitempty"`
-	Id               *string `url:"id,omitempty",json:"id,omitempty"`
-	Quiet            *bool   `url:"quiet,omitempty",json:"quiet,omitempty"`
-	Pool             *string `url:"pool,omitempty",json:"pool,omitempty"`
-	Schedule         *string `url:"schedule,omitempty",json:"schedule,omitempty"`
-	Dow              *string `url:"dow,omitempty",json:"dow,omitempty"`
-	Mailto           *string `url:"mailto,omitempty",json:"mailto,omitempty"`
-	PruneBackups     *string `url:"prune-backups,omitempty",json:"prune-backups,omitempty"`
-	Stdexcludes      *bool   `url:"stdexcludes,omitempty",json:"stdexcludes,omitempty"`
-	Lockwait         *int    `url:"lockwait,omitempty",json:"lockwait,omitempty"`
-	Mailnotification *string `url:"mailnotification,omitempty",json:"mailnotification,omitempty"`
-	Node             *string `url:"node,omitempty",json:"node,omitempty"`
-	Pigz             *int    `url:"pigz,omitempty",json:"pigz,omitempty"`
-}
+type CreateRequest map[string]interface{}
 
 type CreateResponse map[string]interface{}
 
@@ -82,7 +46,8 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FindRequest struct {
-	Id string `url:"id",json:"id"`
+	Id string `url:"id",json:"id"` // The job ID.
+
 }
 
 type FindResponse map[string]interface{}
@@ -96,43 +61,45 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type UpdateRequest struct {
-	Exclude          *string `url:"exclude,omitempty",json:"exclude,omitempty"`
-	Stop             *bool   `url:"stop,omitempty",json:"stop,omitempty"`
-	Storage          *string `url:"storage,omitempty",json:"storage,omitempty"`
-	Compress         *string `url:"compress,omitempty",json:"compress,omitempty"`
-	Mailto           *string `url:"mailto,omitempty",json:"mailto,omitempty"`
-	PruneBackups     *string `url:"prune-backups,omitempty",json:"prune-backups,omitempty"`
-	Remove           *bool   `url:"remove,omitempty",json:"remove,omitempty"`
-	RepeatMissed     *bool   `url:"repeat-missed,omitempty",json:"repeat-missed,omitempty"`
-	Schedule         *string `url:"schedule,omitempty",json:"schedule,omitempty"`
-	Script           *string `url:"script,omitempty",json:"script,omitempty"`
-	Dow              *string `url:"dow,omitempty",json:"dow,omitempty"`
-	ExcludePath      *string `url:"exclude-path,omitempty",json:"exclude-path,omitempty"`
-	Maxfiles         *int    `url:"maxfiles,omitempty",json:"maxfiles,omitempty"`
-	Performance      *string `url:"performance,omitempty",json:"performance,omitempty"`
-	Pigz             *int    `url:"pigz,omitempty",json:"pigz,omitempty"`
-	Stopwait         *int    `url:"stopwait,omitempty",json:"stopwait,omitempty"`
-	All              *bool   `url:"all,omitempty",json:"all,omitempty"`
-	Comment          *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Lockwait         *int    `url:"lockwait,omitempty",json:"lockwait,omitempty"`
-	Mailnotification *string `url:"mailnotification,omitempty",json:"mailnotification,omitempty"`
-	Vmid             *string `url:"vmid,omitempty",json:"vmid,omitempty"`
-	Bwlimit          *int    `url:"bwlimit,omitempty",json:"bwlimit,omitempty"`
-	Mode             *string `url:"mode,omitempty",json:"mode,omitempty"`
-	Protected        *bool   `url:"protected,omitempty",json:"protected,omitempty"`
-	Tmpdir           *string `url:"tmpdir,omitempty",json:"tmpdir,omitempty"`
-	Node             *string `url:"node,omitempty",json:"node,omitempty"`
-	Stdexcludes      *bool   `url:"stdexcludes,omitempty",json:"stdexcludes,omitempty"`
-	Delete           *string `url:"delete,omitempty",json:"delete,omitempty"`
-	Dumpdir          *string `url:"dumpdir,omitempty",json:"dumpdir,omitempty"`
-	Id               string  `url:"id",json:"id"`
-	Ionice           *int    `url:"ionice,omitempty",json:"ionice,omitempty"`
-	NotesTemplate    *string `url:"notes-template,omitempty",json:"notes-template,omitempty"`
-	Quiet            *bool   `url:"quiet,omitempty",json:"quiet,omitempty"`
-	Enabled          *bool   `url:"enabled,omitempty",json:"enabled,omitempty"`
-	Pool             *string `url:"pool,omitempty",json:"pool,omitempty"`
-	Starttime        *string `url:"starttime,omitempty",json:"starttime,omitempty"`
-	Zstd             *int    `url:"zstd,omitempty",json:"zstd,omitempty"`
+	Id string `url:"id",json:"id"` // The job ID.
+
+	// The following parameters are optional
+	All              *bool   `url:"all,omitempty",json:"all,omitempty"`                           // Backup all known guest systems on this host.
+	Bwlimit          *int    `url:"bwlimit,omitempty",json:"bwlimit,omitempty"`                   // Limit I/O bandwidth (KBytes per second).
+	Comment          *string `url:"comment,omitempty",json:"comment,omitempty"`                   // Description for the Job.
+	Compress         *string `url:"compress,omitempty",json:"compress,omitempty"`                 // Compress dump file.
+	Delete           *string `url:"delete,omitempty",json:"delete,omitempty"`                     // A list of settings you want to delete.
+	Dow              *string `url:"dow,omitempty",json:"dow,omitempty"`                           // Day of week selection.
+	Dumpdir          *string `url:"dumpdir,omitempty",json:"dumpdir,omitempty"`                   // Store resulting files to specified directory.
+	Enabled          *bool   `url:"enabled,omitempty",json:"enabled,omitempty"`                   // Enable or disable the job.
+	Exclude          *string `url:"exclude,omitempty",json:"exclude,omitempty"`                   // Exclude specified guest systems (assumes --all)
+	ExcludePath      *string `url:"exclude-path,omitempty",json:"exclude-path,omitempty"`         // Exclude certain files/directories (shell globs). Paths starting with '/' are anchored to the container's root,  other paths match relative to each subdirectory.
+	Ionice           *int    `url:"ionice,omitempty",json:"ionice,omitempty"`                     // Set CFQ ionice priority.
+	Lockwait         *int    `url:"lockwait,omitempty",json:"lockwait,omitempty"`                 // Maximal time to wait for the global lock (minutes).
+	Mailnotification *string `url:"mailnotification,omitempty",json:"mailnotification,omitempty"` // Specify when to send an email
+	Mailto           *string `url:"mailto,omitempty",json:"mailto,omitempty"`                     // Comma-separated list of email addresses or users that should receive email notifications.
+	Maxfiles         *int    `url:"maxfiles,omitempty",json:"maxfiles,omitempty"`                 // Deprecated: use 'prune-backups' instead. Maximal number of backup files per guest system.
+	Mode             *string `url:"mode,omitempty",json:"mode,omitempty"`                         // Backup mode.
+	Node             *string `url:"node,omitempty",json:"node,omitempty"`                         // Only run if executed on this node.
+	NotesTemplate    *string `url:"notes-template,omitempty",json:"notes-template,omitempty"`     // Template string for generating notes for the backup(s). It can contain variables which will be replaced by their values. Currently supported are {{cluster}}, {{guestname}}, {{node}}, and {{vmid}}, but more might be added in the future. Needs to be a single line, newline and backslash need to be escaped as '\n' and '\\' respectively.
+	Performance      *string `url:"performance,omitempty",json:"performance,omitempty"`           // Other performance-related settings.
+	Pigz             *int    `url:"pigz,omitempty",json:"pigz,omitempty"`                         // Use pigz instead of gzip when N>0. N=1 uses half of cores, N>1 uses N as thread count.
+	Pool             *string `url:"pool,omitempty",json:"pool,omitempty"`                         // Backup all known guest systems included in the specified pool.
+	Protected        *bool   `url:"protected,omitempty",json:"protected,omitempty"`               // If true, mark backup(s) as protected.
+	PruneBackups     *string `url:"prune-backups,omitempty",json:"prune-backups,omitempty"`       // Use these retention options instead of those from the storage configuration.
+	Quiet            *bool   `url:"quiet,omitempty",json:"quiet,omitempty"`                       // Be quiet.
+	Remove           *bool   `url:"remove,omitempty",json:"remove,omitempty"`                     // Prune older backups according to 'prune-backups'.
+	RepeatMissed     *bool   `url:"repeat-missed,omitempty",json:"repeat-missed,omitempty"`       // If true, the job will be run as soon as possible if it was missed while the scheduler was not running.
+	Schedule         *string `url:"schedule,omitempty",json:"schedule,omitempty"`                 // Backup schedule. The format is a subset of `systemd` calendar events.
+	Script           *string `url:"script,omitempty",json:"script,omitempty"`                     // Use specified hook script.
+	Starttime        *string `url:"starttime,omitempty",json:"starttime,omitempty"`               // Job Start time.
+	Stdexcludes      *bool   `url:"stdexcludes,omitempty",json:"stdexcludes,omitempty"`           // Exclude temporary files and logs.
+	Stop             *bool   `url:"stop,omitempty",json:"stop,omitempty"`                         // Stop running backup jobs on this host.
+	Stopwait         *int    `url:"stopwait,omitempty",json:"stopwait,omitempty"`                 // Maximal time to wait until a guest system is stopped (minutes).
+	Storage          *string `url:"storage,omitempty",json:"storage,omitempty"`                   // Store resulting file to this storage.
+	Tmpdir           *string `url:"tmpdir,omitempty",json:"tmpdir,omitempty"`                     // Store temporary files to specified directory.
+	Vmid             *string `url:"vmid,omitempty",json:"vmid,omitempty"`                         // The ID of the guest system you want to backup.
+	Zstd             *int    `url:"zstd,omitempty",json:"zstd,omitempty"`                         // Zstd threads. N=0 uses half of the available cores, N>0 uses N as thread count.
 }
 
 type UpdateResponse map[string]interface{}
@@ -146,7 +113,8 @@ func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateRespons
 }
 
 type DeleteRequest struct {
-	Id string `url:"id",json:"id"`
+	Id string `url:"id",json:"id"` // The job ID.
+
 }
 
 type DeleteResponse map[string]interface{}
@@ -160,20 +128,24 @@ func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteRespons
 }
 
 type GetVolumeBackupIncludedIncludedVolumesRequest struct {
-	Id string `url:"id",json:"id"`
+	Id string `url:"id",json:"id"` // The job ID.
+
 }
 
 type GetVolumeBackupIncludedIncludedVolumesResponse struct {
 	Children []*struct {
-		Id       int     `url:"id",json:"id"`
-		Name     *string `url:"name,omitempty",json:"name,omitempty"`
-		Type     string  `url:"type",json:"type"`
+		Id   int    `url:"id",json:"id"`     // VMID of the guest.
+		Type string `url:"type",json:"type"` // Type of the guest, VM, CT or unknown for removed but not purged guests.
+
+		// The following parameters are optional
 		Children []*struct {
-			Id       string `url:"id",json:"id"`
-			Included bool   `url:"included",json:"included"`
-			Name     string `url:"name",json:"name"`
-			Reason   string `url:"reason",json:"reason"`
-		} `url:"children,omitempty",json:"children,omitempty"`
+			Id       string `url:"id",json:"id"`             // Configuration key of the volume.
+			Included bool   `url:"included",json:"included"` // Whether the volume is included in the backup or not.
+			Name     string `url:"name",json:"name"`         // Name of the volume.
+			Reason   string `url:"reason",json:"reason"`     // The reason why the volume is included (or excluded).
+
+		} `url:"children,omitempty",json:"children,omitempty"` // The volumes of the guest with the information if they will be included in backups.
+		Name *string `url:"name,omitempty",json:"name,omitempty"` // Name of the guest
 	} `url:"children",json:"children"`
 }
 

@@ -21,23 +21,27 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type IndexResponse struct {
-	Leaf     bool `url:"leaf",json:"leaf"`
 	Children []*struct {
-		Name     string `url:"name",json:"name"`
-		Size     int    `url:"size",json:"size"`
+		Free int    `url:"free",json:"free"` // The free bytes in the volume group
+		Leaf bool   `url:"leaf",json:"leaf"`
+		Name string `url:"name",json:"name"` // The name of the volume group
+		Size int    `url:"size",json:"size"` // The size of the volume group in bytes
+
+		// The following parameters are optional
 		Children []*struct {
-			Name string `url:"name",json:"name"`
-			Size int    `url:"size",json:"size"`
-			Free int    `url:"free",json:"free"`
+			Free int    `url:"free",json:"free"` // The free bytes in the physical volume
 			Leaf bool   `url:"leaf",json:"leaf"`
-		} `url:"children,omitempty",json:"children,omitempty"`
-		Free int  `url:"free",json:"free"`
-		Leaf bool `url:"leaf",json:"leaf"`
+			Name string `url:"name",json:"name"` // The name of the physical volume
+			Size int    `url:"size",json:"size"` // The size of the physical volume in bytes
+
+		} `url:"children,omitempty",json:"children,omitempty"` // The underlying physical volumes
 	} `url:"children",json:"children"`
+	Leaf bool `url:"leaf",json:"leaf"`
 }
 
 // Index List LVM Volume Groups
@@ -49,10 +53,12 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type CreateRequest struct {
-	AddStorage *bool  `url:"add_storage,omitempty",json:"add_storage,omitempty"`
-	Device     string `url:"device",json:"device"`
-	Name       string `url:"name",json:"name"`
-	Node       string `url:"node",json:"node"`
+	Device string `url:"device",json:"device"` // The block device you want to create the volume group on
+	Name   string `url:"name",json:"name"`     // The storage identifier.
+	Node   string `url:"node",json:"node"`     // The cluster node name.
+
+	// The following parameters are optional
+	AddStorage *bool `url:"add_storage,omitempty",json:"add_storage,omitempty"` // Configure storage using the Volume Group
 }
 
 type CreateResponse string
@@ -66,10 +72,12 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type DeleteRequest struct {
-	Node          string `url:"node",json:"node"`
-	CleanupConfig *bool  `url:"cleanup-config,omitempty",json:"cleanup-config,omitempty"`
-	CleanupDisks  *bool  `url:"cleanup-disks,omitempty",json:"cleanup-disks,omitempty"`
-	Name          string `url:"name",json:"name"`
+	Name string `url:"name",json:"name"` // The storage identifier.
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+	// The following parameters are optional
+	CleanupConfig *bool `url:"cleanup-config,omitempty",json:"cleanup-config,omitempty"` // Marks associated storage(s) as not available on this node anymore or removes them from the configuration (if configured for this node only).
+	CleanupDisks  *bool `url:"cleanup-disks,omitempty",json:"cleanup-disks,omitempty"`   // Also wipe disks so they can be repurposed afterwards.
 }
 
 type DeleteResponse string

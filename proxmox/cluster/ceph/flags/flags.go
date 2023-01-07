@@ -21,7 +21,8 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexResponse []*struct {
-	Name string `url:"name",json:"name"`
+	Name string `url:"name",json:"name"` // Flag name.
+
 }
 
 // Index get the status of all ceph flags
@@ -32,19 +33,7 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 	return resp, err
 }
 
-type MassUpdateRequest struct {
-	Noout       *bool `url:"noout,omitempty",json:"noout,omitempty"`
-	Norebalance *bool `url:"norebalance,omitempty",json:"norebalance,omitempty"`
-	Noscrub     *bool `url:"noscrub,omitempty",json:"noscrub,omitempty"`
-	Noup        *bool `url:"noup,omitempty",json:"noup,omitempty"`
-	Pause       *bool `url:"pause,omitempty",json:"pause,omitempty"`
-	Nodown      *bool `url:"nodown,omitempty",json:"nodown,omitempty"`
-	Noin        *bool `url:"noin,omitempty",json:"noin,omitempty"`
-	Norecover   *bool `url:"norecover,omitempty",json:"norecover,omitempty"`
-	Notieragent *bool `url:"notieragent,omitempty",json:"notieragent,omitempty"`
-	Nobackfill  *bool `url:"nobackfill,omitempty",json:"nobackfill,omitempty"`
-	NodeepScrub *bool `url:"nodeep-scrub,omitempty",json:"nodeep-scrub,omitempty"`
-}
+type MassUpdateRequest map[string]interface{}
 
 type MassUpdateResponse string
 
@@ -57,7 +46,8 @@ func (c *Client) MassUpdate(ctx context.Context, req *MassUpdateRequest) (*MassU
 }
 
 type FindRequest struct {
-	Flag string `url:"flag",json:"flag"`
+	Flag string `url:"flag",json:"flag"` // The name of the flag name to get.
+
 }
 
 type FindResponse bool
@@ -71,8 +61,9 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type UpdateRequest struct {
-	Flag  string `url:"flag",json:"flag"`
-	Value bool   `url:"value",json:"value"`
+	Flag  string `url:"flag",json:"flag"`   // The ceph flag to update
+	Value bool   `url:"value",json:"value"` // The new value of the flag
+
 }
 
 type UpdateResponse map[string]interface{}

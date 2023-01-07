@@ -21,7 +21,8 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type IndexResponse []*map[string]interface{}
@@ -35,21 +36,11 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type InfoRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
-type InfoResponse []*struct {
-	Filename      *string  `url:"filename,omitempty",json:"filename,omitempty"`
-	Fingerprint   *string  `url:"fingerprint,omitempty",json:"fingerprint,omitempty"`
-	Issuer        *string  `url:"issuer,omitempty",json:"issuer,omitempty"`
-	Notbefore     *int     `url:"notbefore,omitempty",json:"notbefore,omitempty"`
-	Pem           *string  `url:"pem,omitempty",json:"pem,omitempty"`
-	San           []string `url:"san,omitempty",json:"san,omitempty"`
-	Notafter      *int     `url:"notafter,omitempty",json:"notafter,omitempty"`
-	PublicKeyBits *int     `url:"public-key-bits,omitempty",json:"public-key-bits,omitempty"`
-	PublicKeyType *string  `url:"public-key-type,omitempty",json:"public-key-type,omitempty"`
-	Subject       *string  `url:"subject,omitempty",json:"subject,omitempty"`
-}
+type InfoResponse []*map[string]interface{}
 
 // Info Get information about node's certificates.
 func (c *Client) Info(ctx context.Context, req *InfoRequest) (*InfoResponse, error) {
@@ -60,8 +51,10 @@ func (c *Client) Info(ctx context.Context, req *InfoRequest) (*InfoResponse, err
 }
 
 type RemoveCustomCertCustomRequest struct {
-	Node    string `url:"node",json:"node"`
-	Restart *bool  `url:"restart,omitempty",json:"restart,omitempty"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+	// The following parameters are optional
+	Restart *bool `url:"restart,omitempty",json:"restart,omitempty"` // Restart pveproxy.
 }
 
 type RemoveCustomCertCustomResponse map[string]interface{}
@@ -75,25 +68,16 @@ func (c *Client) RemoveCustomCertCustom(ctx context.Context, req *RemoveCustomCe
 }
 
 type UploadCustomCertCustomRequest struct {
-	Certificates string  `url:"certificates",json:"certificates"`
-	Force        *bool   `url:"force,omitempty",json:"force,omitempty"`
-	Key          *string `url:"key,omitempty",json:"key,omitempty"`
-	Node         string  `url:"node",json:"node"`
-	Restart      *bool   `url:"restart,omitempty",json:"restart,omitempty"`
+	Certificates string `url:"certificates",json:"certificates"` // PEM encoded certificate (chain).
+	Node         string `url:"node",json:"node"`                 // The cluster node name.
+
+	// The following parameters are optional
+	Force   *bool   `url:"force,omitempty",json:"force,omitempty"`     // Overwrite existing custom or ACME certificate files.
+	Key     *string `url:"key,omitempty",json:"key,omitempty"`         // PEM encoded private key.
+	Restart *bool   `url:"restart,omitempty",json:"restart,omitempty"` // Restart pveproxy.
 }
 
-type UploadCustomCertCustomResponse struct {
-	Fingerprint   *string  `url:"fingerprint,omitempty",json:"fingerprint,omitempty"`
-	Notafter      *int     `url:"notafter,omitempty",json:"notafter,omitempty"`
-	Pem           *string  `url:"pem,omitempty",json:"pem,omitempty"`
-	PublicKeyBits *int     `url:"public-key-bits,omitempty",json:"public-key-bits,omitempty"`
-	Subject       *string  `url:"subject,omitempty",json:"subject,omitempty"`
-	Filename      *string  `url:"filename,omitempty",json:"filename,omitempty"`
-	Issuer        *string  `url:"issuer,omitempty",json:"issuer,omitempty"`
-	Notbefore     *int     `url:"notbefore,omitempty",json:"notbefore,omitempty"`
-	PublicKeyType *string  `url:"public-key-type,omitempty",json:"public-key-type,omitempty"`
-	San           []string `url:"san,omitempty",json:"san,omitempty"`
-}
+type UploadCustomCertCustomResponse map[string]interface{}
 
 // UploadCustomCertCustom Upload or update custom certificate chain and key.
 func (c *Client) UploadCustomCertCustom(ctx context.Context, req *UploadCustomCertCustomRequest) (*UploadCustomCertCustomResponse, error) {

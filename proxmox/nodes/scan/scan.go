@@ -21,7 +21,8 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type IndexResponse []*struct {
@@ -37,13 +38,15 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type NfsscanNfsRequest struct {
-	Node   string `url:"node",json:"node"`
-	Server string `url:"server",json:"server"`
+	Node   string `url:"node",json:"node"`     // The cluster node name.
+	Server string `url:"server",json:"server"` // The server address (name or IP).
+
 }
 
 type NfsscanNfsResponse []*struct {
-	Options string `url:"options",json:"options"`
-	Path    string `url:"path",json:"path"`
+	Options string `url:"options",json:"options"` // NFS export options.
+	Path    string `url:"path",json:"path"`       // The exported path.
+
 }
 
 // NfsscanNfs Scan remote NFS server.
@@ -55,16 +58,19 @@ func (c *Client) NfsscanNfs(ctx context.Context, req *NfsscanNfsRequest) (*Nfssc
 }
 
 type CifsscanCifsRequest struct {
-	Domain   *string `url:"domain,omitempty",json:"domain,omitempty"`
-	Node     string  `url:"node",json:"node"`
-	Password *string `url:"password,omitempty",json:"password,omitempty"`
-	Server   string  `url:"server",json:"server"`
-	Username *string `url:"username,omitempty",json:"username,omitempty"`
+	Node   string `url:"node",json:"node"`     // The cluster node name.
+	Server string `url:"server",json:"server"` // The server address (name or IP).
+
+	// The following parameters are optional
+	Domain   *string `url:"domain,omitempty",json:"domain,omitempty"`     // SMB domain (Workgroup).
+	Password *string `url:"password,omitempty",json:"password,omitempty"` // User password.
+	Username *string `url:"username,omitempty",json:"username,omitempty"` // User name.
 }
 
 type CifsscanCifsResponse []*struct {
-	Description string `url:"description",json:"description"`
-	Share       string `url:"share",json:"share"`
+	Description string `url:"description",json:"description"` // Descriptive text from server.
+	Share       string `url:"share",json:"share"`             // The cifs share name.
+
 }
 
 // CifsscanCifs Scan remote CIFS server.
@@ -76,17 +82,21 @@ func (c *Client) CifsscanCifs(ctx context.Context, req *CifsscanCifsRequest) (*C
 }
 
 type PbsscanPbsRequest struct {
-	Fingerprint *string `url:"fingerprint,omitempty",json:"fingerprint,omitempty"`
-	Node        string  `url:"node",json:"node"`
-	Password    string  `url:"password",json:"password"`
-	Port        *int    `url:"port,omitempty",json:"port,omitempty"`
-	Server      string  `url:"server",json:"server"`
-	Username    string  `url:"username",json:"username"`
+	Node     string `url:"node",json:"node"`         // The cluster node name.
+	Password string `url:"password",json:"password"` // User password or API token secret.
+	Server   string `url:"server",json:"server"`     // The server address (name or IP).
+	Username string `url:"username",json:"username"` // User-name or API token-ID.
+
+	// The following parameters are optional
+	Fingerprint *string `url:"fingerprint,omitempty",json:"fingerprint,omitempty"` // Certificate SHA 256 fingerprint.
+	Port        *int    `url:"port,omitempty",json:"port,omitempty"`               // Optional port.
 }
 
 type PbsscanPbsResponse []*struct {
-	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Store   string  `url:"store",json:"store"`
+	Store string `url:"store",json:"store"` // The datastore name.
+
+	// The following parameters are optional
+	Comment *string `url:"comment,omitempty",json:"comment,omitempty"` // Comment from server.
 }
 
 // PbsscanPbs Scan remote Proxmox Backup Server.
@@ -98,12 +108,14 @@ func (c *Client) PbsscanPbs(ctx context.Context, req *PbsscanPbsRequest) (*Pbssc
 }
 
 type GlusterfsscanGlusterfsRequest struct {
-	Node   string `url:"node",json:"node"`
-	Server string `url:"server",json:"server"`
+	Node   string `url:"node",json:"node"`     // The cluster node name.
+	Server string `url:"server",json:"server"` // The server address (name or IP).
+
 }
 
 type GlusterfsscanGlusterfsResponse []*struct {
-	Volname string `url:"volname",json:"volname"`
+	Volname string `url:"volname",json:"volname"` // The volume name.
+
 }
 
 // GlusterfsscanGlusterfs Scan remote GlusterFS server.
@@ -115,13 +127,15 @@ func (c *Client) GlusterfsscanGlusterfs(ctx context.Context, req *GlusterfsscanG
 }
 
 type IscsiscanIscsiRequest struct {
-	Portal string `url:"portal",json:"portal"`
-	Node   string `url:"node",json:"node"`
+	Node   string `url:"node",json:"node"`     // The cluster node name.
+	Portal string `url:"portal",json:"portal"` // The iSCSI portal (IP or DNS name with optional port).
+
 }
 
 type IscsiscanIscsiResponse []*struct {
-	Portal string `url:"portal",json:"portal"`
-	Target string `url:"target",json:"target"`
+	Portal string `url:"portal",json:"portal"` // The iSCSI portal name.
+	Target string `url:"target",json:"target"` // The iSCSI target name.
+
 }
 
 // IscsiscanIscsi Scan remote iSCSI server.
@@ -133,11 +147,13 @@ func (c *Client) IscsiscanIscsi(ctx context.Context, req *IscsiscanIscsiRequest)
 }
 
 type LvmscanLvmRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type LvmscanLvmResponse []*struct {
-	Vg string `url:"vg",json:"vg"`
+	Vg string `url:"vg",json:"vg"` // The LVM logical volume group name.
+
 }
 
 // LvmscanLvm List local LVM volume groups.
@@ -149,12 +165,13 @@ func (c *Client) LvmscanLvm(ctx context.Context, req *LvmscanLvmRequest) (*Lvmsc
 }
 
 type LvmthinscanLvmthinRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
 	Vg   string `url:"vg",json:"vg"`
 }
 
 type LvmthinscanLvmthinResponse []*struct {
-	Lv string `url:"lv",json:"lv"`
+	Lv string `url:"lv",json:"lv"` // The LVM Thin Pool name (LVM logical volume).
+
 }
 
 // LvmthinscanLvmthin List local LVM Thin Pools.
@@ -166,11 +183,13 @@ func (c *Client) LvmthinscanLvmthin(ctx context.Context, req *LvmthinscanLvmthin
 }
 
 type ZfsscanZfsRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type ZfsscanZfsResponse []*struct {
-	Pool string `url:"pool",json:"pool"`
+	Pool string `url:"pool",json:"pool"` // ZFS pool name.
+
 }
 
 // ZfsscanZfs Scan zfs pool list on local node.

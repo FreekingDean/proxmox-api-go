@@ -33,13 +33,15 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 }
 
 type ChildCreateRequest struct {
-	Force      *bool   `url:"force,omitempty",json:"force,omitempty"`
-	Linkn      *string `url:"link[n],omitempty",json:"link[n],omitempty"`
-	NewNodeIp  *string `url:"new_node_ip,omitempty",json:"new_node_ip,omitempty"`
-	Node       string  `url:"node",json:"node"`
-	Nodeid     *int    `url:"nodeid,omitempty",json:"nodeid,omitempty"`
-	Votes      *int    `url:"votes,omitempty",json:"votes,omitempty"`
-	Apiversion *int    `url:"apiversion,omitempty",json:"apiversion,omitempty"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+	// The following parameters are optional
+	Apiversion *int    `url:"apiversion,omitempty",json:"apiversion,omitempty"`   // The JOIN_API_VERSION of the new node.
+	Force      *bool   `url:"force,omitempty",json:"force,omitempty"`             // Do not throw error if node already exists.
+	Linkn      *string `url:"link[n],omitempty",json:"link[n],omitempty"`         // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
+	NewNodeIp  *string `url:"new_node_ip,omitempty",json:"new_node_ip,omitempty"` // IP Address of node to add. Used as fallback if no links are given.
+	Nodeid     *int    `url:"nodeid,omitempty",json:"nodeid,omitempty"`           // Node id for this node.
+	Votes      *int    `url:"votes,omitempty",json:"votes,omitempty"`             // Number of votes for this node
 }
 
 type ChildCreateResponse struct {
@@ -57,7 +59,8 @@ func (c *Client) ChildCreate(ctx context.Context, req *ChildCreateRequest) (*Chi
 }
 
 type DeleteRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type DeleteResponse map[string]interface{}

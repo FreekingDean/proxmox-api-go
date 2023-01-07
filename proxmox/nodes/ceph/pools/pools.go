@@ -21,27 +21,30 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type IndexResponse []*struct {
+	BytesUsed     int     `url:"bytes_used",json:"bytes_used"`
+	CrushRule     int     `url:"crush_rule",json:"crush_rule"`
+	CrushRuleName string  `url:"crush_rule_name",json:"crush_rule_name"`
+	MinSize       int     `url:"min_size",json:"min_size"`
+	PercentUsed   float64 `url:"percent_used",json:"percent_used"`
+	PgNum         int     `url:"pg_num",json:"pg_num"`
+	Pool          int     `url:"pool",json:"pool"`
+	PoolName      string  `url:"pool_name",json:"pool_name"`
+	Size          int     `url:"size",json:"size"`
+	Type          string  `url:"type",json:"type"`
+
+	// The following parameters are optional
 	ApplicationMetadata map[string]interface{} `url:"application_metadata,omitempty",json:"application_metadata,omitempty"`
-	BytesUsed           int                    `url:"bytes_used",json:"bytes_used"`
-	CrushRule           int                    `url:"crush_rule",json:"crush_rule"`
-	MinSize             int                    `url:"min_size",json:"min_size"`
-	PgNum               int                    `url:"pg_num",json:"pg_num"`
-	PoolName            string                 `url:"pool_name",json:"pool_name"`
-	TargetSizeRatio     *float64               `url:"target_size_ratio,omitempty",json:"target_size_ratio,omitempty"`
 	AutoscaleStatus     map[string]interface{} `url:"autoscale_status,omitempty",json:"autoscale_status,omitempty"`
-	PercentUsed         float64                `url:"percent_used",json:"percent_used"`
-	PgNumFinal          *int                   `url:"pg_num_final,omitempty",json:"pg_num_final,omitempty"`
-	Pool                int                    `url:"pool",json:"pool"`
-	Size                int                    `url:"size",json:"size"`
-	CrushRuleName       string                 `url:"crush_rule_name",json:"crush_rule_name"`
 	PgAutoscaleMode     *string                `url:"pg_autoscale_mode,omitempty",json:"pg_autoscale_mode,omitempty"`
+	PgNumFinal          *int                   `url:"pg_num_final,omitempty",json:"pg_num_final,omitempty"`
 	PgNumMin            *int                   `url:"pg_num_min,omitempty",json:"pg_num_min,omitempty"`
 	TargetSize          *int                   `url:"target_size,omitempty",json:"target_size,omitempty"`
-	Type                string                 `url:"type",json:"type"`
+	TargetSizeRatio     *float64               `url:"target_size_ratio,omitempty",json:"target_size_ratio,omitempty"`
 }
 
 // Index List all pools.
@@ -53,19 +56,21 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type CreateRequest struct {
-	PgAutoscaleMode *string  `url:"pg_autoscale_mode,omitempty",json:"pg_autoscale_mode,omitempty"`
-	TargetSizeRatio *float64 `url:"target_size_ratio,omitempty",json:"target_size_ratio,omitempty"`
-	AddStorages     *bool    `url:"add_storages,omitempty",json:"add_storages,omitempty"`
-	Application     *string  `url:"application,omitempty",json:"application,omitempty"`
-	CrushRule       *string  `url:"crush_rule,omitempty",json:"crush_rule,omitempty"`
-	Name            string   `url:"name",json:"name"`
-	PgNumMin        *int     `url:"pg_num_min,omitempty",json:"pg_num_min,omitempty"`
-	Size            *int     `url:"size,omitempty",json:"size,omitempty"`
-	TargetSize      *string  `url:"target_size,omitempty",json:"target_size,omitempty"`
-	ErasureCoding   *string  `url:"erasure-coding,omitempty",json:"erasure-coding,omitempty"`
-	MinSize         *int     `url:"min_size,omitempty",json:"min_size,omitempty"`
-	Node            string   `url:"node",json:"node"`
-	PgNum           *int     `url:"pg_num,omitempty",json:"pg_num,omitempty"`
+	Name string `url:"name",json:"name"` // The name of the pool. It must be unique.
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+	// The following parameters are optional
+	AddStorages     *bool    `url:"add_storages,omitempty",json:"add_storages,omitempty"`           // Configure VM and CT storage using the new pool.
+	Application     *string  `url:"application,omitempty",json:"application,omitempty"`             // The application of the pool.
+	CrushRule       *string  `url:"crush_rule,omitempty",json:"crush_rule,omitempty"`               // The rule to use for mapping object placement in the cluster.
+	ErasureCoding   *string  `url:"erasure-coding,omitempty",json:"erasure-coding,omitempty"`       // Create an erasure coded pool for RBD with an accompaning replicated pool for metadata storage. With EC, the common ceph options 'size', 'min_size' and 'crush_rule' parameters will be applied to the metadata pool.
+	MinSize         *int     `url:"min_size,omitempty",json:"min_size,omitempty"`                   // Minimum number of replicas per object
+	PgAutoscaleMode *string  `url:"pg_autoscale_mode,omitempty",json:"pg_autoscale_mode,omitempty"` // The automatic PG scaling mode of the pool.
+	PgNum           *int     `url:"pg_num,omitempty",json:"pg_num,omitempty"`                       // Number of placement groups.
+	PgNumMin        *int     `url:"pg_num_min,omitempty",json:"pg_num_min,omitempty"`               // Minimal number of placement groups.
+	Size            *int     `url:"size,omitempty",json:"size,omitempty"`                           // Number of replicas per object
+	TargetSize      *string  `url:"target_size,omitempty",json:"target_size,omitempty"`             // The estimated target size of the pool for the PG autoscaler.
+	TargetSizeRatio *float64 `url:"target_size_ratio,omitempty",json:"target_size_ratio,omitempty"` // The estimated target ratio of the pool for the PG autoscaler.
 }
 
 type CreateResponse string
@@ -79,36 +84,40 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FindRequest struct {
-	Name    string `url:"name",json:"name"`
-	Node    string `url:"node",json:"node"`
-	Verbose *bool  `url:"verbose,omitempty",json:"verbose,omitempty"`
+	Name string `url:"name",json:"name"` // The name of the pool. It must be unique.
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+	// The following parameters are optional
+	Verbose *bool `url:"verbose,omitempty",json:"verbose,omitempty"` // If enabled, will display additional data(eg. statistics).
 }
 
 type FindResponse struct {
-	MinSize              *int                      `url:"min_size,omitempty",json:"min_size,omitempty"`
-	Name                 string                    `url:"name",json:"name"`
-	Noscrub              bool                      `url:"noscrub",json:"noscrub"`
-	PgpNum               int                       `url:"pgp_num",json:"pgp_num"`
-	Statistics           map[string]interface{}    `url:"statistics,omitempty",json:"statistics,omitempty"`
-	TargetSizeRatio      *float64                  `url:"target_size_ratio,omitempty",json:"target_size_ratio,omitempty"`
-	CrushRule            *string                   `url:"crush_rule,omitempty",json:"crush_rule,omitempty"`
-	Hashpspool           bool                      `url:"hashpspool",json:"hashpspool"`
-	WriteFadviseDontneed bool                      `url:"write_fadvise_dontneed",json:"write_fadvise_dontneed"`
-	AutoscaleStatus      map[string]interface{}    `url:"autoscale_status,omitempty",json:"autoscale_status,omitempty"`
-	PgNum                *int                      `url:"pg_num,omitempty",json:"pg_num,omitempty"`
-	FastRead             bool                      `url:"fast_read",json:"fast_read"`
-	NodeepScrub          bool                      `url:"nodeep-scrub",json:"nodeep-scrub"`
-	Nosizechange         bool                      `url:"nosizechange",json:"nosizechange"`
-	PgNumMin             *int                      `url:"pg_num_min,omitempty",json:"pg_num_min,omitempty"`
-	TargetSize           *string                   `url:"target_size,omitempty",json:"target_size,omitempty"`
-	Application          *string                   `url:"application,omitempty",json:"application,omitempty"`
-	ApplicationList      []*map[string]interface{} `url:"application_list,omitempty",json:"application_list,omitempty"`
-	Nopgchange           bool                      `url:"nopgchange",json:"nopgchange"`
-	PgAutoscaleMode      *string                   `url:"pg_autoscale_mode,omitempty",json:"pg_autoscale_mode,omitempty"`
-	Size                 *int                      `url:"size,omitempty",json:"size,omitempty"`
-	UseGmtHitset         bool                      `url:"use_gmt_hitset",json:"use_gmt_hitset"`
-	Id                   int                       `url:"id",json:"id"`
-	Nodelete             bool                      `url:"nodelete",json:"nodelete"`
+	FastRead             bool   `url:"fast_read",json:"fast_read"`
+	Hashpspool           bool   `url:"hashpspool",json:"hashpspool"`
+	Id                   int    `url:"id",json:"id"`
+	Name                 string `url:"name",json:"name"` // The name of the pool. It must be unique.
+	NodeepScrub          bool   `url:"nodeep-scrub",json:"nodeep-scrub"`
+	Nodelete             bool   `url:"nodelete",json:"nodelete"`
+	Nopgchange           bool   `url:"nopgchange",json:"nopgchange"`
+	Noscrub              bool   `url:"noscrub",json:"noscrub"`
+	Nosizechange         bool   `url:"nosizechange",json:"nosizechange"`
+	PgpNum               int    `url:"pgp_num",json:"pgp_num"`
+	UseGmtHitset         bool   `url:"use_gmt_hitset",json:"use_gmt_hitset"`
+	WriteFadviseDontneed bool   `url:"write_fadvise_dontneed",json:"write_fadvise_dontneed"`
+
+	// The following parameters are optional
+	Application     *string                   `url:"application,omitempty",json:"application,omitempty"` // The application of the pool.
+	ApplicationList []*map[string]interface{} `url:"application_list,omitempty",json:"application_list,omitempty"`
+	AutoscaleStatus map[string]interface{}    `url:"autoscale_status,omitempty",json:"autoscale_status,omitempty"`
+	CrushRule       *string                   `url:"crush_rule,omitempty",json:"crush_rule,omitempty"`               // The rule to use for mapping object placement in the cluster.
+	MinSize         *int                      `url:"min_size,omitempty",json:"min_size,omitempty"`                   // Minimum number of replicas per object
+	PgAutoscaleMode *string                   `url:"pg_autoscale_mode,omitempty",json:"pg_autoscale_mode,omitempty"` // The automatic PG scaling mode of the pool.
+	PgNum           *int                      `url:"pg_num,omitempty",json:"pg_num,omitempty"`                       // Number of placement groups.
+	PgNumMin        *int                      `url:"pg_num_min,omitempty",json:"pg_num_min,omitempty"`               // Minimal number of placement groups.
+	Size            *int                      `url:"size,omitempty",json:"size,omitempty"`                           // Number of replicas per object
+	Statistics      map[string]interface{}    `url:"statistics,omitempty",json:"statistics,omitempty"`
+	TargetSize      *string                   `url:"target_size,omitempty",json:"target_size,omitempty"`             // The estimated target size of the pool for the PG autoscaler.
+	TargetSizeRatio *float64                  `url:"target_size_ratio,omitempty",json:"target_size_ratio,omitempty"` // The estimated target ratio of the pool for the PG autoscaler.
 }
 
 // Find List pool settings.
@@ -120,17 +129,19 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type UpdateRequest struct {
-	CrushRule       *string  `url:"crush_rule,omitempty",json:"crush_rule,omitempty"`
-	Name            string   `url:"name",json:"name"`
-	Node            string   `url:"node",json:"node"`
-	PgAutoscaleMode *string  `url:"pg_autoscale_mode,omitempty",json:"pg_autoscale_mode,omitempty"`
-	PgNum           *int     `url:"pg_num,omitempty",json:"pg_num,omitempty"`
-	PgNumMin        *int     `url:"pg_num_min,omitempty",json:"pg_num_min,omitempty"`
-	Size            *int     `url:"size,omitempty",json:"size,omitempty"`
-	TargetSizeRatio *float64 `url:"target_size_ratio,omitempty",json:"target_size_ratio,omitempty"`
-	Application     *string  `url:"application,omitempty",json:"application,omitempty"`
-	MinSize         *int     `url:"min_size,omitempty",json:"min_size,omitempty"`
-	TargetSize      *string  `url:"target_size,omitempty",json:"target_size,omitempty"`
+	Name string `url:"name",json:"name"` // The name of the pool. It must be unique.
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+	// The following parameters are optional
+	Application     *string  `url:"application,omitempty",json:"application,omitempty"`             // The application of the pool.
+	CrushRule       *string  `url:"crush_rule,omitempty",json:"crush_rule,omitempty"`               // The rule to use for mapping object placement in the cluster.
+	MinSize         *int     `url:"min_size,omitempty",json:"min_size,omitempty"`                   // Minimum number of replicas per object
+	PgAutoscaleMode *string  `url:"pg_autoscale_mode,omitempty",json:"pg_autoscale_mode,omitempty"` // The automatic PG scaling mode of the pool.
+	PgNum           *int     `url:"pg_num,omitempty",json:"pg_num,omitempty"`                       // Number of placement groups.
+	PgNumMin        *int     `url:"pg_num_min,omitempty",json:"pg_num_min,omitempty"`               // Minimal number of placement groups.
+	Size            *int     `url:"size,omitempty",json:"size,omitempty"`                           // Number of replicas per object
+	TargetSize      *string  `url:"target_size,omitempty",json:"target_size,omitempty"`             // The estimated target size of the pool for the PG autoscaler.
+	TargetSizeRatio *float64 `url:"target_size_ratio,omitempty",json:"target_size_ratio,omitempty"` // The estimated target ratio of the pool for the PG autoscaler.
 }
 
 type UpdateResponse string
@@ -144,11 +155,13 @@ func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateRespons
 }
 
 type DeleteRequest struct {
-	RemoveEcprofile *bool  `url:"remove_ecprofile,omitempty",json:"remove_ecprofile,omitempty"`
-	RemoveStorages  *bool  `url:"remove_storages,omitempty",json:"remove_storages,omitempty"`
-	Force           *bool  `url:"force,omitempty",json:"force,omitempty"`
-	Name            string `url:"name",json:"name"`
-	Node            string `url:"node",json:"node"`
+	Name string `url:"name",json:"name"` // The name of the pool. It must be unique.
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+	// The following parameters are optional
+	Force           *bool `url:"force,omitempty",json:"force,omitempty"`                       // If true, destroys pool even if in use
+	RemoveEcprofile *bool `url:"remove_ecprofile,omitempty",json:"remove_ecprofile,omitempty"` // Remove the erasure code profile. Defaults to true, if applicable.
+	RemoveStorages  *bool `url:"remove_storages,omitempty",json:"remove_storages,omitempty"`   // Remove all pveceph-managed storages configured for this pool
 }
 
 type DeleteResponse string

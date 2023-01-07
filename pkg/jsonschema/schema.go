@@ -26,6 +26,7 @@ type InfoSchema struct {
 
 type JSONSchema struct {
 	AdditionalProperties *SchemaOrBool          `json:"additionalProperties"`
+	Description          string                 `json:"description"`
 	Properties           map[string]*JSONSchema `json:"properties"`
 	Default              interface{}            `json:"default"`
 	Type                 *SchemaOrString        `json:"type"`

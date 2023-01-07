@@ -21,7 +21,8 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type IndexResponse map[string]interface{}
@@ -35,14 +36,16 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type CreateRequest struct {
-	CrushDeviceClass *string  `url:"crush-device-class,omitempty",json:"crush-device-class,omitempty"`
-	DbDev            *string  `url:"db_dev,omitempty",json:"db_dev,omitempty"`
-	DbDevSize        *float64 `url:"db_dev_size,omitempty",json:"db_dev_size,omitempty"`
-	Dev              string   `url:"dev",json:"dev"`
-	Encrypted        *bool    `url:"encrypted,omitempty",json:"encrypted,omitempty"`
-	Node             string   `url:"node",json:"node"`
-	WalDev           *string  `url:"wal_dev,omitempty",json:"wal_dev,omitempty"`
-	WalDevSize       *float64 `url:"wal_dev_size,omitempty",json:"wal_dev_size,omitempty"`
+	Dev  string `url:"dev",json:"dev"`   // Block device name.
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+	// The following parameters are optional
+	CrushDeviceClass *string  `url:"crush-device-class,omitempty",json:"crush-device-class,omitempty"` // Set the device class of the OSD in crush.
+	DbDev            *string  `url:"db_dev,omitempty",json:"db_dev,omitempty"`                         // Block device name for block.db.
+	DbDevSize        *float64 `url:"db_dev_size,omitempty",json:"db_dev_size,omitempty"`               // Size in GiB for block.db.
+	Encrypted        *bool    `url:"encrypted,omitempty",json:"encrypted,omitempty"`                   // Enables encryption of the OSD.
+	WalDev           *string  `url:"wal_dev,omitempty",json:"wal_dev,omitempty"`                       // Block device name for block.wal.
+	WalDevSize       *float64 `url:"wal_dev_size,omitempty",json:"wal_dev_size,omitempty"`             // Size in GiB for block.wal.
 }
 
 type CreateResponse string
@@ -56,9 +59,11 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type DeleteRequest struct {
-	Cleanup *bool  `url:"cleanup,omitempty",json:"cleanup,omitempty"`
-	Node    string `url:"node",json:"node"`
-	Osdid   int    `url:"osdid",json:"osdid"`
+	Node  string `url:"node",json:"node"`   // The cluster node name.
+	Osdid int    `url:"osdid",json:"osdid"` // OSD ID
+
+	// The following parameters are optional
+	Cleanup *bool `url:"cleanup,omitempty",json:"cleanup,omitempty"` // If set, we remove partition table entries.
 }
 
 type DeleteResponse string
@@ -72,8 +77,9 @@ func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteRespons
 }
 
 type InRequest struct {
-	Node  string `url:"node",json:"node"`
-	Osdid int    `url:"osdid",json:"osdid"`
+	Node  string `url:"node",json:"node"`   // The cluster node name.
+	Osdid int    `url:"osdid",json:"osdid"` // OSD ID
+
 }
 
 type InResponse map[string]interface{}
@@ -87,8 +93,9 @@ func (c *Client) In(ctx context.Context, req *InRequest) (*InResponse, error) {
 }
 
 type OutRequest struct {
-	Node  string `url:"node",json:"node"`
-	Osdid int    `url:"osdid",json:"osdid"`
+	Node  string `url:"node",json:"node"`   // The cluster node name.
+	Osdid int    `url:"osdid",json:"osdid"` // OSD ID
+
 }
 
 type OutResponse map[string]interface{}
@@ -102,9 +109,11 @@ func (c *Client) Out(ctx context.Context, req *OutRequest) (*OutResponse, error)
 }
 
 type ScrubRequest struct {
-	Deep  *bool  `url:"deep,omitempty",json:"deep,omitempty"`
-	Node  string `url:"node",json:"node"`
-	Osdid int    `url:"osdid",json:"osdid"`
+	Node  string `url:"node",json:"node"`   // The cluster node name.
+	Osdid int    `url:"osdid",json:"osdid"` // OSD ID
+
+	// The following parameters are optional
+	Deep *bool `url:"deep,omitempty",json:"deep,omitempty"` // If set, instructs a deep scrub instead of a normal one.
 }
 
 type ScrubResponse map[string]interface{}

@@ -21,9 +21,11 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Pending *bool  `url:"pending,omitempty",json:"pending,omitempty"`
-	Running *bool  `url:"running,omitempty",json:"running,omitempty"`
-	Vnet    string `url:"vnet",json:"vnet"`
+	Vnet string `url:"vnet",json:"vnet"` // The SDN vnet object identifier.
+
+	// The following parameters are optional
+	Pending *bool `url:"pending,omitempty",json:"pending,omitempty"` // Display pending config.
+	Running *bool `url:"running,omitempty",json:"running,omitempty"` // Display running config.
 }
 
 type IndexResponse []*map[string]interface{}
@@ -37,12 +39,14 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type CreateRequest struct {
-	Subnet        string  `url:"subnet",json:"subnet"`
-	Type          string  `url:"type",json:"type"`
-	Vnet          string  `url:"vnet",json:"vnet"`
-	Dnszoneprefix *string `url:"dnszoneprefix,omitempty",json:"dnszoneprefix,omitempty"`
-	Gateway       *string `url:"gateway,omitempty",json:"gateway,omitempty"`
-	Snat          *bool   `url:"snat,omitempty",json:"snat,omitempty"`
+	Subnet string `url:"subnet",json:"subnet"` // The SDN subnet object identifier.
+	Type   string `url:"type",json:"type"`
+	Vnet   string `url:"vnet",json:"vnet"` // associated vnet
+
+	// The following parameters are optional
+	Dnszoneprefix *string `url:"dnszoneprefix,omitempty",json:"dnszoneprefix,omitempty"` // dns domain zone prefix  ex: 'adm' -> <hostname>.adm.mydomain.com
+	Gateway       *string `url:"gateway,omitempty",json:"gateway,omitempty"`             // Subnet Gateway: Will be assign on vnet for layer3 zones
+	Snat          *bool   `url:"snat,omitempty",json:"snat,omitempty"`                   // enable masquerade for this subnet if pve-firewall
 }
 
 type CreateResponse map[string]interface{}
@@ -56,10 +60,12 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FindRequest struct {
-	Pending *bool  `url:"pending,omitempty",json:"pending,omitempty"`
-	Running *bool  `url:"running,omitempty",json:"running,omitempty"`
-	Subnet  string `url:"subnet",json:"subnet"`
-	Vnet    string `url:"vnet",json:"vnet"`
+	Subnet string `url:"subnet",json:"subnet"` // The SDN subnet object identifier.
+	Vnet   string `url:"vnet",json:"vnet"`     // The SDN vnet object identifier.
+
+	// The following parameters are optional
+	Pending *bool `url:"pending,omitempty",json:"pending,omitempty"` // Display pending config.
+	Running *bool `url:"running,omitempty",json:"running,omitempty"` // Display running config.
 }
 
 type FindResponse map[string]interface{}
@@ -73,13 +79,15 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type UpdateRequest struct {
-	Digest        *string `url:"digest,omitempty",json:"digest,omitempty"`
-	Dnszoneprefix *string `url:"dnszoneprefix,omitempty",json:"dnszoneprefix,omitempty"`
-	Gateway       *string `url:"gateway,omitempty",json:"gateway,omitempty"`
-	Snat          *bool   `url:"snat,omitempty",json:"snat,omitempty"`
-	Subnet        string  `url:"subnet",json:"subnet"`
-	Vnet          *string `url:"vnet,omitempty",json:"vnet,omitempty"`
-	Delete        *string `url:"delete,omitempty",json:"delete,omitempty"`
+	Subnet string `url:"subnet",json:"subnet"` // The SDN subnet object identifier.
+
+	// The following parameters are optional
+	Delete        *string `url:"delete,omitempty",json:"delete,omitempty"`               // A list of settings you want to delete.
+	Digest        *string `url:"digest,omitempty",json:"digest,omitempty"`               // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Dnszoneprefix *string `url:"dnszoneprefix,omitempty",json:"dnszoneprefix,omitempty"` // dns domain zone prefix  ex: 'adm' -> <hostname>.adm.mydomain.com
+	Gateway       *string `url:"gateway,omitempty",json:"gateway,omitempty"`             // Subnet Gateway: Will be assign on vnet for layer3 zones
+	Snat          *bool   `url:"snat,omitempty",json:"snat,omitempty"`                   // enable masquerade for this subnet if pve-firewall
+	Vnet          *string `url:"vnet,omitempty",json:"vnet,omitempty"`                   // associated vnet
 }
 
 type UpdateResponse map[string]interface{}
@@ -93,8 +101,9 @@ func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateRespons
 }
 
 type DeleteRequest struct {
-	Subnet string `url:"subnet",json:"subnet"`
-	Vnet   string `url:"vnet",json:"vnet"`
+	Subnet string `url:"subnet",json:"subnet"` // The SDN subnet object identifier.
+	Vnet   string `url:"vnet",json:"vnet"`     // The SDN vnet object identifier.
+
 }
 
 type DeleteResponse map[string]interface{}

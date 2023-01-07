@@ -21,25 +21,29 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Content *string `url:"content,omitempty",json:"content,omitempty"`
-	Enabled *bool   `url:"enabled,omitempty",json:"enabled,omitempty"`
-	Format  *bool   `url:"format,omitempty",json:"format,omitempty"`
-	Node    string  `url:"node",json:"node"`
-	Storage *string `url:"storage,omitempty",json:"storage,omitempty"`
-	Target  *string `url:"target,omitempty",json:"target,omitempty"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+	// The following parameters are optional
+	Content *string `url:"content,omitempty",json:"content,omitempty"` // Only list stores which support this content type.
+	Enabled *bool   `url:"enabled,omitempty",json:"enabled,omitempty"` // Only list stores which are enabled (not disabled in config).
+	Format  *bool   `url:"format,omitempty",json:"format,omitempty"`   // Include information about formats
+	Storage *string `url:"storage,omitempty",json:"storage,omitempty"` // Only list status for  specified storage
+	Target  *string `url:"target,omitempty",json:"target,omitempty"`   // If target is different to 'node', we only lists shared storages which content is accessible on this 'node' and the specified 'target' node.
 }
 
 type IndexResponse []*struct {
-	Active       *bool    `url:"active,omitempty",json:"active,omitempty"`
-	Content      string   `url:"content",json:"content"`
-	Enabled      *bool    `url:"enabled,omitempty",json:"enabled,omitempty"`
-	Storage      string   `url:"storage",json:"storage"`
-	Type         string   `url:"type",json:"type"`
-	UsedFraction *float64 `url:"used_fraction,omitempty",json:"used_fraction,omitempty"`
-	Avail        *int     `url:"avail,omitempty",json:"avail,omitempty"`
-	Shared       *bool    `url:"shared,omitempty",json:"shared,omitempty"`
-	Total        *int     `url:"total,omitempty",json:"total,omitempty"`
-	Used         *int     `url:"used,omitempty",json:"used,omitempty"`
+	Content string `url:"content",json:"content"` // Allowed storage content types.
+	Storage string `url:"storage",json:"storage"` // The storage identifier.
+	Type    string `url:"type",json:"type"`       // Storage type.
+
+	// The following parameters are optional
+	Active       *bool    `url:"active,omitempty",json:"active,omitempty"`               // Set when storage is accessible.
+	Avail        *int     `url:"avail,omitempty",json:"avail,omitempty"`                 // Available storage space in bytes.
+	Enabled      *bool    `url:"enabled,omitempty",json:"enabled,omitempty"`             // Set when storage is enabled (not disabled).
+	Shared       *bool    `url:"shared,omitempty",json:"shared,omitempty"`               // Shared flag from storage configuration.
+	Total        *int     `url:"total,omitempty",json:"total,omitempty"`                 // Total storage space in bytes.
+	Used         *int     `url:"used,omitempty",json:"used,omitempty"`                   // Used storage space in bytes.
+	UsedFraction *float64 `url:"used_fraction,omitempty",json:"used_fraction,omitempty"` // Used fraction (used/total).
 }
 
 // Index Get status for all datastores.
@@ -51,8 +55,9 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type FindRequest struct {
-	Storage string `url:"storage",json:"storage"`
-	Node    string `url:"node",json:"node"`
+	Node    string `url:"node",json:"node"`       // The cluster node name.
+	Storage string `url:"storage",json:"storage"` // The storage identifier.
+
 }
 
 type FindResponse []*struct {
@@ -68,11 +73,13 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type DeletePrunebackupsRequest struct {
-	Vmid         *int    `url:"vmid,omitempty",json:"vmid,omitempty"`
-	Node         string  `url:"node",json:"node"`
-	PruneBackups *string `url:"prune-backups,omitempty",json:"prune-backups,omitempty"`
-	Storage      string  `url:"storage",json:"storage"`
-	Type         *string `url:"type,omitempty",json:"type,omitempty"`
+	Node    string `url:"node",json:"node"`       // The cluster node name.
+	Storage string `url:"storage",json:"storage"` // The storage identifier.
+
+	// The following parameters are optional
+	PruneBackups *string `url:"prune-backups,omitempty",json:"prune-backups,omitempty"` // Use these retention options instead of those from the storage configuration.
+	Type         *string `url:"type,omitempty",json:"type,omitempty"`                   // Either 'qemu' or 'lxc'. Only consider backups for guests of this type.
+	Vmid         *int    `url:"vmid,omitempty",json:"vmid,omitempty"`                   // Only prune backups for this VM.
 }
 
 type DeletePrunebackupsResponse string
@@ -86,19 +93,23 @@ func (c *Client) DeletePrunebackups(ctx context.Context, req *DeletePrunebackups
 }
 
 type DryrunPrunebackupsRequest struct {
-	Type         *string `url:"type,omitempty",json:"type,omitempty"`
-	Vmid         *int    `url:"vmid,omitempty",json:"vmid,omitempty"`
-	Node         string  `url:"node",json:"node"`
-	PruneBackups *string `url:"prune-backups,omitempty",json:"prune-backups,omitempty"`
-	Storage      string  `url:"storage",json:"storage"`
+	Node    string `url:"node",json:"node"`       // The cluster node name.
+	Storage string `url:"storage",json:"storage"` // The storage identifier.
+
+	// The following parameters are optional
+	PruneBackups *string `url:"prune-backups,omitempty",json:"prune-backups,omitempty"` // Use these retention options instead of those from the storage configuration.
+	Type         *string `url:"type,omitempty",json:"type,omitempty"`                   // Either 'qemu' or 'lxc'. Only consider backups for guests of this type.
+	Vmid         *int    `url:"vmid,omitempty",json:"vmid,omitempty"`                   // Only consider backups for this guest.
 }
 
 type DryrunPrunebackupsResponse []*struct {
-	Mark  string `url:"mark",json:"mark"`
-	Type  string `url:"type",json:"type"`
-	Vmid  *int   `url:"vmid,omitempty",json:"vmid,omitempty"`
-	Volid string `url:"volid",json:"volid"`
-	Ctime int    `url:"ctime",json:"ctime"`
+	Ctime int    `url:"ctime",json:"ctime"` // Creation time of the backup (seconds since the UNIX epoch).
+	Mark  string `url:"mark",json:"mark"`   // Whether the backup would be kept or removed. Backups that are protected or don't use the standard naming scheme are not removed.
+	Type  string `url:"type",json:"type"`   // One of 'qemu', 'lxc', 'openvz' or 'unknown'.
+	Volid string `url:"volid",json:"volid"` // Backup volume ID.
+
+	// The following parameters are optional
+	Vmid *int `url:"vmid,omitempty",json:"vmid,omitempty"` // The VM the backup belongs to.
 }
 
 // DryrunPrunebackups Get prune information for backups. NOTE: this is only a preview and might not be what a subsequent prune call does if backups are removed/added in the meantime.
@@ -110,8 +121,9 @@ func (c *Client) DryrunPrunebackups(ctx context.Context, req *DryrunPrunebackups
 }
 
 type ReadStatusRequest struct {
-	Node    string `url:"node",json:"node"`
-	Storage string `url:"storage",json:"storage"`
+	Node    string `url:"node",json:"node"`       // The cluster node name.
+	Storage string `url:"storage",json:"storage"` // The storage identifier.
+
 }
 
 type ReadStatusResponse map[string]interface{}
@@ -125,11 +137,13 @@ func (c *Client) ReadStatus(ctx context.Context, req *ReadStatusRequest) (*ReadS
 }
 
 type RrdRequest struct {
-	Ds        string  `url:"ds",json:"ds"`
-	Node      string  `url:"node",json:"node"`
-	Storage   string  `url:"storage",json:"storage"`
-	Timeframe string  `url:"timeframe",json:"timeframe"`
-	Cf        *string `url:"cf,omitempty",json:"cf,omitempty"`
+	Ds        string `url:"ds",json:"ds"`               // The list of datasources you want to display.
+	Node      string `url:"node",json:"node"`           // The cluster node name.
+	Storage   string `url:"storage",json:"storage"`     // The storage identifier.
+	Timeframe string `url:"timeframe",json:"timeframe"` // Specify the time frame you are interested in.
+
+	// The following parameters are optional
+	Cf *string `url:"cf,omitempty",json:"cf,omitempty"` // The RRD consolidation function
 }
 
 type RrdResponse struct {
@@ -145,10 +159,12 @@ func (c *Client) Rrd(ctx context.Context, req *RrdRequest) (*RrdResponse, error)
 }
 
 type RrddataRequest struct {
-	Cf        *string `url:"cf,omitempty",json:"cf,omitempty"`
-	Node      string  `url:"node",json:"node"`
-	Storage   string  `url:"storage",json:"storage"`
-	Timeframe string  `url:"timeframe",json:"timeframe"`
+	Node      string `url:"node",json:"node"`           // The cluster node name.
+	Storage   string `url:"storage",json:"storage"`     // The storage identifier.
+	Timeframe string `url:"timeframe",json:"timeframe"` // Specify the time frame you are interested in.
+
+	// The following parameters are optional
+	Cf *string `url:"cf,omitempty",json:"cf,omitempty"` // The RRD consolidation function
 }
 
 type RrddataResponse []*map[string]interface{}
@@ -162,13 +178,15 @@ func (c *Client) Rrddata(ctx context.Context, req *RrddataRequest) (*RrddataResp
 }
 
 type UploadRequest struct {
-	Checksum          *string `url:"checksum,omitempty",json:"checksum,omitempty"`
-	ChecksumAlgorithm *string `url:"checksum-algorithm,omitempty",json:"checksum-algorithm,omitempty"`
-	Content           string  `url:"content",json:"content"`
-	Filename          string  `url:"filename",json:"filename"`
-	Node              string  `url:"node",json:"node"`
-	Storage           string  `url:"storage",json:"storage"`
-	Tmpfilename       *string `url:"tmpfilename,omitempty",json:"tmpfilename,omitempty"`
+	Content  string `url:"content",json:"content"`   // Content type.
+	Filename string `url:"filename",json:"filename"` // The name of the file to create. Caution: This will be normalized!
+	Node     string `url:"node",json:"node"`         // The cluster node name.
+	Storage  string `url:"storage",json:"storage"`   // The storage identifier.
+
+	// The following parameters are optional
+	Checksum          *string `url:"checksum,omitempty",json:"checksum,omitempty"`                     // The expected checksum of the file.
+	ChecksumAlgorithm *string `url:"checksum-algorithm,omitempty",json:"checksum-algorithm,omitempty"` // The algorithm to calculate the checksum of the file.
+	Tmpfilename       *string `url:"tmpfilename,omitempty",json:"tmpfilename,omitempty"`               // The source file name. This parameter is usually set by the REST handler. You can only overwrite it when connecting to the trusted port on localhost.
 }
 
 type UploadResponse string
@@ -182,14 +200,16 @@ func (c *Client) Upload(ctx context.Context, req *UploadRequest) (*UploadRespons
 }
 
 type DownloadUrlRequest struct {
-	VerifyCertificates *bool   `url:"verify-certificates,omitempty",json:"verify-certificates,omitempty"`
-	Checksum           *string `url:"checksum,omitempty",json:"checksum,omitempty"`
-	ChecksumAlgorithm  *string `url:"checksum-algorithm,omitempty",json:"checksum-algorithm,omitempty"`
-	Content            string  `url:"content",json:"content"`
-	Filename           string  `url:"filename",json:"filename"`
-	Node               string  `url:"node",json:"node"`
-	Storage            string  `url:"storage",json:"storage"`
-	Url                string  `url:"url",json:"url"`
+	Content  string `url:"content",json:"content"`   // Content type.
+	Filename string `url:"filename",json:"filename"` // The name of the file to create. Caution: This will be normalized!
+	Node     string `url:"node",json:"node"`         // The cluster node name.
+	Storage  string `url:"storage",json:"storage"`   // The storage identifier.
+	Url      string `url:"url",json:"url"`           // The URL to download the file from.
+
+	// The following parameters are optional
+	Checksum           *string `url:"checksum,omitempty",json:"checksum,omitempty"`                       // The expected checksum of the file.
+	ChecksumAlgorithm  *string `url:"checksum-algorithm,omitempty",json:"checksum-algorithm,omitempty"`   // The algorithm to calculate the checksum of the file.
+	VerifyCertificates *bool   `url:"verify-certificates,omitempty",json:"verify-certificates,omitempty"` // If false, no SSL/TLS certificates will be verified.
 }
 
 type DownloadUrlResponse string

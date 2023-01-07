@@ -20,22 +20,20 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexRequest struct {
-	Type    *string `url:"type,omitempty",json:"type,omitempty"`
-	Pending *bool   `url:"pending,omitempty",json:"pending,omitempty"`
-	Running *bool   `url:"running,omitempty",json:"running,omitempty"`
-}
+type IndexRequest map[string]interface{}
 
 type IndexResponse []*struct {
+	Type string `url:"type",json:"type"`
+	Zone string `url:"zone",json:"zone"`
+
+	// The following parameters are optional
+	Dns        *string `url:"dns,omitempty",json:"dns,omitempty"`
 	Dnszone    *string `url:"dnszone,omitempty",json:"dnszone,omitempty"`
 	Ipam       *string `url:"ipam,omitempty",json:"ipam,omitempty"`
 	Mtu        *int    `url:"mtu,omitempty",json:"mtu,omitempty"`
 	Nodes      *string `url:"nodes,omitempty",json:"nodes,omitempty"`
-	State      *string `url:"state,omitempty",json:"state,omitempty"`
-	Type       string  `url:"type",json:"type"`
-	Dns        *string `url:"dns,omitempty",json:"dns,omitempty"`
 	Reversedns *string `url:"reversedns,omitempty",json:"reversedns,omitempty"`
-	Zone       string  `url:"zone",json:"zone"`
+	State      *string `url:"state,omitempty",json:"state,omitempty"`
 }
 
 // Index SDN zones index.
@@ -47,29 +45,31 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type CreateRequest struct {
-	BridgeDisableMacLearning *bool   `url:"bridge-disable-mac-learning,omitempty",json:"bridge-disable-mac-learning,omitempty"`
-	Controller               *string `url:"controller,omitempty",json:"controller,omitempty"`
-	DpId                     *int    `url:"dp-id,omitempty",json:"dp-id,omitempty"`
-	Reversedns               *string `url:"reversedns,omitempty",json:"reversedns,omitempty"`
-	RtImport                 *string `url:"rt-import,omitempty",json:"rt-import,omitempty"`
-	VlanProtocol             *string `url:"vlan-protocol,omitempty",json:"vlan-protocol,omitempty"`
-	Dnszone                  *string `url:"dnszone,omitempty",json:"dnszone,omitempty"`
-	Exitnodes                *string `url:"exitnodes,omitempty",json:"exitnodes,omitempty"`
-	Ipam                     *string `url:"ipam,omitempty",json:"ipam,omitempty"`
-	Mtu                      *int    `url:"mtu,omitempty",json:"mtu,omitempty"`
-	Tag                      *int    `url:"tag,omitempty",json:"tag,omitempty"`
-	Type                     string  `url:"type",json:"type"`
-	Zone                     string  `url:"zone",json:"zone"`
-	AdvertiseSubnets         *bool   `url:"advertise-subnets,omitempty",json:"advertise-subnets,omitempty"`
+	Type string `url:"type",json:"type"` // Plugin type.
+	Zone string `url:"zone",json:"zone"` // The SDN zone object identifier.
+
+	// The following parameters are optional
+	AdvertiseSubnets         *bool   `url:"advertise-subnets,omitempty",json:"advertise-subnets,omitempty"` // Advertise evpn subnets if you have silent hosts
 	Bridge                   *string `url:"bridge,omitempty",json:"bridge,omitempty"`
-	DisableArpNdSuppression  *bool   `url:"disable-arp-nd-suppression,omitempty",json:"disable-arp-nd-suppression,omitempty"`
-	Dns                      *string `url:"dns,omitempty",json:"dns,omitempty"`
-	ExitnodesLocalRouting    *bool   `url:"exitnodes-local-routing,omitempty",json:"exitnodes-local-routing,omitempty"`
-	Mac                      *string `url:"mac,omitempty",json:"mac,omitempty"`
-	Peers                    *string `url:"peers,omitempty",json:"peers,omitempty"`
-	ExitnodesPrimary         *string `url:"exitnodes-primary,omitempty",json:"exitnodes-primary,omitempty"`
-	Nodes                    *string `url:"nodes,omitempty",json:"nodes,omitempty"`
-	VrfVxlan                 *int    `url:"vrf-vxlan,omitempty",json:"vrf-vxlan,omitempty"`
+	BridgeDisableMacLearning *bool   `url:"bridge-disable-mac-learning,omitempty",json:"bridge-disable-mac-learning,omitempty"` // Disable auto mac learning.
+	Controller               *string `url:"controller,omitempty",json:"controller,omitempty"`                                   // Frr router name
+	DisableArpNdSuppression  *bool   `url:"disable-arp-nd-suppression,omitempty",json:"disable-arp-nd-suppression,omitempty"`   // Disable ipv4 arp && ipv6 neighbour discovery suppression
+	Dns                      *string `url:"dns,omitempty",json:"dns,omitempty"`                                                 // dns api server
+	Dnszone                  *string `url:"dnszone,omitempty",json:"dnszone,omitempty"`                                         // dns domain zone  ex: mydomain.com
+	DpId                     *int    `url:"dp-id,omitempty",json:"dp-id,omitempty"`                                             // Faucet dataplane id
+	Exitnodes                *string `url:"exitnodes,omitempty",json:"exitnodes,omitempty"`                                     // List of cluster node names.
+	ExitnodesLocalRouting    *bool   `url:"exitnodes-local-routing,omitempty",json:"exitnodes-local-routing,omitempty"`         // Allow exitnodes to connect to evpn guests
+	ExitnodesPrimary         *string `url:"exitnodes-primary,omitempty",json:"exitnodes-primary,omitempty"`                     // Force traffic to this exitnode first.
+	Ipam                     *string `url:"ipam,omitempty",json:"ipam,omitempty"`                                               // use a specific ipam
+	Mac                      *string `url:"mac,omitempty",json:"mac,omitempty"`                                                 // Anycast logical router mac address
+	Mtu                      *int    `url:"mtu,omitempty",json:"mtu,omitempty"`                                                 // MTU
+	Nodes                    *string `url:"nodes,omitempty",json:"nodes,omitempty"`                                             // List of cluster node names.
+	Peers                    *string `url:"peers,omitempty",json:"peers,omitempty"`                                             // peers address list.
+	Reversedns               *string `url:"reversedns,omitempty",json:"reversedns,omitempty"`                                   // reverse dns api server
+	RtImport                 *string `url:"rt-import,omitempty",json:"rt-import,omitempty"`                                     // Route-Target import
+	Tag                      *int    `url:"tag,omitempty",json:"tag,omitempty"`                                                 // Service-VLAN Tag
+	VlanProtocol             *string `url:"vlan-protocol,omitempty",json:"vlan-protocol,omitempty"`
+	VrfVxlan                 *int    `url:"vrf-vxlan,omitempty",json:"vrf-vxlan,omitempty"` // l3vni.
 }
 
 type CreateResponse map[string]interface{}
@@ -83,9 +83,11 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FindRequest struct {
-	Pending *bool  `url:"pending,omitempty",json:"pending,omitempty"`
-	Running *bool  `url:"running,omitempty",json:"running,omitempty"`
-	Zone    string `url:"zone",json:"zone"`
+	Zone string `url:"zone",json:"zone"` // The SDN zone object identifier.
+
+	// The following parameters are optional
+	Pending *bool `url:"pending,omitempty",json:"pending,omitempty"` // Display pending config.
+	Running *bool `url:"running,omitempty",json:"running,omitempty"` // Display running config.
 }
 
 type FindResponse map[string]interface{}
@@ -99,30 +101,32 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type UpdateRequest struct {
-	Exitnodes                *string `url:"exitnodes,omitempty",json:"exitnodes,omitempty"`
-	ExitnodesLocalRouting    *bool   `url:"exitnodes-local-routing,omitempty",json:"exitnodes-local-routing,omitempty"`
-	Nodes                    *string `url:"nodes,omitempty",json:"nodes,omitempty"`
-	Reversedns               *string `url:"reversedns,omitempty",json:"reversedns,omitempty"`
-	Controller               *string `url:"controller,omitempty",json:"controller,omitempty"`
-	DisableArpNdSuppression  *bool   `url:"disable-arp-nd-suppression,omitempty",json:"disable-arp-nd-suppression,omitempty"`
-	Dns                      *string `url:"dns,omitempty",json:"dns,omitempty"`
-	Dnszone                  *string `url:"dnszone,omitempty",json:"dnszone,omitempty"`
-	Tag                      *int    `url:"tag,omitempty",json:"tag,omitempty"`
-	AdvertiseSubnets         *bool   `url:"advertise-subnets,omitempty",json:"advertise-subnets,omitempty"`
-	Delete                   *string `url:"delete,omitempty",json:"delete,omitempty"`
-	Peers                    *string `url:"peers,omitempty",json:"peers,omitempty"`
-	VlanProtocol             *string `url:"vlan-protocol,omitempty",json:"vlan-protocol,omitempty"`
-	VrfVxlan                 *int    `url:"vrf-vxlan,omitempty",json:"vrf-vxlan,omitempty"`
-	Digest                   *string `url:"digest,omitempty",json:"digest,omitempty"`
-	DpId                     *int    `url:"dp-id,omitempty",json:"dp-id,omitempty"`
-	Ipam                     *string `url:"ipam,omitempty",json:"ipam,omitempty"`
-	RtImport                 *string `url:"rt-import,omitempty",json:"rt-import,omitempty"`
-	Mtu                      *int    `url:"mtu,omitempty",json:"mtu,omitempty"`
-	Zone                     string  `url:"zone",json:"zone"`
+	Zone string `url:"zone",json:"zone"` // The SDN zone object identifier.
+
+	// The following parameters are optional
+	AdvertiseSubnets         *bool   `url:"advertise-subnets,omitempty",json:"advertise-subnets,omitempty"` // Advertise evpn subnets if you have silent hosts
 	Bridge                   *string `url:"bridge,omitempty",json:"bridge,omitempty"`
-	BridgeDisableMacLearning *bool   `url:"bridge-disable-mac-learning,omitempty",json:"bridge-disable-mac-learning,omitempty"`
-	ExitnodesPrimary         *string `url:"exitnodes-primary,omitempty",json:"exitnodes-primary,omitempty"`
-	Mac                      *string `url:"mac,omitempty",json:"mac,omitempty"`
+	BridgeDisableMacLearning *bool   `url:"bridge-disable-mac-learning,omitempty",json:"bridge-disable-mac-learning,omitempty"` // Disable auto mac learning.
+	Controller               *string `url:"controller,omitempty",json:"controller,omitempty"`                                   // Frr router name
+	Delete                   *string `url:"delete,omitempty",json:"delete,omitempty"`                                           // A list of settings you want to delete.
+	Digest                   *string `url:"digest,omitempty",json:"digest,omitempty"`                                           // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	DisableArpNdSuppression  *bool   `url:"disable-arp-nd-suppression,omitempty",json:"disable-arp-nd-suppression,omitempty"`   // Disable ipv4 arp && ipv6 neighbour discovery suppression
+	Dns                      *string `url:"dns,omitempty",json:"dns,omitempty"`                                                 // dns api server
+	Dnszone                  *string `url:"dnszone,omitempty",json:"dnszone,omitempty"`                                         // dns domain zone  ex: mydomain.com
+	DpId                     *int    `url:"dp-id,omitempty",json:"dp-id,omitempty"`                                             // Faucet dataplane id
+	Exitnodes                *string `url:"exitnodes,omitempty",json:"exitnodes,omitempty"`                                     // List of cluster node names.
+	ExitnodesLocalRouting    *bool   `url:"exitnodes-local-routing,omitempty",json:"exitnodes-local-routing,omitempty"`         // Allow exitnodes to connect to evpn guests
+	ExitnodesPrimary         *string `url:"exitnodes-primary,omitempty",json:"exitnodes-primary,omitempty"`                     // Force traffic to this exitnode first.
+	Ipam                     *string `url:"ipam,omitempty",json:"ipam,omitempty"`                                               // use a specific ipam
+	Mac                      *string `url:"mac,omitempty",json:"mac,omitempty"`                                                 // Anycast logical router mac address
+	Mtu                      *int    `url:"mtu,omitempty",json:"mtu,omitempty"`                                                 // MTU
+	Nodes                    *string `url:"nodes,omitempty",json:"nodes,omitempty"`                                             // List of cluster node names.
+	Peers                    *string `url:"peers,omitempty",json:"peers,omitempty"`                                             // peers address list.
+	Reversedns               *string `url:"reversedns,omitempty",json:"reversedns,omitempty"`                                   // reverse dns api server
+	RtImport                 *string `url:"rt-import,omitempty",json:"rt-import,omitempty"`                                     // Route-Target import
+	Tag                      *int    `url:"tag,omitempty",json:"tag,omitempty"`                                                 // Service-VLAN Tag
+	VlanProtocol             *string `url:"vlan-protocol,omitempty",json:"vlan-protocol,omitempty"`
+	VrfVxlan                 *int    `url:"vrf-vxlan,omitempty",json:"vrf-vxlan,omitempty"` // l3vni.
 }
 
 type UpdateResponse map[string]interface{}
@@ -136,7 +140,8 @@ func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateRespons
 }
 
 type DeleteRequest struct {
-	Zone string `url:"zone",json:"zone"`
+	Zone string `url:"zone",json:"zone"` // The SDN zone object identifier.
+
 }
 
 type DeleteResponse map[string]interface{}

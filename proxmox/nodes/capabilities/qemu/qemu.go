@@ -21,7 +21,8 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type IndexResponse []*map[string]interface{}
@@ -35,13 +36,15 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type IndexCpuRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type IndexCpuResponse []*struct {
-	Custom bool   `url:"custom",json:"custom"`
-	Name   string `url:"name",json:"name"`
-	Vendor string `url:"vendor",json:"vendor"`
+	Custom bool   `url:"custom",json:"custom"` // True if this is a custom CPU model.
+	Name   string `url:"name",json:"name"`     // Name of the CPU model. Identifies it for subsequent API calls. Prefixed with 'custom-' for custom models.
+	Vendor string `url:"vendor",json:"vendor"` // CPU vendor visible to the guest when this model is selected. Vendor of 'reported-model' in case of custom models.
+
 }
 
 // IndexCpu List all custom and default CPU models.
@@ -53,13 +56,15 @@ func (c *Client) IndexCpu(ctx context.Context, req *IndexCpuRequest) (*IndexCpuR
 }
 
 type TypesMachinesRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type TypesMachinesResponse []*struct {
-	Id      string `url:"id",json:"id"`
-	Type    string `url:"type",json:"type"`
-	Version string `url:"version",json:"version"`
+	Id      string `url:"id",json:"id"`           // Full name of machine type and version.
+	Type    string `url:"type",json:"type"`       // The machine type.
+	Version string `url:"version",json:"version"` // The machine version.
+
 }
 
 // TypesMachines Get available QEMU/KVM machine types.

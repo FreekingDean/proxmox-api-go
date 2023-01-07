@@ -21,8 +21,10 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexResponse []*struct {
+	Roleid string `url:"roleid",json:"roleid"`
+
+	// The following parameters are optional
 	Privs   *string `url:"privs,omitempty",json:"privs,omitempty"`
-	Roleid  string  `url:"roleid",json:"roleid"`
 	Special *bool   `url:"special,omitempty",json:"special,omitempty"`
 }
 
@@ -35,8 +37,10 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 }
 
 type CreateRequest struct {
-	Privs  *string `url:"privs,omitempty",json:"privs,omitempty"`
-	Roleid string  `url:"roleid",json:"roleid"`
+	Roleid string `url:"roleid",json:"roleid"`
+
+	// The following parameters are optional
+	Privs *string `url:"privs,omitempty",json:"privs,omitempty"`
 }
 
 type CreateResponse map[string]interface{}
@@ -53,45 +57,7 @@ type FindRequest struct {
 	Roleid string `url:"roleid",json:"roleid"`
 }
 
-type FindResponse struct {
-	SysModify                 *bool `url:"Sys.Modify,omitempty",json:"Sys.Modify,omitempty"`
-	VmConfigCloudinit         *bool `url:"VM.Config.Cloudinit,omitempty",json:"VM.Config.Cloudinit,omitempty"`
-	VmSnapshotRollback        *bool `url:"VM.Snapshot.Rollback,omitempty",json:"VM.Snapshot.Rollback,omitempty"`
-	SdnAudit                  *bool `url:"SDN.Audit,omitempty",json:"SDN.Audit,omitempty"`
-	DatastoreAudit            *bool `url:"Datastore.Audit,omitempty",json:"Datastore.Audit,omitempty"`
-	GroupAllocate             *bool `url:"Group.Allocate,omitempty",json:"Group.Allocate,omitempty"`
-	DatastoreAllocatetemplate *bool `url:"Datastore.AllocateTemplate,omitempty",json:"Datastore.AllocateTemplate,omitempty"`
-	UserModify                *bool `url:"User.Modify,omitempty",json:"User.Modify,omitempty"`
-	VmAudit                   *bool `url:"VM.Audit,omitempty",json:"VM.Audit,omitempty"`
-	VmConfigCdrom             *bool `url:"VM.Config.CDROM,omitempty",json:"VM.Config.CDROM,omitempty"`
-	VmConfigDisk              *bool `url:"VM.Config.Disk,omitempty",json:"VM.Config.Disk,omitempty"`
-	VmSnapshot                *bool `url:"VM.Snapshot,omitempty",json:"VM.Snapshot,omitempty"`
-	SysIncoming               *bool `url:"Sys.Incoming,omitempty",json:"Sys.Incoming,omitempty"`
-	PoolAudit                 *bool `url:"Pool.Audit,omitempty",json:"Pool.Audit,omitempty"`
-	RealmAllocate             *bool `url:"Realm.Allocate,omitempty",json:"Realm.Allocate,omitempty"`
-	SysConsole                *bool `url:"Sys.Console,omitempty",json:"Sys.Console,omitempty"`
-	VmClone                   *bool `url:"VM.Clone,omitempty",json:"VM.Clone,omitempty"`
-	VmConfigCpu               *bool `url:"VM.Config.CPU,omitempty",json:"VM.Config.CPU,omitempty"`
-	PermissionsModify         *bool `url:"Permissions.Modify,omitempty",json:"Permissions.Modify,omitempty"`
-	VmConfigMemory            *bool `url:"VM.Config.Memory,omitempty",json:"VM.Config.Memory,omitempty"`
-	VmConfigNetwork           *bool `url:"VM.Config.Network,omitempty",json:"VM.Config.Network,omitempty"`
-	SysPowermgmt              *bool `url:"Sys.PowerMgmt,omitempty",json:"Sys.PowerMgmt,omitempty"`
-	SysAudit                  *bool `url:"Sys.Audit,omitempty",json:"Sys.Audit,omitempty"`
-	VmBackup                  *bool `url:"VM.Backup,omitempty",json:"VM.Backup,omitempty"`
-	DatastoreAllocate         *bool `url:"Datastore.Allocate,omitempty",json:"Datastore.Allocate,omitempty"`
-	PoolAllocate              *bool `url:"Pool.Allocate,omitempty",json:"Pool.Allocate,omitempty"`
-	SdnAllocate               *bool `url:"SDN.Allocate,omitempty",json:"SDN.Allocate,omitempty"`
-	SysSyslog                 *bool `url:"Sys.Syslog,omitempty",json:"Sys.Syslog,omitempty"`
-	VmAllocate                *bool `url:"VM.Allocate,omitempty",json:"VM.Allocate,omitempty"`
-	VmMigrate                 *bool `url:"VM.Migrate,omitempty",json:"VM.Migrate,omitempty"`
-	VmMonitor                 *bool `url:"VM.Monitor,omitempty",json:"VM.Monitor,omitempty"`
-	VmPowermgmt               *bool `url:"VM.PowerMgmt,omitempty",json:"VM.PowerMgmt,omitempty"`
-	DatastoreAllocatespace    *bool `url:"Datastore.AllocateSpace,omitempty",json:"Datastore.AllocateSpace,omitempty"`
-	VmConfigHwtype            *bool `url:"VM.Config.HWType,omitempty",json:"VM.Config.HWType,omitempty"`
-	VmConfigOptions           *bool `url:"VM.Config.Options,omitempty",json:"VM.Config.Options,omitempty"`
-	VmConsole                 *bool `url:"VM.Console,omitempty",json:"VM.Console,omitempty"`
-	RealmAllocateuser         *bool `url:"Realm.AllocateUser,omitempty",json:"Realm.AllocateUser,omitempty"`
-}
+type FindResponse map[string]interface{}
 
 // Find Get role configuration.
 func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
@@ -102,9 +68,11 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type UpdateRequest struct {
+	Roleid string `url:"roleid",json:"roleid"`
+
+	// The following parameters are optional
 	Append *bool   `url:"append,omitempty",json:"append,omitempty"`
 	Privs  *string `url:"privs,omitempty",json:"privs,omitempty"`
-	Roleid string  `url:"roleid",json:"roleid"`
 }
 
 type UpdateResponse map[string]interface{}

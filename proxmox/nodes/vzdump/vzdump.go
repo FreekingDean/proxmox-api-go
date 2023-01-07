@@ -20,38 +20,7 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type CreateRequest struct {
-	Mailnotification *string `url:"mailnotification,omitempty",json:"mailnotification,omitempty"`
-	Remove           *bool   `url:"remove,omitempty",json:"remove,omitempty"`
-	Storage          *string `url:"storage,omitempty",json:"storage,omitempty"`
-	Vmid             *string `url:"vmid,omitempty",json:"vmid,omitempty"`
-	Exclude          *string `url:"exclude,omitempty",json:"exclude,omitempty"`
-	Script           *string `url:"script,omitempty",json:"script,omitempty"`
-	Mailto           *string `url:"mailto,omitempty",json:"mailto,omitempty"`
-	PruneBackups     *string `url:"prune-backups,omitempty",json:"prune-backups,omitempty"`
-	Stdout           *bool   `url:"stdout,omitempty",json:"stdout,omitempty"`
-	All              *bool   `url:"all,omitempty",json:"all,omitempty"`
-	Maxfiles         *int    `url:"maxfiles,omitempty",json:"maxfiles,omitempty"`
-	Mode             *string `url:"mode,omitempty",json:"mode,omitempty"`
-	Node             *string `url:"node,omitempty",json:"node,omitempty"`
-	Performance      *string `url:"performance,omitempty",json:"performance,omitempty"`
-	Quiet            *bool   `url:"quiet,omitempty",json:"quiet,omitempty"`
-	Stop             *bool   `url:"stop,omitempty",json:"stop,omitempty"`
-	ExcludePath      *string `url:"exclude-path,omitempty",json:"exclude-path,omitempty"`
-	NotesTemplate    *string `url:"notes-template,omitempty",json:"notes-template,omitempty"`
-	Pigz             *int    `url:"pigz,omitempty",json:"pigz,omitempty"`
-	Dumpdir          *string `url:"dumpdir,omitempty",json:"dumpdir,omitempty"`
-	Protected        *bool   `url:"protected,omitempty",json:"protected,omitempty"`
-	Tmpdir           *string `url:"tmpdir,omitempty",json:"tmpdir,omitempty"`
-	Zstd             *int    `url:"zstd,omitempty",json:"zstd,omitempty"`
-	Compress         *string `url:"compress,omitempty",json:"compress,omitempty"`
-	Stdexcludes      *bool   `url:"stdexcludes,omitempty",json:"stdexcludes,omitempty"`
-	Lockwait         *int    `url:"lockwait,omitempty",json:"lockwait,omitempty"`
-	Ionice           *int    `url:"ionice,omitempty",json:"ionice,omitempty"`
-	Pool             *string `url:"pool,omitempty",json:"pool,omitempty"`
-	Stopwait         *int    `url:"stopwait,omitempty",json:"stopwait,omitempty"`
-	Bwlimit          *int    `url:"bwlimit,omitempty",json:"bwlimit,omitempty"`
-}
+type CreateRequest map[string]interface{}
 
 type CreateResponse string
 
@@ -64,41 +33,13 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type DefaultsRequest struct {
-	Node    string  `url:"node",json:"node"`
-	Storage *string `url:"storage,omitempty",json:"storage,omitempty"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+	// The following parameters are optional
+	Storage *string `url:"storage,omitempty",json:"storage,omitempty"` // The storage identifier.
 }
 
-type DefaultsResponse struct {
-	Mode             *string `url:"mode,omitempty",json:"mode,omitempty"`
-	Pool             *string `url:"pool,omitempty",json:"pool,omitempty"`
-	Script           *string `url:"script,omitempty",json:"script,omitempty"`
-	Stopwait         *int    `url:"stopwait,omitempty",json:"stopwait,omitempty"`
-	Tmpdir           *string `url:"tmpdir,omitempty",json:"tmpdir,omitempty"`
-	Exclude          *string `url:"exclude,omitempty",json:"exclude,omitempty"`
-	Performance      *string `url:"performance,omitempty",json:"performance,omitempty"`
-	PruneBackups     *string `url:"prune-backups,omitempty",json:"prune-backups,omitempty"`
-	Lockwait         *int    `url:"lockwait,omitempty",json:"lockwait,omitempty"`
-	Mailto           *string `url:"mailto,omitempty",json:"mailto,omitempty"`
-	NotesTemplate    *string `url:"notes-template,omitempty",json:"notes-template,omitempty"`
-	Pigz             *int    `url:"pigz,omitempty",json:"pigz,omitempty"`
-	Protected        *bool   `url:"protected,omitempty",json:"protected,omitempty"`
-	Zstd             *int    `url:"zstd,omitempty",json:"zstd,omitempty"`
-	All              *bool   `url:"all,omitempty",json:"all,omitempty"`
-	Mailnotification *string `url:"mailnotification,omitempty",json:"mailnotification,omitempty"`
-	Node             *string `url:"node,omitempty",json:"node,omitempty"`
-	Vmid             *string `url:"vmid,omitempty",json:"vmid,omitempty"`
-	Dumpdir          *string `url:"dumpdir,omitempty",json:"dumpdir,omitempty"`
-	Maxfiles         *int    `url:"maxfiles,omitempty",json:"maxfiles,omitempty"`
-	Quiet            *bool   `url:"quiet,omitempty",json:"quiet,omitempty"`
-	Bwlimit          *int    `url:"bwlimit,omitempty",json:"bwlimit,omitempty"`
-	ExcludePath      *string `url:"exclude-path,omitempty",json:"exclude-path,omitempty"`
-	Ionice           *int    `url:"ionice,omitempty",json:"ionice,omitempty"`
-	Remove           *bool   `url:"remove,omitempty",json:"remove,omitempty"`
-	Stdexcludes      *bool   `url:"stdexcludes,omitempty",json:"stdexcludes,omitempty"`
-	Stop             *bool   `url:"stop,omitempty",json:"stop,omitempty"`
-	Storage          *string `url:"storage,omitempty",json:"storage,omitempty"`
-	Compress         *string `url:"compress,omitempty",json:"compress,omitempty"`
-}
+type DefaultsResponse map[string]interface{}
 
 // Defaults Get the currently configured vzdump defaults.
 func (c *Client) Defaults(ctx context.Context, req *DefaultsRequest) (*DefaultsResponse, error) {
@@ -109,8 +50,9 @@ func (c *Client) Defaults(ctx context.Context, req *DefaultsRequest) (*DefaultsR
 }
 
 type ExtractconfigRequest struct {
-	Volume string `url:"volume",json:"volume"`
-	Node   string `url:"node",json:"node"`
+	Node   string `url:"node",json:"node"`     // The cluster node name.
+	Volume string `url:"volume",json:"volume"` // Volume identifier
+
 }
 
 type ExtractconfigResponse string

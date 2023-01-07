@@ -20,9 +20,7 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexRequest struct {
-	Type *string `url:"type,omitempty",json:"type,omitempty"`
-}
+type IndexRequest map[string]interface{}
 
 type IndexResponse []*struct {
 	Dns  string `url:"dns",json:"dns"`
@@ -38,13 +36,15 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type CreateRequest struct {
-	Reversemaskv6 *int   `url:"reversemaskv6,omitempty",json:"reversemaskv6,omitempty"`
-	Reversev6mask *int   `url:"reversev6mask,omitempty",json:"reversev6mask,omitempty"`
-	Ttl           *int   `url:"ttl,omitempty",json:"ttl,omitempty"`
-	Type          string `url:"type",json:"type"`
-	Url           string `url:"url",json:"url"`
-	Dns           string `url:"dns",json:"dns"`
-	Key           string `url:"key",json:"key"`
+	Dns  string `url:"dns",json:"dns"` // The SDN dns object identifier.
+	Key  string `url:"key",json:"key"`
+	Type string `url:"type",json:"type"` // Plugin type.
+	Url  string `url:"url",json:"url"`
+
+	// The following parameters are optional
+	Reversemaskv6 *int `url:"reversemaskv6,omitempty",json:"reversemaskv6,omitempty"`
+	Reversev6mask *int `url:"reversev6mask,omitempty",json:"reversev6mask,omitempty"`
+	Ttl           *int `url:"ttl,omitempty",json:"ttl,omitempty"`
 }
 
 type CreateResponse map[string]interface{}
@@ -58,7 +58,8 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FindRequest struct {
-	Dns string `url:"dns",json:"dns"`
+	Dns string `url:"dns",json:"dns"` // The SDN dns object identifier.
+
 }
 
 type FindResponse map[string]interface{}
@@ -72,13 +73,15 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type UpdateRequest struct {
+	Dns string `url:"dns",json:"dns"` // The SDN dns object identifier.
+
+	// The following parameters are optional
+	Delete        *string `url:"delete,omitempty",json:"delete,omitempty"` // A list of settings you want to delete.
+	Digest        *string `url:"digest,omitempty",json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 	Key           *string `url:"key,omitempty",json:"key,omitempty"`
 	Reversemaskv6 *int    `url:"reversemaskv6,omitempty",json:"reversemaskv6,omitempty"`
 	Ttl           *int    `url:"ttl,omitempty",json:"ttl,omitempty"`
 	Url           *string `url:"url,omitempty",json:"url,omitempty"`
-	Delete        *string `url:"delete,omitempty",json:"delete,omitempty"`
-	Digest        *string `url:"digest,omitempty",json:"digest,omitempty"`
-	Dns           string  `url:"dns",json:"dns"`
 }
 
 type UpdateResponse map[string]interface{}
@@ -92,7 +95,8 @@ func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateRespons
 }
 
 type DeleteRequest struct {
-	Dns string `url:"dns",json:"dns"`
+	Dns string `url:"dns",json:"dns"` // The SDN dns object identifier.
+
 }
 
 type DeleteResponse map[string]interface{}

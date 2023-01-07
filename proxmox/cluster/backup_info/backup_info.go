@@ -21,7 +21,8 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexResponse []*struct {
-	Subdir string `url:"subdir",json:"subdir"`
+	Subdir string `url:"subdir",json:"subdir"` // API sub-directory endpoint
+
 }
 
 // Index Index for backup info related endpoints
@@ -33,9 +34,11 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 }
 
 type GetGuestsNotInBackupNotBackedUpResponse []*struct {
-	Name *string `url:"name,omitempty",json:"name,omitempty"`
-	Type string  `url:"type",json:"type"`
-	Vmid int     `url:"vmid",json:"vmid"`
+	Type string `url:"type",json:"type"` // Type of the guest.
+	Vmid int    `url:"vmid",json:"vmid"` // VMID of the guest.
+
+	// The following parameters are optional
+	Name *string `url:"name,omitempty",json:"name,omitempty"` // Name of the guest
 }
 
 // GetGuestsNotInBackupNotBackedUp Shows all guests which are not covered by any backup job.

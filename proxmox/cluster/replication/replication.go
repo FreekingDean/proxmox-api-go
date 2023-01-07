@@ -31,15 +31,17 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 }
 
 type CreateRequest struct {
-	RemoveJob *string  `url:"remove_job,omitempty",json:"remove_job,omitempty"`
-	Schedule  *string  `url:"schedule,omitempty",json:"schedule,omitempty"`
-	Target    string   `url:"target",json:"target"`
-	Type      string   `url:"type",json:"type"`
-	Comment   *string  `url:"comment,omitempty",json:"comment,omitempty"`
-	Disable   *bool    `url:"disable,omitempty",json:"disable,omitempty"`
-	Id        string   `url:"id",json:"id"`
-	Rate      *float64 `url:"rate,omitempty",json:"rate,omitempty"`
-	Source    *string  `url:"source,omitempty",json:"source,omitempty"`
+	Id     string `url:"id",json:"id"`         // Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. '<GUEST>-<JOBNUM>'.
+	Target string `url:"target",json:"target"` // Target node.
+	Type   string `url:"type",json:"type"`     // Section type.
+
+	// The following parameters are optional
+	Comment   *string  `url:"comment,omitempty",json:"comment,omitempty"`       // Description.
+	Disable   *bool    `url:"disable,omitempty",json:"disable,omitempty"`       // Flag to disable/deactivate the entry.
+	Rate      *float64 `url:"rate,omitempty",json:"rate,omitempty"`             // Rate limit in mbps (megabytes per second) as floating point number.
+	RemoveJob *string  `url:"remove_job,omitempty",json:"remove_job,omitempty"` // Mark the replication job for removal. The job will remove all local replication snapshots. When set to 'full', it also tries to remove replicated volumes on the target. The job then removes itself from the configuration file.
+	Schedule  *string  `url:"schedule,omitempty",json:"schedule,omitempty"`     // Storage replication schedule. The format is a subset of `systemd` calendar events.
+	Source    *string  `url:"source,omitempty",json:"source,omitempty"`         // For internal use, to detect if the guest was stolen.
 }
 
 type CreateResponse map[string]interface{}
@@ -53,7 +55,8 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FindRequest struct {
-	Id string `url:"id",json:"id"`
+	Id string `url:"id",json:"id"` // Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. '<GUEST>-<JOBNUM>'.
+
 }
 
 type FindResponse map[string]interface{}
@@ -67,15 +70,17 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type UpdateRequest struct {
-	Comment   *string  `url:"comment,omitempty",json:"comment,omitempty"`
-	Delete    *string  `url:"delete,omitempty",json:"delete,omitempty"`
-	Digest    *string  `url:"digest,omitempty",json:"digest,omitempty"`
-	Rate      *float64 `url:"rate,omitempty",json:"rate,omitempty"`
-	Disable   *bool    `url:"disable,omitempty",json:"disable,omitempty"`
-	Id        string   `url:"id",json:"id"`
-	RemoveJob *string  `url:"remove_job,omitempty",json:"remove_job,omitempty"`
-	Schedule  *string  `url:"schedule,omitempty",json:"schedule,omitempty"`
-	Source    *string  `url:"source,omitempty",json:"source,omitempty"`
+	Id string `url:"id",json:"id"` // Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. '<GUEST>-<JOBNUM>'.
+
+	// The following parameters are optional
+	Comment   *string  `url:"comment,omitempty",json:"comment,omitempty"`       // Description.
+	Delete    *string  `url:"delete,omitempty",json:"delete,omitempty"`         // A list of settings you want to delete.
+	Digest    *string  `url:"digest,omitempty",json:"digest,omitempty"`         // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Disable   *bool    `url:"disable,omitempty",json:"disable,omitempty"`       // Flag to disable/deactivate the entry.
+	Rate      *float64 `url:"rate,omitempty",json:"rate,omitempty"`             // Rate limit in mbps (megabytes per second) as floating point number.
+	RemoveJob *string  `url:"remove_job,omitempty",json:"remove_job,omitempty"` // Mark the replication job for removal. The job will remove all local replication snapshots. When set to 'full', it also tries to remove replicated volumes on the target. The job then removes itself from the configuration file.
+	Schedule  *string  `url:"schedule,omitempty",json:"schedule,omitempty"`     // Storage replication schedule. The format is a subset of `systemd` calendar events.
+	Source    *string  `url:"source,omitempty",json:"source,omitempty"`         // For internal use, to detect if the guest was stolen.
 }
 
 type UpdateResponse map[string]interface{}
@@ -89,9 +94,11 @@ func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateRespons
 }
 
 type DeleteRequest struct {
-	Keep  *bool  `url:"keep,omitempty",json:"keep,omitempty"`
-	Force *bool  `url:"force,omitempty",json:"force,omitempty"`
-	Id    string `url:"id",json:"id"`
+	Id string `url:"id",json:"id"` // Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. '<GUEST>-<JOBNUM>'.
+
+	// The following parameters are optional
+	Force *bool `url:"force,omitempty",json:"force,omitempty"` // Will remove the jobconfig entry, but will not cleanup.
+	Keep  *bool `url:"keep,omitempty",json:"keep,omitempty"`   // Keep replicated data at target (do not remove).
 }
 
 type DeleteResponse map[string]interface{}

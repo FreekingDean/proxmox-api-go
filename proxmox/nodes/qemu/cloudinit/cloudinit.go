@@ -21,14 +21,17 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type IndexResponse []*struct {
-	New *string `url:"new,omitempty",json:"new,omitempty"`
-	Old *string `url:"old,omitempty",json:"old,omitempty"`
-	Key string  `url:"key",json:"key"`
+	Key string `url:"key",json:"key"` // Configuration option name.
+
+	// The following parameters are optional
+	New *string `url:"new,omitempty",json:"new,omitempty"` // The new pending value.
+	Old *string `url:"old,omitempty",json:"old,omitempty"` // Value as it was used to generate the current cloudinit image.
 }
 
 // Index Get the cloudinit configuration with both current and pending values.
@@ -40,8 +43,9 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type MassUpdateRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type MassUpdateResponse map[string]interface{}
@@ -55,9 +59,10 @@ func (c *Client) MassUpdate(ctx context.Context, req *MassUpdateRequest) (*MassU
 }
 
 type CloudinitGeneratedConfigDumpRequest struct {
-	Node string `url:"node",json:"node"`
-	Type string `url:"type",json:"type"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Type string `url:"type",json:"type"` // Config type.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type CloudinitGeneratedConfigDumpResponse string

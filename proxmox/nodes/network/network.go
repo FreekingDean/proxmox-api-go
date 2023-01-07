@@ -21,8 +21,10 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string  `url:"node",json:"node"`
-	Type *string `url:"type,omitempty",json:"type,omitempty"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+	// The following parameters are optional
+	Type *string `url:"type,omitempty",json:"type,omitempty"` // Only list specific interface types.
 }
 
 type IndexResponse []*map[string]interface{}
@@ -36,34 +38,36 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type CreateRequest struct {
-	BridgePorts        *string `url:"bridge_ports,omitempty",json:"bridge_ports,omitempty"`
-	BridgeVlanAware    *bool   `url:"bridge_vlan_aware,omitempty",json:"bridge_vlan_aware,omitempty"`
-	Gateway6           *string `url:"gateway6,omitempty",json:"gateway6,omitempty"`
-	Mtu                *int    `url:"mtu,omitempty",json:"mtu,omitempty"`
-	OvsBonds           *string `url:"ovs_bonds,omitempty",json:"ovs_bonds,omitempty"`
-	OvsBridge          *string `url:"ovs_bridge,omitempty",json:"ovs_bridge,omitempty"`
-	VlanId             *int    `url:"vlan-id,omitempty",json:"vlan-id,omitempty"`
-	Address6           *string `url:"address6,omitempty",json:"address6,omitempty"`
-	Iface              string  `url:"iface",json:"iface"`
-	Slaves             *string `url:"slaves,omitempty",json:"slaves,omitempty"`
-	Address            *string `url:"address,omitempty",json:"address,omitempty"`
-	Cidr               *string `url:"cidr,omitempty",json:"cidr,omitempty"`
-	Comments6          *string `url:"comments6,omitempty",json:"comments6,omitempty"`
-	Node               string  `url:"node",json:"node"`
-	Comments           *string `url:"comments,omitempty",json:"comments,omitempty"`
-	Gateway            *string `url:"gateway,omitempty",json:"gateway,omitempty"`
-	OvsPorts           *string `url:"ovs_ports,omitempty",json:"ovs_ports,omitempty"`
-	Netmask            *string `url:"netmask,omitempty",json:"netmask,omitempty"`
-	VlanRawDevice      *string `url:"vlan-raw-device,omitempty",json:"vlan-raw-device,omitempty"`
-	BondPrimary        *string `url:"bond-primary,omitempty",json:"bond-primary,omitempty"`
-	BondXmitHashPolicy *string `url:"bond_xmit_hash_policy,omitempty",json:"bond_xmit_hash_policy,omitempty"`
-	Cidr6              *string `url:"cidr6,omitempty",json:"cidr6,omitempty"`
-	OvsTag             *int    `url:"ovs_tag,omitempty",json:"ovs_tag,omitempty"`
-	Type               string  `url:"type",json:"type"`
-	Autostart          *bool   `url:"autostart,omitempty",json:"autostart,omitempty"`
-	BondMode           *string `url:"bond_mode,omitempty",json:"bond_mode,omitempty"`
-	Netmask6           *int    `url:"netmask6,omitempty",json:"netmask6,omitempty"`
-	OvsOptions         *string `url:"ovs_options,omitempty",json:"ovs_options,omitempty"`
+	Iface string `url:"iface",json:"iface"` // Network interface name.
+	Node  string `url:"node",json:"node"`   // The cluster node name.
+	Type  string `url:"type",json:"type"`   // Network interface type
+
+	// The following parameters are optional
+	Address            *string `url:"address,omitempty",json:"address,omitempty"`                             // IP address.
+	Address6           *string `url:"address6,omitempty",json:"address6,omitempty"`                           // IP address.
+	Autostart          *bool   `url:"autostart,omitempty",json:"autostart,omitempty"`                         // Automatically start interface on boot.
+	BondMode           *string `url:"bond_mode,omitempty",json:"bond_mode,omitempty"`                         // Bonding mode.
+	BondPrimary        *string `url:"bond-primary,omitempty",json:"bond-primary,omitempty"`                   // Specify the primary interface for active-backup bond.
+	BondXmitHashPolicy *string `url:"bond_xmit_hash_policy,omitempty",json:"bond_xmit_hash_policy,omitempty"` // Selects the transmit hash policy to use for slave selection in balance-xor and 802.3ad modes.
+	BridgePorts        *string `url:"bridge_ports,omitempty",json:"bridge_ports,omitempty"`                   // Specify the interfaces you want to add to your bridge.
+	BridgeVlanAware    *bool   `url:"bridge_vlan_aware,omitempty",json:"bridge_vlan_aware,omitempty"`         // Enable bridge vlan support.
+	Cidr               *string `url:"cidr,omitempty",json:"cidr,omitempty"`                                   // IPv4 CIDR.
+	Cidr6              *string `url:"cidr6,omitempty",json:"cidr6,omitempty"`                                 // IPv6 CIDR.
+	Comments           *string `url:"comments,omitempty",json:"comments,omitempty"`                           // Comments
+	Comments6          *string `url:"comments6,omitempty",json:"comments6,omitempty"`                         // Comments
+	Gateway            *string `url:"gateway,omitempty",json:"gateway,omitempty"`                             // Default gateway address.
+	Gateway6           *string `url:"gateway6,omitempty",json:"gateway6,omitempty"`                           // Default ipv6 gateway address.
+	Mtu                *int    `url:"mtu,omitempty",json:"mtu,omitempty"`                                     // MTU.
+	Netmask            *string `url:"netmask,omitempty",json:"netmask,omitempty"`                             // Network mask.
+	Netmask6           *int    `url:"netmask6,omitempty",json:"netmask6,omitempty"`                           // Network mask.
+	OvsBonds           *string `url:"ovs_bonds,omitempty",json:"ovs_bonds,omitempty"`                         // Specify the interfaces used by the bonding device.
+	OvsBridge          *string `url:"ovs_bridge,omitempty",json:"ovs_bridge,omitempty"`                       // The OVS bridge associated with a OVS port. This is required when you create an OVS port.
+	OvsOptions         *string `url:"ovs_options,omitempty",json:"ovs_options,omitempty"`                     // OVS interface options.
+	OvsPorts           *string `url:"ovs_ports,omitempty",json:"ovs_ports,omitempty"`                         // Specify the interfaces you want to add to your bridge.
+	OvsTag             *int    `url:"ovs_tag,omitempty",json:"ovs_tag,omitempty"`                             // Specify a VLan tag (used by OVSPort, OVSIntPort, OVSBond)
+	Slaves             *string `url:"slaves,omitempty",json:"slaves,omitempty"`                               // Specify the interfaces used by the bonding device.
+	VlanId             *int    `url:"vlan-id,omitempty",json:"vlan-id,omitempty"`                             // vlan-id for a custom named vlan interface (ifupdown2 only).
+	VlanRawDevice      *string `url:"vlan-raw-device,omitempty",json:"vlan-raw-device,omitempty"`             // Specify the raw interface for the vlan interface.
 }
 
 type CreateResponse map[string]interface{}
@@ -77,7 +81,8 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type MassUpdateRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type MassUpdateResponse string
@@ -91,7 +96,8 @@ func (c *Client) MassUpdate(ctx context.Context, req *MassUpdateRequest) (*MassU
 }
 
 type MassDeleteRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type MassDeleteResponse map[string]interface{}
@@ -105,8 +111,9 @@ func (c *Client) MassDelete(ctx context.Context, req *MassDeleteRequest) (*MassD
 }
 
 type FindRequest struct {
-	Iface string `url:"iface",json:"iface"`
-	Node  string `url:"node",json:"node"`
+	Iface string `url:"iface",json:"iface"` // Network interface name.
+	Node  string `url:"node",json:"node"`   // The cluster node name.
+
 }
 
 type FindResponse struct {
@@ -123,35 +130,37 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type UpdateRequest struct {
-	BridgeVlanAware    *bool   `url:"bridge_vlan_aware,omitempty",json:"bridge_vlan_aware,omitempty"`
-	Gateway6           *string `url:"gateway6,omitempty",json:"gateway6,omitempty"`
-	OvsOptions         *string `url:"ovs_options,omitempty",json:"ovs_options,omitempty"`
-	OvsPorts           *string `url:"ovs_ports,omitempty",json:"ovs_ports,omitempty"`
-	BondMode           *string `url:"bond_mode,omitempty",json:"bond_mode,omitempty"`
-	Cidr               *string `url:"cidr,omitempty",json:"cidr,omitempty"`
-	Netmask6           *int    `url:"netmask6,omitempty",json:"netmask6,omitempty"`
-	Slaves             *string `url:"slaves,omitempty",json:"slaves,omitempty"`
-	Type               string  `url:"type",json:"type"`
-	Comments           *string `url:"comments,omitempty",json:"comments,omitempty"`
-	Comments6          *string `url:"comments6,omitempty",json:"comments6,omitempty"`
-	Gateway            *string `url:"gateway,omitempty",json:"gateway,omitempty"`
-	OvsBonds           *string `url:"ovs_bonds,omitempty",json:"ovs_bonds,omitempty"`
-	VlanId             *int    `url:"vlan-id,omitempty",json:"vlan-id,omitempty"`
-	Autostart          *bool   `url:"autostart,omitempty",json:"autostart,omitempty"`
-	BridgePorts        *string `url:"bridge_ports,omitempty",json:"bridge_ports,omitempty"`
-	Address            *string `url:"address,omitempty",json:"address,omitempty"`
-	BondXmitHashPolicy *string `url:"bond_xmit_hash_policy,omitempty",json:"bond_xmit_hash_policy,omitempty"`
-	Cidr6              *string `url:"cidr6,omitempty",json:"cidr6,omitempty"`
-	Delete             *string `url:"delete,omitempty",json:"delete,omitempty"`
-	Netmask            *string `url:"netmask,omitempty",json:"netmask,omitempty"`
-	OvsBridge          *string `url:"ovs_bridge,omitempty",json:"ovs_bridge,omitempty"`
-	Mtu                *int    `url:"mtu,omitempty",json:"mtu,omitempty"`
-	Node               string  `url:"node",json:"node"`
-	OvsTag             *int    `url:"ovs_tag,omitempty",json:"ovs_tag,omitempty"`
-	Address6           *string `url:"address6,omitempty",json:"address6,omitempty"`
-	BondPrimary        *string `url:"bond-primary,omitempty",json:"bond-primary,omitempty"`
-	Iface              string  `url:"iface",json:"iface"`
-	VlanRawDevice      *string `url:"vlan-raw-device,omitempty",json:"vlan-raw-device,omitempty"`
+	Iface string `url:"iface",json:"iface"` // Network interface name.
+	Node  string `url:"node",json:"node"`   // The cluster node name.
+	Type  string `url:"type",json:"type"`   // Network interface type
+
+	// The following parameters are optional
+	Address            *string `url:"address,omitempty",json:"address,omitempty"`                             // IP address.
+	Address6           *string `url:"address6,omitempty",json:"address6,omitempty"`                           // IP address.
+	Autostart          *bool   `url:"autostart,omitempty",json:"autostart,omitempty"`                         // Automatically start interface on boot.
+	BondMode           *string `url:"bond_mode,omitempty",json:"bond_mode,omitempty"`                         // Bonding mode.
+	BondPrimary        *string `url:"bond-primary,omitempty",json:"bond-primary,omitempty"`                   // Specify the primary interface for active-backup bond.
+	BondXmitHashPolicy *string `url:"bond_xmit_hash_policy,omitempty",json:"bond_xmit_hash_policy,omitempty"` // Selects the transmit hash policy to use for slave selection in balance-xor and 802.3ad modes.
+	BridgePorts        *string `url:"bridge_ports,omitempty",json:"bridge_ports,omitempty"`                   // Specify the interfaces you want to add to your bridge.
+	BridgeVlanAware    *bool   `url:"bridge_vlan_aware,omitempty",json:"bridge_vlan_aware,omitempty"`         // Enable bridge vlan support.
+	Cidr               *string `url:"cidr,omitempty",json:"cidr,omitempty"`                                   // IPv4 CIDR.
+	Cidr6              *string `url:"cidr6,omitempty",json:"cidr6,omitempty"`                                 // IPv6 CIDR.
+	Comments           *string `url:"comments,omitempty",json:"comments,omitempty"`                           // Comments
+	Comments6          *string `url:"comments6,omitempty",json:"comments6,omitempty"`                         // Comments
+	Delete             *string `url:"delete,omitempty",json:"delete,omitempty"`                               // A list of settings you want to delete.
+	Gateway            *string `url:"gateway,omitempty",json:"gateway,omitempty"`                             // Default gateway address.
+	Gateway6           *string `url:"gateway6,omitempty",json:"gateway6,omitempty"`                           // Default ipv6 gateway address.
+	Mtu                *int    `url:"mtu,omitempty",json:"mtu,omitempty"`                                     // MTU.
+	Netmask            *string `url:"netmask,omitempty",json:"netmask,omitempty"`                             // Network mask.
+	Netmask6           *int    `url:"netmask6,omitempty",json:"netmask6,omitempty"`                           // Network mask.
+	OvsBonds           *string `url:"ovs_bonds,omitempty",json:"ovs_bonds,omitempty"`                         // Specify the interfaces used by the bonding device.
+	OvsBridge          *string `url:"ovs_bridge,omitempty",json:"ovs_bridge,omitempty"`                       // The OVS bridge associated with a OVS port. This is required when you create an OVS port.
+	OvsOptions         *string `url:"ovs_options,omitempty",json:"ovs_options,omitempty"`                     // OVS interface options.
+	OvsPorts           *string `url:"ovs_ports,omitempty",json:"ovs_ports,omitempty"`                         // Specify the interfaces you want to add to your bridge.
+	OvsTag             *int    `url:"ovs_tag,omitempty",json:"ovs_tag,omitempty"`                             // Specify a VLan tag (used by OVSPort, OVSIntPort, OVSBond)
+	Slaves             *string `url:"slaves,omitempty",json:"slaves,omitempty"`                               // Specify the interfaces used by the bonding device.
+	VlanId             *int    `url:"vlan-id,omitempty",json:"vlan-id,omitempty"`                             // vlan-id for a custom named vlan interface (ifupdown2 only).
+	VlanRawDevice      *string `url:"vlan-raw-device,omitempty",json:"vlan-raw-device,omitempty"`             // Specify the raw interface for the vlan interface.
 }
 
 type UpdateResponse map[string]interface{}
@@ -165,8 +174,9 @@ func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateRespons
 }
 
 type DeleteRequest struct {
-	Iface string `url:"iface",json:"iface"`
-	Node  string `url:"node",json:"node"`
+	Iface string `url:"iface",json:"iface"` // Network interface name.
+	Node  string `url:"node",json:"node"`   // The cluster node name.
+
 }
 
 type DeleteResponse map[string]interface{}

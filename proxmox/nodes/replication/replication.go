@@ -21,8 +21,10 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Guest *int   `url:"guest,omitempty",json:"guest,omitempty"`
-	Node  string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+	// The following parameters are optional
+	Guest *int `url:"guest,omitempty",json:"guest,omitempty"` // Only list replication jobs for this guest.
 }
 
 type IndexResponse []*struct {
@@ -38,8 +40,9 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type FindRequest struct {
-	Id   string `url:"id",json:"id"`
-	Node string `url:"node",json:"node"`
+	Id   string `url:"id",json:"id"`     // Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. '<GUEST>-<JOBNUM>'.
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type FindResponse []*map[string]interface{}
@@ -53,8 +56,9 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type JobStatusRequest struct {
-	Node string `url:"node",json:"node"`
-	Id   string `url:"id",json:"id"`
+	Id   string `url:"id",json:"id"`     // Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. '<GUEST>-<JOBNUM>'.
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type JobStatusResponse map[string]interface{}
@@ -68,15 +72,18 @@ func (c *Client) JobStatus(ctx context.Context, req *JobStatusRequest) (*JobStat
 }
 
 type ReadJobLogRequest struct {
-	Id    string `url:"id",json:"id"`
-	Limit *int   `url:"limit,omitempty",json:"limit,omitempty"`
-	Node  string `url:"node",json:"node"`
-	Start *int   `url:"start,omitempty",json:"start,omitempty"`
+	Id   string `url:"id",json:"id"`     // Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. '<GUEST>-<JOBNUM>'.
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+	// The following parameters are optional
+	Limit *int `url:"limit,omitempty",json:"limit,omitempty"`
+	Start *int `url:"start,omitempty",json:"start,omitempty"`
 }
 
 type ReadJobLogResponse []*struct {
-	N int    `url:"n",json:"n"`
-	T string `url:"t",json:"t"`
+	N int    `url:"n",json:"n"` // Line number
+	T string `url:"t",json:"t"` // Line text
+
 }
 
 // ReadJobLog Read replication job log.
@@ -88,8 +95,9 @@ func (c *Client) ReadJobLog(ctx context.Context, req *ReadJobLogRequest) (*ReadJ
 }
 
 type ScheduleNowRequest struct {
-	Id   string `url:"id",json:"id"`
-	Node string `url:"node",json:"node"`
+	Id   string `url:"id",json:"id"`     // Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. '<GUEST>-<JOBNUM>'.
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type ScheduleNowResponse string

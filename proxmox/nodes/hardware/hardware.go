@@ -21,7 +21,8 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type IndexResponse []*struct {
@@ -37,22 +38,25 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type UsbscanUsbRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type UsbscanUsbResponse []*struct {
-	Vendid       string  `url:"vendid",json:"vendid"`
-	Class        int     `url:"class",json:"class"`
-	Level        int     `url:"level",json:"level"`
-	Prodid       string  `url:"prodid",json:"prodid"`
-	Port         int     `url:"port",json:"port"`
+	Busnum int    `url:"busnum",json:"busnum"`
+	Class  int    `url:"class",json:"class"`
+	Devnum int    `url:"devnum",json:"devnum"`
+	Level  int    `url:"level",json:"level"`
+	Port   int    `url:"port",json:"port"`
+	Prodid string `url:"prodid",json:"prodid"`
+	Speed  string `url:"speed",json:"speed"`
+	Vendid string `url:"vendid",json:"vendid"`
+
+	// The following parameters are optional
+	Manufacturer *string `url:"manufacturer,omitempty",json:"manufacturer,omitempty"`
 	Product      *string `url:"product,omitempty",json:"product,omitempty"`
 	Serial       *string `url:"serial,omitempty",json:"serial,omitempty"`
-	Speed        string  `url:"speed",json:"speed"`
 	Usbpath      *string `url:"usbpath,omitempty",json:"usbpath,omitempty"`
-	Busnum       int     `url:"busnum",json:"busnum"`
-	Devnum       int     `url:"devnum",json:"devnum"`
-	Manufacturer *string `url:"manufacturer,omitempty",json:"manufacturer,omitempty"`
 }
 
 // UsbscanUsb List local USB devices.

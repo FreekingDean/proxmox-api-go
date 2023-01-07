@@ -21,8 +21,9 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type IndexResponse []*struct {
@@ -38,27 +39,30 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type VmStatusCurrentRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type VmStatusCurrentResponse struct {
-	Cpus           *float64               `url:"cpus,omitempty",json:"cpus,omitempty"`
-	Ha             map[string]interface{} `url:"ha",json:"ha"`
-	Maxmem         *int                   `url:"maxmem,omitempty",json:"maxmem,omitempty"`
-	Qmpstatus      *string                `url:"qmpstatus,omitempty",json:"qmpstatus,omitempty"`
-	Tags           *string                `url:"tags,omitempty",json:"tags,omitempty"`
-	Maxdisk        *int                   `url:"maxdisk,omitempty",json:"maxdisk,omitempty"`
-	Name           *string                `url:"name,omitempty",json:"name,omitempty"`
-	Lock           *string                `url:"lock,omitempty",json:"lock,omitempty"`
-	Pid            *int                   `url:"pid,omitempty",json:"pid,omitempty"`
-	Status         string                 `url:"status",json:"status"`
-	Vmid           int                    `url:"vmid",json:"vmid"`
-	Agent          *bool                  `url:"agent,omitempty",json:"agent,omitempty"`
-	RunningMachine *string                `url:"running-machine,omitempty",json:"running-machine,omitempty"`
-	RunningQemu    *string                `url:"running-qemu,omitempty",json:"running-qemu,omitempty"`
-	Spice          *bool                  `url:"spice,omitempty",json:"spice,omitempty"`
-	Uptime         *int                   `url:"uptime,omitempty",json:"uptime,omitempty"`
+	Ha     map[string]interface{} `url:"ha",json:"ha"`         // HA manager service status.
+	Status string                 `url:"status",json:"status"` // Qemu process status.
+	Vmid   int                    `url:"vmid",json:"vmid"`     // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Agent          *bool    `url:"agent,omitempty",json:"agent,omitempty"`                     // Qemu GuestAgent enabled in config.
+	Cpus           *float64 `url:"cpus,omitempty",json:"cpus,omitempty"`                       // Maximum usable CPUs.
+	Lock           *string  `url:"lock,omitempty",json:"lock,omitempty"`                       // The current config lock, if any.
+	Maxdisk        *int     `url:"maxdisk,omitempty",json:"maxdisk,omitempty"`                 // Root disk size in bytes.
+	Maxmem         *int     `url:"maxmem,omitempty",json:"maxmem,omitempty"`                   // Maximum memory in bytes.
+	Name           *string  `url:"name,omitempty",json:"name,omitempty"`                       // VM name.
+	Pid            *int     `url:"pid,omitempty",json:"pid,omitempty"`                         // PID of running qemu process.
+	Qmpstatus      *string  `url:"qmpstatus,omitempty",json:"qmpstatus,omitempty"`             // Qemu QMP agent status.
+	RunningMachine *string  `url:"running-machine,omitempty",json:"running-machine,omitempty"` // The currently running machine type (if running).
+	RunningQemu    *string  `url:"running-qemu,omitempty",json:"running-qemu,omitempty"`       // The currently running QEMU version (if running).
+	Spice          *bool    `url:"spice,omitempty",json:"spice,omitempty"`                     // Qemu VGA configuration supports spice.
+	Tags           *string  `url:"tags,omitempty",json:"tags,omitempty"`                       // The current configured tags, if any
+	Uptime         *int     `url:"uptime,omitempty",json:"uptime,omitempty"`                   // Uptime.
 }
 
 // VmStatusCurrent Get virtual machine status.
@@ -70,17 +74,19 @@ func (c *Client) VmStatusCurrent(ctx context.Context, req *VmStatusCurrentReques
 }
 
 type VmStartRequest struct {
-	Migratedfrom     *string `url:"migratedfrom,omitempty",json:"migratedfrom,omitempty"`
-	MigrationNetwork *string `url:"migration_network,omitempty",json:"migration_network,omitempty"`
-	Node             string  `url:"node",json:"node"`
-	Timeout          *int    `url:"timeout,omitempty",json:"timeout,omitempty"`
-	Vmid             int     `url:"vmid",json:"vmid"`
-	ForceCpu         *string `url:"force-cpu,omitempty",json:"force-cpu,omitempty"`
-	Machine          *string `url:"machine,omitempty",json:"machine,omitempty"`
-	MigrationType    *string `url:"migration_type,omitempty",json:"migration_type,omitempty"`
-	Skiplock         *bool   `url:"skiplock,omitempty",json:"skiplock,omitempty"`
-	Stateuri         *string `url:"stateuri,omitempty",json:"stateuri,omitempty"`
-	Targetstorage    *string `url:"targetstorage,omitempty",json:"targetstorage,omitempty"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	ForceCpu         *string `url:"force-cpu,omitempty",json:"force-cpu,omitempty"`                 // Override QEMU's -cpu argument with the given string.
+	Machine          *string `url:"machine,omitempty",json:"machine,omitempty"`                     // Specifies the Qemu machine type.
+	Migratedfrom     *string `url:"migratedfrom,omitempty",json:"migratedfrom,omitempty"`           // The cluster node name.
+	MigrationNetwork *string `url:"migration_network,omitempty",json:"migration_network,omitempty"` // CIDR of the (sub) network that is used for migration.
+	MigrationType    *string `url:"migration_type,omitempty",json:"migration_type,omitempty"`       // Migration traffic is encrypted using an SSH tunnel by default. On secure, completely private networks this can be disabled to increase performance.
+	Skiplock         *bool   `url:"skiplock,omitempty",json:"skiplock,omitempty"`                   // Ignore locks - only root is allowed to use this option.
+	Stateuri         *string `url:"stateuri,omitempty",json:"stateuri,omitempty"`                   // Some command save/restore state from this location.
+	Targetstorage    *string `url:"targetstorage,omitempty",json:"targetstorage,omitempty"`         // Mapping from source to target storages. Providing only a single storage ID maps all source storages to that storage. Providing the special value '1' will map each source storage to itself.
+	Timeout          *int    `url:"timeout,omitempty",json:"timeout,omitempty"`                     // Wait maximal timeout seconds.
 }
 
 type VmStartResponse string
@@ -94,12 +100,14 @@ func (c *Client) VmStart(ctx context.Context, req *VmStartRequest) (*VmStartResp
 }
 
 type VmStopRequest struct {
-	Skiplock     *bool   `url:"skiplock,omitempty",json:"skiplock,omitempty"`
-	Timeout      *int    `url:"timeout,omitempty",json:"timeout,omitempty"`
-	Vmid         int     `url:"vmid",json:"vmid"`
-	Keepactive   *bool   `url:"keepActive,omitempty",json:"keepActive,omitempty"`
-	Migratedfrom *string `url:"migratedfrom,omitempty",json:"migratedfrom,omitempty"`
-	Node         string  `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Keepactive   *bool   `url:"keepActive,omitempty",json:"keepActive,omitempty"`     // Do not deactivate storage volumes.
+	Migratedfrom *string `url:"migratedfrom,omitempty",json:"migratedfrom,omitempty"` // The cluster node name.
+	Skiplock     *bool   `url:"skiplock,omitempty",json:"skiplock,omitempty"`         // Ignore locks - only root is allowed to use this option.
+	Timeout      *int    `url:"timeout,omitempty",json:"timeout,omitempty"`           // Wait maximal timeout seconds.
 }
 
 type VmStopResponse string
@@ -113,9 +121,11 @@ func (c *Client) VmStop(ctx context.Context, req *VmStopRequest) (*VmStopRespons
 }
 
 type VmResetRequest struct {
-	Node     string `url:"node",json:"node"`
-	Skiplock *bool  `url:"skiplock,omitempty",json:"skiplock,omitempty"`
-	Vmid     int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Skiplock *bool `url:"skiplock,omitempty",json:"skiplock,omitempty"` // Ignore locks - only root is allowed to use this option.
 }
 
 type VmResetResponse string
@@ -129,12 +139,14 @@ func (c *Client) VmReset(ctx context.Context, req *VmResetRequest) (*VmResetResp
 }
 
 type VmShutdownRequest struct {
-	Forcestop  *bool  `url:"forceStop,omitempty",json:"forceStop,omitempty"`
-	Keepactive *bool  `url:"keepActive,omitempty",json:"keepActive,omitempty"`
-	Node       string `url:"node",json:"node"`
-	Skiplock   *bool  `url:"skiplock,omitempty",json:"skiplock,omitempty"`
-	Timeout    *int   `url:"timeout,omitempty",json:"timeout,omitempty"`
-	Vmid       int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Forcestop  *bool `url:"forceStop,omitempty",json:"forceStop,omitempty"`   // Make sure the VM stops.
+	Keepactive *bool `url:"keepActive,omitempty",json:"keepActive,omitempty"` // Do not deactivate storage volumes.
+	Skiplock   *bool `url:"skiplock,omitempty",json:"skiplock,omitempty"`     // Ignore locks - only root is allowed to use this option.
+	Timeout    *int  `url:"timeout,omitempty",json:"timeout,omitempty"`       // Wait maximal timeout seconds.
 }
 
 type VmShutdownResponse string
@@ -148,9 +160,11 @@ func (c *Client) VmShutdown(ctx context.Context, req *VmShutdownRequest) (*VmShu
 }
 
 type VmRebootRequest struct {
-	Node    string `url:"node",json:"node"`
-	Timeout *int   `url:"timeout,omitempty",json:"timeout,omitempty"`
-	Vmid    int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Timeout *int `url:"timeout,omitempty",json:"timeout,omitempty"` // Wait maximal timeout seconds for the shutdown.
 }
 
 type VmRebootResponse string
@@ -164,11 +178,13 @@ func (c *Client) VmReboot(ctx context.Context, req *VmRebootRequest) (*VmRebootR
 }
 
 type VmSuspendRequest struct {
-	Statestorage *string `url:"statestorage,omitempty",json:"statestorage,omitempty"`
-	Todisk       *bool   `url:"todisk,omitempty",json:"todisk,omitempty"`
-	Vmid         int     `url:"vmid",json:"vmid"`
-	Node         string  `url:"node",json:"node"`
-	Skiplock     *bool   `url:"skiplock,omitempty",json:"skiplock,omitempty"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Skiplock     *bool   `url:"skiplock,omitempty",json:"skiplock,omitempty"`         // Ignore locks - only root is allowed to use this option.
+	Statestorage *string `url:"statestorage,omitempty",json:"statestorage,omitempty"` // The storage for the VM state
+	Todisk       *bool   `url:"todisk,omitempty",json:"todisk,omitempty"`             // If set, suspends the VM to disk. Will be resumed on next VM start.
 }
 
 type VmSuspendResponse string
@@ -182,10 +198,12 @@ func (c *Client) VmSuspend(ctx context.Context, req *VmSuspendRequest) (*VmSuspe
 }
 
 type VmResumeRequest struct {
-	Nocheck  *bool  `url:"nocheck,omitempty",json:"nocheck,omitempty"`
-	Node     string `url:"node",json:"node"`
-	Skiplock *bool  `url:"skiplock,omitempty",json:"skiplock,omitempty"`
-	Vmid     int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Nocheck  *bool `url:"nocheck,omitempty",json:"nocheck,omitempty"`
+	Skiplock *bool `url:"skiplock,omitempty",json:"skiplock,omitempty"` // Ignore locks - only root is allowed to use this option.
 }
 
 type VmResumeResponse string

@@ -22,13 +22,16 @@ func New(c HTTPClient) *Client {
 
 type IndexResponse []*struct {
 	Entries []*struct {
-		Created     int    `url:"created",json:"created"`
-		Description string `url:"description",json:"description"`
-		Enable      *bool  `url:"enable,omitempty",json:"enable,omitempty"`
-		Id          string `url:"id",json:"id"`
-		Type        string `url:"type",json:"type"`
+		Created     int    `url:"created",json:"created"`         // Creation time of this entry as unix epoch.
+		Description string `url:"description",json:"description"` // User chosen description for this entry.
+		Id          string `url:"id",json:"id"`                   // The id used to reference this entry.
+		Type        string `url:"type",json:"type"`               // TFA Entry Type.
+
+		// The following parameters are optional
+		Enable *bool `url:"enable,omitempty",json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
 	} `url:"entries",json:"entries"`
-	Userid string `url:"userid",json:"userid"`
+	Userid string `url:"userid",json:"userid"` // User this entry belongs to.
+
 }
 
 // Index List TFA configurations of users.
@@ -40,7 +43,8 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 }
 
 type CreateRequest struct {
-	Response string `url:"response",json:"response"`
+	Response string `url:"response",json:"response"` // The response to the current authentication challenge.
+
 }
 
 type CreateResponse struct {
@@ -56,15 +60,18 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FindRequest struct {
-	Userid string `url:"userid",json:"userid"`
+	Userid string `url:"userid",json:"userid"` // User ID
+
 }
 
 type FindResponse []*struct {
-	Type        string `url:"type",json:"type"`
-	Created     int    `url:"created",json:"created"`
-	Description string `url:"description",json:"description"`
-	Enable      *bool  `url:"enable,omitempty",json:"enable,omitempty"`
-	Id          string `url:"id",json:"id"`
+	Created     int    `url:"created",json:"created"`         // Creation time of this entry as unix epoch.
+	Description string `url:"description",json:"description"` // User chosen description for this entry.
+	Id          string `url:"id",json:"id"`                   // The id used to reference this entry.
+	Type        string `url:"type",json:"type"`               // TFA Entry Type.
+
+	// The following parameters are optional
+	Enable *bool `url:"enable,omitempty",json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
 }
 
 // Find List TFA configurations of users.
@@ -76,19 +83,23 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type ChildCreateRequest struct {
-	Challenge   *string `url:"challenge,omitempty",json:"challenge,omitempty"`
-	Description *string `url:"description,omitempty",json:"description,omitempty"`
-	Password    *string `url:"password,omitempty",json:"password,omitempty"`
-	Totp        *string `url:"totp,omitempty",json:"totp,omitempty"`
-	Type        string  `url:"type",json:"type"`
-	Userid      string  `url:"userid",json:"userid"`
-	Value       *string `url:"value,omitempty",json:"value,omitempty"`
+	Type   string `url:"type",json:"type"`     // TFA Entry Type.
+	Userid string `url:"userid",json:"userid"` // User ID
+
+	// The following parameters are optional
+	Challenge   *string `url:"challenge,omitempty",json:"challenge,omitempty"`     // When responding to a u2f challenge: the original challenge string
+	Description *string `url:"description,omitempty",json:"description,omitempty"` // A description to distinguish multiple entries from one another
+	Password    *string `url:"password,omitempty",json:"password,omitempty"`       // The current password.
+	Totp        *string `url:"totp,omitempty",json:"totp,omitempty"`               // A totp URI.
+	Value       *string `url:"value,omitempty",json:"value,omitempty"`             // The current value for the provided totp URI, or a Webauthn/U2F challenge response
 }
 
 type ChildCreateResponse struct {
-	Challenge *string  `url:"challenge,omitempty",json:"challenge,omitempty"`
-	Id        string   `url:"id",json:"id"`
-	Recovery  []string `url:"recovery,omitempty",json:"recovery,omitempty"`
+	Id string `url:"id",json:"id"` // The id of a newly added TFA entry.
+
+	// The following parameters are optional
+	Challenge *string  `url:"challenge,omitempty",json:"challenge,omitempty"` // When adding u2f entries, this contains a challenge the user must respond to in order to finish the registration.
+	Recovery  []string `url:"recovery,omitempty",json:"recovery,omitempty"`   // When adding recovery codes, this contains the list of codes to be displayed to the user
 }
 
 // ChildCreate Add a TFA entry for a user.
@@ -100,9 +111,11 @@ func (c *Client) ChildCreate(ctx context.Context, req *ChildCreateRequest) (*Chi
 }
 
 type DeleteTfaIdRequest struct {
-	Id       string  `url:"id",json:"id"`
-	Password *string `url:"password,omitempty",json:"password,omitempty"`
-	Userid   string  `url:"userid",json:"userid"`
+	Id     string `url:"id",json:"id"`         // A TFA entry id.
+	Userid string `url:"userid",json:"userid"` // User ID
+
+	// The following parameters are optional
+	Password *string `url:"password,omitempty",json:"password,omitempty"` // The current password.
 }
 
 type DeleteTfaIdResponse map[string]interface{}
@@ -116,16 +129,19 @@ func (c *Client) DeleteTfaId(ctx context.Context, req *DeleteTfaIdRequest) (*Del
 }
 
 type GetTfaEntryIdRequest struct {
-	Id     string `url:"id",json:"id"`
-	Userid string `url:"userid",json:"userid"`
+	Id     string `url:"id",json:"id"`         // A TFA entry id.
+	Userid string `url:"userid",json:"userid"` // User ID
+
 }
 
 type GetTfaEntryIdResponse struct {
-	Created     int    `url:"created",json:"created"`
-	Description string `url:"description",json:"description"`
-	Enable      *bool  `url:"enable,omitempty",json:"enable,omitempty"`
-	Id          string `url:"id",json:"id"`
-	Type        string `url:"type",json:"type"`
+	Created     int    `url:"created",json:"created"`         // Creation time of this entry as unix epoch.
+	Description string `url:"description",json:"description"` // User chosen description for this entry.
+	Id          string `url:"id",json:"id"`                   // The id used to reference this entry.
+	Type        string `url:"type",json:"type"`               // TFA Entry Type.
+
+	// The following parameters are optional
+	Enable *bool `url:"enable,omitempty",json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
 }
 
 // GetTfaEntryId Fetch a requested TFA entry if present.
@@ -137,11 +153,13 @@ func (c *Client) GetTfaEntryId(ctx context.Context, req *GetTfaEntryIdRequest) (
 }
 
 type UpdateTfaEntryIdRequest struct {
-	Description *string `url:"description,omitempty",json:"description,omitempty"`
-	Enable      *bool   `url:"enable,omitempty",json:"enable,omitempty"`
-	Id          string  `url:"id",json:"id"`
-	Password    *string `url:"password,omitempty",json:"password,omitempty"`
-	Userid      string  `url:"userid",json:"userid"`
+	Id     string `url:"id",json:"id"`         // A TFA entry id.
+	Userid string `url:"userid",json:"userid"` // User ID
+
+	// The following parameters are optional
+	Description *string `url:"description,omitempty",json:"description,omitempty"` // A description to distinguish multiple entries from one another
+	Enable      *bool   `url:"enable,omitempty",json:"enable,omitempty"`           // Whether the entry should be enabled for login.
+	Password    *string `url:"password,omitempty",json:"password,omitempty"`       // The current password.
 }
 
 type UpdateTfaEntryIdResponse map[string]interface{}

@@ -21,9 +21,11 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexResponse []*struct {
+	Digest string `url:"digest",json:"digest"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Name   string `url:"name",json:"name"`     // IP set name.
+
+	// The following parameters are optional
 	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Digest  string  `url:"digest",json:"digest"`
-	Name    string  `url:"name",json:"name"`
 }
 
 // Index List IPSets
@@ -35,10 +37,12 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 }
 
 type CreateRequest struct {
+	Name string `url:"name",json:"name"` // IP set name.
+
+	// The following parameters are optional
 	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Digest  *string `url:"digest,omitempty",json:"digest,omitempty"`
-	Name    string  `url:"name",json:"name"`
-	Rename  *string `url:"rename,omitempty",json:"rename,omitempty"`
+	Digest  *string `url:"digest,omitempty",json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Rename  *string `url:"rename,omitempty",json:"rename,omitempty"` // Rename an existing IPSet. You can set 'rename' to the same value as 'name' to update the 'comment' of an existing IPSet.
 }
 
 type CreateResponse map[string]interface{}
@@ -52,13 +56,16 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FindRequest struct {
-	Name string `url:"name",json:"name"`
+	Name string `url:"name",json:"name"` // IP set name.
+
 }
 
 type FindResponse []*struct {
-	Cidr    string  `url:"cidr",json:"cidr"`
+	Cidr   string `url:"cidr",json:"cidr"`
+	Digest string `url:"digest",json:"digest"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+
+	// The following parameters are optional
 	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Digest  string  `url:"digest",json:"digest"`
 	Nomatch *bool   `url:"nomatch,omitempty",json:"nomatch,omitempty"`
 }
 
@@ -71,9 +78,11 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type ChildCreateRequest struct {
-	Cidr    string  `url:"cidr",json:"cidr"`
+	Cidr string `url:"cidr",json:"cidr"` // Network/IP specification in CIDR format.
+	Name string `url:"name",json:"name"` // IP set name.
+
+	// The following parameters are optional
 	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Name    string  `url:"name",json:"name"`
 	Nomatch *bool   `url:"nomatch,omitempty",json:"nomatch,omitempty"`
 }
 
@@ -88,8 +97,10 @@ func (c *Client) ChildCreate(ctx context.Context, req *ChildCreateRequest) (*Chi
 }
 
 type DeleteRequest struct {
-	Force *bool  `url:"force,omitempty",json:"force,omitempty"`
-	Name  string `url:"name",json:"name"`
+	Name string `url:"name",json:"name"` // IP set name.
+
+	// The following parameters are optional
+	Force *bool `url:"force,omitempty",json:"force,omitempty"` // Delete all members of the IPSet, if there are any.
 }
 
 type DeleteResponse map[string]interface{}
@@ -103,9 +114,11 @@ func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteRespons
 }
 
 type RemoveIpCidrRequest struct {
-	Cidr   string  `url:"cidr",json:"cidr"`
-	Digest *string `url:"digest,omitempty",json:"digest,omitempty"`
-	Name   string  `url:"name",json:"name"`
+	Cidr string `url:"cidr",json:"cidr"` // Network/IP specification in CIDR format.
+	Name string `url:"name",json:"name"` // IP set name.
+
+	// The following parameters are optional
+	Digest *string `url:"digest,omitempty",json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 }
 
 type RemoveIpCidrResponse map[string]interface{}
@@ -119,8 +132,9 @@ func (c *Client) RemoveIpCidr(ctx context.Context, req *RemoveIpCidrRequest) (*R
 }
 
 type ReadIpCidrRequest struct {
-	Cidr string `url:"cidr",json:"cidr"`
-	Name string `url:"name",json:"name"`
+	Cidr string `url:"cidr",json:"cidr"` // Network/IP specification in CIDR format.
+	Name string `url:"name",json:"name"` // IP set name.
+
 }
 
 type ReadIpCidrResponse map[string]interface{}
@@ -134,10 +148,12 @@ func (c *Client) ReadIpCidr(ctx context.Context, req *ReadIpCidrRequest) (*ReadI
 }
 
 type UpdateIpCidrRequest struct {
-	Cidr    string  `url:"cidr",json:"cidr"`
+	Cidr string `url:"cidr",json:"cidr"` // Network/IP specification in CIDR format.
+	Name string `url:"name",json:"name"` // IP set name.
+
+	// The following parameters are optional
 	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Digest  *string `url:"digest,omitempty",json:"digest,omitempty"`
-	Name    string  `url:"name",json:"name"`
+	Digest  *string `url:"digest,omitempty",json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 	Nomatch *bool   `url:"nomatch,omitempty",json:"nomatch,omitempty"`
 }
 

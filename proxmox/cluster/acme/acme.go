@@ -30,9 +30,7 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 	return resp, err
 }
 
-type GetTosRequest struct {
-	Directory *string `url:"directory,omitempty",json:"directory,omitempty"`
-}
+type GetTosRequest map[string]interface{}
 
 type GetTosResponse *string
 
@@ -46,7 +44,8 @@ func (c *Client) GetTos(ctx context.Context, req *GetTosRequest) (*GetTosRespons
 
 type GetDirectoriesResponse []*struct {
 	Name string `url:"name",json:"name"`
-	Url  string `url:"url",json:"url"`
+	Url  string `url:"url",json:"url"` // URL of ACME CA directory endpoint.
+
 }
 
 // GetDirectories Get named known ACME directory endpoints.
@@ -58,10 +57,10 @@ func (c *Client) GetDirectories(ctx context.Context) (*GetDirectoriesResponse, e
 }
 
 type ChallengeschemaChallengeSchemaResponse []*struct {
+	Id     string                 `url:"id",json:"id"`
+	Name   string                 `url:"name",json:"name"` // Human readable name, falls back to id
 	Schema map[string]interface{} `url:"schema",json:"schema"`
 	Type   string                 `url:"type",json:"type"`
-	Id     string                 `url:"id",json:"id"`
-	Name   string                 `url:"name",json:"name"`
 }
 
 // ChallengeschemaChallengeSchema Get schema of ACME challenge types.

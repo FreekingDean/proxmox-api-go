@@ -20,10 +20,7 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexRequest struct {
-	Running *bool `url:"running,omitempty",json:"running,omitempty"`
-	Pending *bool `url:"pending,omitempty",json:"pending,omitempty"`
-}
+type IndexRequest map[string]interface{}
 
 type IndexResponse []*map[string]interface{}
 
@@ -36,12 +33,14 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type CreateRequest struct {
-	Zone      string  `url:"zone",json:"zone"`
-	Alias     *string `url:"alias,omitempty",json:"alias,omitempty"`
-	Tag       *int    `url:"tag,omitempty",json:"tag,omitempty"`
-	Type      *string `url:"type,omitempty",json:"type,omitempty"`
-	Vlanaware *bool   `url:"vlanaware,omitempty",json:"vlanaware,omitempty"`
-	Vnet      string  `url:"vnet",json:"vnet"`
+	Vnet string `url:"vnet",json:"vnet"` // The SDN vnet object identifier.
+	Zone string `url:"zone",json:"zone"` // zone id
+
+	// The following parameters are optional
+	Alias     *string `url:"alias,omitempty",json:"alias,omitempty"`         // alias name of the vnet
+	Tag       *int    `url:"tag,omitempty",json:"tag,omitempty"`             // vlan or vxlan id
+	Type      *string `url:"type,omitempty",json:"type,omitempty"`           // Type
+	Vlanaware *bool   `url:"vlanaware,omitempty",json:"vlanaware,omitempty"` // Allow vm VLANs to pass through this vnet.
 }
 
 type CreateResponse map[string]interface{}
@@ -55,9 +54,11 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FindRequest struct {
-	Pending *bool  `url:"pending,omitempty",json:"pending,omitempty"`
-	Running *bool  `url:"running,omitempty",json:"running,omitempty"`
-	Vnet    string `url:"vnet",json:"vnet"`
+	Vnet string `url:"vnet",json:"vnet"` // The SDN vnet object identifier.
+
+	// The following parameters are optional
+	Pending *bool `url:"pending,omitempty",json:"pending,omitempty"` // Display pending config.
+	Running *bool `url:"running,omitempty",json:"running,omitempty"` // Display running config.
 }
 
 type FindResponse map[string]interface{}
@@ -71,13 +72,15 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type UpdateRequest struct {
-	Tag       *int    `url:"tag,omitempty",json:"tag,omitempty"`
-	Vlanaware *bool   `url:"vlanaware,omitempty",json:"vlanaware,omitempty"`
-	Vnet      string  `url:"vnet",json:"vnet"`
-	Zone      *string `url:"zone,omitempty",json:"zone,omitempty"`
-	Alias     *string `url:"alias,omitempty",json:"alias,omitempty"`
-	Delete    *string `url:"delete,omitempty",json:"delete,omitempty"`
-	Digest    *string `url:"digest,omitempty",json:"digest,omitempty"`
+	Vnet string `url:"vnet",json:"vnet"` // The SDN vnet object identifier.
+
+	// The following parameters are optional
+	Alias     *string `url:"alias,omitempty",json:"alias,omitempty"`         // alias name of the vnet
+	Delete    *string `url:"delete,omitempty",json:"delete,omitempty"`       // A list of settings you want to delete.
+	Digest    *string `url:"digest,omitempty",json:"digest,omitempty"`       // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Tag       *int    `url:"tag,omitempty",json:"tag,omitempty"`             // vlan or vxlan id
+	Vlanaware *bool   `url:"vlanaware,omitempty",json:"vlanaware,omitempty"` // Allow vm VLANs to pass through this vnet.
+	Zone      *string `url:"zone,omitempty",json:"zone,omitempty"`           // zone id
 }
 
 type UpdateResponse map[string]interface{}
@@ -91,7 +94,8 @@ func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateRespons
 }
 
 type DeleteRequest struct {
-	Vnet string `url:"vnet",json:"vnet"`
+	Vnet string `url:"vnet",json:"vnet"` // The SDN vnet object identifier.
+
 }
 
 type DeleteResponse map[string]interface{}

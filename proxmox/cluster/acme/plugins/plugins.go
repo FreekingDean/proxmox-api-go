@@ -20,12 +20,11 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexRequest struct {
-	Type *string `url:"type,omitempty",json:"type,omitempty"`
-}
+type IndexRequest map[string]interface{}
 
 type IndexResponse []*struct {
-	Plugin string `url:"plugin",json:"plugin"`
+	Plugin string `url:"plugin",json:"plugin"` // Unique identifier for ACME plugin instance.
+
 }
 
 // Index ACME plugin index.
@@ -37,13 +36,15 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type CreateRequest struct {
-	ValidationDelay *int    `url:"validation-delay,omitempty",json:"validation-delay,omitempty"`
-	Api             *string `url:"api,omitempty",json:"api,omitempty"`
-	Data            *string `url:"data,omitempty",json:"data,omitempty"`
-	Disable         *bool   `url:"disable,omitempty",json:"disable,omitempty"`
-	Id              string  `url:"id",json:"id"`
-	Nodes           *string `url:"nodes,omitempty",json:"nodes,omitempty"`
-	Type            string  `url:"type",json:"type"`
+	Id   string `url:"id",json:"id"`     // ACME Plugin ID name
+	Type string `url:"type",json:"type"` // ACME challenge type.
+
+	// The following parameters are optional
+	Api             *string `url:"api,omitempty",json:"api,omitempty"`                           // API plugin name
+	Data            *string `url:"data,omitempty",json:"data,omitempty"`                         // DNS plugin data. (base64 encoded)
+	Disable         *bool   `url:"disable,omitempty",json:"disable,omitempty"`                   // Flag to disable the config.
+	Nodes           *string `url:"nodes,omitempty",json:"nodes,omitempty"`                       // List of cluster node names.
+	ValidationDelay *int    `url:"validation-delay,omitempty",json:"validation-delay,omitempty"` // Extra delay in seconds to wait before requesting validation. Allows to cope with a long TTL of DNS records.
 }
 
 type CreateResponse map[string]interface{}
@@ -57,7 +58,8 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FindRequest struct {
-	Id string `url:"id",json:"id"`
+	Id string `url:"id",json:"id"` // Unique identifier for ACME plugin instance.
+
 }
 
 type FindResponse map[string]interface{}
@@ -71,14 +73,16 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type UpdateRequest struct {
-	Digest          *string `url:"digest,omitempty",json:"digest,omitempty"`
-	Disable         *bool   `url:"disable,omitempty",json:"disable,omitempty"`
-	Id              string  `url:"id",json:"id"`
-	Nodes           *string `url:"nodes,omitempty",json:"nodes,omitempty"`
-	ValidationDelay *int    `url:"validation-delay,omitempty",json:"validation-delay,omitempty"`
-	Api             *string `url:"api,omitempty",json:"api,omitempty"`
-	Data            *string `url:"data,omitempty",json:"data,omitempty"`
-	Delete          *string `url:"delete,omitempty",json:"delete,omitempty"`
+	Id string `url:"id",json:"id"` // ACME Plugin ID name
+
+	// The following parameters are optional
+	Api             *string `url:"api,omitempty",json:"api,omitempty"`                           // API plugin name
+	Data            *string `url:"data,omitempty",json:"data,omitempty"`                         // DNS plugin data. (base64 encoded)
+	Delete          *string `url:"delete,omitempty",json:"delete,omitempty"`                     // A list of settings you want to delete.
+	Digest          *string `url:"digest,omitempty",json:"digest,omitempty"`                     // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Disable         *bool   `url:"disable,omitempty",json:"disable,omitempty"`                   // Flag to disable the config.
+	Nodes           *string `url:"nodes,omitempty",json:"nodes,omitempty"`                       // List of cluster node names.
+	ValidationDelay *int    `url:"validation-delay,omitempty",json:"validation-delay,omitempty"` // Extra delay in seconds to wait before requesting validation. Allows to cope with a long TTL of DNS records.
 }
 
 type UpdateResponse map[string]interface{}
@@ -92,7 +96,8 @@ func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateRespons
 }
 
 type DeleteRequest struct {
-	Id string `url:"id",json:"id"`
+	Id string `url:"id",json:"id"` // Unique identifier for ACME plugin instance.
+
 }
 
 type DeleteResponse map[string]interface{}

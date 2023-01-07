@@ -21,8 +21,9 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type IndexResponse []*struct {
@@ -38,22 +39,25 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type VmStatusCurrentRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type VmStatusCurrentResponse struct {
-	Uptime  *int                   `url:"uptime,omitempty",json:"uptime,omitempty"`
-	Vmid    int                    `url:"vmid",json:"vmid"`
-	Cpus    *float64               `url:"cpus,omitempty",json:"cpus,omitempty"`
-	Lock    *string                `url:"lock,omitempty",json:"lock,omitempty"`
-	Maxdisk *int                   `url:"maxdisk,omitempty",json:"maxdisk,omitempty"`
-	Maxswap *int                   `url:"maxswap,omitempty",json:"maxswap,omitempty"`
-	Status  string                 `url:"status",json:"status"`
-	Tags    *string                `url:"tags,omitempty",json:"tags,omitempty"`
-	Ha      map[string]interface{} `url:"ha",json:"ha"`
-	Maxmem  *int                   `url:"maxmem,omitempty",json:"maxmem,omitempty"`
-	Name    *string                `url:"name,omitempty",json:"name,omitempty"`
+	Ha     map[string]interface{} `url:"ha",json:"ha"`         // HA manager service status.
+	Status string                 `url:"status",json:"status"` // LXC Container status.
+	Vmid   int                    `url:"vmid",json:"vmid"`     // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Cpus    *float64 `url:"cpus,omitempty",json:"cpus,omitempty"`       // Maximum usable CPUs.
+	Lock    *string  `url:"lock,omitempty",json:"lock,omitempty"`       // The current config lock, if any.
+	Maxdisk *int     `url:"maxdisk,omitempty",json:"maxdisk,omitempty"` // Root disk size in bytes.
+	Maxmem  *int     `url:"maxmem,omitempty",json:"maxmem,omitempty"`   // Maximum memory in bytes.
+	Maxswap *int     `url:"maxswap,omitempty",json:"maxswap,omitempty"` // Maximum SWAP memory in bytes.
+	Name    *string  `url:"name,omitempty",json:"name,omitempty"`       // Container name.
+	Tags    *string  `url:"tags,omitempty",json:"tags,omitempty"`       // The current configured tags, if any.
+	Uptime  *int     `url:"uptime,omitempty",json:"uptime,omitempty"`   // Uptime.
 }
 
 // VmStatusCurrent Get virtual machine status.
@@ -65,10 +69,12 @@ func (c *Client) VmStatusCurrent(ctx context.Context, req *VmStatusCurrentReques
 }
 
 type VmStartRequest struct {
-	Debug    *bool  `url:"debug,omitempty",json:"debug,omitempty"`
-	Node     string `url:"node",json:"node"`
-	Skiplock *bool  `url:"skiplock,omitempty",json:"skiplock,omitempty"`
-	Vmid     int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Debug    *bool `url:"debug,omitempty",json:"debug,omitempty"`       // If set, enables very verbose debug log-level on start.
+	Skiplock *bool `url:"skiplock,omitempty",json:"skiplock,omitempty"` // Ignore locks - only root is allowed to use this option.
 }
 
 type VmStartResponse string
@@ -82,9 +88,11 @@ func (c *Client) VmStart(ctx context.Context, req *VmStartRequest) (*VmStartResp
 }
 
 type VmStopRequest struct {
-	Node     string `url:"node",json:"node"`
-	Skiplock *bool  `url:"skiplock,omitempty",json:"skiplock,omitempty"`
-	Vmid     int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Skiplock *bool `url:"skiplock,omitempty",json:"skiplock,omitempty"` // Ignore locks - only root is allowed to use this option.
 }
 
 type VmStopResponse string
@@ -98,10 +106,12 @@ func (c *Client) VmStop(ctx context.Context, req *VmStopRequest) (*VmStopRespons
 }
 
 type VmShutdownRequest struct {
-	Forcestop *bool  `url:"forceStop,omitempty",json:"forceStop,omitempty"`
-	Node      string `url:"node",json:"node"`
-	Timeout   *int   `url:"timeout,omitempty",json:"timeout,omitempty"`
-	Vmid      int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Forcestop *bool `url:"forceStop,omitempty",json:"forceStop,omitempty"` // Make sure the Container stops.
+	Timeout   *int  `url:"timeout,omitempty",json:"timeout,omitempty"`     // Wait maximal timeout seconds.
 }
 
 type VmShutdownResponse string
@@ -115,8 +125,9 @@ func (c *Client) VmShutdown(ctx context.Context, req *VmShutdownRequest) (*VmShu
 }
 
 type VmSuspendRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type VmSuspendResponse string
@@ -130,8 +141,9 @@ func (c *Client) VmSuspend(ctx context.Context, req *VmSuspendRequest) (*VmSuspe
 }
 
 type VmResumeRequest struct {
-	Vmid int    `url:"vmid",json:"vmid"`
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type VmResumeResponse string
@@ -145,9 +157,11 @@ func (c *Client) VmResume(ctx context.Context, req *VmResumeRequest) (*VmResumeR
 }
 
 type VmRebootRequest struct {
-	Node    string `url:"node",json:"node"`
-	Timeout *int   `url:"timeout,omitempty",json:"timeout,omitempty"`
-	Vmid    int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Timeout *int `url:"timeout,omitempty",json:"timeout,omitempty"` // Wait maximal timeout seconds for the shutdown.
 }
 
 type VmRebootResponse string

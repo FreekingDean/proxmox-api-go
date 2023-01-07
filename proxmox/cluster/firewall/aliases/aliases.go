@@ -21,10 +21,12 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexResponse []*struct {
-	Cidr    string  `url:"cidr",json:"cidr"`
+	Cidr   string `url:"cidr",json:"cidr"`
+	Digest string `url:"digest",json:"digest"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Name   string `url:"name",json:"name"`
+
+	// The following parameters are optional
 	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Digest  string  `url:"digest",json:"digest"`
-	Name    string  `url:"name",json:"name"`
 }
 
 // Index List aliases
@@ -36,9 +38,11 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 }
 
 type CreateRequest struct {
-	Cidr    string  `url:"cidr",json:"cidr"`
+	Cidr string `url:"cidr",json:"cidr"` // Network/IP specification in CIDR format.
+	Name string `url:"name",json:"name"` // Alias name.
+
+	// The following parameters are optional
 	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Name    string  `url:"name",json:"name"`
 }
 
 type CreateResponse map[string]interface{}
@@ -52,7 +56,8 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FindRequest struct {
-	Name string `url:"name",json:"name"`
+	Name string `url:"name",json:"name"` // Alias name.
+
 }
 
 type FindResponse map[string]interface{}
@@ -66,11 +71,13 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type UpdateRequest struct {
-	Rename  *string `url:"rename,omitempty",json:"rename,omitempty"`
-	Cidr    string  `url:"cidr",json:"cidr"`
+	Cidr string `url:"cidr",json:"cidr"` // Network/IP specification in CIDR format.
+	Name string `url:"name",json:"name"` // Alias name.
+
+	// The following parameters are optional
 	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Digest  *string `url:"digest,omitempty",json:"digest,omitempty"`
-	Name    string  `url:"name",json:"name"`
+	Digest  *string `url:"digest,omitempty",json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Rename  *string `url:"rename,omitempty",json:"rename,omitempty"` // Rename an existing alias.
 }
 
 type UpdateResponse map[string]interface{}
@@ -84,8 +91,10 @@ func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateRespons
 }
 
 type DeleteRequest struct {
-	Digest *string `url:"digest,omitempty",json:"digest,omitempty"`
-	Name   string  `url:"name",json:"name"`
+	Name string `url:"name",json:"name"` // Alias name.
+
+	// The following parameters are optional
+	Digest *string `url:"digest,omitempty",json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 }
 
 type DeleteResponse map[string]interface{}

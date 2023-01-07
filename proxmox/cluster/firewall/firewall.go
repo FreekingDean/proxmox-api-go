@@ -30,13 +30,7 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 	return resp, err
 }
 
-type GetOptionsResponse struct {
-	Ebtables     *bool   `url:"ebtables,omitempty",json:"ebtables,omitempty"`
-	Enable       *int    `url:"enable,omitempty",json:"enable,omitempty"`
-	LogRatelimit *string `url:"log_ratelimit,omitempty",json:"log_ratelimit,omitempty"`
-	PolicyIn     *string `url:"policy_in,omitempty",json:"policy_in,omitempty"`
-	PolicyOut    *string `url:"policy_out,omitempty",json:"policy_out,omitempty"`
-}
+type GetOptionsResponse map[string]interface{}
 
 // GetOptions Get Firewall options.
 func (c *Client) GetOptions(ctx context.Context) (*GetOptionsResponse, error) {
@@ -46,15 +40,7 @@ func (c *Client) GetOptions(ctx context.Context) (*GetOptionsResponse, error) {
 	return resp, err
 }
 
-type SetOptionsRequest struct {
-	Enable       *int    `url:"enable,omitempty",json:"enable,omitempty"`
-	LogRatelimit *string `url:"log_ratelimit,omitempty",json:"log_ratelimit,omitempty"`
-	PolicyIn     *string `url:"policy_in,omitempty",json:"policy_in,omitempty"`
-	PolicyOut    *string `url:"policy_out,omitempty",json:"policy_out,omitempty"`
-	Delete       *string `url:"delete,omitempty",json:"delete,omitempty"`
-	Digest       *string `url:"digest,omitempty",json:"digest,omitempty"`
-	Ebtables     *bool   `url:"ebtables,omitempty",json:"ebtables,omitempty"`
-}
+type SetOptionsRequest map[string]interface{}
 
 type SetOptionsResponse map[string]interface{}
 
@@ -67,8 +53,9 @@ func (c *Client) SetOptions(ctx context.Context, req *SetOptionsRequest) (*SetOp
 }
 
 type GetMacrosResponse []*struct {
-	Descr string `url:"descr",json:"descr"`
-	Macro string `url:"macro",json:"macro"`
+	Descr string `url:"descr",json:"descr"` // More verbose description (if available).
+	Macro string `url:"macro",json:"macro"` // Macro name.
+
 }
 
 // GetMacros List available macros
@@ -79,15 +66,15 @@ func (c *Client) GetMacros(ctx context.Context) (*GetMacrosResponse, error) {
 	return resp, err
 }
 
-type RefsRequest struct {
-	Type *string `url:"type,omitempty",json:"type,omitempty"`
-}
+type RefsRequest map[string]interface{}
 
 type RefsResponse []*struct {
+	Name string `url:"name",json:"name"`
+	Ref  string `url:"ref",json:"ref"`
+	Type string `url:"type",json:"type"`
+
+	// The following parameters are optional
 	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Name    string  `url:"name",json:"name"`
-	Ref     string  `url:"ref",json:"ref"`
-	Type    string  `url:"type",json:"type"`
 }
 
 // Refs Lists possible IPSet/Alias reference which are allowed in source/dest properties.

@@ -20,9 +20,7 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexRequest struct {
-	Type *string `url:"type,omitempty",json:"type,omitempty"`
-}
+type IndexRequest map[string]interface{}
 
 type IndexResponse []*struct {
 	Storage string `url:"storage",json:"storage"`
@@ -37,72 +35,74 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type CreateRequest struct {
-	Base                 *string `url:"base,omitempty",json:"base,omitempty"`
-	EncryptionKey        *string `url:"encryption-key,omitempty",json:"encryption-key,omitempty"`
-	Content              *string `url:"content,omitempty",json:"content,omitempty"`
-	Saferemove           *bool   `url:"saferemove,omitempty",json:"saferemove,omitempty"`
-	ComstarHg            *string `url:"comstar_hg,omitempty",json:"comstar_hg,omitempty"`
-	Disable              *bool   `url:"disable,omitempty",json:"disable,omitempty"`
-	Format               *string `url:"format,omitempty",json:"format,omitempty"`
-	Preallocation        *string `url:"preallocation,omitempty",json:"preallocation,omitempty"`
-	DataPool             *string `url:"data-pool,omitempty",json:"data-pool,omitempty"`
-	MasterPubkey         *string `url:"master-pubkey,omitempty",json:"master-pubkey,omitempty"`
-	Password             *string `url:"password,omitempty",json:"password,omitempty"`
-	Pool                 *string `url:"pool,omitempty",json:"pool,omitempty"`
-	Share                *string `url:"share,omitempty",json:"share,omitempty"`
-	Volume               *string `url:"volume,omitempty",json:"volume,omitempty"`
-	Fingerprint          *string `url:"fingerprint,omitempty",json:"fingerprint,omitempty"`
-	LioTpg               *string `url:"lio_tpg,omitempty",json:"lio_tpg,omitempty"`
-	Path                 *string `url:"path,omitempty",json:"path,omitempty"`
-	Storage              string  `url:"storage",json:"storage"`
-	Username             *string `url:"username,omitempty",json:"username,omitempty"`
-	Keyring              *string `url:"keyring,omitempty",json:"keyring,omitempty"`
-	Shared               *bool   `url:"shared,omitempty",json:"shared,omitempty"`
-	Krbd                 *bool   `url:"krbd,omitempty",json:"krbd,omitempty"`
-	Nocow                *bool   `url:"nocow,omitempty",json:"nocow,omitempty"`
-	Port                 *int    `url:"port,omitempty",json:"port,omitempty"`
-	FsName               *string `url:"fs-name,omitempty",json:"fs-name,omitempty"`
-	IsMountpoint         *string `url:"is_mountpoint,omitempty",json:"is_mountpoint,omitempty"`
-	SaferemoveThroughput *string `url:"saferemove_throughput,omitempty",json:"saferemove_throughput,omitempty"`
-	Sparse               *bool   `url:"sparse,omitempty",json:"sparse,omitempty"`
-	Target               *string `url:"target,omitempty",json:"target,omitempty"`
-	Bwlimit              *string `url:"bwlimit,omitempty",json:"bwlimit,omitempty"`
-	Export               *string `url:"export,omitempty",json:"export,omitempty"`
-	Maxfiles             *int    `url:"maxfiles,omitempty",json:"maxfiles,omitempty"`
-	Monhost              *string `url:"monhost,omitempty",json:"monhost,omitempty"`
-	Mountpoint           *string `url:"mountpoint,omitempty",json:"mountpoint,omitempty"`
-	Nowritecache         *bool   `url:"nowritecache,omitempty",json:"nowritecache,omitempty"`
-	PruneBackups         *string `url:"prune-backups,omitempty",json:"prune-backups,omitempty"`
-	Transport            *string `url:"transport,omitempty",json:"transport,omitempty"`
-	ComstarTg            *string `url:"comstar_tg,omitempty",json:"comstar_tg,omitempty"`
-	Smbversion           *string `url:"smbversion,omitempty",json:"smbversion,omitempty"`
-	Subdir               *string `url:"subdir,omitempty",json:"subdir,omitempty"`
-	TaggedOnly           *bool   `url:"tagged_only,omitempty",json:"tagged_only,omitempty"`
-	Domain               *string `url:"domain,omitempty",json:"domain,omitempty"`
-	Type                 string  `url:"type",json:"type"`
-	Vgname               *string `url:"vgname,omitempty",json:"vgname,omitempty"`
-	Server2              *string `url:"server2,omitempty",json:"server2,omitempty"`
-	Iscsiprovider        *string `url:"iscsiprovider,omitempty",json:"iscsiprovider,omitempty"`
-	MaxProtectedBackups  *int    `url:"max-protected-backups,omitempty",json:"max-protected-backups,omitempty"`
-	Authsupported        *string `url:"authsupported,omitempty",json:"authsupported,omitempty"`
-	Mkdir                *bool   `url:"mkdir,omitempty",json:"mkdir,omitempty"`
-	Namespace            *string `url:"namespace,omitempty",json:"namespace,omitempty"`
-	Datastore            *string `url:"datastore,omitempty",json:"datastore,omitempty"`
-	Options              *string `url:"options,omitempty",json:"options,omitempty"`
-	Portal               *string `url:"portal,omitempty",json:"portal,omitempty"`
-	Server               *string `url:"server,omitempty",json:"server,omitempty"`
-	Thinpool             *string `url:"thinpool,omitempty",json:"thinpool,omitempty"`
-	Nodes                *string `url:"nodes,omitempty",json:"nodes,omitempty"`
-	Fuse                 *bool   `url:"fuse,omitempty",json:"fuse,omitempty"`
-	Blocksize            *string `url:"blocksize,omitempty",json:"blocksize,omitempty"`
+	Storage string `url:"storage",json:"storage"` // The storage identifier.
+	Type    string `url:"type",json:"type"`       // Storage type.
+
+	// The following parameters are optional
+	Authsupported        *string `url:"authsupported,omitempty",json:"authsupported,omitempty"`                 // Authsupported.
+	Base                 *string `url:"base,omitempty",json:"base,omitempty"`                                   // Base volume. This volume is automatically activated.
+	Blocksize            *string `url:"blocksize,omitempty",json:"blocksize,omitempty"`                         // block size
+	Bwlimit              *string `url:"bwlimit,omitempty",json:"bwlimit,omitempty"`                             // Set bandwidth/io limits various operations.
+	ComstarHg            *string `url:"comstar_hg,omitempty",json:"comstar_hg,omitempty"`                       // host group for comstar views
+	ComstarTg            *string `url:"comstar_tg,omitempty",json:"comstar_tg,omitempty"`                       // target group for comstar views
+	Content              *string `url:"content,omitempty",json:"content,omitempty"`                             // Allowed content types.NOTE: the value 'rootdir' is used for Containers, and value 'images' for VMs.
+	DataPool             *string `url:"data-pool,omitempty",json:"data-pool,omitempty"`                         // Data Pool (for erasure coding only)
+	Datastore            *string `url:"datastore,omitempty",json:"datastore,omitempty"`                         // Proxmox Backup Server datastore name.
+	Disable              *bool   `url:"disable,omitempty",json:"disable,omitempty"`                             // Flag to disable the storage.
+	Domain               *string `url:"domain,omitempty",json:"domain,omitempty"`                               // CIFS domain.
+	EncryptionKey        *string `url:"encryption-key,omitempty",json:"encryption-key,omitempty"`               // Encryption key. Use 'autogen' to generate one automatically without passphrase.
+	Export               *string `url:"export,omitempty",json:"export,omitempty"`                               // NFS export path.
+	Fingerprint          *string `url:"fingerprint,omitempty",json:"fingerprint,omitempty"`                     // Certificate SHA 256 fingerprint.
+	Format               *string `url:"format,omitempty",json:"format,omitempty"`                               // Default image format.
+	FsName               *string `url:"fs-name,omitempty",json:"fs-name,omitempty"`                             // The Ceph filesystem name.
+	Fuse                 *bool   `url:"fuse,omitempty",json:"fuse,omitempty"`                                   // Mount CephFS through FUSE.
+	IsMountpoint         *string `url:"is_mountpoint,omitempty",json:"is_mountpoint,omitempty"`                 // Assume the given path is an externally managed mountpoint and consider the storage offline if it is not mounted. Using a boolean (yes/no) value serves as a shortcut to using the target path in this field.
+	Iscsiprovider        *string `url:"iscsiprovider,omitempty",json:"iscsiprovider,omitempty"`                 // iscsi provider
+	Keyring              *string `url:"keyring,omitempty",json:"keyring,omitempty"`                             // Client keyring contents (for external clusters).
+	Krbd                 *bool   `url:"krbd,omitempty",json:"krbd,omitempty"`                                   // Always access rbd through krbd kernel module.
+	LioTpg               *string `url:"lio_tpg,omitempty",json:"lio_tpg,omitempty"`                             // target portal group for Linux LIO targets
+	MasterPubkey         *string `url:"master-pubkey,omitempty",json:"master-pubkey,omitempty"`                 // Base64-encoded, PEM-formatted public RSA key. Used to encrypt a copy of the encryption-key which will be added to each encrypted backup.
+	MaxProtectedBackups  *int    `url:"max-protected-backups,omitempty",json:"max-protected-backups,omitempty"` // Maximal number of protected backups per guest. Use '-1' for unlimited.
+	Maxfiles             *int    `url:"maxfiles,omitempty",json:"maxfiles,omitempty"`                           // Deprecated: use 'prune-backups' instead. Maximal number of backup files per VM. Use '0' for unlimited.
+	Mkdir                *bool   `url:"mkdir,omitempty",json:"mkdir,omitempty"`                                 // Create the directory if it doesn't exist.
+	Monhost              *string `url:"monhost,omitempty",json:"monhost,omitempty"`                             // IP addresses of monitors (for external clusters).
+	Mountpoint           *string `url:"mountpoint,omitempty",json:"mountpoint,omitempty"`                       // mount point
+	Namespace            *string `url:"namespace,omitempty",json:"namespace,omitempty"`                         // Namespace.
+	Nocow                *bool   `url:"nocow,omitempty",json:"nocow,omitempty"`                                 // Set the NOCOW flag on files. Disables data checksumming and causes data errors to be unrecoverable from while allowing direct I/O. Only use this if data does not need to be any more safe than on a single ext4 formatted disk with no underlying raid system.
+	Nodes                *string `url:"nodes,omitempty",json:"nodes,omitempty"`                                 // List of cluster node names.
+	Nowritecache         *bool   `url:"nowritecache,omitempty",json:"nowritecache,omitempty"`                   // disable write caching on the target
+	Options              *string `url:"options,omitempty",json:"options,omitempty"`                             // NFS mount options (see 'man nfs')
+	Password             *string `url:"password,omitempty",json:"password,omitempty"`                           // Password for accessing the share/datastore.
+	Path                 *string `url:"path,omitempty",json:"path,omitempty"`                                   // File system path.
+	Pool                 *string `url:"pool,omitempty",json:"pool,omitempty"`                                   // Pool.
+	Port                 *int    `url:"port,omitempty",json:"port,omitempty"`                                   // For non default port.
+	Portal               *string `url:"portal,omitempty",json:"portal,omitempty"`                               // iSCSI portal (IP or DNS name with optional port).
+	Preallocation        *string `url:"preallocation,omitempty",json:"preallocation,omitempty"`                 // Preallocation mode for raw and qcow2 images. Using 'metadata' on raw images results in preallocation=off.
+	PruneBackups         *string `url:"prune-backups,omitempty",json:"prune-backups,omitempty"`                 // The retention options with shorter intervals are processed first with --keep-last being the very first one. Each option covers a specific period of time. We say that backups within this period are covered by this option. The next option does not take care of already covered backups and only considers older backups.
+	Saferemove           *bool   `url:"saferemove,omitempty",json:"saferemove,omitempty"`                       // Zero-out data when removing LVs.
+	SaferemoveThroughput *string `url:"saferemove_throughput,omitempty",json:"saferemove_throughput,omitempty"` // Wipe throughput (cstream -t parameter value).
+	Server               *string `url:"server,omitempty",json:"server,omitempty"`                               // Server IP or DNS name.
+	Server2              *string `url:"server2,omitempty",json:"server2,omitempty"`                             // Backup volfile server IP or DNS name.
+	Share                *string `url:"share,omitempty",json:"share,omitempty"`                                 // CIFS share.
+	Shared               *bool   `url:"shared,omitempty",json:"shared,omitempty"`                               // Mark storage as shared.
+	Smbversion           *string `url:"smbversion,omitempty",json:"smbversion,omitempty"`                       // SMB protocol version. 'default' if not set, negotiates the highest SMB2+ version supported by both the client and server.
+	Sparse               *bool   `url:"sparse,omitempty",json:"sparse,omitempty"`                               // use sparse volumes
+	Subdir               *string `url:"subdir,omitempty",json:"subdir,omitempty"`                               // Subdir to mount.
+	TaggedOnly           *bool   `url:"tagged_only,omitempty",json:"tagged_only,omitempty"`                     // Only use logical volumes tagged with 'pve-vm-ID'.
+	Target               *string `url:"target,omitempty",json:"target,omitempty"`                               // iSCSI target.
+	Thinpool             *string `url:"thinpool,omitempty",json:"thinpool,omitempty"`                           // LVM thin pool LV name.
+	Transport            *string `url:"transport,omitempty",json:"transport,omitempty"`                         // Gluster transport: tcp or rdma
+	Username             *string `url:"username,omitempty",json:"username,omitempty"`                           // RBD Id.
+	Vgname               *string `url:"vgname,omitempty",json:"vgname,omitempty"`                               // Volume group name.
+	Volume               *string `url:"volume,omitempty",json:"volume,omitempty"`                               // Glusterfs Volume.
 }
 
 type CreateResponse struct {
-	Config struct {
-		EncryptionKey *string `url:"encryption-key,omitempty",json:"encryption-key,omitempty"`
-	} `url:"config,omitempty",json:"config,omitempty"`
-	Storage string `url:"storage",json:"storage"`
-	Type    string `url:"type",json:"type"`
+	Storage string `url:"storage",json:"storage"` // The ID of the created storage.
+	Type    string `url:"type",json:"type"`       // The type of the created storage.
+
+	// The following parameters are optional
+	Config map[string]interface{} `url:"config,omitempty",json:"config,omitempty"` // Partial, possible server generated, configuration properties.
 }
 
 // Create Create a new storage.
@@ -114,7 +114,8 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FindRequest struct {
-	Storage string `url:"storage",json:"storage"`
+	Storage string `url:"storage",json:"storage"` // The storage identifier.
+
 }
 
 type FindResponse map[string]interface{}
@@ -128,61 +129,63 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type UpdateRequest struct {
-	Port                 *int    `url:"port,omitempty",json:"port,omitempty"`
-	ComstarHg            *string `url:"comstar_hg,omitempty",json:"comstar_hg,omitempty"`
-	Content              *string `url:"content,omitempty",json:"content,omitempty"`
-	Fuse                 *bool   `url:"fuse,omitempty",json:"fuse,omitempty"`
-	Krbd                 *bool   `url:"krbd,omitempty",json:"krbd,omitempty"`
-	Mountpoint           *string `url:"mountpoint,omitempty",json:"mountpoint,omitempty"`
-	Pool                 *string `url:"pool,omitempty",json:"pool,omitempty"`
-	EncryptionKey        *string `url:"encryption-key,omitempty",json:"encryption-key,omitempty"`
-	FsName               *string `url:"fs-name,omitempty",json:"fs-name,omitempty"`
-	IsMountpoint         *string `url:"is_mountpoint,omitempty",json:"is_mountpoint,omitempty"`
-	Shared               *bool   `url:"shared,omitempty",json:"shared,omitempty"`
-	ComstarTg            *string `url:"comstar_tg,omitempty",json:"comstar_tg,omitempty"`
-	Fingerprint          *string `url:"fingerprint,omitempty",json:"fingerprint,omitempty"`
-	Mkdir                *bool   `url:"mkdir,omitempty",json:"mkdir,omitempty"`
-	Nocow                *bool   `url:"nocow,omitempty",json:"nocow,omitempty"`
-	Nodes                *string `url:"nodes,omitempty",json:"nodes,omitempty"`
-	Sparse               *bool   `url:"sparse,omitempty",json:"sparse,omitempty"`
-	Digest               *string `url:"digest,omitempty",json:"digest,omitempty"`
-	Format               *string `url:"format,omitempty",json:"format,omitempty"`
-	Keyring              *string `url:"keyring,omitempty",json:"keyring,omitempty"`
-	Options              *string `url:"options,omitempty",json:"options,omitempty"`
-	Preallocation        *string `url:"preallocation,omitempty",json:"preallocation,omitempty"`
-	Smbversion           *string `url:"smbversion,omitempty",json:"smbversion,omitempty"`
-	Username             *string `url:"username,omitempty",json:"username,omitempty"`
-	Delete               *string `url:"delete,omitempty",json:"delete,omitempty"`
-	MasterPubkey         *string `url:"master-pubkey,omitempty",json:"master-pubkey,omitempty"`
-	MaxProtectedBackups  *int    `url:"max-protected-backups,omitempty",json:"max-protected-backups,omitempty"`
-	Monhost              *string `url:"monhost,omitempty",json:"monhost,omitempty"`
-	Password             *string `url:"password,omitempty",json:"password,omitempty"`
-	Server               *string `url:"server,omitempty",json:"server,omitempty"`
-	TaggedOnly           *bool   `url:"tagged_only,omitempty",json:"tagged_only,omitempty"`
-	DataPool             *string `url:"data-pool,omitempty",json:"data-pool,omitempty"`
-	Maxfiles             *int    `url:"maxfiles,omitempty",json:"maxfiles,omitempty"`
-	Namespace            *string `url:"namespace,omitempty",json:"namespace,omitempty"`
-	Nowritecache         *bool   `url:"nowritecache,omitempty",json:"nowritecache,omitempty"`
-	PruneBackups         *string `url:"prune-backups,omitempty",json:"prune-backups,omitempty"`
-	Server2              *string `url:"server2,omitempty",json:"server2,omitempty"`
-	Disable              *bool   `url:"disable,omitempty",json:"disable,omitempty"`
-	Domain               *string `url:"domain,omitempty",json:"domain,omitempty"`
-	Storage              string  `url:"storage",json:"storage"`
-	Subdir               *string `url:"subdir,omitempty",json:"subdir,omitempty"`
-	Transport            *string `url:"transport,omitempty",json:"transport,omitempty"`
-	Blocksize            *string `url:"blocksize,omitempty",json:"blocksize,omitempty"`
-	Bwlimit              *string `url:"bwlimit,omitempty",json:"bwlimit,omitempty"`
-	LioTpg               *string `url:"lio_tpg,omitempty",json:"lio_tpg,omitempty"`
-	Saferemove           *bool   `url:"saferemove,omitempty",json:"saferemove,omitempty"`
-	SaferemoveThroughput *string `url:"saferemove_throughput,omitempty",json:"saferemove_throughput,omitempty"`
+	Storage string `url:"storage",json:"storage"` // The storage identifier.
+
+	// The following parameters are optional
+	Blocksize            *string `url:"blocksize,omitempty",json:"blocksize,omitempty"`                         // block size
+	Bwlimit              *string `url:"bwlimit,omitempty",json:"bwlimit,omitempty"`                             // Set bandwidth/io limits various operations.
+	ComstarHg            *string `url:"comstar_hg,omitempty",json:"comstar_hg,omitempty"`                       // host group for comstar views
+	ComstarTg            *string `url:"comstar_tg,omitempty",json:"comstar_tg,omitempty"`                       // target group for comstar views
+	Content              *string `url:"content,omitempty",json:"content,omitempty"`                             // Allowed content types.NOTE: the value 'rootdir' is used for Containers, and value 'images' for VMs.
+	DataPool             *string `url:"data-pool,omitempty",json:"data-pool,omitempty"`                         // Data Pool (for erasure coding only)
+	Delete               *string `url:"delete,omitempty",json:"delete,omitempty"`                               // A list of settings you want to delete.
+	Digest               *string `url:"digest,omitempty",json:"digest,omitempty"`                               // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Disable              *bool   `url:"disable,omitempty",json:"disable,omitempty"`                             // Flag to disable the storage.
+	Domain               *string `url:"domain,omitempty",json:"domain,omitempty"`                               // CIFS domain.
+	EncryptionKey        *string `url:"encryption-key,omitempty",json:"encryption-key,omitempty"`               // Encryption key. Use 'autogen' to generate one automatically without passphrase.
+	Fingerprint          *string `url:"fingerprint,omitempty",json:"fingerprint,omitempty"`                     // Certificate SHA 256 fingerprint.
+	Format               *string `url:"format,omitempty",json:"format,omitempty"`                               // Default image format.
+	FsName               *string `url:"fs-name,omitempty",json:"fs-name,omitempty"`                             // The Ceph filesystem name.
+	Fuse                 *bool   `url:"fuse,omitempty",json:"fuse,omitempty"`                                   // Mount CephFS through FUSE.
+	IsMountpoint         *string `url:"is_mountpoint,omitempty",json:"is_mountpoint,omitempty"`                 // Assume the given path is an externally managed mountpoint and consider the storage offline if it is not mounted. Using a boolean (yes/no) value serves as a shortcut to using the target path in this field.
+	Keyring              *string `url:"keyring,omitempty",json:"keyring,omitempty"`                             // Client keyring contents (for external clusters).
+	Krbd                 *bool   `url:"krbd,omitempty",json:"krbd,omitempty"`                                   // Always access rbd through krbd kernel module.
+	LioTpg               *string `url:"lio_tpg,omitempty",json:"lio_tpg,omitempty"`                             // target portal group for Linux LIO targets
+	MasterPubkey         *string `url:"master-pubkey,omitempty",json:"master-pubkey,omitempty"`                 // Base64-encoded, PEM-formatted public RSA key. Used to encrypt a copy of the encryption-key which will be added to each encrypted backup.
+	MaxProtectedBackups  *int    `url:"max-protected-backups,omitempty",json:"max-protected-backups,omitempty"` // Maximal number of protected backups per guest. Use '-1' for unlimited.
+	Maxfiles             *int    `url:"maxfiles,omitempty",json:"maxfiles,omitempty"`                           // Deprecated: use 'prune-backups' instead. Maximal number of backup files per VM. Use '0' for unlimited.
+	Mkdir                *bool   `url:"mkdir,omitempty",json:"mkdir,omitempty"`                                 // Create the directory if it doesn't exist.
+	Monhost              *string `url:"monhost,omitempty",json:"monhost,omitempty"`                             // IP addresses of monitors (for external clusters).
+	Mountpoint           *string `url:"mountpoint,omitempty",json:"mountpoint,omitempty"`                       // mount point
+	Namespace            *string `url:"namespace,omitempty",json:"namespace,omitempty"`                         // Namespace.
+	Nocow                *bool   `url:"nocow,omitempty",json:"nocow,omitempty"`                                 // Set the NOCOW flag on files. Disables data checksumming and causes data errors to be unrecoverable from while allowing direct I/O. Only use this if data does not need to be any more safe than on a single ext4 formatted disk with no underlying raid system.
+	Nodes                *string `url:"nodes,omitempty",json:"nodes,omitempty"`                                 // List of cluster node names.
+	Nowritecache         *bool   `url:"nowritecache,omitempty",json:"nowritecache,omitempty"`                   // disable write caching on the target
+	Options              *string `url:"options,omitempty",json:"options,omitempty"`                             // NFS mount options (see 'man nfs')
+	Password             *string `url:"password,omitempty",json:"password,omitempty"`                           // Password for accessing the share/datastore.
+	Pool                 *string `url:"pool,omitempty",json:"pool,omitempty"`                                   // Pool.
+	Port                 *int    `url:"port,omitempty",json:"port,omitempty"`                                   // For non default port.
+	Preallocation        *string `url:"preallocation,omitempty",json:"preallocation,omitempty"`                 // Preallocation mode for raw and qcow2 images. Using 'metadata' on raw images results in preallocation=off.
+	PruneBackups         *string `url:"prune-backups,omitempty",json:"prune-backups,omitempty"`                 // The retention options with shorter intervals are processed first with --keep-last being the very first one. Each option covers a specific period of time. We say that backups within this period are covered by this option. The next option does not take care of already covered backups and only considers older backups.
+	Saferemove           *bool   `url:"saferemove,omitempty",json:"saferemove,omitempty"`                       // Zero-out data when removing LVs.
+	SaferemoveThroughput *string `url:"saferemove_throughput,omitempty",json:"saferemove_throughput,omitempty"` // Wipe throughput (cstream -t parameter value).
+	Server               *string `url:"server,omitempty",json:"server,omitempty"`                               // Server IP or DNS name.
+	Server2              *string `url:"server2,omitempty",json:"server2,omitempty"`                             // Backup volfile server IP or DNS name.
+	Shared               *bool   `url:"shared,omitempty",json:"shared,omitempty"`                               // Mark storage as shared.
+	Smbversion           *string `url:"smbversion,omitempty",json:"smbversion,omitempty"`                       // SMB protocol version. 'default' if not set, negotiates the highest SMB2+ version supported by both the client and server.
+	Sparse               *bool   `url:"sparse,omitempty",json:"sparse,omitempty"`                               // use sparse volumes
+	Subdir               *string `url:"subdir,omitempty",json:"subdir,omitempty"`                               // Subdir to mount.
+	TaggedOnly           *bool   `url:"tagged_only,omitempty",json:"tagged_only,omitempty"`                     // Only use logical volumes tagged with 'pve-vm-ID'.
+	Transport            *string `url:"transport,omitempty",json:"transport,omitempty"`                         // Gluster transport: tcp or rdma
+	Username             *string `url:"username,omitempty",json:"username,omitempty"`                           // RBD Id.
 }
 
 type UpdateResponse struct {
-	Config struct {
-		EncryptionKey *string `url:"encryption-key,omitempty",json:"encryption-key,omitempty"`
-	} `url:"config,omitempty",json:"config,omitempty"`
-	Storage string `url:"storage",json:"storage"`
-	Type    string `url:"type",json:"type"`
+	Storage string `url:"storage",json:"storage"` // The ID of the created storage.
+	Type    string `url:"type",json:"type"`       // The type of the created storage.
+
+	// The following parameters are optional
+	Config map[string]interface{} `url:"config,omitempty",json:"config,omitempty"` // Partial, possible server generated, configuration properties.
 }
 
 // Update Update storage configuration.
@@ -194,7 +197,8 @@ func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateRespons
 }
 
 type DeleteRequest struct {
-	Storage string `url:"storage",json:"storage"`
+	Storage string `url:"storage",json:"storage"` // The storage identifier.
+
 }
 
 type DeleteResponse map[string]interface{}

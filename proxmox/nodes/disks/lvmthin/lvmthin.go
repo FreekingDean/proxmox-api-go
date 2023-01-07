@@ -21,16 +21,18 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type IndexResponse []*struct {
-	Vg           string `url:"vg",json:"vg"`
-	Lv           string `url:"lv",json:"lv"`
-	LvSize       int    `url:"lv_size",json:"lv_size"`
-	MetadataSize int    `url:"metadata_size",json:"metadata_size"`
-	MetadataUsed int    `url:"metadata_used",json:"metadata_used"`
-	Used         int    `url:"used",json:"used"`
+	Lv           string `url:"lv",json:"lv"`                       // The name of the thinpool.
+	LvSize       int    `url:"lv_size",json:"lv_size"`             // The size of the thinpool in bytes.
+	MetadataSize int    `url:"metadata_size",json:"metadata_size"` // The size of the metadata lv in bytes.
+	MetadataUsed int    `url:"metadata_used",json:"metadata_used"` // The used bytes of the metadata lv.
+	Used         int    `url:"used",json:"used"`                   // The used bytes of the thinpool.
+	Vg           string `url:"vg",json:"vg"`                       // The associated volume group.
+
 }
 
 // Index List LVM thinpools
@@ -42,10 +44,12 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type CreateRequest struct {
-	AddStorage *bool  `url:"add_storage,omitempty",json:"add_storage,omitempty"`
-	Device     string `url:"device",json:"device"`
-	Name       string `url:"name",json:"name"`
-	Node       string `url:"node",json:"node"`
+	Device string `url:"device",json:"device"` // The block device you want to create the thinpool on.
+	Name   string `url:"name",json:"name"`     // The storage identifier.
+	Node   string `url:"node",json:"node"`     // The cluster node name.
+
+	// The following parameters are optional
+	AddStorage *bool `url:"add_storage,omitempty",json:"add_storage,omitempty"` // Configure storage using the thinpool.
 }
 
 type CreateResponse string
@@ -59,11 +63,13 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type DeleteRequest struct {
-	CleanupConfig *bool  `url:"cleanup-config,omitempty",json:"cleanup-config,omitempty"`
-	CleanupDisks  *bool  `url:"cleanup-disks,omitempty",json:"cleanup-disks,omitempty"`
-	Name          string `url:"name",json:"name"`
-	Node          string `url:"node",json:"node"`
-	VolumeGroup   string `url:"volume-group",json:"volume-group"`
+	Name        string `url:"name",json:"name"`                 // The storage identifier.
+	Node        string `url:"node",json:"node"`                 // The cluster node name.
+	VolumeGroup string `url:"volume-group",json:"volume-group"` // The storage identifier.
+
+	// The following parameters are optional
+	CleanupConfig *bool `url:"cleanup-config,omitempty",json:"cleanup-config,omitempty"` // Marks associated storage(s) as not available on this node anymore or removes them from the configuration (if configured for this node only).
+	CleanupDisks  *bool `url:"cleanup-disks,omitempty",json:"cleanup-disks,omitempty"`   // Also wipe disks so they can be repurposed afterwards.
 }
 
 type DeleteResponse string

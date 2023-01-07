@@ -25,8 +25,14 @@ func New(c HTTPClient) *Client {
 {{- if .Properties -}}
 struct{
 {{- range $_, $prop := .Properties }}
-  {{$prop.Name}} {{template "type" $prop}} `url:"{{$prop.JSONName}}{{ if $prop.Optional }},omitempty{{ end }}",json:"{{$prop.JSONName}}{{ if $prop.Optional }},omitempty{{ end }}"`
+  {{$prop.Name}} {{template "type" $prop}} `url:"{{$prop.JSONName}}",json:"{{$prop.JSONName}}"` {{ if $prop.Description }}// {{ $prop.Description }}{{ end }}
 {{- end}}
+{{ if .OptionalProperties }}
+// The following parameters are optional
+{{- range $_, $prop := .OptionalProperties }}
+  {{$prop.Name}} {{template "type" $prop}} `url:"{{$prop.JSONName}},omitempty",json:"{{$prop.JSONName}},omitempty"` {{ if $prop.Description }}// {{ $prop.Description }}{{ end }}
+{{- end}}
+{{- end }}
 } 
 {{- else -}}
 map[string]interface{}

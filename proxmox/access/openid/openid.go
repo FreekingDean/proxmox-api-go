@@ -33,8 +33,9 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 }
 
 type AuthUrlRequest struct {
-	Realm       string `url:"realm",json:"realm"`
-	RedirectUrl string `url:"redirect-url",json:"redirect-url"`
+	Realm       string `url:"realm",json:"realm"`               // Authentication domain ID
+	RedirectUrl string `url:"redirect-url",json:"redirect-url"` // Redirection Url. The client should set this to the used server url (location.origin).
+
 }
 
 type AuthUrlResponse string
@@ -48,17 +49,20 @@ func (c *Client) AuthUrl(ctx context.Context, req *AuthUrlRequest) (*AuthUrlResp
 }
 
 type LoginRequest struct {
-	Code        string `url:"code",json:"code"`
-	RedirectUrl string `url:"redirect-url",json:"redirect-url"`
-	State       string `url:"state",json:"state"`
+	Code        string `url:"code",json:"code"`                 // OpenId authorization code.
+	RedirectUrl string `url:"redirect-url",json:"redirect-url"` // Redirection Url. The client should set this to the used server url (location.origin).
+	State       string `url:"state",json:"state"`               // OpenId state.
+
 }
 
 type LoginResponse struct {
-	Csrfpreventiontoken string                 `url:"CSRFPreventionToken",json:"CSRFPreventionToken"`
 	Cap                 map[string]interface{} `url:"cap",json:"cap"`
-	Clustername         *string                `url:"clustername,omitempty",json:"clustername,omitempty"`
+	Csrfpreventiontoken string                 `url:"CSRFPreventionToken",json:"CSRFPreventionToken"`
 	Ticket              string                 `url:"ticket",json:"ticket"`
 	Username            string                 `url:"username",json:"username"`
+
+	// The following parameters are optional
+	Clustername *string `url:"clustername,omitempty",json:"clustername,omitempty"`
 }
 
 // Login  Verify OpenID authorization code and create a ticket.

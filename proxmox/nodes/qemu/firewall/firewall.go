@@ -21,8 +21,9 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type IndexResponse []*map[string]interface{}
@@ -36,22 +37,12 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type GetOptionsRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
-type GetOptionsResponse struct {
-	Dhcp        *bool   `url:"dhcp,omitempty",json:"dhcp,omitempty"`
-	Enable      *bool   `url:"enable,omitempty",json:"enable,omitempty"`
-	Ipfilter    *bool   `url:"ipfilter,omitempty",json:"ipfilter,omitempty"`
-	LogLevelOut *string `url:"log_level_out,omitempty",json:"log_level_out,omitempty"`
-	PolicyOut   *string `url:"policy_out,omitempty",json:"policy_out,omitempty"`
-	LogLevelIn  *string `url:"log_level_in,omitempty",json:"log_level_in,omitempty"`
-	Macfilter   *bool   `url:"macfilter,omitempty",json:"macfilter,omitempty"`
-	Ndp         *bool   `url:"ndp,omitempty",json:"ndp,omitempty"`
-	PolicyIn    *string `url:"policy_in,omitempty",json:"policy_in,omitempty"`
-	Radv        *bool   `url:"radv,omitempty",json:"radv,omitempty"`
-}
+type GetOptionsResponse map[string]interface{}
 
 // GetOptions Get VM firewall options.
 func (c *Client) GetOptions(ctx context.Context, req *GetOptionsRequest) (*GetOptionsResponse, error) {
@@ -62,20 +53,22 @@ func (c *Client) GetOptions(ctx context.Context, req *GetOptionsRequest) (*GetOp
 }
 
 type SetOptionsRequest struct {
-	Dhcp        *bool   `url:"dhcp,omitempty",json:"dhcp,omitempty"`
-	PolicyIn    *string `url:"policy_in,omitempty",json:"policy_in,omitempty"`
-	Vmid        int     `url:"vmid",json:"vmid"`
-	Delete      *string `url:"delete,omitempty",json:"delete,omitempty"`
-	Digest      *string `url:"digest,omitempty",json:"digest,omitempty"`
-	LogLevelIn  *string `url:"log_level_in,omitempty",json:"log_level_in,omitempty"`
-	Macfilter   *bool   `url:"macfilter,omitempty",json:"macfilter,omitempty"`
-	PolicyOut   *string `url:"policy_out,omitempty",json:"policy_out,omitempty"`
-	Radv        *bool   `url:"radv,omitempty",json:"radv,omitempty"`
-	Enable      *bool   `url:"enable,omitempty",json:"enable,omitempty"`
-	Ipfilter    *bool   `url:"ipfilter,omitempty",json:"ipfilter,omitempty"`
-	LogLevelOut *string `url:"log_level_out,omitempty",json:"log_level_out,omitempty"`
-	Ndp         *bool   `url:"ndp,omitempty",json:"ndp,omitempty"`
-	Node        string  `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Delete      *string `url:"delete,omitempty",json:"delete,omitempty"`               // A list of settings you want to delete.
+	Dhcp        *bool   `url:"dhcp,omitempty",json:"dhcp,omitempty"`                   // Enable DHCP.
+	Digest      *string `url:"digest,omitempty",json:"digest,omitempty"`               // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Enable      *bool   `url:"enable,omitempty",json:"enable,omitempty"`               // Enable/disable firewall rules.
+	Ipfilter    *bool   `url:"ipfilter,omitempty",json:"ipfilter,omitempty"`           // Enable default IP filters. This is equivalent to adding an empty ipfilter-net<id> ipset for every interface. Such ipsets implicitly contain sane default restrictions such as restricting IPv6 link local addresses to the one derived from the interface's MAC address. For containers the configured IP addresses will be implicitly added.
+	LogLevelIn  *string `url:"log_level_in,omitempty",json:"log_level_in,omitempty"`   // Log level for incoming traffic.
+	LogLevelOut *string `url:"log_level_out,omitempty",json:"log_level_out,omitempty"` // Log level for outgoing traffic.
+	Macfilter   *bool   `url:"macfilter,omitempty",json:"macfilter,omitempty"`         // Enable/disable MAC address filter.
+	Ndp         *bool   `url:"ndp,omitempty",json:"ndp,omitempty"`                     // Enable NDP (Neighbor Discovery Protocol).
+	PolicyIn    *string `url:"policy_in,omitempty",json:"policy_in,omitempty"`         // Input policy.
+	PolicyOut   *string `url:"policy_out,omitempty",json:"policy_out,omitempty"`       // Output policy.
+	Radv        *bool   `url:"radv,omitempty",json:"radv,omitempty"`                   // Allow sending Router Advertisement.
 }
 
 type SetOptionsResponse map[string]interface{}
@@ -89,15 +82,18 @@ func (c *Client) SetOptions(ctx context.Context, req *SetOptionsRequest) (*SetOp
 }
 
 type LogRequest struct {
-	Limit *int   `url:"limit,omitempty",json:"limit,omitempty"`
-	Node  string `url:"node",json:"node"`
-	Start *int   `url:"start,omitempty",json:"start,omitempty"`
-	Vmid  int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Limit *int `url:"limit,omitempty",json:"limit,omitempty"`
+	Start *int `url:"start,omitempty",json:"start,omitempty"`
 }
 
 type LogResponse []*struct {
-	N int    `url:"n",json:"n"`
-	T string `url:"t",json:"t"`
+	N int    `url:"n",json:"n"` // Line number
+	T string `url:"t",json:"t"` // Line text
+
 }
 
 // Log Read firewall log
@@ -109,15 +105,19 @@ func (c *Client) Log(ctx context.Context, req *LogRequest) (*LogResponse, error)
 }
 
 type RefsRequest struct {
-	Node string  `url:"node",json:"node"`
-	Type *string `url:"type,omitempty",json:"type,omitempty"`
-	Vmid int     `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Type *string `url:"type,omitempty",json:"type,omitempty"` // Only list references of specified type.
 }
 
 type RefsResponse []*struct {
+	Name string `url:"name",json:"name"`
+	Type string `url:"type",json:"type"`
+
+	// The following parameters are optional
 	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Name    string  `url:"name",json:"name"`
-	Type    string  `url:"type",json:"type"`
 }
 
 // Refs Lists possible IPSet/Alias reference which are allowed in source/dest properties.

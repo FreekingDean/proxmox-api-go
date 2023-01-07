@@ -21,8 +21,9 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type IndexResponse []*map[string]interface{}
@@ -36,9 +37,10 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type CreateRequest struct {
-	Command string `url:"command",json:"command"`
-	Node    string `url:"node",json:"node"`
-	Vmid    int    `url:"vmid",json:"vmid"`
+	Command string `url:"command",json:"command"` // The QGA command.
+	Node    string `url:"node",json:"node"`       // The cluster node name.
+	Vmid    int    `url:"vmid",json:"vmid"`       // The (unique) ID of the VM.
+
 }
 
 type CreateResponse map[string]interface{}
@@ -52,8 +54,9 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FsfreezeFreezeRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type FsfreezeFreezeResponse map[string]interface{}
@@ -67,8 +70,9 @@ func (c *Client) FsfreezeFreeze(ctx context.Context, req *FsfreezeFreezeRequest)
 }
 
 type FsfreezeStatusRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type FsfreezeStatusResponse map[string]interface{}
@@ -82,8 +86,9 @@ func (c *Client) FsfreezeStatus(ctx context.Context, req *FsfreezeStatusRequest)
 }
 
 type FsfreezeThawRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type FsfreezeThawResponse map[string]interface{}
@@ -97,8 +102,9 @@ func (c *Client) FsfreezeThaw(ctx context.Context, req *FsfreezeThawRequest) (*F
 }
 
 type FstrimRequest struct {
-	Vmid int    `url:"vmid",json:"vmid"`
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type FstrimResponse map[string]interface{}
@@ -112,8 +118,9 @@ func (c *Client) Fstrim(ctx context.Context, req *FstrimRequest) (*FstrimRespons
 }
 
 type GetFsinfoRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type GetFsinfoResponse map[string]interface{}
@@ -127,8 +134,9 @@ func (c *Client) GetFsinfo(ctx context.Context, req *GetFsinfoRequest) (*GetFsin
 }
 
 type GetHostNameRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type GetHostNameResponse map[string]interface{}
@@ -142,8 +150,9 @@ func (c *Client) GetHostName(ctx context.Context, req *GetHostNameRequest) (*Get
 }
 
 type GetMemoryBlockInfoRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type GetMemoryBlockInfoResponse map[string]interface{}
@@ -157,8 +166,9 @@ func (c *Client) GetMemoryBlockInfo(ctx context.Context, req *GetMemoryBlockInfo
 }
 
 type GetMemoryBlocksRequest struct {
-	Vmid int    `url:"vmid",json:"vmid"`
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type GetMemoryBlocksResponse map[string]interface{}
@@ -172,8 +182,9 @@ func (c *Client) GetMemoryBlocks(ctx context.Context, req *GetMemoryBlocksReques
 }
 
 type GetOsinfoRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type GetOsinfoResponse map[string]interface{}
@@ -187,8 +198,9 @@ func (c *Client) GetOsinfo(ctx context.Context, req *GetOsinfoRequest) (*GetOsin
 }
 
 type GetTimeRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type GetTimeResponse map[string]interface{}
@@ -202,8 +214,9 @@ func (c *Client) GetTime(ctx context.Context, req *GetTimeRequest) (*GetTimeResp
 }
 
 type GetTimezoneRequest struct {
-	Vmid int    `url:"vmid",json:"vmid"`
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type GetTimezoneResponse map[string]interface{}
@@ -217,8 +230,9 @@ func (c *Client) GetTimezone(ctx context.Context, req *GetTimezoneRequest) (*Get
 }
 
 type GetUsersRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type GetUsersResponse map[string]interface{}
@@ -232,8 +246,9 @@ func (c *Client) GetUsers(ctx context.Context, req *GetUsersRequest) (*GetUsersR
 }
 
 type GetVcpusRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type GetVcpusResponse map[string]interface{}
@@ -247,8 +262,9 @@ func (c *Client) GetVcpus(ctx context.Context, req *GetVcpusRequest) (*GetVcpusR
 }
 
 type InfoRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type InfoResponse map[string]interface{}
@@ -262,8 +278,9 @@ func (c *Client) Info(ctx context.Context, req *InfoRequest) (*InfoResponse, err
 }
 
 type NetworkGetInterfacesRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type NetworkGetInterfacesResponse map[string]interface{}
@@ -277,8 +294,9 @@ func (c *Client) NetworkGetInterfaces(ctx context.Context, req *NetworkGetInterf
 }
 
 type PingRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type PingResponse map[string]interface{}
@@ -292,8 +310,9 @@ func (c *Client) Ping(ctx context.Context, req *PingRequest) (*PingResponse, err
 }
 
 type ShutdownRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type ShutdownResponse map[string]interface{}
@@ -307,8 +326,9 @@ func (c *Client) Shutdown(ctx context.Context, req *ShutdownRequest) (*ShutdownR
 }
 
 type SuspendDiskRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type SuspendDiskResponse map[string]interface{}
@@ -322,8 +342,9 @@ func (c *Client) SuspendDisk(ctx context.Context, req *SuspendDiskRequest) (*Sus
 }
 
 type SuspendHybridRequest struct {
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type SuspendHybridResponse map[string]interface{}
@@ -337,8 +358,9 @@ func (c *Client) SuspendHybrid(ctx context.Context, req *SuspendHybridRequest) (
 }
 
 type SuspendRamRequest struct {
-	Vmid int    `url:"vmid",json:"vmid"`
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type SuspendRamResponse map[string]interface{}
@@ -352,11 +374,13 @@ func (c *Client) SuspendRam(ctx context.Context, req *SuspendRamRequest) (*Suspe
 }
 
 type SetUserPasswordRequest struct {
-	Node     string `url:"node",json:"node"`
-	Password string `url:"password",json:"password"`
-	Username string `url:"username",json:"username"`
-	Vmid     int    `url:"vmid",json:"vmid"`
-	Crypted  *bool  `url:"crypted,omitempty",json:"crypted,omitempty"`
+	Node     string `url:"node",json:"node"`         // The cluster node name.
+	Password string `url:"password",json:"password"` // The new password.
+	Username string `url:"username",json:"username"` // The user to set the password for.
+	Vmid     int    `url:"vmid",json:"vmid"`         // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Crypted *bool `url:"crypted,omitempty",json:"crypted,omitempty"` // set to 1 if the password has already been passed through crypt()
 }
 
 type SetUserPasswordResponse map[string]interface{}
@@ -370,14 +394,17 @@ func (c *Client) SetUserPassword(ctx context.Context, req *SetUserPasswordReques
 }
 
 type ExecRequest struct {
-	Command   *string `url:"command,omitempty",json:"command,omitempty"`
-	InputData *string `url:"input-data,omitempty",json:"input-data,omitempty"`
-	Node      string  `url:"node",json:"node"`
-	Vmid      int     `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Command   *string `url:"command,omitempty",json:"command,omitempty"`       // The command as a list of program + arguments
+	InputData *string `url:"input-data,omitempty",json:"input-data,omitempty"` // Data to pass as 'input-data' to the guest. Usually treated as STDIN to 'command'.
 }
 
 type ExecResponse struct {
-	Pid int `url:"pid",json:"pid"`
+	Pid int `url:"pid",json:"pid"` // The PID of the process started by the guest-agent.
+
 }
 
 // Exec Executes the given command in the vm via the guest-agent and returns an object with the pid.
@@ -389,19 +416,22 @@ func (c *Client) Exec(ctx context.Context, req *ExecRequest) (*ExecResponse, err
 }
 
 type ExecStatusRequest struct {
-	Node string `url:"node",json:"node"`
-	Pid  int    `url:"pid",json:"pid"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Pid  int    `url:"pid",json:"pid"`   // The PID to query
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type ExecStatusResponse struct {
-	OutData      *string `url:"out-data,omitempty",json:"out-data,omitempty"`
-	OutTruncated *bool   `url:"out-truncated,omitempty",json:"out-truncated,omitempty"`
-	Signal       *int    `url:"signal,omitempty",json:"signal,omitempty"`
-	ErrData      *string `url:"err-data,omitempty",json:"err-data,omitempty"`
-	ErrTruncated *bool   `url:"err-truncated,omitempty",json:"err-truncated,omitempty"`
-	Exitcode     *int    `url:"exitcode,omitempty",json:"exitcode,omitempty"`
-	Exited       bool    `url:"exited",json:"exited"`
+	Exited bool `url:"exited",json:"exited"` // Tells if the given command has exited yet.
+
+	// The following parameters are optional
+	ErrData      *string `url:"err-data,omitempty",json:"err-data,omitempty"`           // stderr of the process
+	ErrTruncated *bool   `url:"err-truncated,omitempty",json:"err-truncated,omitempty"` // true if stderr was not fully captured
+	Exitcode     *int    `url:"exitcode,omitempty",json:"exitcode,omitempty"`           // process exit code if it was normally terminated.
+	OutData      *string `url:"out-data,omitempty",json:"out-data,omitempty"`           // stdout of the process
+	OutTruncated *bool   `url:"out-truncated,omitempty",json:"out-truncated,omitempty"` // true if stdout was not fully captured
+	Signal       *int    `url:"signal,omitempty",json:"signal,omitempty"`               // signal number or exception code if the process was abnormally terminated.
 }
 
 // ExecStatus Gets the status of the given pid started by the guest-agent
@@ -413,14 +443,17 @@ func (c *Client) ExecStatus(ctx context.Context, req *ExecStatusRequest) (*ExecS
 }
 
 type FileReadRequest struct {
-	File string `url:"file",json:"file"`
-	Node string `url:"node",json:"node"`
-	Vmid int    `url:"vmid",json:"vmid"`
+	File string `url:"file",json:"file"` // The path to the file
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
 }
 
 type FileReadResponse struct {
-	Content   string `url:"content",json:"content"`
-	Truncated *bool  `url:"truncated,omitempty",json:"truncated,omitempty"`
+	Content string `url:"content",json:"content"` // The content of the file, maximum 16777216
+
+	// The following parameters are optional
+	Truncated *bool `url:"truncated,omitempty",json:"truncated,omitempty"` // If set to 1, the output is truncated and not complete
 }
 
 // FileRead Reads the given file via guest agent. Is limited to 16777216 bytes.
@@ -432,11 +465,13 @@ func (c *Client) FileRead(ctx context.Context, req *FileReadRequest) (*FileReadR
 }
 
 type FileWriteRequest struct {
-	File    string `url:"file",json:"file"`
-	Node    string `url:"node",json:"node"`
-	Vmid    int    `url:"vmid",json:"vmid"`
-	Content string `url:"content",json:"content"`
-	Encode  *bool  `url:"encode,omitempty",json:"encode,omitempty"`
+	Content string `url:"content",json:"content"` // The content to write into the file.
+	File    string `url:"file",json:"file"`       // The path to the file.
+	Node    string `url:"node",json:"node"`       // The cluster node name.
+	Vmid    int    `url:"vmid",json:"vmid"`       // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Encode *bool `url:"encode,omitempty",json:"encode,omitempty"` // If set, the content will be encoded as base64 (required by QEMU).Otherwise the content needs to be encoded beforehand - defaults to true.
 }
 
 type FileWriteResponse map[string]interface{}

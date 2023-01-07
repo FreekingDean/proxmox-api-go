@@ -21,9 +21,11 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexResponse []*struct {
+	Groupid string `url:"groupid",json:"groupid"`
+
+	// The following parameters are optional
 	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Groupid string  `url:"groupid",json:"groupid"`
-	Users   *string `url:"users,omitempty",json:"users,omitempty"`
+	Users   *string `url:"users,omitempty",json:"users,omitempty"` // list of users which form this group
 }
 
 // Index Group index.
@@ -35,8 +37,10 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 }
 
 type CreateRequest struct {
+	Groupid string `url:"groupid",json:"groupid"`
+
+	// The following parameters are optional
 	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Groupid string  `url:"groupid",json:"groupid"`
 }
 
 type CreateResponse map[string]interface{}
@@ -54,8 +58,10 @@ type FindRequest struct {
 }
 
 type FindResponse struct {
-	Comment *string  `url:"comment,omitempty",json:"comment,omitempty"`
 	Members []string `url:"members",json:"members"`
+
+	// The following parameters are optional
+	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
 }
 
 // Find Get group configuration.
@@ -67,7 +73,9 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type UpdateRequest struct {
-	Groupid string  `url:"groupid",json:"groupid"`
+	Groupid string `url:"groupid",json:"groupid"`
+
+	// The following parameters are optional
 	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
 }
 

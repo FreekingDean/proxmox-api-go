@@ -31,10 +31,12 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 }
 
 type CreateRequest struct {
-	Clustername string  `url:"clustername",json:"clustername"`
-	Linkn       *string `url:"link[n],omitempty",json:"link[n],omitempty"`
-	Nodeid      *int    `url:"nodeid,omitempty",json:"nodeid,omitempty"`
-	Votes       *int    `url:"votes,omitempty",json:"votes,omitempty"`
+	Clustername string `url:"clustername",json:"clustername"` // The name of the cluster.
+
+	// The following parameters are optional
+	Linkn  *string `url:"link[n],omitempty",json:"link[n],omitempty"` // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
+	Nodeid *int    `url:"nodeid,omitempty",json:"nodeid,omitempty"`   // Node id for this node.
+	Votes  *int    `url:"votes,omitempty",json:"votes,omitempty"`     // Number of votes for this node.
 }
 
 type CreateResponse string
@@ -57,22 +59,22 @@ func (c *Client) JoinApiVersionApiversion(ctx context.Context) (*JoinApiVersionA
 	return resp, err
 }
 
-type JoinInfoJoinRequest struct {
-	Node *string `url:"node,omitempty",json:"node,omitempty"`
-}
+type JoinInfoJoinRequest map[string]interface{}
 
 type JoinInfoJoinResponse struct {
-	PreferredNode string                 `url:"preferred_node",json:"preferred_node"`
-	Totem         map[string]interface{} `url:"totem",json:"totem"`
-	ConfigDigest  string                 `url:"config_digest",json:"config_digest"`
-	Nodelist      []*struct {
-		Ring0Addr   *string `url:"ring0_addr,omitempty",json:"ring0_addr,omitempty"`
-		Name        string  `url:"name",json:"name"`
-		Nodeid      *int    `url:"nodeid,omitempty",json:"nodeid,omitempty"`
-		PveAddr     string  `url:"pve_addr",json:"pve_addr"`
-		PveFp       string  `url:"pve_fp",json:"pve_fp"`
-		QuorumVotes int     `url:"quorum_votes",json:"quorum_votes"`
+	ConfigDigest string `url:"config_digest",json:"config_digest"`
+	Nodelist     []*struct {
+		Name        string `url:"name",json:"name"` // The cluster node name.
+		PveAddr     string `url:"pve_addr",json:"pve_addr"`
+		PveFp       string `url:"pve_fp",json:"pve_fp"` // Certificate SHA 256 fingerprint.
+		QuorumVotes int    `url:"quorum_votes",json:"quorum_votes"`
+
+		// The following parameters are optional
+		Nodeid    *int    `url:"nodeid,omitempty",json:"nodeid,omitempty"`         // Node id for this node.
+		Ring0Addr *string `url:"ring0_addr,omitempty",json:"ring0_addr,omitempty"` // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
 	} `url:"nodelist",json:"nodelist"`
+	PreferredNode string                 `url:"preferred_node",json:"preferred_node"` // The cluster node name.
+	Totem         map[string]interface{} `url:"totem",json:"totem"`
 }
 
 // JoinInfoJoin Get information needed to join this cluster over the connected node.
@@ -84,13 +86,15 @@ func (c *Client) JoinInfoJoin(ctx context.Context, req *JoinInfoJoinRequest) (*J
 }
 
 type JoinRequest struct {
-	Hostname    string  `url:"hostname",json:"hostname"`
-	Linkn       *string `url:"link[n],omitempty",json:"link[n],omitempty"`
-	Nodeid      *int    `url:"nodeid,omitempty",json:"nodeid,omitempty"`
-	Password    string  `url:"password",json:"password"`
-	Votes       *int    `url:"votes,omitempty",json:"votes,omitempty"`
-	Fingerprint string  `url:"fingerprint",json:"fingerprint"`
-	Force       *bool   `url:"force,omitempty",json:"force,omitempty"`
+	Fingerprint string `url:"fingerprint",json:"fingerprint"` // Certificate SHA 256 fingerprint.
+	Hostname    string `url:"hostname",json:"hostname"`       // Hostname (or IP) of an existing cluster member.
+	Password    string `url:"password",json:"password"`       // Superuser (root) password of peer node.
+
+	// The following parameters are optional
+	Force  *bool   `url:"force,omitempty",json:"force,omitempty"`     // Do not throw error if node already exists.
+	Linkn  *string `url:"link[n],omitempty",json:"link[n],omitempty"` // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
+	Nodeid *int    `url:"nodeid,omitempty",json:"nodeid,omitempty"`   // Node id for this node.
+	Votes  *int    `url:"votes,omitempty",json:"votes,omitempty"`     // Number of votes for this node
 }
 
 type JoinResponse string

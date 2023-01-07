@@ -31,10 +31,12 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 }
 
 type CreateRequest struct {
-	Contact   string  `url:"contact",json:"contact"`
-	Directory *string `url:"directory,omitempty",json:"directory,omitempty"`
-	Name      *string `url:"name,omitempty",json:"name,omitempty"`
-	TosUrl    *string `url:"tos_url,omitempty",json:"tos_url,omitempty"`
+	Contact string `url:"contact",json:"contact"` // Contact email addresses.
+
+	// The following parameters are optional
+	Directory *string `url:"directory,omitempty",json:"directory,omitempty"` // URL of ACME CA directory endpoint.
+	Name      *string `url:"name,omitempty",json:"name,omitempty"`           // ACME account config file name.
+	TosUrl    *string `url:"tos_url,omitempty",json:"tos_url,omitempty"`     // URL of CA TermsOfService - setting this indicates agreement.
 }
 
 type CreateResponse string
@@ -47,16 +49,9 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 	return resp, err
 }
 
-type FindRequest struct {
-	Name *string `url:"name,omitempty",json:"name,omitempty"`
-}
+type FindRequest map[string]interface{}
 
-type FindResponse struct {
-	Account   map[string]interface{} `url:"account,omitempty",json:"account,omitempty"`
-	Directory *string                `url:"directory,omitempty",json:"directory,omitempty"`
-	Location  *string                `url:"location,omitempty",json:"location,omitempty"`
-	Tos       *string                `url:"tos,omitempty",json:"tos,omitempty"`
-}
+type FindResponse map[string]interface{}
 
 // Find Return existing ACME account information.
 func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
@@ -66,10 +61,7 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 	return resp, err
 }
 
-type UpdateRequest struct {
-	Contact *string `url:"contact,omitempty",json:"contact,omitempty"`
-	Name    *string `url:"name,omitempty",json:"name,omitempty"`
-}
+type UpdateRequest map[string]interface{}
 
 type UpdateResponse string
 
@@ -81,9 +73,7 @@ func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateRespons
 	return resp, err
 }
 
-type DeleteRequest struct {
-	Name *string `url:"name,omitempty",json:"name,omitempty"`
-}
+type DeleteRequest map[string]interface{}
 
 type DeleteResponse string
 

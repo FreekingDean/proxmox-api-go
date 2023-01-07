@@ -21,7 +21,8 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type IndexResponse []*map[string]interface{}
@@ -35,7 +36,8 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type ConfigRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type ConfigResponse string
@@ -49,16 +51,17 @@ func (c *Client) Config(ctx context.Context, req *ConfigRequest) (*ConfigRespons
 }
 
 type ConfigdbRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type ConfigdbResponse []*struct {
-	Name               string `url:"name",json:"name"`
-	Section            string `url:"section",json:"section"`
-	Value              string `url:"value",json:"value"`
 	CanUpdateAtRuntime bool   `url:"can_update_at_runtime",json:"can_update_at_runtime"`
 	Level              string `url:"level",json:"level"`
 	Mask               string `url:"mask",json:"mask"`
+	Name               string `url:"name",json:"name"`
+	Section            string `url:"section",json:"section"`
+	Value              string `url:"value",json:"value"`
 }
 
 // Configdb Get Ceph configuration database.
@@ -70,13 +73,15 @@ func (c *Client) Configdb(ctx context.Context, req *ConfigdbRequest) (*ConfigdbR
 }
 
 type InitRequest struct {
-	PgBits         *int    `url:"pg_bits,omitempty",json:"pg_bits,omitempty"`
-	Size           *int    `url:"size,omitempty",json:"size,omitempty"`
-	ClusterNetwork *string `url:"cluster-network,omitempty",json:"cluster-network,omitempty"`
-	DisableCephx   *bool   `url:"disable_cephx,omitempty",json:"disable_cephx,omitempty"`
-	MinSize        *int    `url:"min_size,omitempty",json:"min_size,omitempty"`
-	Network        *string `url:"network,omitempty",json:"network,omitempty"`
-	Node           string  `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+	// The following parameters are optional
+	ClusterNetwork *string `url:"cluster-network,omitempty",json:"cluster-network,omitempty"` // Declare a separate cluster network, OSDs will routeheartbeat, object replication and recovery traffic over it
+	DisableCephx   *bool   `url:"disable_cephx,omitempty",json:"disable_cephx,omitempty"`     // Disable cephx authentication.WARNING: cephx is a security feature protecting against man-in-the-middle attacks. Only consider disabling cephx if your network is private!
+	MinSize        *int    `url:"min_size,omitempty",json:"min_size,omitempty"`               // Minimum number of available replicas per object to allow I/O
+	Network        *string `url:"network,omitempty",json:"network,omitempty"`                 // Use specific network for all ceph related traffic
+	PgBits         *int    `url:"pg_bits,omitempty",json:"pg_bits,omitempty"`                 // Placement group bits, used to specify the default number of placement groups.NOTE: 'osd pool default pg num' does not work for default pools.
+	Size           *int    `url:"size,omitempty",json:"size,omitempty"`                       // Targeted number of replicas per object
 }
 
 type InitResponse map[string]interface{}
@@ -90,8 +95,10 @@ func (c *Client) Init(ctx context.Context, req *InitRequest) (*InitResponse, err
 }
 
 type StopRequest struct {
-	Node    string  `url:"node",json:"node"`
-	Service *string `url:"service,omitempty",json:"service,omitempty"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+	// The following parameters are optional
+	Service *string `url:"service,omitempty",json:"service,omitempty"` // Ceph service name.
 }
 
 type StopResponse string
@@ -105,8 +112,10 @@ func (c *Client) Stop(ctx context.Context, req *StopRequest) (*StopResponse, err
 }
 
 type StartRequest struct {
-	Node    string  `url:"node",json:"node"`
-	Service *string `url:"service,omitempty",json:"service,omitempty"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+	// The following parameters are optional
+	Service *string `url:"service,omitempty",json:"service,omitempty"` // Ceph service name.
 }
 
 type StartResponse string
@@ -120,8 +129,10 @@ func (c *Client) Start(ctx context.Context, req *StartRequest) (*StartResponse, 
 }
 
 type RestartRequest struct {
-	Service *string `url:"service,omitempty",json:"service,omitempty"`
-	Node    string  `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+	// The following parameters are optional
+	Service *string `url:"service,omitempty",json:"service,omitempty"` // Ceph service name.
 }
 
 type RestartResponse string
@@ -135,7 +146,8 @@ func (c *Client) Restart(ctx context.Context, req *RestartRequest) (*RestartResp
 }
 
 type StatusRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type StatusResponse map[string]interface{}
@@ -149,7 +161,8 @@ func (c *Client) Status(ctx context.Context, req *StatusRequest) (*StatusRespons
 }
 
 type CrushRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type CrushResponse string
@@ -163,14 +176,17 @@ func (c *Client) Crush(ctx context.Context, req *CrushRequest) (*CrushResponse, 
 }
 
 type LogRequest struct {
-	Limit *int   `url:"limit,omitempty",json:"limit,omitempty"`
-	Node  string `url:"node",json:"node"`
-	Start *int   `url:"start,omitempty",json:"start,omitempty"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+	// The following parameters are optional
+	Limit *int `url:"limit,omitempty",json:"limit,omitempty"`
+	Start *int `url:"start,omitempty",json:"start,omitempty"`
 }
 
 type LogResponse []*struct {
-	N int    `url:"n",json:"n"`
-	T string `url:"t",json:"t"`
+	N int    `url:"n",json:"n"` // Line number
+	T string `url:"t",json:"t"` // Line text
+
 }
 
 // Log Read ceph log
@@ -182,7 +198,8 @@ func (c *Client) Log(ctx context.Context, req *LogRequest) (*LogResponse, error)
 }
 
 type RulesRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type RulesResponse []*map[string]interface{}
@@ -196,15 +213,18 @@ func (c *Client) Rules(ctx context.Context, req *RulesRequest) (*RulesResponse, 
 }
 
 type CmdSafetyRequest struct {
-	Action  string `url:"action",json:"action"`
-	Id      string `url:"id",json:"id"`
-	Node    string `url:"node",json:"node"`
-	Service string `url:"service",json:"service"`
+	Action  string `url:"action",json:"action"`   // Action to check
+	Id      string `url:"id",json:"id"`           // ID of the service
+	Node    string `url:"node",json:"node"`       // The cluster node name.
+	Service string `url:"service",json:"service"` // Service type
+
 }
 
 type CmdSafetyResponse struct {
-	Safe   bool    `url:"safe",json:"safe"`
-	Status *string `url:"status,omitempty",json:"status,omitempty"`
+	Safe bool `url:"safe",json:"safe"` // If it is safe to run the command.
+
+	// The following parameters are optional
+	Status *string `url:"status,omitempty",json:"status,omitempty"` // Status message given by Ceph.
 }
 
 // CmdSafety Heuristical check if it is safe to perform an action.

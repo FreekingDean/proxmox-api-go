@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"sort"
 	"strings"
 	"text/template"
 
@@ -179,12 +180,13 @@ type OperationTempl struct {
 }
 
 type Type struct {
-	Properties []*Type
-	Name       string
-	JSONName   string
-	Type       string
-	SubType    string
-	Optional   bool
+	Properties         []*Type
+	OptionalProperties []*Type
+	Name               string
+	JSONName           string
+	Type               string
+	SubType            string
+	Description        string
 }
 
 func defineType(schema *jsonschema.JSONSchema) *Type {
@@ -196,9 +198,10 @@ func defineType(schema *jsonschema.JSONSchema) *Type {
 		}
 	}
 	t := &Type{
-		Type:       StrType(schema.Type, bool(schema.Optional)),
-		Properties: make([]*Type, 0),
-		Optional:   bool(schema.Optional),
+		Type:               StrType(schema.Type, bool(schema.Optional)),
+		Properties:         make([]*Type, 0),
+		OptionalProperties: make([]*Type, 0),
+		Description:        strings.Replace(schema.Description, "\n", "", -1),
 	}
 	for name, param := range schema.Properties {
 		p := defineType(param)
@@ -207,7 +210,11 @@ func defineType(schema *jsonschema.JSONSchema) *Type {
 		}
 		p.Name = Nameify(name)
 		p.JSONName = name
-		t.Properties = append(t.Properties, p)
+		if param.Optional {
+			t.OptionalProperties = append(t.OptionalProperties, p)
+		} else {
+			t.Properties = append(t.Properties, p)
+		}
 	}
 	if schema.Items == nil && schema.Type.String == "array" {
 		t.Properties = []*Type{
@@ -219,6 +226,8 @@ func defineType(schema *jsonschema.JSONSchema) *Type {
 			defineType(schema.Items),
 		}
 	}
+	sort.Sort(&TypeSorter{t.Properties})
+	sort.Sort(&TypeSorter{t.OptionalProperties})
 	return t
 }
 
@@ -298,4 +307,22 @@ func Format(w io.Writer, source string) error {
 	}
 
 	return format.Node(w, fset, node)
+}
+
+type TypeSorter struct {
+	types []*Type
+}
+
+func (t *TypeSorter) Len() int {
+	return len(t.types)
+}
+
+func (t *TypeSorter) Less(a, b int) bool {
+	return t.types[a].Name < t.types[b].Name
+}
+
+func (t *TypeSorter) Swap(i, j int) {
+	temp := t.types[i]
+	t.types[i] = t.types[j]
+	t.types[j] = temp
 }

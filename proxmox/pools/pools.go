@@ -33,8 +33,10 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 }
 
 type CreateRequest struct {
+	Poolid string `url:"poolid",json:"poolid"`
+
+	// The following parameters are optional
 	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Poolid  string  `url:"poolid",json:"poolid"`
 }
 
 type CreateResponse map[string]interface{}
@@ -48,19 +50,25 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FindRequest struct {
-	Poolid string  `url:"poolid",json:"poolid"`
-	Type   *string `url:"type,omitempty",json:"type,omitempty"`
+	Poolid string `url:"poolid",json:"poolid"`
+
+	// The following parameters are optional
+	Type *string `url:"type,omitempty",json:"type,omitempty"`
 }
 
 type FindResponse struct {
-	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
 	Members []*struct {
-		Id      string  `url:"id",json:"id"`
-		Node    string  `url:"node",json:"node"`
+		Id   string `url:"id",json:"id"`
+		Node string `url:"node",json:"node"`
+		Type string `url:"type",json:"type"`
+
+		// The following parameters are optional
 		Storage *string `url:"storage,omitempty",json:"storage,omitempty"`
-		Type    string  `url:"type",json:"type"`
 		Vmid    *int    `url:"vmid,omitempty",json:"vmid,omitempty"`
 	} `url:"members",json:"members"`
+
+	// The following parameters are optional
+	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
 }
 
 // Find Get pool configuration.
@@ -72,11 +80,13 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type UpdateRequest struct {
-	Storage *string `url:"storage,omitempty",json:"storage,omitempty"`
-	Vms     *string `url:"vms,omitempty",json:"vms,omitempty"`
+	Poolid string `url:"poolid",json:"poolid"`
+
+	// The following parameters are optional
 	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Delete  *bool   `url:"delete,omitempty",json:"delete,omitempty"`
-	Poolid  string  `url:"poolid",json:"poolid"`
+	Delete  *bool   `url:"delete,omitempty",json:"delete,omitempty"`   // Remove vms/storage (instead of adding it).
+	Storage *string `url:"storage,omitempty",json:"storage,omitempty"` // List of storage IDs.
+	Vms     *string `url:"vms,omitempty",json:"vms,omitempty"`         // List of virtual machines.
 }
 
 type UpdateResponse map[string]interface{}

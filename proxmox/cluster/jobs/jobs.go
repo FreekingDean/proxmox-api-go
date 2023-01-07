@@ -21,7 +21,8 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexResponse []*struct {
-	Subdir string `url:"subdir",json:"subdir"`
+	Subdir string `url:"subdir",json:"subdir"` // API sub-directory endpoint
+
 }
 
 // Index Index for jobs related endpoints.
@@ -33,14 +34,17 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 }
 
 type ScheduleAnalyzeRequest struct {
-	Iterations *int   `url:"iterations,omitempty",json:"iterations,omitempty"`
-	Schedule   string `url:"schedule",json:"schedule"`
-	Starttime  *int   `url:"starttime,omitempty",json:"starttime,omitempty"`
+	Schedule string `url:"schedule",json:"schedule"` // Job schedule. The format is a subset of `systemd` calendar events.
+
+	// The following parameters are optional
+	Iterations *int `url:"iterations,omitempty",json:"iterations,omitempty"` // Number of event-iteration to simulate and return.
+	Starttime  *int `url:"starttime,omitempty",json:"starttime,omitempty"`   // UNIX timestamp to start the calculation from. Defaults to the current time.
 }
 
 type ScheduleAnalyzeResponse []*struct {
-	Utc       string `url:"utc",json:"utc"`
-	Timestamp int    `url:"timestamp",json:"timestamp"`
+	Timestamp int    `url:"timestamp",json:"timestamp"` // UNIX timestamp for the run.
+	Utc       string `url:"utc",json:"utc"`             // UTC timestamp for the run.
+
 }
 
 // ScheduleAnalyze Returns a list of future schedule runtimes.

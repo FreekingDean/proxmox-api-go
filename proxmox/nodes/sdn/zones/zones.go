@@ -21,12 +21,14 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type IndexResponse []*struct {
-	Status string `url:"status",json:"status"`
-	Zone   string `url:"zone",json:"zone"`
+	Status string `url:"status",json:"status"` // Status of zone
+	Zone   string `url:"zone",json:"zone"`     // The SDN zone object identifier.
+
 }
 
 // Index Get status for all zones.
@@ -38,8 +40,9 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type FindRequest struct {
-	Zone string `url:"zone",json:"zone"`
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Zone string `url:"zone",json:"zone"` // The SDN zone object identifier.
+
 }
 
 type FindResponse []*struct {
@@ -55,14 +58,17 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type IndexContentRequest struct {
-	Node string `url:"node",json:"node"`
-	Zone string `url:"zone",json:"zone"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Zone string `url:"zone",json:"zone"` // The SDN zone object identifier.
+
 }
 
 type IndexContentResponse []*struct {
-	Vnet      string  `url:"vnet",json:"vnet"`
-	Status    *string `url:"status,omitempty",json:"status,omitempty"`
-	Statusmsg *string `url:"statusmsg,omitempty",json:"statusmsg,omitempty"`
+	Vnet string `url:"vnet",json:"vnet"` // Vnet identifier.
+
+	// The following parameters are optional
+	Status    *string `url:"status,omitempty",json:"status,omitempty"`       // Status.
+	Statusmsg *string `url:"statusmsg,omitempty",json:"statusmsg,omitempty"` // Status details
 }
 
 // IndexContent List zone content.

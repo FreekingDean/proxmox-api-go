@@ -21,19 +21,22 @@ func New(c HTTPClient) *Client {
 }
 
 type ListRequest struct {
-	Filepath string `url:"filepath",json:"filepath"`
-	Node     string `url:"node",json:"node"`
-	Storage  string `url:"storage",json:"storage"`
-	Volume   string `url:"volume",json:"volume"`
+	Filepath string `url:"filepath",json:"filepath"` // base64-path to the directory or file being listed, or "/".
+	Node     string `url:"node",json:"node"`         // The cluster node name.
+	Storage  string `url:"storage",json:"storage"`   // The storage identifier.
+	Volume   string `url:"volume",json:"volume"`     // Backup volume ID or name. Currently only PBS snapshots are supported.
+
 }
 
 type ListResponse []*struct {
-	Filepath string `url:"filepath",json:"filepath"`
-	Leaf     bool   `url:"leaf",json:"leaf"`
-	Mtime    *int   `url:"mtime,omitempty",json:"mtime,omitempty"`
-	Size     *int   `url:"size,omitempty",json:"size,omitempty"`
-	Text     string `url:"text",json:"text"`
-	Type     string `url:"type",json:"type"`
+	Filepath string `url:"filepath",json:"filepath"` // base64 path of the current entry
+	Leaf     bool   `url:"leaf",json:"leaf"`         // If this entry is a leaf in the directory graph.
+	Text     string `url:"text",json:"text"`         // Entry display text.
+	Type     string `url:"type",json:"type"`         // Entry type.
+
+	// The following parameters are optional
+	Mtime *int `url:"mtime,omitempty",json:"mtime,omitempty"` // Entry last-modified time (unix timestamp).
+	Size  *int `url:"size,omitempty",json:"size,omitempty"`   // Entry file size.
 }
 
 // List List files and directories for single file restore under the given path.
@@ -45,10 +48,11 @@ func (c *Client) List(ctx context.Context, req *ListRequest) (*ListResponse, err
 }
 
 type DownloadRequest struct {
-	Filepath string `url:"filepath",json:"filepath"`
-	Node     string `url:"node",json:"node"`
-	Storage  string `url:"storage",json:"storage"`
-	Volume   string `url:"volume",json:"volume"`
+	Filepath string `url:"filepath",json:"filepath"` // base64-path to the directory or file to download.
+	Node     string `url:"node",json:"node"`         // The cluster node name.
+	Storage  string `url:"storage",json:"storage"`   // The storage identifier.
+	Volume   string `url:"volume",json:"volume"`     // Backup volume ID or name. Currently only PBS snapshots are supported.
+
 }
 
 type DownloadResponse interface{}

@@ -21,15 +21,17 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"`
+	Node string `url:"node",json:"node"` // The cluster node name.
+
 }
 
 type IndexResponse []*struct {
-	Device   string `url:"device",json:"device"`
-	Options  string `url:"options",json:"options"`
-	Path     string `url:"path",json:"path"`
-	Type     string `url:"type",json:"type"`
-	Unitfile string `url:"unitfile",json:"unitfile"`
+	Device   string `url:"device",json:"device"`     // The mounted device.
+	Options  string `url:"options",json:"options"`   // The mount options.
+	Path     string `url:"path",json:"path"`         // The mount path.
+	Type     string `url:"type",json:"type"`         // The filesystem type.
+	Unitfile string `url:"unitfile",json:"unitfile"` // The path of the mount unit.
+
 }
 
 // Index PVE Managed Directory storages.
@@ -41,11 +43,13 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type CreateRequest struct {
-	AddStorage *bool   `url:"add_storage,omitempty",json:"add_storage,omitempty"`
-	Device     string  `url:"device",json:"device"`
-	Filesystem *string `url:"filesystem,omitempty",json:"filesystem,omitempty"`
-	Name       string  `url:"name",json:"name"`
-	Node       string  `url:"node",json:"node"`
+	Device string `url:"device",json:"device"` // The block device you want to create the filesystem on.
+	Name   string `url:"name",json:"name"`     // The storage identifier.
+	Node   string `url:"node",json:"node"`     // The cluster node name.
+
+	// The following parameters are optional
+	AddStorage *bool   `url:"add_storage,omitempty",json:"add_storage,omitempty"` // Configure storage using the directory.
+	Filesystem *string `url:"filesystem,omitempty",json:"filesystem,omitempty"`   // The desired filesystem.
 }
 
 type CreateResponse string
@@ -59,10 +63,12 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type DeleteRequest struct {
-	CleanupDisks  *bool  `url:"cleanup-disks,omitempty",json:"cleanup-disks,omitempty"`
-	Name          string `url:"name",json:"name"`
-	Node          string `url:"node",json:"node"`
-	CleanupConfig *bool  `url:"cleanup-config,omitempty",json:"cleanup-config,omitempty"`
+	Name string `url:"name",json:"name"` // The storage identifier.
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+	// The following parameters are optional
+	CleanupConfig *bool `url:"cleanup-config,omitempty",json:"cleanup-config,omitempty"` // Marks associated storage(s) as not available on this node anymore or removes them from the configuration (if configured for this node only).
+	CleanupDisks  *bool `url:"cleanup-disks,omitempty",json:"cleanup-disks,omitempty"`   // Also wipe disk so it can be repurposed afterwards.
 }
 
 type DeleteResponse string
