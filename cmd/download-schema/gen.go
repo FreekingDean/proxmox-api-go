@@ -130,16 +130,18 @@ func LoadPackage(curdir string, s *jsonschema.Schema) error {
 					return err
 				}
 			} else {
-				for _, info := range c.Info {
-					methodName := Nameify(info.Name)
-					textName := Nameify(c.Text)
-					if !strings.HasSuffix(methodName, textName) {
-						methodName += textName
+				for _, key := range keys {
+					if info, ok := c.Info[key]; ok {
+						methodName := Nameify(info.Name)
+						textName := Nameify(c.Text)
+						if !strings.HasSuffix(methodName, textName) {
+							methodName += textName
+						}
+						p.Methods = append(
+							p.Methods,
+							genMethod(methodName, info, c.Path),
+						)
 					}
-					p.Methods = append(
-						p.Methods,
-						genMethod(methodName, info, c.Path),
-					)
 				}
 			}
 		}
