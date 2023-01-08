@@ -100,6 +100,23 @@ func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteRespons
 	return resp, err
 }
 
+type GetSnapshotConfigRequest struct {
+	Node     string `url:"node",json:"node"`         // The cluster node name.
+	Snapname string `url:"snapname",json:"snapname"` // The name of the snapshot.
+	Vmid     int    `url:"vmid",json:"vmid"`         // The (unique) ID of the VM.
+
+}
+
+type GetSnapshotConfigResponse map[string]interface{}
+
+// GetSnapshotConfig Get snapshot configuration
+func (c *Client) GetSnapshotConfig(ctx context.Context, req *GetSnapshotConfigRequest) (*GetSnapshotConfigResponse, error) {
+	var resp *GetSnapshotConfigResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/snapshot/{snapname}/config", "GET", &resp, req)
+	return resp, err
+}
+
 type UpdateSnapshotConfigRequest struct {
 	Node     string `url:"node",json:"node"`         // The cluster node name.
 	Snapname string `url:"snapname",json:"snapname"` // The name of the snapshot.
@@ -116,23 +133,6 @@ func (c *Client) UpdateSnapshotConfig(ctx context.Context, req *UpdateSnapshotCo
 	var resp *UpdateSnapshotConfigResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/snapshot/{snapname}/config", "PUT", &resp, req)
-	return resp, err
-}
-
-type GetSnapshotConfigRequest struct {
-	Node     string `url:"node",json:"node"`         // The cluster node name.
-	Snapname string `url:"snapname",json:"snapname"` // The name of the snapshot.
-	Vmid     int    `url:"vmid",json:"vmid"`         // The (unique) ID of the VM.
-
-}
-
-type GetSnapshotConfigResponse map[string]interface{}
-
-// GetSnapshotConfig Get snapshot configuration
-func (c *Client) GetSnapshotConfig(ctx context.Context, req *GetSnapshotConfigRequest) (*GetSnapshotConfigResponse, error) {
-	var resp *GetSnapshotConfigResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/snapshot/{snapname}/config", "GET", &resp, req)
 	return resp, err
 }
 

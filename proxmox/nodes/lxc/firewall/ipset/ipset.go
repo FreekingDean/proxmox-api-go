@@ -127,26 +127,6 @@ func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteRespons
 	return resp, err
 }
 
-type RemoveIpCidrRequest struct {
-	Cidr string `url:"cidr",json:"cidr"` // Network/IP specification in CIDR format.
-	Name string `url:"name",json:"name"` // IP set name.
-	Node string `url:"node",json:"node"` // The cluster node name.
-	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
-
-	// The following parameters are optional
-	Digest *string `url:"digest,omitempty",json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-}
-
-type RemoveIpCidrResponse map[string]interface{}
-
-// RemoveIpCidr Remove IP or Network from IPSet.
-func (c *Client) RemoveIpCidr(ctx context.Context, req *RemoveIpCidrRequest) (*RemoveIpCidrResponse, error) {
-	var resp *RemoveIpCidrResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}/{cidr}", "DELETE", &resp, req)
-	return resp, err
-}
-
 type ReadIpCidrRequest struct {
 	Cidr string `url:"cidr",json:"cidr"` // Network/IP specification in CIDR format.
 	Name string `url:"name",json:"name"` // IP set name.
@@ -184,5 +164,25 @@ func (c *Client) UpdateIpCidr(ctx context.Context, req *UpdateIpCidrRequest) (*U
 	var resp *UpdateIpCidrResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}/{cidr}", "PUT", &resp, req)
+	return resp, err
+}
+
+type RemoveIpCidrRequest struct {
+	Cidr string `url:"cidr",json:"cidr"` // Network/IP specification in CIDR format.
+	Name string `url:"name",json:"name"` // IP set name.
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Digest *string `url:"digest,omitempty",json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+}
+
+type RemoveIpCidrResponse map[string]interface{}
+
+// RemoveIpCidr Remove IP or Network from IPSet.
+func (c *Client) RemoveIpCidr(ctx context.Context, req *RemoveIpCidrRequest) (*RemoveIpCidrResponse, error) {
+	var resp *RemoveIpCidrResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/firewall/ipset/{name}/{cidr}", "DELETE", &resp, req)
 	return resp, err
 }

@@ -57,21 +57,6 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 	return resp, err
 }
 
-type DeleteSubscriptionRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
-
-}
-
-type DeleteSubscriptionResponse map[string]interface{}
-
-// DeleteSubscription Delete subscription key of this node.
-func (c *Client) DeleteSubscription(ctx context.Context, req *DeleteSubscriptionRequest) (*DeleteSubscriptionResponse, error) {
-	var resp *DeleteSubscriptionResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/subscription", "DELETE", &resp, req)
-	return resp, err
-}
-
 type GetSubscriptionRequest struct {
 	Node string `url:"node",json:"node"` // The cluster node name.
 
@@ -117,6 +102,21 @@ func (c *Client) SetSubscription(ctx context.Context, req *SetSubscriptionReques
 	var resp *SetSubscriptionResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/subscription", "PUT", &resp, req)
+	return resp, err
+}
+
+type DeleteSubscriptionRequest struct {
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+}
+
+type DeleteSubscriptionResponse map[string]interface{}
+
+// DeleteSubscription Delete subscription key of this node.
+func (c *Client) DeleteSubscription(ctx context.Context, req *DeleteSubscriptionRequest) (*DeleteSubscriptionResponse, error) {
+	var resp *DeleteSubscriptionResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/subscription", "DELETE", &resp, req)
 	return resp, err
 }
 
@@ -627,24 +627,6 @@ func (c *Client) Migrateall(ctx context.Context, req *MigrateallRequest) (*Migra
 	return resp, err
 }
 
-type WriteEtcHostsRequest struct {
-	Data string `url:"data",json:"data"` // The target content of /etc/hosts.
-	Node string `url:"node",json:"node"` // The cluster node name.
-
-	// The following parameters are optional
-	Digest *string `url:"digest,omitempty",json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-}
-
-type WriteEtcHostsResponse map[string]interface{}
-
-// WriteEtcHosts Write /etc/hosts.
-func (c *Client) WriteEtcHosts(ctx context.Context, req *WriteEtcHostsRequest) (*WriteEtcHostsResponse, error) {
-	var resp *WriteEtcHostsResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/hosts", "POST", &resp, req)
-	return resp, err
-}
-
 type GetEtcHostsRequest struct {
 	Node string `url:"node",json:"node"` // The cluster node name.
 
@@ -662,5 +644,23 @@ func (c *Client) GetEtcHosts(ctx context.Context, req *GetEtcHostsRequest) (*Get
 	var resp *GetEtcHostsResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/hosts", "GET", &resp, req)
+	return resp, err
+}
+
+type WriteEtcHostsRequest struct {
+	Data string `url:"data",json:"data"` // The target content of /etc/hosts.
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+	// The following parameters are optional
+	Digest *string `url:"digest,omitempty",json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+}
+
+type WriteEtcHostsResponse map[string]interface{}
+
+// WriteEtcHosts Write /etc/hosts.
+func (c *Client) WriteEtcHosts(ctx context.Context, req *WriteEtcHostsRequest) (*WriteEtcHostsResponse, error) {
+	var resp *WriteEtcHostsResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/hosts", "POST", &resp, req)
 	return resp, err
 }

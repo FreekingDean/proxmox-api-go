@@ -72,26 +72,6 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 	return resp, err
 }
 
-type DeletePrunebackupsRequest struct {
-	Node    string `url:"node",json:"node"`       // The cluster node name.
-	Storage string `url:"storage",json:"storage"` // The storage identifier.
-
-	// The following parameters are optional
-	PruneBackups *string `url:"prune-backups,omitempty",json:"prune-backups,omitempty"` // Use these retention options instead of those from the storage configuration.
-	Type         *string `url:"type,omitempty",json:"type,omitempty"`                   // Either 'qemu' or 'lxc'. Only consider backups for guests of this type.
-	Vmid         *int    `url:"vmid,omitempty",json:"vmid,omitempty"`                   // Only prune backups for this VM.
-}
-
-type DeletePrunebackupsResponse string
-
-// DeletePrunebackups Prune backups. Only those using the standard naming scheme are considered.
-func (c *Client) DeletePrunebackups(ctx context.Context, req *DeletePrunebackupsRequest) (*DeletePrunebackupsResponse, error) {
-	var resp *DeletePrunebackupsResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/prunebackups", "DELETE", &resp, req)
-	return resp, err
-}
-
 type DryrunPrunebackupsRequest struct {
 	Node    string `url:"node",json:"node"`       // The cluster node name.
 	Storage string `url:"storage",json:"storage"` // The storage identifier.
@@ -117,6 +97,26 @@ func (c *Client) DryrunPrunebackups(ctx context.Context, req *DryrunPrunebackups
 	var resp *DryrunPrunebackupsResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/prunebackups", "GET", &resp, req)
+	return resp, err
+}
+
+type DeletePrunebackupsRequest struct {
+	Node    string `url:"node",json:"node"`       // The cluster node name.
+	Storage string `url:"storage",json:"storage"` // The storage identifier.
+
+	// The following parameters are optional
+	PruneBackups *string `url:"prune-backups,omitempty",json:"prune-backups,omitempty"` // Use these retention options instead of those from the storage configuration.
+	Type         *string `url:"type,omitempty",json:"type,omitempty"`                   // Either 'qemu' or 'lxc'. Only consider backups for guests of this type.
+	Vmid         *int    `url:"vmid,omitempty",json:"vmid,omitempty"`                   // Only prune backups for this VM.
+}
+
+type DeletePrunebackupsResponse string
+
+// DeletePrunebackups Prune backups. Only those using the standard naming scheme are considered.
+func (c *Client) DeletePrunebackups(ctx context.Context, req *DeletePrunebackupsRequest) (*DeletePrunebackupsResponse, error) {
+	var resp *DeletePrunebackupsResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/prunebackups", "DELETE", &resp, req)
 	return resp, err
 }
 

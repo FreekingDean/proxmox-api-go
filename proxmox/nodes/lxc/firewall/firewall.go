@@ -36,22 +36,6 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 	return resp, err
 }
 
-type GetOptionsRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
-	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
-
-}
-
-type GetOptionsResponse map[string]interface{}
-
-// GetOptions Get VM firewall options.
-func (c *Client) GetOptions(ctx context.Context, req *GetOptionsRequest) (*GetOptionsResponse, error) {
-	var resp *GetOptionsResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/firewall/options", "GET", &resp, req)
-	return resp, err
-}
-
 type SetOptionsRequest struct {
 	Node string `url:"node",json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
@@ -78,6 +62,22 @@ func (c *Client) SetOptions(ctx context.Context, req *SetOptionsRequest) (*SetOp
 	var resp *SetOptionsResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/firewall/options", "PUT", &resp, req)
+	return resp, err
+}
+
+type GetOptionsRequest struct {
+	Node string `url:"node",json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+
+}
+
+type GetOptionsResponse map[string]interface{}
+
+// GetOptions Get VM firewall options.
+func (c *Client) GetOptions(ctx context.Context, req *GetOptionsRequest) (*GetOptionsResponse, error) {
+	var resp *GetOptionsResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/firewall/options", "GET", &resp, req)
 	return resp, err
 }
 

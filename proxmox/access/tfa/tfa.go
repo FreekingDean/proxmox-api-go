@@ -110,24 +110,6 @@ func (c *Client) ChildCreate(ctx context.Context, req *ChildCreateRequest) (*Chi
 	return resp, err
 }
 
-type DeleteTfaIdRequest struct {
-	Id     string `url:"id",json:"id"`         // A TFA entry id.
-	Userid string `url:"userid",json:"userid"` // User ID
-
-	// The following parameters are optional
-	Password *string `url:"password,omitempty",json:"password,omitempty"` // The current password.
-}
-
-type DeleteTfaIdResponse map[string]interface{}
-
-// DeleteTfaId Delete a TFA entry by ID.
-func (c *Client) DeleteTfaId(ctx context.Context, req *DeleteTfaIdRequest) (*DeleteTfaIdResponse, error) {
-	var resp *DeleteTfaIdResponse
-
-	err := c.httpClient.Do(ctx, "/access/tfa/{userid}/{id}", "DELETE", &resp, req)
-	return resp, err
-}
-
 type GetTfaEntryIdRequest struct {
 	Id     string `url:"id",json:"id"`         // A TFA entry id.
 	Userid string `url:"userid",json:"userid"` // User ID
@@ -169,5 +151,23 @@ func (c *Client) UpdateTfaEntryId(ctx context.Context, req *UpdateTfaEntryIdRequ
 	var resp *UpdateTfaEntryIdResponse
 
 	err := c.httpClient.Do(ctx, "/access/tfa/{userid}/{id}", "PUT", &resp, req)
+	return resp, err
+}
+
+type DeleteTfaIdRequest struct {
+	Id     string `url:"id",json:"id"`         // A TFA entry id.
+	Userid string `url:"userid",json:"userid"` // User ID
+
+	// The following parameters are optional
+	Password *string `url:"password,omitempty",json:"password,omitempty"` // The current password.
+}
+
+type DeleteTfaIdResponse map[string]interface{}
+
+// DeleteTfaId Delete a TFA entry by ID.
+func (c *Client) DeleteTfaId(ctx context.Context, req *DeleteTfaIdRequest) (*DeleteTfaIdResponse, error) {
+	var resp *DeleteTfaIdResponse
+
+	err := c.httpClient.Do(ctx, "/access/tfa/{userid}/{id}", "DELETE", &resp, req)
 	return resp, err
 }

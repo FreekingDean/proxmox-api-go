@@ -118,24 +118,6 @@ func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteRespons
 	return resp, err
 }
 
-type DeleteRulePosRequest struct {
-	Group string `url:"group",json:"group"` // Security Group name.
-
-	// The following parameters are optional
-	Digest *string `url:"digest,omitempty",json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-	Pos    *int    `url:"pos,omitempty",json:"pos,omitempty"`       // Update rule at position <pos>.
-}
-
-type DeleteRulePosResponse map[string]interface{}
-
-// DeleteRulePos Delete rule.
-func (c *Client) DeleteRulePos(ctx context.Context, req *DeleteRulePosRequest) (*DeleteRulePosResponse, error) {
-	var resp *DeleteRulePosResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/firewall/groups/{group}/{pos}", "DELETE", &resp, req)
-	return resp, err
-}
-
 type GetRulePosRequest struct {
 	Group string `url:"group",json:"group"` // Security Group name.
 
@@ -201,5 +183,23 @@ func (c *Client) UpdateRulePos(ctx context.Context, req *UpdateRulePosRequest) (
 	var resp *UpdateRulePosResponse
 
 	err := c.httpClient.Do(ctx, "/cluster/firewall/groups/{group}/{pos}", "PUT", &resp, req)
+	return resp, err
+}
+
+type DeleteRulePosRequest struct {
+	Group string `url:"group",json:"group"` // Security Group name.
+
+	// The following parameters are optional
+	Digest *string `url:"digest,omitempty",json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Pos    *int    `url:"pos,omitempty",json:"pos,omitempty"`       // Update rule at position <pos>.
+}
+
+type DeleteRulePosResponse map[string]interface{}
+
+// DeleteRulePos Delete rule.
+func (c *Client) DeleteRulePos(ctx context.Context, req *DeleteRulePosRequest) (*DeleteRulePosResponse, error) {
+	var resp *DeleteRulePosResponse
+
+	err := c.httpClient.Do(ctx, "/cluster/firewall/groups/{group}/{pos}", "DELETE", &resp, req)
 	return resp, err
 }

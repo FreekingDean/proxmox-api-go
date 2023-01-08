@@ -35,23 +35,6 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 	return resp, err
 }
 
-type RenewCertificateRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
-
-	// The following parameters are optional
-	Force *bool `url:"force,omitempty",json:"force,omitempty"` // Force renewal even if expiry is more than 30 days away.
-}
-
-type RenewCertificateResponse string
-
-// RenewCertificate Renew existing certificate from CA.
-func (c *Client) RenewCertificate(ctx context.Context, req *RenewCertificateRequest) (*RenewCertificateResponse, error) {
-	var resp *RenewCertificateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates/acme/certificate", "PUT", &resp, req)
-	return resp, err
-}
-
 type RevokeCertificateRequest struct {
 	Node string `url:"node",json:"node"` // The cluster node name.
 
@@ -81,5 +64,22 @@ func (c *Client) NewCertificate(ctx context.Context, req *NewCertificateRequest)
 	var resp *NewCertificateResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates/acme/certificate", "POST", &resp, req)
+	return resp, err
+}
+
+type RenewCertificateRequest struct {
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+	// The following parameters are optional
+	Force *bool `url:"force,omitempty",json:"force,omitempty"` // Force renewal even if expiry is more than 30 days away.
+}
+
+type RenewCertificateResponse string
+
+// RenewCertificate Renew existing certificate from CA.
+func (c *Client) RenewCertificate(ctx context.Context, req *RenewCertificateRequest) (*RenewCertificateResponse, error) {
+	var resp *RenewCertificateResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates/acme/certificate", "PUT", &resp, req)
 	return resp, err
 }

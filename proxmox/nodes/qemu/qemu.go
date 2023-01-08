@@ -760,31 +760,6 @@ func (c *Client) MoveVmDiskMoveDisk(ctx context.Context, req *MoveVmDiskMoveDisk
 	return resp, err
 }
 
-type MigrateVmMigrateRequest struct {
-	Node   string `url:"node",json:"node"`     // The cluster node name.
-	Target string `url:"target",json:"target"` // Target node.
-	Vmid   int    `url:"vmid",json:"vmid"`     // The (unique) ID of the VM.
-
-	// The following parameters are optional
-	Bwlimit          *int    `url:"bwlimit,omitempty",json:"bwlimit,omitempty"`                     // Override I/O bandwidth limit (in KiB/s).
-	Force            *bool   `url:"force,omitempty",json:"force,omitempty"`                         // Allow to migrate VMs which use local devices. Only root may use this option.
-	MigrationNetwork *string `url:"migration_network,omitempty",json:"migration_network,omitempty"` // CIDR of the (sub) network that is used for migration.
-	MigrationType    *string `url:"migration_type,omitempty",json:"migration_type,omitempty"`       // Migration traffic is encrypted using an SSH tunnel by default. On secure, completely private networks this can be disabled to increase performance.
-	Online           *bool   `url:"online,omitempty",json:"online,omitempty"`                       // Use online/live migration if VM is running. Ignored if VM is stopped.
-	Targetstorage    *string `url:"targetstorage,omitempty",json:"targetstorage,omitempty"`         // Mapping from source to target storages. Providing only a single storage ID maps all source storages to that storage. Providing the special value '1' will map each source storage to itself.
-	WithLocalDisks   *bool   `url:"with-local-disks,omitempty",json:"with-local-disks,omitempty"`   // Enable live storage migration for local disk
-}
-
-type MigrateVmMigrateResponse string
-
-// MigrateVmMigrate Migrate virtual machine. Creates a new migration task.
-func (c *Client) MigrateVmMigrate(ctx context.Context, req *MigrateVmMigrateRequest) (*MigrateVmMigrateResponse, error) {
-	var resp *MigrateVmMigrateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/migrate", "POST", &resp, req)
-	return resp, err
-}
-
 type MigrateVmPreconditionMigrateRequest struct {
 	Node string `url:"node",json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
@@ -808,6 +783,31 @@ func (c *Client) MigrateVmPreconditionMigrate(ctx context.Context, req *MigrateV
 	var resp *MigrateVmPreconditionMigrateResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/migrate", "GET", &resp, req)
+	return resp, err
+}
+
+type MigrateVmMigrateRequest struct {
+	Node   string `url:"node",json:"node"`     // The cluster node name.
+	Target string `url:"target",json:"target"` // Target node.
+	Vmid   int    `url:"vmid",json:"vmid"`     // The (unique) ID of the VM.
+
+	// The following parameters are optional
+	Bwlimit          *int    `url:"bwlimit,omitempty",json:"bwlimit,omitempty"`                     // Override I/O bandwidth limit (in KiB/s).
+	Force            *bool   `url:"force,omitempty",json:"force,omitempty"`                         // Allow to migrate VMs which use local devices. Only root may use this option.
+	MigrationNetwork *string `url:"migration_network,omitempty",json:"migration_network,omitempty"` // CIDR of the (sub) network that is used for migration.
+	MigrationType    *string `url:"migration_type,omitempty",json:"migration_type,omitempty"`       // Migration traffic is encrypted using an SSH tunnel by default. On secure, completely private networks this can be disabled to increase performance.
+	Online           *bool   `url:"online,omitempty",json:"online,omitempty"`                       // Use online/live migration if VM is running. Ignored if VM is stopped.
+	Targetstorage    *string `url:"targetstorage,omitempty",json:"targetstorage,omitempty"`         // Mapping from source to target storages. Providing only a single storage ID maps all source storages to that storage. Providing the special value '1' will map each source storage to itself.
+	WithLocalDisks   *bool   `url:"with-local-disks,omitempty",json:"with-local-disks,omitempty"`   // Enable live storage migration for local disk
+}
+
+type MigrateVmMigrateResponse string
+
+// MigrateVmMigrate Migrate virtual machine. Creates a new migration task.
+func (c *Client) MigrateVmMigrate(ctx context.Context, req *MigrateVmMigrateRequest) (*MigrateVmMigrateResponse, error) {
+	var resp *MigrateVmMigrateResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/migrate", "POST", &resp, req)
 	return resp, err
 }
 

@@ -30,6 +30,10 @@ func gen(schema []*jsonschema.Schema) error {
 	return nil
 }
 
+var (
+	keys []string = []string{"GET", "POST", "PUT", "DELETE"}
+)
+
 func LoadPackage(curdir string, s *jsonschema.Schema) error {
 	packageName := PackageNameify(Nameify(s.Text))
 	dir := curdir + "/" + packageName
@@ -104,16 +108,18 @@ func LoadPackage(curdir string, s *jsonschema.Schema) error {
 						return err
 					}
 				} else {
-					for _, info := range cc.Info {
-						methodName := Nameify(info.Name)
-						textName := Nameify(cc.Text)
-						if !strings.HasSuffix(methodName, textName) {
-							methodName += textName
+					for _, key := range keys {
+						if info, ok := cc.Info[key]; ok {
+							methodName := Nameify(info.Name)
+							textName := Nameify(cc.Text)
+							if !strings.HasSuffix(methodName, textName) {
+								methodName += textName
+							}
+							p.Methods = append(
+								p.Methods,
+								genMethod(methodName, info, cc.Path),
+							)
 						}
-						p.Methods = append(
-							p.Methods,
-							genMethod(methodName, info, cc.Path),
-						)
 					}
 				}
 			}
