@@ -50,23 +50,6 @@ func (c *Client) Info(ctx context.Context, req *InfoRequest) (*InfoResponse, err
 	return resp, err
 }
 
-type RemoveCustomCertCustomRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
-
-	// The following parameters are optional
-	Restart *bool `url:"restart,omitempty",json:"restart,omitempty"` // Restart pveproxy.
-}
-
-type RemoveCustomCertCustomResponse map[string]interface{}
-
-// RemoveCustomCertCustom DELETE custom certificate chain and key.
-func (c *Client) RemoveCustomCertCustom(ctx context.Context, req *RemoveCustomCertCustomRequest) (*RemoveCustomCertCustomResponse, error) {
-	var resp *RemoveCustomCertCustomResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates/custom", "DELETE", &resp, req)
-	return resp, err
-}
-
 type UploadCustomCertCustomRequest struct {
 	Certificates string `url:"certificates",json:"certificates"` // PEM encoded certificate (chain).
 	Node         string `url:"node",json:"node"`                 // The cluster node name.
@@ -84,5 +67,22 @@ func (c *Client) UploadCustomCertCustom(ctx context.Context, req *UploadCustomCe
 	var resp *UploadCustomCertCustomResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates/custom", "POST", &resp, req)
+	return resp, err
+}
+
+type RemoveCustomCertCustomRequest struct {
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+	// The following parameters are optional
+	Restart *bool `url:"restart,omitempty",json:"restart,omitempty"` // Restart pveproxy.
+}
+
+type RemoveCustomCertCustomResponse map[string]interface{}
+
+// RemoveCustomCertCustom DELETE custom certificate chain and key.
+func (c *Client) RemoveCustomCertCustom(ctx context.Context, req *RemoveCustomCertCustomRequest) (*RemoveCustomCertCustomResponse, error) {
+	var resp *RemoveCustomCertCustomResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates/custom", "DELETE", &resp, req)
 	return resp, err
 }

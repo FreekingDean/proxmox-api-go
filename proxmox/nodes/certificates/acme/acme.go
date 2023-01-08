@@ -35,21 +35,6 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 	return resp, err
 }
 
-type RevokeCertificateRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
-
-}
-
-type RevokeCertificateResponse string
-
-// RevokeCertificate Revoke existing certificate from CA.
-func (c *Client) RevokeCertificate(ctx context.Context, req *RevokeCertificateRequest) (*RevokeCertificateResponse, error) {
-	var resp *RevokeCertificateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates/acme/certificate", "DELETE", &resp, req)
-	return resp, err
-}
-
 type NewCertificateRequest struct {
 	Node string `url:"node",json:"node"` // The cluster node name.
 
@@ -81,5 +66,20 @@ func (c *Client) RenewCertificate(ctx context.Context, req *RenewCertificateRequ
 	var resp *RenewCertificateResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates/acme/certificate", "PUT", &resp, req)
+	return resp, err
+}
+
+type RevokeCertificateRequest struct {
+	Node string `url:"node",json:"node"` // The cluster node name.
+
+}
+
+type RevokeCertificateResponse string
+
+// RevokeCertificate Revoke existing certificate from CA.
+func (c *Client) RevokeCertificate(ctx context.Context, req *RevokeCertificateRequest) (*RevokeCertificateResponse, error) {
+	var resp *RevokeCertificateResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates/acme/certificate", "DELETE", &resp, req)
 	return resp, err
 }
