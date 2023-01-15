@@ -4,6 +4,7 @@ package roles
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -24,8 +25,8 @@ type IndexResponse []*struct {
 	Roleid string `url:"roleid",json:"roleid"`
 
 	// The following parameters are optional
-	Privs   *string `url:"privs,omitempty",json:"privs,omitempty"`
-	Special *bool   `url:"special,omitempty",json:"special,omitempty"`
+	Privs   *string           `url:"privs,omitempty",json:"privs,omitempty"`
+	Special *util.SpecialBool `url:"special,omitempty",json:"special,omitempty"`
 }
 
 // Index Role index.
@@ -60,43 +61,43 @@ type FindRequest struct {
 type FindResponse struct {
 
 	// The following parameters are optional
-	DatastoreAllocate         *bool `url:"Datastore.Allocate,omitempty",json:"Datastore.Allocate,omitempty"`
-	DatastoreAllocatespace    *bool `url:"Datastore.AllocateSpace,omitempty",json:"Datastore.AllocateSpace,omitempty"`
-	DatastoreAllocatetemplate *bool `url:"Datastore.AllocateTemplate,omitempty",json:"Datastore.AllocateTemplate,omitempty"`
-	DatastoreAudit            *bool `url:"Datastore.Audit,omitempty",json:"Datastore.Audit,omitempty"`
-	GroupAllocate             *bool `url:"Group.Allocate,omitempty",json:"Group.Allocate,omitempty"`
-	PermissionsModify         *bool `url:"Permissions.Modify,omitempty",json:"Permissions.Modify,omitempty"`
-	PoolAllocate              *bool `url:"Pool.Allocate,omitempty",json:"Pool.Allocate,omitempty"`
-	PoolAudit                 *bool `url:"Pool.Audit,omitempty",json:"Pool.Audit,omitempty"`
-	RealmAllocate             *bool `url:"Realm.Allocate,omitempty",json:"Realm.Allocate,omitempty"`
-	RealmAllocateuser         *bool `url:"Realm.AllocateUser,omitempty",json:"Realm.AllocateUser,omitempty"`
-	SdnAllocate               *bool `url:"SDN.Allocate,omitempty",json:"SDN.Allocate,omitempty"`
-	SdnAudit                  *bool `url:"SDN.Audit,omitempty",json:"SDN.Audit,omitempty"`
-	SysAudit                  *bool `url:"Sys.Audit,omitempty",json:"Sys.Audit,omitempty"`
-	SysConsole                *bool `url:"Sys.Console,omitempty",json:"Sys.Console,omitempty"`
-	SysIncoming               *bool `url:"Sys.Incoming,omitempty",json:"Sys.Incoming,omitempty"`
-	SysModify                 *bool `url:"Sys.Modify,omitempty",json:"Sys.Modify,omitempty"`
-	SysPowermgmt              *bool `url:"Sys.PowerMgmt,omitempty",json:"Sys.PowerMgmt,omitempty"`
-	SysSyslog                 *bool `url:"Sys.Syslog,omitempty",json:"Sys.Syslog,omitempty"`
-	UserModify                *bool `url:"User.Modify,omitempty",json:"User.Modify,omitempty"`
-	VmAllocate                *bool `url:"VM.Allocate,omitempty",json:"VM.Allocate,omitempty"`
-	VmAudit                   *bool `url:"VM.Audit,omitempty",json:"VM.Audit,omitempty"`
-	VmBackup                  *bool `url:"VM.Backup,omitempty",json:"VM.Backup,omitempty"`
-	VmClone                   *bool `url:"VM.Clone,omitempty",json:"VM.Clone,omitempty"`
-	VmConfigCdrom             *bool `url:"VM.Config.CDROM,omitempty",json:"VM.Config.CDROM,omitempty"`
-	VmConfigCloudinit         *bool `url:"VM.Config.Cloudinit,omitempty",json:"VM.Config.Cloudinit,omitempty"`
-	VmConfigCpu               *bool `url:"VM.Config.CPU,omitempty",json:"VM.Config.CPU,omitempty"`
-	VmConfigDisk              *bool `url:"VM.Config.Disk,omitempty",json:"VM.Config.Disk,omitempty"`
-	VmConfigHwtype            *bool `url:"VM.Config.HWType,omitempty",json:"VM.Config.HWType,omitempty"`
-	VmConfigMemory            *bool `url:"VM.Config.Memory,omitempty",json:"VM.Config.Memory,omitempty"`
-	VmConfigNetwork           *bool `url:"VM.Config.Network,omitempty",json:"VM.Config.Network,omitempty"`
-	VmConfigOptions           *bool `url:"VM.Config.Options,omitempty",json:"VM.Config.Options,omitempty"`
-	VmConsole                 *bool `url:"VM.Console,omitempty",json:"VM.Console,omitempty"`
-	VmMigrate                 *bool `url:"VM.Migrate,omitempty",json:"VM.Migrate,omitempty"`
-	VmMonitor                 *bool `url:"VM.Monitor,omitempty",json:"VM.Monitor,omitempty"`
-	VmPowermgmt               *bool `url:"VM.PowerMgmt,omitempty",json:"VM.PowerMgmt,omitempty"`
-	VmSnapshot                *bool `url:"VM.Snapshot,omitempty",json:"VM.Snapshot,omitempty"`
-	VmSnapshotRollback        *bool `url:"VM.Snapshot.Rollback,omitempty",json:"VM.Snapshot.Rollback,omitempty"`
+	DatastoreAllocate         *util.SpecialBool `url:"Datastore.Allocate,omitempty",json:"Datastore.Allocate,omitempty"`
+	DatastoreAllocatespace    *util.SpecialBool `url:"Datastore.AllocateSpace,omitempty",json:"Datastore.AllocateSpace,omitempty"`
+	DatastoreAllocatetemplate *util.SpecialBool `url:"Datastore.AllocateTemplate,omitempty",json:"Datastore.AllocateTemplate,omitempty"`
+	DatastoreAudit            *util.SpecialBool `url:"Datastore.Audit,omitempty",json:"Datastore.Audit,omitempty"`
+	GroupAllocate             *util.SpecialBool `url:"Group.Allocate,omitempty",json:"Group.Allocate,omitempty"`
+	PermissionsModify         *util.SpecialBool `url:"Permissions.Modify,omitempty",json:"Permissions.Modify,omitempty"`
+	PoolAllocate              *util.SpecialBool `url:"Pool.Allocate,omitempty",json:"Pool.Allocate,omitempty"`
+	PoolAudit                 *util.SpecialBool `url:"Pool.Audit,omitempty",json:"Pool.Audit,omitempty"`
+	RealmAllocate             *util.SpecialBool `url:"Realm.Allocate,omitempty",json:"Realm.Allocate,omitempty"`
+	RealmAllocateuser         *util.SpecialBool `url:"Realm.AllocateUser,omitempty",json:"Realm.AllocateUser,omitempty"`
+	SdnAllocate               *util.SpecialBool `url:"SDN.Allocate,omitempty",json:"SDN.Allocate,omitempty"`
+	SdnAudit                  *util.SpecialBool `url:"SDN.Audit,omitempty",json:"SDN.Audit,omitempty"`
+	SysAudit                  *util.SpecialBool `url:"Sys.Audit,omitempty",json:"Sys.Audit,omitempty"`
+	SysConsole                *util.SpecialBool `url:"Sys.Console,omitempty",json:"Sys.Console,omitempty"`
+	SysIncoming               *util.SpecialBool `url:"Sys.Incoming,omitempty",json:"Sys.Incoming,omitempty"`
+	SysModify                 *util.SpecialBool `url:"Sys.Modify,omitempty",json:"Sys.Modify,omitempty"`
+	SysPowermgmt              *util.SpecialBool `url:"Sys.PowerMgmt,omitempty",json:"Sys.PowerMgmt,omitempty"`
+	SysSyslog                 *util.SpecialBool `url:"Sys.Syslog,omitempty",json:"Sys.Syslog,omitempty"`
+	UserModify                *util.SpecialBool `url:"User.Modify,omitempty",json:"User.Modify,omitempty"`
+	VmAllocate                *util.SpecialBool `url:"VM.Allocate,omitempty",json:"VM.Allocate,omitempty"`
+	VmAudit                   *util.SpecialBool `url:"VM.Audit,omitempty",json:"VM.Audit,omitempty"`
+	VmBackup                  *util.SpecialBool `url:"VM.Backup,omitempty",json:"VM.Backup,omitempty"`
+	VmClone                   *util.SpecialBool `url:"VM.Clone,omitempty",json:"VM.Clone,omitempty"`
+	VmConfigCdrom             *util.SpecialBool `url:"VM.Config.CDROM,omitempty",json:"VM.Config.CDROM,omitempty"`
+	VmConfigCloudinit         *util.SpecialBool `url:"VM.Config.Cloudinit,omitempty",json:"VM.Config.Cloudinit,omitempty"`
+	VmConfigCpu               *util.SpecialBool `url:"VM.Config.CPU,omitempty",json:"VM.Config.CPU,omitempty"`
+	VmConfigDisk              *util.SpecialBool `url:"VM.Config.Disk,omitempty",json:"VM.Config.Disk,omitempty"`
+	VmConfigHwtype            *util.SpecialBool `url:"VM.Config.HWType,omitempty",json:"VM.Config.HWType,omitempty"`
+	VmConfigMemory            *util.SpecialBool `url:"VM.Config.Memory,omitempty",json:"VM.Config.Memory,omitempty"`
+	VmConfigNetwork           *util.SpecialBool `url:"VM.Config.Network,omitempty",json:"VM.Config.Network,omitempty"`
+	VmConfigOptions           *util.SpecialBool `url:"VM.Config.Options,omitempty",json:"VM.Config.Options,omitempty"`
+	VmConsole                 *util.SpecialBool `url:"VM.Console,omitempty",json:"VM.Console,omitempty"`
+	VmMigrate                 *util.SpecialBool `url:"VM.Migrate,omitempty",json:"VM.Migrate,omitempty"`
+	VmMonitor                 *util.SpecialBool `url:"VM.Monitor,omitempty",json:"VM.Monitor,omitempty"`
+	VmPowermgmt               *util.SpecialBool `url:"VM.PowerMgmt,omitempty",json:"VM.PowerMgmt,omitempty"`
+	VmSnapshot                *util.SpecialBool `url:"VM.Snapshot,omitempty",json:"VM.Snapshot,omitempty"`
+	VmSnapshotRollback        *util.SpecialBool `url:"VM.Snapshot.Rollback,omitempty",json:"VM.Snapshot.Rollback,omitempty"`
 }
 
 // Find Get role configuration.
@@ -111,8 +112,8 @@ type UpdateRequest struct {
 	Roleid string `url:"roleid",json:"roleid"`
 
 	// The following parameters are optional
-	Append *bool   `url:"append,omitempty",json:"append,omitempty"`
-	Privs  *string `url:"privs,omitempty",json:"privs,omitempty"`
+	Append *util.SpecialBool `url:"append,omitempty",json:"append,omitempty"`
+	Privs  *string           `url:"privs,omitempty",json:"privs,omitempty"`
 }
 
 type UpdateResponse map[string]interface{}

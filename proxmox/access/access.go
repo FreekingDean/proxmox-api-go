@@ -4,6 +4,7 @@ package access
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -39,7 +40,7 @@ type ReadAclResponse []*struct {
 	Ugid   string `url:"ugid",json:"ugid"`
 
 	// The following parameters are optional
-	Propagate *bool `url:"propagate,omitempty",json:"propagate,omitempty"` // Allow to propagate (inherit) permissions.
+	Propagate *util.SpecialBool `url:"propagate,omitempty",json:"propagate,omitempty"` // Allow to propagate (inherit) permissions.
 }
 
 // ReadAcl Get Access Control List (ACLs).
@@ -55,11 +56,11 @@ type UpdateAclRequest struct {
 	Roles string `url:"roles",json:"roles"` // List of roles.
 
 	// The following parameters are optional
-	Delete    *bool   `url:"delete,omitempty",json:"delete,omitempty"`       // Remove permissions (instead of adding it).
-	Groups    *string `url:"groups,omitempty",json:"groups,omitempty"`       // List of groups.
-	Propagate *bool   `url:"propagate,omitempty",json:"propagate,omitempty"` // Allow to propagate (inherit) permissions.
-	Tokens    *string `url:"tokens,omitempty",json:"tokens,omitempty"`       // List of API tokens.
-	Users     *string `url:"users,omitempty",json:"users,omitempty"`         // List of users.
+	Delete    *util.SpecialBool `url:"delete,omitempty",json:"delete,omitempty"`       // Remove permissions (instead of adding it).
+	Groups    *string           `url:"groups,omitempty",json:"groups,omitempty"`       // List of groups.
+	Propagate *util.SpecialBool `url:"propagate,omitempty",json:"propagate,omitempty"` // Allow to propagate (inherit) permissions.
+	Tokens    *string           `url:"tokens,omitempty",json:"tokens,omitempty"`       // List of API tokens.
+	Users     *string           `url:"users,omitempty",json:"users,omitempty"`         // List of users.
 }
 
 type UpdateAclResponse map[string]interface{}
@@ -87,12 +88,12 @@ type CreateTicketRequest struct {
 	Username string `url:"username",json:"username"` // User name
 
 	// The following parameters are optional
-	NewFormat    *bool   `url:"new-format,omitempty",json:"new-format,omitempty"`       // With webauthn the format of half-authenticated tickts changed. New clients should pass 1 here and not worry about the old format. The old format is deprecated and will be retired with PVE-8.0
-	Otp          *string `url:"otp,omitempty",json:"otp,omitempty"`                     // One-time password for Two-factor authentication.
-	Path         *string `url:"path,omitempty",json:"path,omitempty"`                   // Verify ticket, and check if user have access 'privs' on 'path'
-	Privs        *string `url:"privs,omitempty",json:"privs,omitempty"`                 // Verify ticket, and check if user have access 'privs' on 'path'
-	Realm        *string `url:"realm,omitempty",json:"realm,omitempty"`                 // You can optionally pass the realm using this parameter. Normally the realm is simply added to the username <username>@<relam>.
-	TfaChallenge *string `url:"tfa-challenge,omitempty",json:"tfa-challenge,omitempty"` // The signed TFA challenge string the user wants to respond to.
+	NewFormat    *util.SpecialBool `url:"new-format,omitempty",json:"new-format,omitempty"`       // With webauthn the format of half-authenticated tickts changed. New clients should pass 1 here and not worry about the old format. The old format is deprecated and will be retired with PVE-8.0
+	Otp          *string           `url:"otp,omitempty",json:"otp,omitempty"`                     // One-time password for Two-factor authentication.
+	Path         *string           `url:"path,omitempty",json:"path,omitempty"`                   // Verify ticket, and check if user have access 'privs' on 'path'
+	Privs        *string           `url:"privs,omitempty",json:"privs,omitempty"`                 // Verify ticket, and check if user have access 'privs' on 'path'
+	Realm        *string           `url:"realm,omitempty",json:"realm,omitempty"`                 // You can optionally pass the realm using this parameter. Normally the realm is simply added to the username <username>@<relam>.
+	TfaChallenge *string           `url:"tfa-challenge,omitempty",json:"tfa-challenge,omitempty"` // The signed TFA challenge string the user wants to respond to.
 }
 
 type CreateTicketResponse struct {

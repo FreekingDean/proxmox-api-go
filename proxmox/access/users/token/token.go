@@ -4,6 +4,7 @@ package token
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -29,9 +30,9 @@ type IndexResponse []*struct {
 	Tokenid string `url:"tokenid",json:"tokenid"` // User-specific token identifier.
 
 	// The following parameters are optional
-	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Expire  *int    `url:"expire,omitempty",json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
-	Privsep *bool   `url:"privsep,omitempty",json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
+	Comment *string           `url:"comment,omitempty",json:"comment,omitempty"`
+	Expire  *int              `url:"expire,omitempty",json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+	Privsep *util.SpecialBool `url:"privsep,omitempty",json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
 
 // Index Get user API tokens.
@@ -51,9 +52,9 @@ type FindRequest struct {
 type FindResponse struct {
 
 	// The following parameters are optional
-	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Expire  *int    `url:"expire,omitempty",json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
-	Privsep *bool   `url:"privsep,omitempty",json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
+	Comment *string           `url:"comment,omitempty",json:"comment,omitempty"`
+	Expire  *int              `url:"expire,omitempty",json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+	Privsep *util.SpecialBool `url:"privsep,omitempty",json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
 
 // Find Get specific API token information.
@@ -69,9 +70,9 @@ type ChildCreateRequest struct {
 	Userid  string `url:"userid",json:"userid"`   // User ID
 
 	// The following parameters are optional
-	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Expire  *int    `url:"expire,omitempty",json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
-	Privsep *bool   `url:"privsep,omitempty",json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
+	Comment *string           `url:"comment,omitempty",json:"comment,omitempty"`
+	Expire  *int              `url:"expire,omitempty",json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+	Privsep *util.SpecialBool `url:"privsep,omitempty",json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
 
 type ChildCreateResponse struct {
@@ -79,9 +80,9 @@ type ChildCreateResponse struct {
 	Info        struct {
 
 		// The following parameters are optional
-		Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-		Expire  *int    `url:"expire,omitempty",json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
-		Privsep *bool   `url:"privsep,omitempty",json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
+		Comment *string           `url:"comment,omitempty",json:"comment,omitempty"`
+		Expire  *int              `url:"expire,omitempty",json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+		Privsep *util.SpecialBool `url:"privsep,omitempty",json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 	} `url:"info",json:"info"`
 	Value string `url:"value",json:"value"` // API token value used for authentication.
 
@@ -100,17 +101,17 @@ type UpdateRequest struct {
 	Userid  string `url:"userid",json:"userid"`   // User ID
 
 	// The following parameters are optional
-	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Expire  *int    `url:"expire,omitempty",json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
-	Privsep *bool   `url:"privsep,omitempty",json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
+	Comment *string           `url:"comment,omitempty",json:"comment,omitempty"`
+	Expire  *int              `url:"expire,omitempty",json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+	Privsep *util.SpecialBool `url:"privsep,omitempty",json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
 
 type UpdateResponse struct {
 
 	// The following parameters are optional
-	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Expire  *int    `url:"expire,omitempty",json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
-	Privsep *bool   `url:"privsep,omitempty",json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
+	Comment *string           `url:"comment,omitempty",json:"comment,omitempty"`
+	Expire  *int              `url:"expire,omitempty",json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+	Privsep *util.SpecialBool `url:"privsep,omitempty",json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
 
 // Update Update API token for a specific user.

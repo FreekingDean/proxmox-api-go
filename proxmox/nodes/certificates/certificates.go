@@ -4,6 +4,7 @@ package certificates
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -68,9 +69,9 @@ type UploadCustomCertCustomRequest struct {
 	Node         string `url:"node",json:"node"`                 // The cluster node name.
 
 	// The following parameters are optional
-	Force   *bool   `url:"force,omitempty",json:"force,omitempty"`     // Overwrite existing custom or ACME certificate files.
-	Key     *string `url:"key,omitempty",json:"key,omitempty"`         // PEM encoded private key.
-	Restart *bool   `url:"restart,omitempty",json:"restart,omitempty"` // Restart pveproxy.
+	Force   *util.SpecialBool `url:"force,omitempty",json:"force,omitempty"`     // Overwrite existing custom or ACME certificate files.
+	Key     *string           `url:"key,omitempty",json:"key,omitempty"`         // PEM encoded private key.
+	Restart *util.SpecialBool `url:"restart,omitempty",json:"restart,omitempty"` // Restart pveproxy.
 }
 
 type UploadCustomCertCustomResponse struct {
@@ -100,7 +101,7 @@ type RemoveCustomCertCustomRequest struct {
 	Node string `url:"node",json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Restart *bool `url:"restart,omitempty",json:"restart,omitempty"` // Restart pveproxy.
+	Restart *util.SpecialBool `url:"restart,omitempty",json:"restart,omitempty"` // Restart pveproxy.
 }
 
 type RemoveCustomCertCustomResponse map[string]interface{}

@@ -4,6 +4,7 @@ package lvm
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -27,21 +28,21 @@ type IndexRequest struct {
 
 type IndexResponse struct {
 	Children []*struct {
-		Free int    `url:"free",json:"free"` // The free bytes in the volume group
-		Leaf bool   `url:"leaf",json:"leaf"`
-		Name string `url:"name",json:"name"` // The name of the volume group
-		Size int    `url:"size",json:"size"` // The size of the volume group in bytes
+		Free int              `url:"free",json:"free"` // The free bytes in the volume group
+		Leaf util.SpecialBool `url:"leaf",json:"leaf"`
+		Name string           `url:"name",json:"name"` // The name of the volume group
+		Size int              `url:"size",json:"size"` // The size of the volume group in bytes
 
 		// The following parameters are optional
 		Children []*struct {
-			Free int    `url:"free",json:"free"` // The free bytes in the physical volume
-			Leaf bool   `url:"leaf",json:"leaf"`
-			Name string `url:"name",json:"name"` // The name of the physical volume
-			Size int    `url:"size",json:"size"` // The size of the physical volume in bytes
+			Free int              `url:"free",json:"free"` // The free bytes in the physical volume
+			Leaf util.SpecialBool `url:"leaf",json:"leaf"`
+			Name string           `url:"name",json:"name"` // The name of the physical volume
+			Size int              `url:"size",json:"size"` // The size of the physical volume in bytes
 
 		} `url:"children,omitempty",json:"children,omitempty"` // The underlying physical volumes
 	} `url:"children",json:"children"`
-	Leaf bool `url:"leaf",json:"leaf"`
+	Leaf util.SpecialBool `url:"leaf",json:"leaf"`
 }
 
 // Index List LVM Volume Groups
@@ -58,7 +59,7 @@ type CreateRequest struct {
 	Node   string `url:"node",json:"node"`     // The cluster node name.
 
 	// The following parameters are optional
-	AddStorage *bool `url:"add_storage,omitempty",json:"add_storage,omitempty"` // Configure storage using the Volume Group
+	AddStorage *util.SpecialBool `url:"add_storage,omitempty",json:"add_storage,omitempty"` // Configure storage using the Volume Group
 }
 
 type CreateResponse string
@@ -76,8 +77,8 @@ type DeleteRequest struct {
 	Node string `url:"node",json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	CleanupConfig *bool `url:"cleanup-config,omitempty",json:"cleanup-config,omitempty"` // Marks associated storage(s) as not available on this node anymore or removes them from the configuration (if configured for this node only).
-	CleanupDisks  *bool `url:"cleanup-disks,omitempty",json:"cleanup-disks,omitempty"`   // Also wipe disks so they can be repurposed afterwards.
+	CleanupConfig *util.SpecialBool `url:"cleanup-config,omitempty",json:"cleanup-config,omitempty"` // Marks associated storage(s) as not available on this node anymore or removes them from the configuration (if configured for this node only).
+	CleanupDisks  *util.SpecialBool `url:"cleanup-disks,omitempty",json:"cleanup-disks,omitempty"`   // Also wipe disks so they can be repurposed afterwards.
 }
 
 type DeleteResponse string

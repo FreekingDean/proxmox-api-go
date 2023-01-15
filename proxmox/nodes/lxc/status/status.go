@@ -4,6 +4,7 @@ package status
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -73,8 +74,8 @@ type VmStartRequest struct {
 	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Debug    *bool `url:"debug,omitempty",json:"debug,omitempty"`       // If set, enables very verbose debug log-level on start.
-	Skiplock *bool `url:"skiplock,omitempty",json:"skiplock,omitempty"` // Ignore locks - only root is allowed to use this option.
+	Debug    *util.SpecialBool `url:"debug,omitempty",json:"debug,omitempty"`       // If set, enables very verbose debug log-level on start.
+	Skiplock *util.SpecialBool `url:"skiplock,omitempty",json:"skiplock,omitempty"` // Ignore locks - only root is allowed to use this option.
 }
 
 type VmStartResponse string
@@ -92,7 +93,7 @@ type VmStopRequest struct {
 	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Skiplock *bool `url:"skiplock,omitempty",json:"skiplock,omitempty"` // Ignore locks - only root is allowed to use this option.
+	Skiplock *util.SpecialBool `url:"skiplock,omitempty",json:"skiplock,omitempty"` // Ignore locks - only root is allowed to use this option.
 }
 
 type VmStopResponse string
@@ -110,8 +111,8 @@ type VmShutdownRequest struct {
 	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Forcestop *bool `url:"forceStop,omitempty",json:"forceStop,omitempty"` // Make sure the Container stops.
-	Timeout   *int  `url:"timeout,omitempty",json:"timeout,omitempty"`     // Wait maximal timeout seconds.
+	Forcestop *util.SpecialBool `url:"forceStop,omitempty",json:"forceStop,omitempty"` // Make sure the Container stops.
+	Timeout   *int              `url:"timeout,omitempty",json:"timeout,omitempty"`     // Wait maximal timeout seconds.
 }
 
 type VmShutdownResponse string

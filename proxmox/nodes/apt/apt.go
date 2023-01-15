@@ -4,6 +4,7 @@ package apt
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -56,8 +57,8 @@ type UpdateDatabaseUpdateRequest struct {
 	Node string `url:"node",json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Notify *bool `url:"notify,omitempty",json:"notify,omitempty"` // Send notification mail about new packages (to email address specified for user 'root@pam').
-	Quiet  *bool `url:"quiet,omitempty",json:"quiet,omitempty"`   // Only produces output suitable for logging, omitting progress indicators.
+	Notify *util.SpecialBool `url:"notify,omitempty",json:"notify,omitempty"` // Send notification mail about new packages (to email address specified for user 'root@pam').
+	Quiet  *util.SpecialBool `url:"quiet,omitempty",json:"quiet,omitempty"`   // Only produces output suitable for logging, omitting progress indicators.
 }
 
 type UpdateDatabaseUpdateResponse string
@@ -105,11 +106,11 @@ type RepositoriesResponse struct {
 		FileType     string `url:"file-type",json:"file-type"` // Format of the file.
 		Path         string `url:"path",json:"path"`           // Path to the problematic file.
 		Repositories []*struct {
-			Enabled  bool     `url:"Enabled",json:"Enabled"`   // Whether the repository is enabled or not
-			Filetype string   `url:"FileType",json:"FileType"` // Format of the defining file.
-			Suites   []string `url:"Suites",json:"Suites"`     // List of package distribuitions
-			Types    []string `url:"Types",json:"Types"`       // List of package types.
-			Uris     []string `url:"URIs",json:"URIs"`         // List of repository URIs.
+			Enabled  util.SpecialBool `url:"Enabled",json:"Enabled"`   // Whether the repository is enabled or not
+			Filetype string           `url:"FileType",json:"FileType"` // Format of the defining file.
+			Suites   []string         `url:"Suites",json:"Suites"`     // List of package distribuitions
+			Types    []string         `url:"Types",json:"Types"`       // List of package types.
+			Uris     []string         `url:"URIs",json:"URIs"`         // List of repository URIs.
 
 			// The following parameters are optional
 			Comment    *string  `url:"Comment,omitempty",json:"Comment,omitempty"`       // Associated comment
@@ -135,7 +136,7 @@ type RepositoriesResponse struct {
 		Name   string `url:"name",json:"name"`     // Full name of the repository.
 
 		// The following parameters are optional
-		Status *bool `url:"status,omitempty",json:"status,omitempty"` // Indicating enabled/disabled status, if the repository is configured.
+		Status *util.SpecialBool `url:"status,omitempty",json:"status,omitempty"` // Indicating enabled/disabled status, if the repository is configured.
 	} `url:"standard-repos",json:"standard-repos"` // List of standard repositories and their configuration status
 
 }
@@ -154,8 +155,8 @@ type ChangeRepositoryRepositoriesRequest struct {
 	Path  string `url:"path",json:"path"`   // Path to the containing file.
 
 	// The following parameters are optional
-	Digest  *string `url:"digest,omitempty",json:"digest,omitempty"`   // Digest to detect modifications.
-	Enabled *bool   `url:"enabled,omitempty",json:"enabled,omitempty"` // Whether the repository should be enabled or not.
+	Digest  *string           `url:"digest,omitempty",json:"digest,omitempty"`   // Digest to detect modifications.
+	Enabled *util.SpecialBool `url:"enabled,omitempty",json:"enabled,omitempty"` // Whether the repository should be enabled or not.
 }
 
 type ChangeRepositoryRepositoriesResponse map[string]interface{}

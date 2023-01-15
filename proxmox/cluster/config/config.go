@@ -4,6 +4,7 @@ package config
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -95,10 +96,10 @@ type JoinRequest struct {
 	Password    string `url:"password",json:"password"`       // Superuser (root) password of peer node.
 
 	// The following parameters are optional
-	Force  *bool   `url:"force,omitempty",json:"force,omitempty"`     // Do not throw error if node already exists.
-	Linkn  *string `url:"link[n],omitempty",json:"link[n],omitempty"` // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
-	Nodeid *int    `url:"nodeid,omitempty",json:"nodeid,omitempty"`   // Node id for this node.
-	Votes  *int    `url:"votes,omitempty",json:"votes,omitempty"`     // Number of votes for this node
+	Force  *util.SpecialBool `url:"force,omitempty",json:"force,omitempty"`     // Do not throw error if node already exists.
+	Linkn  *string           `url:"link[n],omitempty",json:"link[n],omitempty"` // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
+	Nodeid *int              `url:"nodeid,omitempty",json:"nodeid,omitempty"`   // Node id for this node.
+	Votes  *int              `url:"votes,omitempty",json:"votes,omitempty"`     // Number of votes for this node
 }
 
 type JoinResponse string
