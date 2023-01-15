@@ -4,6 +4,7 @@ package lvmthin
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -49,7 +50,7 @@ type CreateRequest struct {
 	Node   string `url:"node",json:"node"`     // The cluster node name.
 
 	// The following parameters are optional
-	AddStorage *bool `url:"add_storage,omitempty",json:"add_storage,omitempty"` // Configure storage using the thinpool.
+	AddStorage *util.SpecialBool `url:"add_storage,omitempty",json:"add_storage,omitempty"` // Configure storage using the thinpool.
 }
 
 type CreateResponse string
@@ -68,8 +69,8 @@ type DeleteRequest struct {
 	VolumeGroup string `url:"volume-group",json:"volume-group"` // The storage identifier.
 
 	// The following parameters are optional
-	CleanupConfig *bool `url:"cleanup-config,omitempty",json:"cleanup-config,omitempty"` // Marks associated storage(s) as not available on this node anymore or removes them from the configuration (if configured for this node only).
-	CleanupDisks  *bool `url:"cleanup-disks,omitempty",json:"cleanup-disks,omitempty"`   // Also wipe disks so they can be repurposed afterwards.
+	CleanupConfig *util.SpecialBool `url:"cleanup-config,omitempty",json:"cleanup-config,omitempty"` // Marks associated storage(s) as not available on this node anymore or removes them from the configuration (if configured for this node only).
+	CleanupDisks  *util.SpecialBool `url:"cleanup-disks,omitempty",json:"cleanup-disks,omitempty"`   // Also wipe disks so they can be repurposed afterwards.
 }
 
 type DeleteResponse string

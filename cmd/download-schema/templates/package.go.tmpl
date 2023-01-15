@@ -4,6 +4,9 @@ package {{.Name}}
 
 import (
   "context"
+  {{- if .Util }}
+  "github.com/FreekingDean/proxmox-api-go/internal/util"
+  {{ end }}
 )
 
 type HTTPClient interface {

@@ -4,6 +4,7 @@ package tfa
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -28,7 +29,7 @@ type IndexResponse []*struct {
 		Type        string `url:"type",json:"type"`               // TFA Entry Type.
 
 		// The following parameters are optional
-		Enable *bool `url:"enable,omitempty",json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
+		Enable *util.SpecialBool `url:"enable,omitempty",json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
 	} `url:"entries",json:"entries"`
 	Userid string `url:"userid",json:"userid"` // User this entry belongs to.
 
@@ -71,7 +72,7 @@ type FindResponse []*struct {
 	Type        string `url:"type",json:"type"`               // TFA Entry Type.
 
 	// The following parameters are optional
-	Enable *bool `url:"enable,omitempty",json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
+	Enable *util.SpecialBool `url:"enable,omitempty",json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
 }
 
 // Find List TFA configurations of users.
@@ -123,7 +124,7 @@ type GetTfaEntryIdResponse struct {
 	Type        string `url:"type",json:"type"`               // TFA Entry Type.
 
 	// The following parameters are optional
-	Enable *bool `url:"enable,omitempty",json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
+	Enable *util.SpecialBool `url:"enable,omitempty",json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
 }
 
 // GetTfaEntryId Fetch a requested TFA entry if present.
@@ -139,9 +140,9 @@ type UpdateTfaEntryIdRequest struct {
 	Userid string `url:"userid",json:"userid"` // User ID
 
 	// The following parameters are optional
-	Description *string `url:"description,omitempty",json:"description,omitempty"` // A description to distinguish multiple entries from one another
-	Enable      *bool   `url:"enable,omitempty",json:"enable,omitempty"`           // Whether the entry should be enabled for login.
-	Password    *string `url:"password,omitempty",json:"password,omitempty"`       // The current password.
+	Description *string           `url:"description,omitempty",json:"description,omitempty"` // A description to distinguish multiple entries from one another
+	Enable      *util.SpecialBool `url:"enable,omitempty",json:"enable,omitempty"`           // Whether the entry should be enabled for login.
+	Password    *string           `url:"password,omitempty",json:"password,omitempty"`       // The current password.
 }
 
 type UpdateTfaEntryIdResponse map[string]interface{}

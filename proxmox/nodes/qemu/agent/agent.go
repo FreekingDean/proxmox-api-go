@@ -4,6 +4,7 @@ package agent
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -380,7 +381,7 @@ type SetUserPasswordRequest struct {
 	Vmid     int    `url:"vmid",json:"vmid"`         // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Crypted *bool `url:"crypted,omitempty",json:"crypted,omitempty"` // set to 1 if the password has already been passed through crypt()
+	Crypted *util.SpecialBool `url:"crypted,omitempty",json:"crypted,omitempty"` // set to 1 if the password has already been passed through crypt()
 }
 
 type SetUserPasswordResponse map[string]interface{}
@@ -423,15 +424,15 @@ type ExecStatusRequest struct {
 }
 
 type ExecStatusResponse struct {
-	Exited bool `url:"exited",json:"exited"` // Tells if the given command has exited yet.
+	Exited util.SpecialBool `url:"exited",json:"exited"` // Tells if the given command has exited yet.
 
 	// The following parameters are optional
-	ErrData      *string `url:"err-data,omitempty",json:"err-data,omitempty"`           // stderr of the process
-	ErrTruncated *bool   `url:"err-truncated,omitempty",json:"err-truncated,omitempty"` // true if stderr was not fully captured
-	Exitcode     *int    `url:"exitcode,omitempty",json:"exitcode,omitempty"`           // process exit code if it was normally terminated.
-	OutData      *string `url:"out-data,omitempty",json:"out-data,omitempty"`           // stdout of the process
-	OutTruncated *bool   `url:"out-truncated,omitempty",json:"out-truncated,omitempty"` // true if stdout was not fully captured
-	Signal       *int    `url:"signal,omitempty",json:"signal,omitempty"`               // signal number or exception code if the process was abnormally terminated.
+	ErrData      *string           `url:"err-data,omitempty",json:"err-data,omitempty"`           // stderr of the process
+	ErrTruncated *util.SpecialBool `url:"err-truncated,omitempty",json:"err-truncated,omitempty"` // true if stderr was not fully captured
+	Exitcode     *int              `url:"exitcode,omitempty",json:"exitcode,omitempty"`           // process exit code if it was normally terminated.
+	OutData      *string           `url:"out-data,omitempty",json:"out-data,omitempty"`           // stdout of the process
+	OutTruncated *util.SpecialBool `url:"out-truncated,omitempty",json:"out-truncated,omitempty"` // true if stdout was not fully captured
+	Signal       *int              `url:"signal,omitempty",json:"signal,omitempty"`               // signal number or exception code if the process was abnormally terminated.
 }
 
 // ExecStatus Gets the status of the given pid started by the guest-agent
@@ -453,7 +454,7 @@ type FileReadResponse struct {
 	Content string `url:"content",json:"content"` // The content of the file, maximum 16777216
 
 	// The following parameters are optional
-	Truncated *bool `url:"truncated,omitempty",json:"truncated,omitempty"` // If set to 1, the output is truncated and not complete
+	Truncated *util.SpecialBool `url:"truncated,omitempty",json:"truncated,omitempty"` // If set to 1, the output is truncated and not complete
 }
 
 // FileRead Reads the given file via guest agent. Is limited to 16777216 bytes.
@@ -471,7 +472,7 @@ type FileWriteRequest struct {
 	Vmid    int    `url:"vmid",json:"vmid"`       // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Encode *bool `url:"encode,omitempty",json:"encode,omitempty"` // If set, the content will be encoded as base64 (required by QEMU).Otherwise the content needs to be encoded beforehand - defaults to true.
+	Encode *util.SpecialBool `url:"encode,omitempty",json:"encode,omitempty"` // If set, the content will be encoded as base64 (required by QEMU).Otherwise the content needs to be encoded beforehand - defaults to true.
 }
 
 type FileWriteResponse map[string]interface{}

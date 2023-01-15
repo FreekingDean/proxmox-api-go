@@ -4,6 +4,7 @@ package vnets
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -23,8 +24,8 @@ func New(c HTTPClient) *Client {
 type IndexRequest struct {
 
 	// The following parameters are optional
-	Pending *bool `url:"pending,omitempty",json:"pending,omitempty"` // Display pending config.
-	Running *bool `url:"running,omitempty",json:"running,omitempty"` // Display running config.
+	Pending *util.SpecialBool `url:"pending,omitempty",json:"pending,omitempty"` // Display pending config.
+	Running *util.SpecialBool `url:"running,omitempty",json:"running,omitempty"` // Display running config.
 }
 
 type IndexResponse []*map[string]interface{}
@@ -42,10 +43,10 @@ type CreateRequest struct {
 	Zone string `url:"zone",json:"zone"` // zone id
 
 	// The following parameters are optional
-	Alias     *string `url:"alias,omitempty",json:"alias,omitempty"`         // alias name of the vnet
-	Tag       *int    `url:"tag,omitempty",json:"tag,omitempty"`             // vlan or vxlan id
-	Type      *string `url:"type,omitempty",json:"type,omitempty"`           // Type
-	Vlanaware *bool   `url:"vlanaware,omitempty",json:"vlanaware,omitempty"` // Allow vm VLANs to pass through this vnet.
+	Alias     *string           `url:"alias,omitempty",json:"alias,omitempty"`         // alias name of the vnet
+	Tag       *int              `url:"tag,omitempty",json:"tag,omitempty"`             // vlan or vxlan id
+	Type      *string           `url:"type,omitempty",json:"type,omitempty"`           // Type
+	Vlanaware *util.SpecialBool `url:"vlanaware,omitempty",json:"vlanaware,omitempty"` // Allow vm VLANs to pass through this vnet.
 }
 
 type CreateResponse map[string]interface{}
@@ -62,8 +63,8 @@ type FindRequest struct {
 	Vnet string `url:"vnet",json:"vnet"` // The SDN vnet object identifier.
 
 	// The following parameters are optional
-	Pending *bool `url:"pending,omitempty",json:"pending,omitempty"` // Display pending config.
-	Running *bool `url:"running,omitempty",json:"running,omitempty"` // Display running config.
+	Pending *util.SpecialBool `url:"pending,omitempty",json:"pending,omitempty"` // Display pending config.
+	Running *util.SpecialBool `url:"running,omitempty",json:"running,omitempty"` // Display running config.
 }
 
 type FindResponse map[string]interface{}
@@ -80,12 +81,12 @@ type UpdateRequest struct {
 	Vnet string `url:"vnet",json:"vnet"` // The SDN vnet object identifier.
 
 	// The following parameters are optional
-	Alias     *string `url:"alias,omitempty",json:"alias,omitempty"`         // alias name of the vnet
-	Delete    *string `url:"delete,omitempty",json:"delete,omitempty"`       // A list of settings you want to delete.
-	Digest    *string `url:"digest,omitempty",json:"digest,omitempty"`       // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-	Tag       *int    `url:"tag,omitempty",json:"tag,omitempty"`             // vlan or vxlan id
-	Vlanaware *bool   `url:"vlanaware,omitempty",json:"vlanaware,omitempty"` // Allow vm VLANs to pass through this vnet.
-	Zone      *string `url:"zone,omitempty",json:"zone,omitempty"`           // zone id
+	Alias     *string           `url:"alias,omitempty",json:"alias,omitempty"`         // alias name of the vnet
+	Delete    *string           `url:"delete,omitempty",json:"delete,omitempty"`       // A list of settings you want to delete.
+	Digest    *string           `url:"digest,omitempty",json:"digest,omitempty"`       // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Tag       *int              `url:"tag,omitempty",json:"tag,omitempty"`             // vlan or vxlan id
+	Vlanaware *util.SpecialBool `url:"vlanaware,omitempty",json:"vlanaware,omitempty"` // Allow vm VLANs to pass through this vnet.
+	Zone      *string           `url:"zone,omitempty",json:"zone,omitempty"`           // zone id
 }
 
 type UpdateResponse map[string]interface{}

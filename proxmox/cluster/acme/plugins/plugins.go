@@ -4,6 +4,7 @@ package plugins
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -44,11 +45,11 @@ type CreateRequest struct {
 	Type string `url:"type",json:"type"` // ACME challenge type.
 
 	// The following parameters are optional
-	Api             *string `url:"api,omitempty",json:"api,omitempty"`                           // API plugin name
-	Data            *string `url:"data,omitempty",json:"data,omitempty"`                         // DNS plugin data. (base64 encoded)
-	Disable         *bool   `url:"disable,omitempty",json:"disable,omitempty"`                   // Flag to disable the config.
-	Nodes           *string `url:"nodes,omitempty",json:"nodes,omitempty"`                       // List of cluster node names.
-	ValidationDelay *int    `url:"validation-delay,omitempty",json:"validation-delay,omitempty"` // Extra delay in seconds to wait before requesting validation. Allows to cope with a long TTL of DNS records.
+	Api             *string           `url:"api,omitempty",json:"api,omitempty"`                           // API plugin name
+	Data            *string           `url:"data,omitempty",json:"data,omitempty"`                         // DNS plugin data. (base64 encoded)
+	Disable         *util.SpecialBool `url:"disable,omitempty",json:"disable,omitempty"`                   // Flag to disable the config.
+	Nodes           *string           `url:"nodes,omitempty",json:"nodes,omitempty"`                       // List of cluster node names.
+	ValidationDelay *int              `url:"validation-delay,omitempty",json:"validation-delay,omitempty"` // Extra delay in seconds to wait before requesting validation. Allows to cope with a long TTL of DNS records.
 }
 
 type CreateResponse map[string]interface{}
@@ -80,13 +81,13 @@ type UpdateRequest struct {
 	Id string `url:"id",json:"id"` // ACME Plugin ID name
 
 	// The following parameters are optional
-	Api             *string `url:"api,omitempty",json:"api,omitempty"`                           // API plugin name
-	Data            *string `url:"data,omitempty",json:"data,omitempty"`                         // DNS plugin data. (base64 encoded)
-	Delete          *string `url:"delete,omitempty",json:"delete,omitempty"`                     // A list of settings you want to delete.
-	Digest          *string `url:"digest,omitempty",json:"digest,omitempty"`                     // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-	Disable         *bool   `url:"disable,omitempty",json:"disable,omitempty"`                   // Flag to disable the config.
-	Nodes           *string `url:"nodes,omitempty",json:"nodes,omitempty"`                       // List of cluster node names.
-	ValidationDelay *int    `url:"validation-delay,omitempty",json:"validation-delay,omitempty"` // Extra delay in seconds to wait before requesting validation. Allows to cope with a long TTL of DNS records.
+	Api             *string           `url:"api,omitempty",json:"api,omitempty"`                           // API plugin name
+	Data            *string           `url:"data,omitempty",json:"data,omitempty"`                         // DNS plugin data. (base64 encoded)
+	Delete          *string           `url:"delete,omitempty",json:"delete,omitempty"`                     // A list of settings you want to delete.
+	Digest          *string           `url:"digest,omitempty",json:"digest,omitempty"`                     // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Disable         *util.SpecialBool `url:"disable,omitempty",json:"disable,omitempty"`                   // Flag to disable the config.
+	Nodes           *string           `url:"nodes,omitempty",json:"nodes,omitempty"`                       // List of cluster node names.
+	ValidationDelay *int              `url:"validation-delay,omitempty",json:"validation-delay,omitempty"` // Extra delay in seconds to wait before requesting validation. Allows to cope with a long TTL of DNS records.
 }
 
 type UpdateResponse map[string]interface{}

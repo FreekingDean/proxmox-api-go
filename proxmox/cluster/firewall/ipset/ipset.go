@@ -4,6 +4,7 @@ package ipset
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -65,8 +66,8 @@ type FindResponse []*struct {
 	Digest string `url:"digest",json:"digest"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 
 	// The following parameters are optional
-	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Nomatch *bool   `url:"nomatch,omitempty",json:"nomatch,omitempty"`
+	Comment *string           `url:"comment,omitempty",json:"comment,omitempty"`
+	Nomatch *util.SpecialBool `url:"nomatch,omitempty",json:"nomatch,omitempty"`
 }
 
 // Find List IPSet content
@@ -82,8 +83,8 @@ type ChildCreateRequest struct {
 	Name string `url:"name",json:"name"` // IP set name.
 
 	// The following parameters are optional
-	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Nomatch *bool   `url:"nomatch,omitempty",json:"nomatch,omitempty"`
+	Comment *string           `url:"comment,omitempty",json:"comment,omitempty"`
+	Nomatch *util.SpecialBool `url:"nomatch,omitempty",json:"nomatch,omitempty"`
 }
 
 type ChildCreateResponse map[string]interface{}
@@ -100,7 +101,7 @@ type DeleteRequest struct {
 	Name string `url:"name",json:"name"` // IP set name.
 
 	// The following parameters are optional
-	Force *bool `url:"force,omitempty",json:"force,omitempty"` // Delete all members of the IPSet, if there are any.
+	Force *util.SpecialBool `url:"force,omitempty",json:"force,omitempty"` // Delete all members of the IPSet, if there are any.
 }
 
 type DeleteResponse map[string]interface{}
@@ -134,9 +135,9 @@ type UpdateIpCidrRequest struct {
 	Name string `url:"name",json:"name"` // IP set name.
 
 	// The following parameters are optional
-	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Digest  *string `url:"digest,omitempty",json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-	Nomatch *bool   `url:"nomatch,omitempty",json:"nomatch,omitempty"`
+	Comment *string           `url:"comment,omitempty",json:"comment,omitempty"`
+	Digest  *string           `url:"digest,omitempty",json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Nomatch *util.SpecialBool `url:"nomatch,omitempty",json:"nomatch,omitempty"`
 }
 
 type UpdateIpCidrResponse map[string]interface{}

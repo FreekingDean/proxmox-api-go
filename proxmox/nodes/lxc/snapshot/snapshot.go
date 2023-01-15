@@ -4,6 +4,7 @@ package snapshot
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -85,7 +86,7 @@ type DeleteRequest struct {
 	Vmid     int    `url:"vmid",json:"vmid"`         // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Force *bool `url:"force,omitempty",json:"force,omitempty"` // For removal from config file, even if removing disk snapshots fails.
+	Force *util.SpecialBool `url:"force,omitempty",json:"force,omitempty"` // For removal from config file, even if removing disk snapshots fails.
 }
 
 type DeleteResponse string
@@ -104,7 +105,7 @@ type RollbackRequest struct {
 	Vmid     int    `url:"vmid",json:"vmid"`         // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Start *bool `url:"start,omitempty",json:"start,omitempty"` // Whether the container should get started after rolling back successfully
+	Start *util.SpecialBool `url:"start,omitempty",json:"start,omitempty"` // Whether the container should get started after rolling back successfully
 }
 
 type RollbackResponse string

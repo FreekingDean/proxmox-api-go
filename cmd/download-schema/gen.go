@@ -47,32 +47,32 @@ func LoadPackage(curdir string, s *jsonschema.Schema) error {
 		return err
 	}
 	b := &bytes.Buffer{}
-	p := Package{
+	p := &Package{
 		Name:    packageName,
 		Methods: make([]*OperationTempl, 0),
 	}
 	if s.Info["GET"] != nil {
 		p.Methods = append(
 			p.Methods,
-			genMethod("Index", s.Info["GET"], s.Path),
+			p.genMethod("Index", s.Info["GET"], s.Path),
 		)
 	}
 	if s.Info["POST"] != nil {
 		p.Methods = append(
 			p.Methods,
-			genMethod("Create", s.Info["POST"], s.Path),
+			p.genMethod("Create", s.Info["POST"], s.Path),
 		)
 	}
 	if s.Info["PUT"] != nil {
 		p.Methods = append(
 			p.Methods,
-			genMethod("MassUpdate", s.Info["PUT"], s.Path),
+			p.genMethod("MassUpdate", s.Info["PUT"], s.Path),
 		)
 	}
 	if s.Info["DELETE"] != nil {
 		p.Methods = append(
 			p.Methods,
-			genMethod("MassDelete", s.Info["DELETE"], s.Path),
+			p.genMethod("MassDelete", s.Info["DELETE"], s.Path),
 		)
 	}
 	for _, c := range s.Children {
@@ -80,25 +80,25 @@ func LoadPackage(curdir string, s *jsonschema.Schema) error {
 			if c.Info["GET"] != nil {
 				p.Methods = append(
 					p.Methods,
-					genMethod("Find", c.Info["GET"], c.Path),
+					p.genMethod("Find", c.Info["GET"], c.Path),
 				)
 			}
 			if c.Info["POST"] != nil {
 				p.Methods = append(
 					p.Methods,
-					genMethod("ChildCreate", c.Info["POST"], c.Path),
+					p.genMethod("ChildCreate", c.Info["POST"], c.Path),
 				)
 			}
 			if c.Info["PUT"] != nil {
 				p.Methods = append(
 					p.Methods,
-					genMethod("Update", c.Info["PUT"], c.Path),
+					p.genMethod("Update", c.Info["PUT"], c.Path),
 				)
 			}
 			if c.Info["DELETE"] != nil {
 				p.Methods = append(
 					p.Methods,
-					genMethod("Delete", c.Info["DELETE"], c.Path),
+					p.genMethod("Delete", c.Info["DELETE"], c.Path),
 				)
 			}
 			for _, cc := range c.Children {
@@ -117,7 +117,7 @@ func LoadPackage(curdir string, s *jsonschema.Schema) error {
 							}
 							p.Methods = append(
 								p.Methods,
-								genMethod(methodName, info, cc.Path),
+								p.genMethod(methodName, info, cc.Path),
 							)
 						}
 					}
@@ -139,7 +139,7 @@ func LoadPackage(curdir string, s *jsonschema.Schema) error {
 						}
 						p.Methods = append(
 							p.Methods,
-							genMethod(methodName, info, c.Path),
+							p.genMethod(methodName, info, c.Path),
 						)
 					}
 				}
@@ -157,7 +157,7 @@ func LoadPackage(curdir string, s *jsonschema.Schema) error {
 	return Format(f, b.String())
 }
 
-func genMethod(operation string, info *jsonschema.InfoSchema, path string) *OperationTempl {
+func (p *Package) genMethod(operation string, info *jsonschema.InfoSchema, path string) *OperationTempl {
 	ot := &OperationTempl{
 		Operation:   operation,
 		Description: info.Description,
@@ -165,16 +165,17 @@ func genMethod(operation string, info *jsonschema.InfoSchema, path string) *Oper
 		Path:        path,
 	}
 	if info.Parameters != nil {
-		ot.Request = defineType(info.Parameters)
+		ot.Request = p.defineType(info.Parameters)
 	}
 	if info.Returns != nil {
-		ot.Response = defineType(info.Returns)
+		ot.Response = p.defineType(info.Returns)
 	}
 	return ot
 }
 
 type Package struct {
 	Name    string
+	Util    bool
 	Methods []*OperationTempl
 }
 
@@ -197,7 +198,7 @@ type Type struct {
 	Description        string
 }
 
-func defineType(schema *jsonschema.JSONSchema) *Type {
+func (p *Package) defineType(schema *jsonschema.JSONSchema) *Type {
 	if schema.Type == nil {
 		if schema.Properties != nil {
 			schema.Type = &jsonschema.SchemaOrString{String: "object"}
@@ -206,13 +207,13 @@ func defineType(schema *jsonschema.JSONSchema) *Type {
 		}
 	}
 	t := &Type{
-		Type:               StrType(schema.Type, bool(schema.Optional)),
+		Type:               p.StrType(schema.Type, bool(schema.Optional)),
 		Properties:         make([]*Type, 0),
 		OptionalProperties: make([]*Type, 0),
 		Description:        strings.Replace(schema.Description, "\n", "", -1),
 	}
 	for name, param := range schema.Properties {
-		p := defineType(param)
+		p := p.defineType(param)
 		if p == nil {
 			continue
 		}
@@ -231,7 +232,7 @@ func defineType(schema *jsonschema.JSONSchema) *Type {
 	}
 	if schema.Items != nil {
 		t.Properties = []*Type{
-			defineType(schema.Items),
+			p.defineType(schema.Items),
 		}
 	}
 	sort.Sort(&TypeSorter{t.Properties})
@@ -268,7 +269,7 @@ func Nameify(name string) string {
 	return strings.Replace(name, "-", "", -1)
 }
 
-func StrType(schemaType *jsonschema.SchemaOrString, optional bool) string {
+func (p *Package) StrType(schemaType *jsonschema.SchemaOrString, optional bool) string {
 	switch schemaType.String {
 	case "integer":
 		if optional {
@@ -279,10 +280,11 @@ func StrType(schemaType *jsonschema.SchemaOrString, optional bool) string {
 	case "object":
 		return "struct"
 	case "boolean":
+		p.Util = true
 		if optional {
-			return "*bool"
+			return "*util.SpecialBool"
 		} else {
-			return "bool"
+			return "util.SpecialBool"
 		}
 	case "array":
 		return "slice"

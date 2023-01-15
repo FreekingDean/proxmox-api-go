@@ -4,6 +4,7 @@ package nodes
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -76,7 +77,7 @@ type UpdateSubscriptionRequest struct {
 	Node string `url:"node",json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Force *bool `url:"force,omitempty",json:"force,omitempty"` // Always connect to server, even if we have up to date info inside local cache.
+	Force *util.SpecialBool `url:"force,omitempty",json:"force,omitempty"` // Always connect to server, even if we have up to date info inside local cache.
 }
 
 type UpdateSubscriptionResponse map[string]interface{}
@@ -355,11 +356,11 @@ type VncshellRequest struct {
 	Node string `url:"node",json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Cmd       *string `url:"cmd,omitempty",json:"cmd,omitempty"`             // Run specific command or default to login.
-	CmdOpts   *string `url:"cmd-opts,omitempty",json:"cmd-opts,omitempty"`   // Add parameters to a command. Encoded as null terminated strings.
-	Height    *int    `url:"height,omitempty",json:"height,omitempty"`       // sets the height of the console in pixels.
-	Websocket *bool   `url:"websocket,omitempty",json:"websocket,omitempty"` // use websocket instead of standard vnc.
-	Width     *int    `url:"width,omitempty",json:"width,omitempty"`         // sets the width of the console in pixels.
+	Cmd       *string           `url:"cmd,omitempty",json:"cmd,omitempty"`             // Run specific command or default to login.
+	CmdOpts   *string           `url:"cmd-opts,omitempty",json:"cmd-opts,omitempty"`   // Add parameters to a command. Encoded as null terminated strings.
+	Height    *int              `url:"height,omitempty",json:"height,omitempty"`       // sets the height of the console in pixels.
+	Websocket *util.SpecialBool `url:"websocket,omitempty",json:"websocket,omitempty"` // use websocket instead of standard vnc.
+	Width     *int              `url:"width,omitempty",json:"width,omitempty"`         // sets the width of the console in pixels.
 }
 
 type VncshellResponse struct {
@@ -560,7 +561,7 @@ type QueryUrlMetadataRequest struct {
 	Url  string `url:"url",json:"url"`   // The URL to query the metadata from.
 
 	// The following parameters are optional
-	VerifyCertificates *bool `url:"verify-certificates,omitempty",json:"verify-certificates,omitempty"` // If false, no SSL/TLS certificates will be verified.
+	VerifyCertificates *util.SpecialBool `url:"verify-certificates,omitempty",json:"verify-certificates,omitempty"` // If false, no SSL/TLS certificates will be verified.
 }
 
 type QueryUrlMetadataResponse struct {
@@ -598,8 +599,8 @@ type StartallRequest struct {
 	Node string `url:"node",json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Force *bool   `url:"force,omitempty",json:"force,omitempty"` // Issue start command even if virtual guest have 'onboot' not set or set to off.
-	Vms   *string `url:"vms,omitempty",json:"vms,omitempty"`     // Only consider guests from this comma separated list of VMIDs.
+	Force *util.SpecialBool `url:"force,omitempty",json:"force,omitempty"` // Issue start command even if virtual guest have 'onboot' not set or set to off.
+	Vms   *string           `url:"vms,omitempty",json:"vms,omitempty"`     // Only consider guests from this comma separated list of VMIDs.
 }
 
 type StartallResponse string
@@ -634,9 +635,9 @@ type MigrateallRequest struct {
 	Target string `url:"target",json:"target"` // Target node.
 
 	// The following parameters are optional
-	Maxworkers     *int    `url:"maxworkers,omitempty",json:"maxworkers,omitempty"`             // Maximal number of parallel migration job. If not set use 'max_workers' from datacenter.cfg, one of both must be set!
-	Vms            *string `url:"vms,omitempty",json:"vms,omitempty"`                           // Only consider Guests with these IDs.
-	WithLocalDisks *bool   `url:"with-local-disks,omitempty",json:"with-local-disks,omitempty"` // Enable live storage migration for local disk
+	Maxworkers     *int              `url:"maxworkers,omitempty",json:"maxworkers,omitempty"`             // Maximal number of parallel migration job. If not set use 'max_workers' from datacenter.cfg, one of both must be set!
+	Vms            *string           `url:"vms,omitempty",json:"vms,omitempty"`                           // Only consider Guests with these IDs.
+	WithLocalDisks *util.SpecialBool `url:"with-local-disks,omitempty",json:"with-local-disks,omitempty"` // Enable live storage migration for local disk
 }
 
 type MigrateallResponse string

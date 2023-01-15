@@ -4,6 +4,7 @@ package groups
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -37,10 +38,10 @@ type CreateRequest struct {
 	Nodes string `url:"nodes",json:"nodes"` // List of cluster node names with optional priority.
 
 	// The following parameters are optional
-	Comment    *string `url:"comment,omitempty",json:"comment,omitempty"`       // Description.
-	Nofailback *bool   `url:"nofailback,omitempty",json:"nofailback,omitempty"` // The CRM tries to run services on the node with the highest priority. If a node with higher priority comes online, the CRM migrates the service to that node. Enabling nofailback prevents that behavior.
-	Restricted *bool   `url:"restricted,omitempty",json:"restricted,omitempty"` // Resources bound to restricted groups may only run on nodes defined by the group.
-	Type       *string `url:"type,omitempty",json:"type,omitempty"`             // Group type.
+	Comment    *string           `url:"comment,omitempty",json:"comment,omitempty"`       // Description.
+	Nofailback *util.SpecialBool `url:"nofailback,omitempty",json:"nofailback,omitempty"` // The CRM tries to run services on the node with the highest priority. If a node with higher priority comes online, the CRM migrates the service to that node. Enabling nofailback prevents that behavior.
+	Restricted *util.SpecialBool `url:"restricted,omitempty",json:"restricted,omitempty"` // Resources bound to restricted groups may only run on nodes defined by the group.
+	Type       *string           `url:"type,omitempty",json:"type,omitempty"`             // Group type.
 }
 
 type CreateResponse map[string]interface{}
@@ -69,12 +70,12 @@ type UpdateRequest struct {
 	Group string `url:"group",json:"group"` // The HA group identifier.
 
 	// The following parameters are optional
-	Comment    *string `url:"comment,omitempty",json:"comment,omitempty"`       // Description.
-	Delete     *string `url:"delete,omitempty",json:"delete,omitempty"`         // A list of settings you want to delete.
-	Digest     *string `url:"digest,omitempty",json:"digest,omitempty"`         // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-	Nodes      *string `url:"nodes,omitempty",json:"nodes,omitempty"`           // List of cluster node names with optional priority.
-	Nofailback *bool   `url:"nofailback,omitempty",json:"nofailback,omitempty"` // The CRM tries to run services on the node with the highest priority. If a node with higher priority comes online, the CRM migrates the service to that node. Enabling nofailback prevents that behavior.
-	Restricted *bool   `url:"restricted,omitempty",json:"restricted,omitempty"` // Resources bound to restricted groups may only run on nodes defined by the group.
+	Comment    *string           `url:"comment,omitempty",json:"comment,omitempty"`       // Description.
+	Delete     *string           `url:"delete,omitempty",json:"delete,omitempty"`         // A list of settings you want to delete.
+	Digest     *string           `url:"digest,omitempty",json:"digest,omitempty"`         // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Nodes      *string           `url:"nodes,omitempty",json:"nodes,omitempty"`           // List of cluster node names with optional priority.
+	Nofailback *util.SpecialBool `url:"nofailback,omitempty",json:"nofailback,omitempty"` // The CRM tries to run services on the node with the highest priority. If a node with higher priority comes online, the CRM migrates the service to that node. Enabling nofailback prevents that behavior.
+	Restricted *util.SpecialBool `url:"restricted,omitempty",json:"restricted,omitempty"` // Resources bound to restricted groups may only run on nodes defined by the group.
 }
 
 type UpdateResponse map[string]interface{}

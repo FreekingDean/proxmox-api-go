@@ -4,6 +4,7 @@ package pools
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -60,17 +61,17 @@ type CreateRequest struct {
 	Node string `url:"node",json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	AddStorages     *bool    `url:"add_storages,omitempty",json:"add_storages,omitempty"`           // Configure VM and CT storage using the new pool.
-	Application     *string  `url:"application,omitempty",json:"application,omitempty"`             // The application of the pool.
-	CrushRule       *string  `url:"crush_rule,omitempty",json:"crush_rule,omitempty"`               // The rule to use for mapping object placement in the cluster.
-	ErasureCoding   *string  `url:"erasure-coding,omitempty",json:"erasure-coding,omitempty"`       // Create an erasure coded pool for RBD with an accompaning replicated pool for metadata storage. With EC, the common ceph options 'size', 'min_size' and 'crush_rule' parameters will be applied to the metadata pool.
-	MinSize         *int     `url:"min_size,omitempty",json:"min_size,omitempty"`                   // Minimum number of replicas per object
-	PgAutoscaleMode *string  `url:"pg_autoscale_mode,omitempty",json:"pg_autoscale_mode,omitempty"` // The automatic PG scaling mode of the pool.
-	PgNum           *int     `url:"pg_num,omitempty",json:"pg_num,omitempty"`                       // Number of placement groups.
-	PgNumMin        *int     `url:"pg_num_min,omitempty",json:"pg_num_min,omitempty"`               // Minimal number of placement groups.
-	Size            *int     `url:"size,omitempty",json:"size,omitempty"`                           // Number of replicas per object
-	TargetSize      *string  `url:"target_size,omitempty",json:"target_size,omitempty"`             // The estimated target size of the pool for the PG autoscaler.
-	TargetSizeRatio *float64 `url:"target_size_ratio,omitempty",json:"target_size_ratio,omitempty"` // The estimated target ratio of the pool for the PG autoscaler.
+	AddStorages     *util.SpecialBool `url:"add_storages,omitempty",json:"add_storages,omitempty"`           // Configure VM and CT storage using the new pool.
+	Application     *string           `url:"application,omitempty",json:"application,omitempty"`             // The application of the pool.
+	CrushRule       *string           `url:"crush_rule,omitempty",json:"crush_rule,omitempty"`               // The rule to use for mapping object placement in the cluster.
+	ErasureCoding   *string           `url:"erasure-coding,omitempty",json:"erasure-coding,omitempty"`       // Create an erasure coded pool for RBD with an accompaning replicated pool for metadata storage. With EC, the common ceph options 'size', 'min_size' and 'crush_rule' parameters will be applied to the metadata pool.
+	MinSize         *int              `url:"min_size,omitempty",json:"min_size,omitempty"`                   // Minimum number of replicas per object
+	PgAutoscaleMode *string           `url:"pg_autoscale_mode,omitempty",json:"pg_autoscale_mode,omitempty"` // The automatic PG scaling mode of the pool.
+	PgNum           *int              `url:"pg_num,omitempty",json:"pg_num,omitempty"`                       // Number of placement groups.
+	PgNumMin        *int              `url:"pg_num_min,omitempty",json:"pg_num_min,omitempty"`               // Minimal number of placement groups.
+	Size            *int              `url:"size,omitempty",json:"size,omitempty"`                           // Number of replicas per object
+	TargetSize      *string           `url:"target_size,omitempty",json:"target_size,omitempty"`             // The estimated target size of the pool for the PG autoscaler.
+	TargetSizeRatio *float64          `url:"target_size_ratio,omitempty",json:"target_size_ratio,omitempty"` // The estimated target ratio of the pool for the PG autoscaler.
 }
 
 type CreateResponse string
@@ -88,22 +89,22 @@ type FindRequest struct {
 	Node string `url:"node",json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Verbose *bool `url:"verbose,omitempty",json:"verbose,omitempty"` // If enabled, will display additional data(eg. statistics).
+	Verbose *util.SpecialBool `url:"verbose,omitempty",json:"verbose,omitempty"` // If enabled, will display additional data(eg. statistics).
 }
 
 type FindResponse struct {
-	FastRead             bool   `url:"fast_read",json:"fast_read"`
-	Hashpspool           bool   `url:"hashpspool",json:"hashpspool"`
-	Id                   int    `url:"id",json:"id"`
-	Name                 string `url:"name",json:"name"` // The name of the pool. It must be unique.
-	NodeepScrub          bool   `url:"nodeep-scrub",json:"nodeep-scrub"`
-	Nodelete             bool   `url:"nodelete",json:"nodelete"`
-	Nopgchange           bool   `url:"nopgchange",json:"nopgchange"`
-	Noscrub              bool   `url:"noscrub",json:"noscrub"`
-	Nosizechange         bool   `url:"nosizechange",json:"nosizechange"`
-	PgpNum               int    `url:"pgp_num",json:"pgp_num"`
-	UseGmtHitset         bool   `url:"use_gmt_hitset",json:"use_gmt_hitset"`
-	WriteFadviseDontneed bool   `url:"write_fadvise_dontneed",json:"write_fadvise_dontneed"`
+	FastRead             util.SpecialBool `url:"fast_read",json:"fast_read"`
+	Hashpspool           util.SpecialBool `url:"hashpspool",json:"hashpspool"`
+	Id                   int              `url:"id",json:"id"`
+	Name                 string           `url:"name",json:"name"` // The name of the pool. It must be unique.
+	NodeepScrub          util.SpecialBool `url:"nodeep-scrub",json:"nodeep-scrub"`
+	Nodelete             util.SpecialBool `url:"nodelete",json:"nodelete"`
+	Nopgchange           util.SpecialBool `url:"nopgchange",json:"nopgchange"`
+	Noscrub              util.SpecialBool `url:"noscrub",json:"noscrub"`
+	Nosizechange         util.SpecialBool `url:"nosizechange",json:"nosizechange"`
+	PgpNum               int              `url:"pgp_num",json:"pgp_num"`
+	UseGmtHitset         util.SpecialBool `url:"use_gmt_hitset",json:"use_gmt_hitset"`
+	WriteFadviseDontneed util.SpecialBool `url:"write_fadvise_dontneed",json:"write_fadvise_dontneed"`
 
 	// The following parameters are optional
 	Application     *string                   `url:"application,omitempty",json:"application,omitempty"` // The application of the pool.
@@ -159,9 +160,9 @@ type DeleteRequest struct {
 	Node string `url:"node",json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Force           *bool `url:"force,omitempty",json:"force,omitempty"`                       // If true, destroys pool even if in use
-	RemoveEcprofile *bool `url:"remove_ecprofile,omitempty",json:"remove_ecprofile,omitempty"` // Remove the erasure code profile. Defaults to true, if applicable.
-	RemoveStorages  *bool `url:"remove_storages,omitempty",json:"remove_storages,omitempty"`   // Remove all pveceph-managed storages configured for this pool
+	Force           *util.SpecialBool `url:"force,omitempty",json:"force,omitempty"`                       // If true, destroys pool even if in use
+	RemoveEcprofile *util.SpecialBool `url:"remove_ecprofile,omitempty",json:"remove_ecprofile,omitempty"` // Remove the erasure code profile. Defaults to true, if applicable.
+	RemoveStorages  *util.SpecialBool `url:"remove_storages,omitempty",json:"remove_storages,omitempty"`   // Remove all pveceph-managed storages configured for this pool
 }
 
 type DeleteResponse string

@@ -4,6 +4,7 @@ package mds
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -29,10 +30,10 @@ type IndexResponse []*struct {
 	State string `url:"state",json:"state"` // State of the MDS
 
 	// The following parameters are optional
-	Addr          *string `url:"addr,omitempty",json:"addr,omitempty"`
-	Host          *string `url:"host,omitempty",json:"host,omitempty"`
-	Rank          *int    `url:"rank,omitempty",json:"rank,omitempty"`
-	StandbyReplay *bool   `url:"standby_replay,omitempty",json:"standby_replay,omitempty"` // If true, the standby MDS is polling the active MDS for faster recovery (hot standby).
+	Addr          *string           `url:"addr,omitempty",json:"addr,omitempty"`
+	Host          *string           `url:"host,omitempty",json:"host,omitempty"`
+	Rank          *int              `url:"rank,omitempty",json:"rank,omitempty"`
+	StandbyReplay *util.SpecialBool `url:"standby_replay,omitempty",json:"standby_replay,omitempty"` // If true, the standby MDS is polling the active MDS for faster recovery (hot standby).
 }
 
 // Index MDS directory index.
@@ -47,8 +48,8 @@ type ChildCreateRequest struct {
 	Node string `url:"node",json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Hotstandby *bool   `url:"hotstandby,omitempty",json:"hotstandby,omitempty"` // Determines whether a ceph-mds daemon should poll and replay the log of an active MDS. Faster switch on MDS failure, but needs more idle resources.
-	Name       *string `url:"name,omitempty",json:"name,omitempty"`             // The ID for the mds, when omitted the same as the nodename
+	Hotstandby *util.SpecialBool `url:"hotstandby,omitempty",json:"hotstandby,omitempty"` // Determines whether a ceph-mds daemon should poll and replay the log of an active MDS. Faster switch on MDS failure, but needs more idle resources.
+	Name       *string           `url:"name,omitempty",json:"name,omitempty"`             // The ID for the mds, when omitted the same as the nodename
 }
 
 type ChildCreateResponse string

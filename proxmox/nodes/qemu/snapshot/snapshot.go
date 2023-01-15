@@ -4,6 +4,7 @@ package snapshot
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -31,9 +32,9 @@ type IndexResponse []*struct {
 	Name        string `url:"name",json:"name"`               // Snapshot identifier. Value 'current' identifies the current VM.
 
 	// The following parameters are optional
-	Parent   *string `url:"parent,omitempty",json:"parent,omitempty"`     // Parent snapshot identifier.
-	Snaptime *int    `url:"snaptime,omitempty",json:"snaptime,omitempty"` // Snapshot creation time
-	Vmstate  *bool   `url:"vmstate,omitempty",json:"vmstate,omitempty"`   // Snapshot includes RAM.
+	Parent   *string           `url:"parent,omitempty",json:"parent,omitempty"`     // Parent snapshot identifier.
+	Snaptime *int              `url:"snaptime,omitempty",json:"snaptime,omitempty"` // Snapshot creation time
+	Vmstate  *util.SpecialBool `url:"vmstate,omitempty",json:"vmstate,omitempty"`   // Snapshot includes RAM.
 }
 
 // Index List all snapshots.
@@ -50,8 +51,8 @@ type CreateRequest struct {
 	Vmid     int    `url:"vmid",json:"vmid"`         // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Description *string `url:"description,omitempty",json:"description,omitempty"` // A textual description or comment.
-	Vmstate     *bool   `url:"vmstate,omitempty",json:"vmstate,omitempty"`         // Save the vmstate
+	Description *string           `url:"description,omitempty",json:"description,omitempty"` // A textual description or comment.
+	Vmstate     *util.SpecialBool `url:"vmstate,omitempty",json:"vmstate,omitempty"`         // Save the vmstate
 }
 
 type CreateResponse string
@@ -87,7 +88,7 @@ type DeleteRequest struct {
 	Vmid     int    `url:"vmid",json:"vmid"`         // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Force *bool `url:"force,omitempty",json:"force,omitempty"` // For removal from config file, even if removing disk snapshots fails.
+	Force *util.SpecialBool `url:"force,omitempty",json:"force,omitempty"` // For removal from config file, even if removing disk snapshots fails.
 }
 
 type DeleteResponse string
@@ -142,7 +143,7 @@ type RollbackRequest struct {
 	Vmid     int    `url:"vmid",json:"vmid"`         // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Start *bool `url:"start,omitempty",json:"start,omitempty"` // Whether the VM should get started after rolling back successfully
+	Start *util.SpecialBool `url:"start,omitempty",json:"start,omitempty"` // Whether the VM should get started after rolling back successfully
 }
 
 type RollbackResponse string

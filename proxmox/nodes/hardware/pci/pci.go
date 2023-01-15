@@ -4,6 +4,7 @@ package pci
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -24,8 +25,8 @@ type IndexRequest struct {
 	Node string `url:"node",json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	PciClassBlacklist *string `url:"pci-class-blacklist,omitempty",json:"pci-class-blacklist,omitempty"` // A list of blacklisted PCI classes, which will not be returned. Following are filtered by default: Memory Controller (05), Bridge (06) and Processor (0b).
-	Verbose           *bool   `url:"verbose,omitempty",json:"verbose,omitempty"`                         // If disabled, does only print the PCI IDs. Otherwise, additional information like vendor and device will be returned.
+	PciClassBlacklist *string           `url:"pci-class-blacklist,omitempty",json:"pci-class-blacklist,omitempty"` // A list of blacklisted PCI classes, which will not be returned. Following are filtered by default: Memory Controller (05), Bridge (06) and Processor (0b).
+	Verbose           *util.SpecialBool `url:"verbose,omitempty",json:"verbose,omitempty"`                         // If disabled, does only print the PCI IDs. Otherwise, additional information like vendor and device will be returned.
 }
 
 type IndexResponse []*struct {
@@ -36,13 +37,13 @@ type IndexResponse []*struct {
 	Vendor     string `url:"vendor",json:"vendor"`         // The Vendor ID.
 
 	// The following parameters are optional
-	DeviceName          *string `url:"device_name,omitempty",json:"device_name,omitempty"`
-	Mdev                *bool   `url:"mdev,omitempty",json:"mdev,omitempty"`                         // If set, marks that the device is capable of creating mediated devices.
-	SubsystemDevice     *string `url:"subsystem_device,omitempty",json:"subsystem_device,omitempty"` // The Subsystem Device ID.
-	SubsystemDeviceName *string `url:"subsystem_device_name,omitempty",json:"subsystem_device_name,omitempty"`
-	SubsystemVendor     *string `url:"subsystem_vendor,omitempty",json:"subsystem_vendor,omitempty"` // The Subsystem Vendor ID.
-	SubsystemVendorName *string `url:"subsystem_vendor_name,omitempty",json:"subsystem_vendor_name,omitempty"`
-	VendorName          *string `url:"vendor_name,omitempty",json:"vendor_name,omitempty"`
+	DeviceName          *string           `url:"device_name,omitempty",json:"device_name,omitempty"`
+	Mdev                *util.SpecialBool `url:"mdev,omitempty",json:"mdev,omitempty"`                         // If set, marks that the device is capable of creating mediated devices.
+	SubsystemDevice     *string           `url:"subsystem_device,omitempty",json:"subsystem_device,omitempty"` // The Subsystem Device ID.
+	SubsystemDeviceName *string           `url:"subsystem_device_name,omitempty",json:"subsystem_device_name,omitempty"`
+	SubsystemVendor     *string           `url:"subsystem_vendor,omitempty",json:"subsystem_vendor,omitempty"` // The Subsystem Vendor ID.
+	SubsystemVendorName *string           `url:"subsystem_vendor_name,omitempty",json:"subsystem_vendor_name,omitempty"`
+	VendorName          *string           `url:"vendor_name,omitempty",json:"vendor_name,omitempty"`
 }
 
 // Index List local PCI devices.

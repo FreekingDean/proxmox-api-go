@@ -4,6 +4,7 @@ package disks
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -39,17 +40,17 @@ type ListRequest struct {
 	Node string `url:"node",json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	IncludePartitions *bool   `url:"include-partitions,omitempty",json:"include-partitions,omitempty"` // Also include partitions.
-	Skipsmart         *bool   `url:"skipsmart,omitempty",json:"skipsmart,omitempty"`                   // Skip smart checks.
-	Type              *string `url:"type,omitempty",json:"type,omitempty"`                             // Only list specific types of disks.
+	IncludePartitions *util.SpecialBool `url:"include-partitions,omitempty",json:"include-partitions,omitempty"` // Also include partitions.
+	Skipsmart         *util.SpecialBool `url:"skipsmart,omitempty",json:"skipsmart,omitempty"`                   // Skip smart checks.
+	Type              *string           `url:"type,omitempty",json:"type,omitempty"`                             // Only list specific types of disks.
 }
 
 type ListResponse []*struct {
-	Devpath string `url:"devpath",json:"devpath"` // The device path
-	Gpt     bool   `url:"gpt",json:"gpt"`
-	Mounted bool   `url:"mounted",json:"mounted"`
-	Osdid   int    `url:"osdid",json:"osdid"`
-	Size    int    `url:"size",json:"size"`
+	Devpath string           `url:"devpath",json:"devpath"` // The device path
+	Gpt     util.SpecialBool `url:"gpt",json:"gpt"`
+	Mounted util.SpecialBool `url:"mounted",json:"mounted"`
+	Osdid   int              `url:"osdid",json:"osdid"`
+	Size    int              `url:"size",json:"size"`
 
 	// The following parameters are optional
 	Health *string `url:"health,omitempty",json:"health,omitempty"`
@@ -74,7 +75,7 @@ type SmartRequest struct {
 	Node string `url:"node",json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Healthonly *bool `url:"healthonly,omitempty",json:"healthonly,omitempty"` // If true returns only the health status
+	Healthonly *util.SpecialBool `url:"healthonly,omitempty",json:"healthonly,omitempty"` // If true returns only the health status
 }
 
 type SmartResponse struct {

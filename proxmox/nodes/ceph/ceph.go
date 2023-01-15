@@ -4,6 +4,7 @@ package ceph
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -56,12 +57,12 @@ type ConfigdbRequest struct {
 }
 
 type ConfigdbResponse []*struct {
-	CanUpdateAtRuntime bool   `url:"can_update_at_runtime",json:"can_update_at_runtime"`
-	Level              string `url:"level",json:"level"`
-	Mask               string `url:"mask",json:"mask"`
-	Name               string `url:"name",json:"name"`
-	Section            string `url:"section",json:"section"`
-	Value              string `url:"value",json:"value"`
+	CanUpdateAtRuntime util.SpecialBool `url:"can_update_at_runtime",json:"can_update_at_runtime"`
+	Level              string           `url:"level",json:"level"`
+	Mask               string           `url:"mask",json:"mask"`
+	Name               string           `url:"name",json:"name"`
+	Section            string           `url:"section",json:"section"`
+	Value              string           `url:"value",json:"value"`
 }
 
 // Configdb Get Ceph configuration database.
@@ -76,12 +77,12 @@ type InitRequest struct {
 	Node string `url:"node",json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	ClusterNetwork *string `url:"cluster-network,omitempty",json:"cluster-network,omitempty"` // Declare a separate cluster network, OSDs will routeheartbeat, object replication and recovery traffic over it
-	DisableCephx   *bool   `url:"disable_cephx,omitempty",json:"disable_cephx,omitempty"`     // Disable cephx authentication.WARNING: cephx is a security feature protecting against man-in-the-middle attacks. Only consider disabling cephx if your network is private!
-	MinSize        *int    `url:"min_size,omitempty",json:"min_size,omitempty"`               // Minimum number of available replicas per object to allow I/O
-	Network        *string `url:"network,omitempty",json:"network,omitempty"`                 // Use specific network for all ceph related traffic
-	PgBits         *int    `url:"pg_bits,omitempty",json:"pg_bits,omitempty"`                 // Placement group bits, used to specify the default number of placement groups.NOTE: 'osd pool default pg num' does not work for default pools.
-	Size           *int    `url:"size,omitempty",json:"size,omitempty"`                       // Targeted number of replicas per object
+	ClusterNetwork *string           `url:"cluster-network,omitempty",json:"cluster-network,omitempty"` // Declare a separate cluster network, OSDs will routeheartbeat, object replication and recovery traffic over it
+	DisableCephx   *util.SpecialBool `url:"disable_cephx,omitempty",json:"disable_cephx,omitempty"`     // Disable cephx authentication.WARNING: cephx is a security feature protecting against man-in-the-middle attacks. Only consider disabling cephx if your network is private!
+	MinSize        *int              `url:"min_size,omitempty",json:"min_size,omitempty"`               // Minimum number of available replicas per object to allow I/O
+	Network        *string           `url:"network,omitempty",json:"network,omitempty"`                 // Use specific network for all ceph related traffic
+	PgBits         *int              `url:"pg_bits,omitempty",json:"pg_bits,omitempty"`                 // Placement group bits, used to specify the default number of placement groups.NOTE: 'osd pool default pg num' does not work for default pools.
+	Size           *int              `url:"size,omitempty",json:"size,omitempty"`                       // Targeted number of replicas per object
 }
 
 type InitResponse map[string]interface{}
@@ -221,7 +222,7 @@ type CmdSafetyRequest struct {
 }
 
 type CmdSafetyResponse struct {
-	Safe bool `url:"safe",json:"safe"` // If it is safe to run the command.
+	Safe util.SpecialBool `url:"safe",json:"safe"` // If it is safe to run the command.
 
 	// The following parameters are optional
 	Status *string `url:"status,omitempty",json:"status,omitempty"` // Status message given by Ceph.
