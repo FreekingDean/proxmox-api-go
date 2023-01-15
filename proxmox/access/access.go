@@ -22,7 +22,7 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexResponse []*struct {
-	Subdir string `url:"subdir",json:"subdir"`
+	Subdir string `url:"subdir" json:"subdir"`
 }
 
 // Index Directory index.
@@ -34,13 +34,13 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 }
 
 type ReadAclResponse []*struct {
-	Path   string `url:"path",json:"path"` // Access control path
-	Roleid string `url:"roleid",json:"roleid"`
-	Type   string `url:"type",json:"type"`
-	Ugid   string `url:"ugid",json:"ugid"`
+	Path   string `url:"path" json:"path"` // Access control path
+	Roleid string `url:"roleid" json:"roleid"`
+	Type   string `url:"type" json:"type"`
+	Ugid   string `url:"ugid" json:"ugid"`
 
 	// The following parameters are optional
-	Propagate *util.SpecialBool `url:"propagate,omitempty",json:"propagate,omitempty"` // Allow to propagate (inherit) permissions.
+	Propagate *util.SpecialBool `url:"propagate,omitempty" json:"propagate,omitempty"` // Allow to propagate (inherit) permissions.
 }
 
 // ReadAcl Get Access Control List (ACLs).
@@ -52,15 +52,15 @@ func (c *Client) ReadAcl(ctx context.Context) (*ReadAclResponse, error) {
 }
 
 type UpdateAclRequest struct {
-	Path  string `url:"path",json:"path"`   // Access control path
-	Roles string `url:"roles",json:"roles"` // List of roles.
+	Path  string `url:"path" json:"path"`   // Access control path
+	Roles string `url:"roles" json:"roles"` // List of roles.
 
 	// The following parameters are optional
-	Delete    *util.SpecialBool `url:"delete,omitempty",json:"delete,omitempty"`       // Remove permissions (instead of adding it).
-	Groups    *string           `url:"groups,omitempty",json:"groups,omitempty"`       // List of groups.
-	Propagate *util.SpecialBool `url:"propagate,omitempty",json:"propagate,omitempty"` // Allow to propagate (inherit) permissions.
-	Tokens    *string           `url:"tokens,omitempty",json:"tokens,omitempty"`       // List of API tokens.
-	Users     *string           `url:"users,omitempty",json:"users,omitempty"`         // List of users.
+	Delete    *util.SpecialBool `url:"delete,omitempty" json:"delete,omitempty"`       // Remove permissions (instead of adding it).
+	Groups    *string           `url:"groups,omitempty" json:"groups,omitempty"`       // List of groups.
+	Propagate *util.SpecialBool `url:"propagate,omitempty" json:"propagate,omitempty"` // Allow to propagate (inherit) permissions.
+	Tokens    *string           `url:"tokens,omitempty" json:"tokens,omitempty"`       // List of API tokens.
+	Users     *string           `url:"users,omitempty" json:"users,omitempty"`         // List of users.
 }
 
 type UpdateAclResponse map[string]interface{}
@@ -84,25 +84,25 @@ func (c *Client) GetTicket(ctx context.Context) (*GetTicketResponse, error) {
 }
 
 type CreateTicketRequest struct {
-	Password string `url:"password",json:"password"` // The secret password. This can also be a valid ticket.
-	Username string `url:"username",json:"username"` // User name
+	Password string `url:"password" json:"password"` // The secret password. This can also be a valid ticket.
+	Username string `url:"username" json:"username"` // User name
 
 	// The following parameters are optional
-	NewFormat    *util.SpecialBool `url:"new-format,omitempty",json:"new-format,omitempty"`       // With webauthn the format of half-authenticated tickts changed. New clients should pass 1 here and not worry about the old format. The old format is deprecated and will be retired with PVE-8.0
-	Otp          *string           `url:"otp,omitempty",json:"otp,omitempty"`                     // One-time password for Two-factor authentication.
-	Path         *string           `url:"path,omitempty",json:"path,omitempty"`                   // Verify ticket, and check if user have access 'privs' on 'path'
-	Privs        *string           `url:"privs,omitempty",json:"privs,omitempty"`                 // Verify ticket, and check if user have access 'privs' on 'path'
-	Realm        *string           `url:"realm,omitempty",json:"realm,omitempty"`                 // You can optionally pass the realm using this parameter. Normally the realm is simply added to the username <username>@<relam>.
-	TfaChallenge *string           `url:"tfa-challenge,omitempty",json:"tfa-challenge,omitempty"` // The signed TFA challenge string the user wants to respond to.
+	NewFormat    *util.SpecialBool `url:"new-format,omitempty" json:"new-format,omitempty"`       // With webauthn the format of half-authenticated tickts changed. New clients should pass 1 here and not worry about the old format. The old format is deprecated and will be retired with PVE-8.0
+	Otp          *string           `url:"otp,omitempty" json:"otp,omitempty"`                     // One-time password for Two-factor authentication.
+	Path         *string           `url:"path,omitempty" json:"path,omitempty"`                   // Verify ticket, and check if user have access 'privs' on 'path'
+	Privs        *string           `url:"privs,omitempty" json:"privs,omitempty"`                 // Verify ticket, and check if user have access 'privs' on 'path'
+	Realm        *string           `url:"realm,omitempty" json:"realm,omitempty"`                 // You can optionally pass the realm using this parameter. Normally the realm is simply added to the username <username>@<relam>.
+	TfaChallenge *string           `url:"tfa-challenge,omitempty" json:"tfa-challenge,omitempty"` // The signed TFA challenge string the user wants to respond to.
 }
 
 type CreateTicketResponse struct {
-	Username string `url:"username",json:"username"`
+	Username string `url:"username" json:"username"`
 
 	// The following parameters are optional
-	Clustername         *string `url:"clustername,omitempty",json:"clustername,omitempty"`
-	Csrfpreventiontoken *string `url:"CSRFPreventionToken,omitempty",json:"CSRFPreventionToken,omitempty"`
-	Ticket              *string `url:"ticket,omitempty",json:"ticket,omitempty"`
+	Clustername         *string `url:"clustername,omitempty" json:"clustername,omitempty"`
+	Csrfpreventiontoken *string `url:"CSRFPreventionToken,omitempty" json:"CSRFPreventionToken,omitempty"`
+	Ticket              *string `url:"ticket,omitempty" json:"ticket,omitempty"`
 }
 
 // CreateTicket Create or verify authentication ticket.
@@ -114,8 +114,8 @@ func (c *Client) CreateTicket(ctx context.Context, req *CreateTicketRequest) (*C
 }
 
 type ChangePasswordRequest struct {
-	Password string `url:"password",json:"password"` // The new password.
-	Userid   string `url:"userid",json:"userid"`     // User ID
+	Password string `url:"password" json:"password"` // The new password.
+	Userid   string `url:"userid" json:"userid"`     // User ID
 
 }
 
@@ -132,8 +132,8 @@ func (c *Client) ChangePassword(ctx context.Context, req *ChangePasswordRequest)
 type PermissionsRequest struct {
 
 	// The following parameters are optional
-	Path   *string `url:"path,omitempty",json:"path,omitempty"`     // Only dump this specific path, not the whole tree.
-	Userid *string `url:"userid,omitempty",json:"userid,omitempty"` // User ID or full API token ID
+	Path   *string `url:"path,omitempty" json:"path,omitempty"`     // Only dump this specific path, not the whole tree.
+	Userid *string `url:"userid,omitempty" json:"userid,omitempty"` // User ID or full API token ID
 }
 
 type PermissionsResponse map[string]interface{}

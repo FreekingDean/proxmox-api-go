@@ -21,16 +21,16 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
 type IndexResponse []*struct {
-	State string `url:"state",json:"state"` // State of the MGR
+	State string `url:"state" json:"state"` // State of the MGR
 
 	// The following parameters are optional
-	Addr *string `url:"addr,omitempty",json:"addr,omitempty"`
-	Host *string `url:"host,omitempty",json:"host,omitempty"`
+	Addr *string `url:"addr,omitempty" json:"addr,omitempty"`
+	Host *string `url:"host,omitempty" json:"host,omitempty"`
 }
 
 // Index MGR directory index.
@@ -42,10 +42,10 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type ChildCreateRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Id *string `url:"id,omitempty",json:"id,omitempty"` // The ID for the manager, when omitted the same as the nodename
+	Id *string `url:"id,omitempty" json:"id,omitempty"` // The ID for the manager, when omitted the same as the nodename
 }
 
 type ChildCreateResponse string
@@ -59,8 +59,8 @@ func (c *Client) ChildCreate(ctx context.Context, req *ChildCreateRequest) (*Chi
 }
 
 type DeleteRequest struct {
-	Id   string `url:"id",json:"id"`     // The ID of the manager
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Id   string `url:"id" json:"id"`     // The ID of the manager
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 

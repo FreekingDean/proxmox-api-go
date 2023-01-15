@@ -22,18 +22,18 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
 type IndexResponse []*struct {
-	Alloc  int     `url:"alloc",json:"alloc"`
-	Dedup  float64 `url:"dedup",json:"dedup"`
-	Frag   int     `url:"frag",json:"frag"`
-	Free   int     `url:"free",json:"free"`
-	Health string  `url:"health",json:"health"`
-	Name   string  `url:"name",json:"name"`
-	Size   int     `url:"size",json:"size"`
+	Alloc  int     `url:"alloc" json:"alloc"`
+	Dedup  float64 `url:"dedup" json:"dedup"`
+	Frag   int     `url:"frag" json:"frag"`
+	Free   int     `url:"free" json:"free"`
+	Health string  `url:"health" json:"health"`
+	Name   string  `url:"name" json:"name"`
+	Size   int     `url:"size" json:"size"`
 }
 
 // Index List Zpools.
@@ -45,16 +45,16 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type CreateRequest struct {
-	Devices   string `url:"devices",json:"devices"`     // The block devices you want to create the zpool on.
-	Name      string `url:"name",json:"name"`           // The storage identifier.
-	Node      string `url:"node",json:"node"`           // The cluster node name.
-	Raidlevel string `url:"raidlevel",json:"raidlevel"` // The RAID level to use.
+	Devices   string `url:"devices" json:"devices"`     // The block devices you want to create the zpool on.
+	Name      string `url:"name" json:"name"`           // The storage identifier.
+	Node      string `url:"node" json:"node"`           // The cluster node name.
+	Raidlevel string `url:"raidlevel" json:"raidlevel"` // The RAID level to use.
 
 	// The following parameters are optional
-	AddStorage  *util.SpecialBool `url:"add_storage,omitempty",json:"add_storage,omitempty"` // Configure storage using the zpool.
-	Ashift      *int              `url:"ashift,omitempty",json:"ashift,omitempty"`           // Pool sector size exponent.
-	Compression *string           `url:"compression,omitempty",json:"compression,omitempty"` // The compression algorithm to use.
-	DraidConfig *string           `url:"draid-config,omitempty",json:"draid-config,omitempty"`
+	AddStorage  *util.SpecialBool `url:"add_storage,omitempty" json:"add_storage,omitempty"` // Configure storage using the zpool.
+	Ashift      *int              `url:"ashift,omitempty" json:"ashift,omitempty"`           // Pool sector size exponent.
+	Compression *string           `url:"compression,omitempty" json:"compression,omitempty"` // The compression algorithm to use.
+	DraidConfig *string           `url:"draid-config,omitempty" json:"draid-config,omitempty"`
 }
 
 type CreateResponse string
@@ -68,30 +68,30 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FindRequest struct {
-	Name string `url:"name",json:"name"` // The storage identifier.
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Name string `url:"name" json:"name"` // The storage identifier.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
 type FindResponse struct {
 	Children []*struct {
-		Msg  string `url:"msg",json:"msg"`   // An optional message about the vdev.
-		Name string `url:"name",json:"name"` // The name of the vdev or section.
+		Msg  string `url:"msg" json:"msg"`   // An optional message about the vdev.
+		Name string `url:"name" json:"name"` // The name of the vdev or section.
 
 		// The following parameters are optional
-		Cksum *float64 `url:"cksum,omitempty",json:"cksum,omitempty"`
-		Read  *float64 `url:"read,omitempty",json:"read,omitempty"`
-		State *string  `url:"state,omitempty",json:"state,omitempty"` // The state of the vdev.
-		Write *float64 `url:"write,omitempty",json:"write,omitempty"`
-	} `url:"children",json:"children"` // The pool configuration information, including the vdevs for each section (e.g. spares, cache), may be nested.
-	Errors string `url:"errors",json:"errors"` // Information about the errors on the zpool.
-	Name   string `url:"name",json:"name"`     // The name of the zpool.
-	State  string `url:"state",json:"state"`   // The state of the zpool.
+		Cksum *float64 `url:"cksum,omitempty" json:"cksum,omitempty"`
+		Read  *float64 `url:"read,omitempty" json:"read,omitempty"`
+		State *string  `url:"state,omitempty" json:"state,omitempty"` // The state of the vdev.
+		Write *float64 `url:"write,omitempty" json:"write,omitempty"`
+	} `url:"children" json:"children"` // The pool configuration information, including the vdevs for each section (e.g. spares, cache), may be nested.
+	Errors string `url:"errors" json:"errors"` // Information about the errors on the zpool.
+	Name   string `url:"name" json:"name"`     // The name of the zpool.
+	State  string `url:"state" json:"state"`   // The state of the zpool.
 
 	// The following parameters are optional
-	Action *string `url:"action,omitempty",json:"action,omitempty"` // Information about the recommended action to fix the state.
-	Scan   *string `url:"scan,omitempty",json:"scan,omitempty"`     // Information about the last/current scrub.
-	Status *string `url:"status,omitempty",json:"status,omitempty"` // Information about the state of the zpool.
+	Action *string `url:"action,omitempty" json:"action,omitempty"` // Information about the recommended action to fix the state.
+	Scan   *string `url:"scan,omitempty" json:"scan,omitempty"`     // Information about the last/current scrub.
+	Status *string `url:"status,omitempty" json:"status,omitempty"` // Information about the state of the zpool.
 }
 
 // Find Get details about a zpool.
@@ -103,12 +103,12 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type DeleteRequest struct {
-	Name string `url:"name",json:"name"` // The storage identifier.
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Name string `url:"name" json:"name"` // The storage identifier.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	CleanupConfig *util.SpecialBool `url:"cleanup-config,omitempty",json:"cleanup-config,omitempty"` // Marks associated storage(s) as not available on this node anymore or removes them from the configuration (if configured for this node only).
-	CleanupDisks  *util.SpecialBool `url:"cleanup-disks,omitempty",json:"cleanup-disks,omitempty"`   // Also wipe disks so they can be repurposed afterwards.
+	CleanupConfig *util.SpecialBool `url:"cleanup-config,omitempty" json:"cleanup-config,omitempty"` // Marks associated storage(s) as not available on this node anymore or removes them from the configuration (if configured for this node only).
+	CleanupDisks  *util.SpecialBool `url:"cleanup-disks,omitempty" json:"cleanup-disks,omitempty"`   // Also wipe disks so they can be repurposed afterwards.
 }
 
 type DeleteResponse string

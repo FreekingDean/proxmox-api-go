@@ -21,7 +21,7 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 

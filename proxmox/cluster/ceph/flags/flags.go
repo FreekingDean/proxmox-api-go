@@ -22,7 +22,7 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexResponse []*struct {
-	Name string `url:"name",json:"name"` // Flag name.
+	Name string `url:"name" json:"name"` // Flag name.
 
 }
 
@@ -37,17 +37,17 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 type MassUpdateRequest struct {
 
 	// The following parameters are optional
-	Nobackfill  *util.SpecialBool `url:"nobackfill,omitempty",json:"nobackfill,omitempty"`     // Backfilling of PGs is suspended.
-	NodeepScrub *util.SpecialBool `url:"nodeep-scrub,omitempty",json:"nodeep-scrub,omitempty"` // Deep Scrubbing is disabled.
-	Nodown      *util.SpecialBool `url:"nodown,omitempty",json:"nodown,omitempty"`             // OSD failure reports are being ignored, such that the monitors will not mark OSDs down.
-	Noin        *util.SpecialBool `url:"noin,omitempty",json:"noin,omitempty"`                 // OSDs that were previously marked out will not be marked back in when they start.
-	Noout       *util.SpecialBool `url:"noout,omitempty",json:"noout,omitempty"`               // OSDs will not automatically be marked out after the configured interval.
-	Norebalance *util.SpecialBool `url:"norebalance,omitempty",json:"norebalance,omitempty"`   // Rebalancing of PGs is suspended.
-	Norecover   *util.SpecialBool `url:"norecover,omitempty",json:"norecover,omitempty"`       // Recovery of PGs is suspended.
-	Noscrub     *util.SpecialBool `url:"noscrub,omitempty",json:"noscrub,omitempty"`           // Scrubbing is disabled.
-	Notieragent *util.SpecialBool `url:"notieragent,omitempty",json:"notieragent,omitempty"`   // Cache tiering activity is suspended.
-	Noup        *util.SpecialBool `url:"noup,omitempty",json:"noup,omitempty"`                 // OSDs are not allowed to start.
-	Pause       *util.SpecialBool `url:"pause,omitempty",json:"pause,omitempty"`               // Pauses read and writes.
+	Nobackfill  *util.SpecialBool `url:"nobackfill,omitempty" json:"nobackfill,omitempty"`     // Backfilling of PGs is suspended.
+	NodeepScrub *util.SpecialBool `url:"nodeep-scrub,omitempty" json:"nodeep-scrub,omitempty"` // Deep Scrubbing is disabled.
+	Nodown      *util.SpecialBool `url:"nodown,omitempty" json:"nodown,omitempty"`             // OSD failure reports are being ignored, such that the monitors will not mark OSDs down.
+	Noin        *util.SpecialBool `url:"noin,omitempty" json:"noin,omitempty"`                 // OSDs that were previously marked out will not be marked back in when they start.
+	Noout       *util.SpecialBool `url:"noout,omitempty" json:"noout,omitempty"`               // OSDs will not automatically be marked out after the configured interval.
+	Norebalance *util.SpecialBool `url:"norebalance,omitempty" json:"norebalance,omitempty"`   // Rebalancing of PGs is suspended.
+	Norecover   *util.SpecialBool `url:"norecover,omitempty" json:"norecover,omitempty"`       // Recovery of PGs is suspended.
+	Noscrub     *util.SpecialBool `url:"noscrub,omitempty" json:"noscrub,omitempty"`           // Scrubbing is disabled.
+	Notieragent *util.SpecialBool `url:"notieragent,omitempty" json:"notieragent,omitempty"`   // Cache tiering activity is suspended.
+	Noup        *util.SpecialBool `url:"noup,omitempty" json:"noup,omitempty"`                 // OSDs are not allowed to start.
+	Pause       *util.SpecialBool `url:"pause,omitempty" json:"pause,omitempty"`               // Pauses read and writes.
 }
 
 type MassUpdateResponse string
@@ -61,7 +61,7 @@ func (c *Client) MassUpdate(ctx context.Context, req *MassUpdateRequest) (*MassU
 }
 
 type FindRequest struct {
-	Flag string `url:"flag",json:"flag"` // The name of the flag name to get.
+	Flag string `url:"flag" json:"flag"` // The name of the flag name to get.
 
 }
 
@@ -76,8 +76,8 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type UpdateRequest struct {
-	Flag  string           `url:"flag",json:"flag"`   // The ceph flag to update
-	Value util.SpecialBool `url:"value",json:"value"` // The new value of the flag
+	Flag  string           `url:"flag" json:"flag"`   // The ceph flag to update
+	Value util.SpecialBool `url:"value" json:"value"` // The new value of the flag
 
 }
 

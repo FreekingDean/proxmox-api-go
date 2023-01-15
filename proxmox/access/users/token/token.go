@@ -22,17 +22,17 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Userid string `url:"userid",json:"userid"` // User ID
+	Userid string `url:"userid" json:"userid"` // User ID
 
 }
 
 type IndexResponse []*struct {
-	Tokenid string `url:"tokenid",json:"tokenid"` // User-specific token identifier.
+	Tokenid string `url:"tokenid" json:"tokenid"` // User-specific token identifier.
 
 	// The following parameters are optional
-	Comment *string           `url:"comment,omitempty",json:"comment,omitempty"`
-	Expire  *int              `url:"expire,omitempty",json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
-	Privsep *util.SpecialBool `url:"privsep,omitempty",json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
+	Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
+	Expire  *int              `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+	Privsep *util.SpecialBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
 
 // Index Get user API tokens.
@@ -44,17 +44,17 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type FindRequest struct {
-	Tokenid string `url:"tokenid",json:"tokenid"` // User-specific token identifier.
-	Userid  string `url:"userid",json:"userid"`   // User ID
+	Tokenid string `url:"tokenid" json:"tokenid"` // User-specific token identifier.
+	Userid  string `url:"userid" json:"userid"`   // User ID
 
 }
 
 type FindResponse struct {
 
 	// The following parameters are optional
-	Comment *string           `url:"comment,omitempty",json:"comment,omitempty"`
-	Expire  *int              `url:"expire,omitempty",json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
-	Privsep *util.SpecialBool `url:"privsep,omitempty",json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
+	Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
+	Expire  *int              `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+	Privsep *util.SpecialBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
 
 // Find Get specific API token information.
@@ -66,25 +66,25 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type ChildCreateRequest struct {
-	Tokenid string `url:"tokenid",json:"tokenid"` // User-specific token identifier.
-	Userid  string `url:"userid",json:"userid"`   // User ID
+	Tokenid string `url:"tokenid" json:"tokenid"` // User-specific token identifier.
+	Userid  string `url:"userid" json:"userid"`   // User ID
 
 	// The following parameters are optional
-	Comment *string           `url:"comment,omitempty",json:"comment,omitempty"`
-	Expire  *int              `url:"expire,omitempty",json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
-	Privsep *util.SpecialBool `url:"privsep,omitempty",json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
+	Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
+	Expire  *int              `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+	Privsep *util.SpecialBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
 
 type ChildCreateResponse struct {
-	FullTokenid string `url:"full-tokenid",json:"full-tokenid"` // The full token id.
+	FullTokenid string `url:"full-tokenid" json:"full-tokenid"` // The full token id.
 	Info        struct {
 
 		// The following parameters are optional
-		Comment *string           `url:"comment,omitempty",json:"comment,omitempty"`
-		Expire  *int              `url:"expire,omitempty",json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
-		Privsep *util.SpecialBool `url:"privsep,omitempty",json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
-	} `url:"info",json:"info"`
-	Value string `url:"value",json:"value"` // API token value used for authentication.
+		Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
+		Expire  *int              `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+		Privsep *util.SpecialBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
+	} `url:"info" json:"info"`
+	Value string `url:"value" json:"value"` // API token value used for authentication.
 
 }
 
@@ -97,21 +97,21 @@ func (c *Client) ChildCreate(ctx context.Context, req *ChildCreateRequest) (*Chi
 }
 
 type UpdateRequest struct {
-	Tokenid string `url:"tokenid",json:"tokenid"` // User-specific token identifier.
-	Userid  string `url:"userid",json:"userid"`   // User ID
+	Tokenid string `url:"tokenid" json:"tokenid"` // User-specific token identifier.
+	Userid  string `url:"userid" json:"userid"`   // User ID
 
 	// The following parameters are optional
-	Comment *string           `url:"comment,omitempty",json:"comment,omitempty"`
-	Expire  *int              `url:"expire,omitempty",json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
-	Privsep *util.SpecialBool `url:"privsep,omitempty",json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
+	Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
+	Expire  *int              `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+	Privsep *util.SpecialBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
 
 type UpdateResponse struct {
 
 	// The following parameters are optional
-	Comment *string           `url:"comment,omitempty",json:"comment,omitempty"`
-	Expire  *int              `url:"expire,omitempty",json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
-	Privsep *util.SpecialBool `url:"privsep,omitempty",json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
+	Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
+	Expire  *int              `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+	Privsep *util.SpecialBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
 
 // Update Update API token for a specific user.
@@ -123,8 +123,8 @@ func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateRespons
 }
 
 type DeleteRequest struct {
-	Tokenid string `url:"tokenid",json:"tokenid"` // User-specific token identifier.
-	Userid  string `url:"userid",json:"userid"`   // User ID
+	Tokenid string `url:"tokenid" json:"tokenid"` // User-specific token identifier.
+	Userid  string `url:"userid" json:"userid"`   // User ID
 
 }
 

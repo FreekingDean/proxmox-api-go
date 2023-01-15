@@ -22,7 +22,7 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
@@ -37,23 +37,23 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type InfoRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
 type InfoResponse []*struct {
 
 	// The following parameters are optional
-	Filename      *string  `url:"filename,omitempty",json:"filename,omitempty"`
-	Fingerprint   *string  `url:"fingerprint,omitempty",json:"fingerprint,omitempty"`         // Certificate SHA 256 fingerprint.
-	Issuer        *string  `url:"issuer,omitempty",json:"issuer,omitempty"`                   // Certificate issuer name.
-	Notafter      *int     `url:"notafter,omitempty",json:"notafter,omitempty"`               // Certificate's notAfter timestamp (UNIX epoch).
-	Notbefore     *int     `url:"notbefore,omitempty",json:"notbefore,omitempty"`             // Certificate's notBefore timestamp (UNIX epoch).
-	Pem           *string  `url:"pem,omitempty",json:"pem,omitempty"`                         // Certificate in PEM format
-	PublicKeyBits *int     `url:"public-key-bits,omitempty",json:"public-key-bits,omitempty"` // Certificate's public key size
-	PublicKeyType *string  `url:"public-key-type,omitempty",json:"public-key-type,omitempty"` // Certificate's public key algorithm
-	San           []string `url:"san,omitempty",json:"san,omitempty"`                         // List of Certificate's SubjectAlternativeName entries.
-	Subject       *string  `url:"subject,omitempty",json:"subject,omitempty"`                 // Certificate subject name.
+	Filename      *string  `url:"filename,omitempty" json:"filename,omitempty"`
+	Fingerprint   *string  `url:"fingerprint,omitempty" json:"fingerprint,omitempty"`         // Certificate SHA 256 fingerprint.
+	Issuer        *string  `url:"issuer,omitempty" json:"issuer,omitempty"`                   // Certificate issuer name.
+	Notafter      *int     `url:"notafter,omitempty" json:"notafter,omitempty"`               // Certificate's notAfter timestamp (UNIX epoch).
+	Notbefore     *int     `url:"notbefore,omitempty" json:"notbefore,omitempty"`             // Certificate's notBefore timestamp (UNIX epoch).
+	Pem           *string  `url:"pem,omitempty" json:"pem,omitempty"`                         // Certificate in PEM format
+	PublicKeyBits *int     `url:"public-key-bits,omitempty" json:"public-key-bits,omitempty"` // Certificate's public key size
+	PublicKeyType *string  `url:"public-key-type,omitempty" json:"public-key-type,omitempty"` // Certificate's public key algorithm
+	San           []string `url:"san,omitempty" json:"san,omitempty"`                         // List of Certificate's SubjectAlternativeName entries.
+	Subject       *string  `url:"subject,omitempty" json:"subject,omitempty"`                 // Certificate subject name.
 }
 
 // Info Get information about node's certificates.
@@ -65,28 +65,28 @@ func (c *Client) Info(ctx context.Context, req *InfoRequest) (*InfoResponse, err
 }
 
 type UploadCustomCertCustomRequest struct {
-	Certificates string `url:"certificates",json:"certificates"` // PEM encoded certificate (chain).
-	Node         string `url:"node",json:"node"`                 // The cluster node name.
+	Certificates string `url:"certificates" json:"certificates"` // PEM encoded certificate (chain).
+	Node         string `url:"node" json:"node"`                 // The cluster node name.
 
 	// The following parameters are optional
-	Force   *util.SpecialBool `url:"force,omitempty",json:"force,omitempty"`     // Overwrite existing custom or ACME certificate files.
-	Key     *string           `url:"key,omitempty",json:"key,omitempty"`         // PEM encoded private key.
-	Restart *util.SpecialBool `url:"restart,omitempty",json:"restart,omitempty"` // Restart pveproxy.
+	Force   *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"`     // Overwrite existing custom or ACME certificate files.
+	Key     *string           `url:"key,omitempty" json:"key,omitempty"`         // PEM encoded private key.
+	Restart *util.SpecialBool `url:"restart,omitempty" json:"restart,omitempty"` // Restart pveproxy.
 }
 
 type UploadCustomCertCustomResponse struct {
 
 	// The following parameters are optional
-	Filename      *string  `url:"filename,omitempty",json:"filename,omitempty"`
-	Fingerprint   *string  `url:"fingerprint,omitempty",json:"fingerprint,omitempty"`         // Certificate SHA 256 fingerprint.
-	Issuer        *string  `url:"issuer,omitempty",json:"issuer,omitempty"`                   // Certificate issuer name.
-	Notafter      *int     `url:"notafter,omitempty",json:"notafter,omitempty"`               // Certificate's notAfter timestamp (UNIX epoch).
-	Notbefore     *int     `url:"notbefore,omitempty",json:"notbefore,omitempty"`             // Certificate's notBefore timestamp (UNIX epoch).
-	Pem           *string  `url:"pem,omitempty",json:"pem,omitempty"`                         // Certificate in PEM format
-	PublicKeyBits *int     `url:"public-key-bits,omitempty",json:"public-key-bits,omitempty"` // Certificate's public key size
-	PublicKeyType *string  `url:"public-key-type,omitempty",json:"public-key-type,omitempty"` // Certificate's public key algorithm
-	San           []string `url:"san,omitempty",json:"san,omitempty"`                         // List of Certificate's SubjectAlternativeName entries.
-	Subject       *string  `url:"subject,omitempty",json:"subject,omitempty"`                 // Certificate subject name.
+	Filename      *string  `url:"filename,omitempty" json:"filename,omitempty"`
+	Fingerprint   *string  `url:"fingerprint,omitempty" json:"fingerprint,omitempty"`         // Certificate SHA 256 fingerprint.
+	Issuer        *string  `url:"issuer,omitempty" json:"issuer,omitempty"`                   // Certificate issuer name.
+	Notafter      *int     `url:"notafter,omitempty" json:"notafter,omitempty"`               // Certificate's notAfter timestamp (UNIX epoch).
+	Notbefore     *int     `url:"notbefore,omitempty" json:"notbefore,omitempty"`             // Certificate's notBefore timestamp (UNIX epoch).
+	Pem           *string  `url:"pem,omitempty" json:"pem,omitempty"`                         // Certificate in PEM format
+	PublicKeyBits *int     `url:"public-key-bits,omitempty" json:"public-key-bits,omitempty"` // Certificate's public key size
+	PublicKeyType *string  `url:"public-key-type,omitempty" json:"public-key-type,omitempty"` // Certificate's public key algorithm
+	San           []string `url:"san,omitempty" json:"san,omitempty"`                         // List of Certificate's SubjectAlternativeName entries.
+	Subject       *string  `url:"subject,omitempty" json:"subject,omitempty"`                 // Certificate subject name.
 }
 
 // UploadCustomCertCustom Upload or update custom certificate chain and key.
@@ -98,10 +98,10 @@ func (c *Client) UploadCustomCertCustom(ctx context.Context, req *UploadCustomCe
 }
 
 type RemoveCustomCertCustomRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Restart *util.SpecialBool `url:"restart,omitempty",json:"restart,omitempty"` // Restart pveproxy.
+	Restart *util.SpecialBool `url:"restart,omitempty" json:"restart,omitempty"` // Restart pveproxy.
 }
 
 type RemoveCustomCertCustomResponse map[string]interface{}

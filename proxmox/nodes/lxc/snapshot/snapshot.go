@@ -22,18 +22,18 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
-	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+	Node string `url:"node" json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
 
 type IndexResponse []*struct {
-	Description string `url:"description",json:"description"` // Snapshot description.
-	Name        string `url:"name",json:"name"`               // Snapshot identifier. Value 'current' identifies the current VM.
+	Description string `url:"description" json:"description"` // Snapshot description.
+	Name        string `url:"name" json:"name"`               // Snapshot identifier. Value 'current' identifies the current VM.
 
 	// The following parameters are optional
-	Parent   *string `url:"parent,omitempty",json:"parent,omitempty"`     // Parent snapshot identifier.
-	Snaptime *int    `url:"snaptime,omitempty",json:"snaptime,omitempty"` // Snapshot creation time
+	Parent   *string `url:"parent,omitempty" json:"parent,omitempty"`     // Parent snapshot identifier.
+	Snaptime *int    `url:"snaptime,omitempty" json:"snaptime,omitempty"` // Snapshot creation time
 }
 
 // Index List all snapshots.
@@ -45,12 +45,12 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type CreateRequest struct {
-	Node     string `url:"node",json:"node"`         // The cluster node name.
-	Snapname string `url:"snapname",json:"snapname"` // The name of the snapshot.
-	Vmid     int    `url:"vmid",json:"vmid"`         // The (unique) ID of the VM.
+	Node     string `url:"node" json:"node"`         // The cluster node name.
+	Snapname string `url:"snapname" json:"snapname"` // The name of the snapshot.
+	Vmid     int    `url:"vmid" json:"vmid"`         // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Description *string `url:"description,omitempty",json:"description,omitempty"` // A textual description or comment.
+	Description *string `url:"description,omitempty" json:"description,omitempty"` // A textual description or comment.
 }
 
 type CreateResponse string
@@ -64,9 +64,9 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FindRequest struct {
-	Node     string `url:"node",json:"node"`         // The cluster node name.
-	Snapname string `url:"snapname",json:"snapname"` // The name of the snapshot.
-	Vmid     int    `url:"vmid",json:"vmid"`         // The (unique) ID of the VM.
+	Node     string `url:"node" json:"node"`         // The cluster node name.
+	Snapname string `url:"snapname" json:"snapname"` // The name of the snapshot.
+	Vmid     int    `url:"vmid" json:"vmid"`         // The (unique) ID of the VM.
 
 }
 
@@ -81,12 +81,12 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type DeleteRequest struct {
-	Node     string `url:"node",json:"node"`         // The cluster node name.
-	Snapname string `url:"snapname",json:"snapname"` // The name of the snapshot.
-	Vmid     int    `url:"vmid",json:"vmid"`         // The (unique) ID of the VM.
+	Node     string `url:"node" json:"node"`         // The cluster node name.
+	Snapname string `url:"snapname" json:"snapname"` // The name of the snapshot.
+	Vmid     int    `url:"vmid" json:"vmid"`         // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Force *util.SpecialBool `url:"force,omitempty",json:"force,omitempty"` // For removal from config file, even if removing disk snapshots fails.
+	Force *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"` // For removal from config file, even if removing disk snapshots fails.
 }
 
 type DeleteResponse string
@@ -100,12 +100,12 @@ func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteRespons
 }
 
 type RollbackRequest struct {
-	Node     string `url:"node",json:"node"`         // The cluster node name.
-	Snapname string `url:"snapname",json:"snapname"` // The name of the snapshot.
-	Vmid     int    `url:"vmid",json:"vmid"`         // The (unique) ID of the VM.
+	Node     string `url:"node" json:"node"`         // The cluster node name.
+	Snapname string `url:"snapname" json:"snapname"` // The name of the snapshot.
+	Vmid     int    `url:"vmid" json:"vmid"`         // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Start *util.SpecialBool `url:"start,omitempty",json:"start,omitempty"` // Whether the container should get started after rolling back successfully
+	Start *util.SpecialBool `url:"start,omitempty" json:"start,omitempty"` // Whether the container should get started after rolling back successfully
 }
 
 type RollbackResponse string
@@ -119,9 +119,9 @@ func (c *Client) Rollback(ctx context.Context, req *RollbackRequest) (*RollbackR
 }
 
 type GetSnapshotConfigRequest struct {
-	Node     string `url:"node",json:"node"`         // The cluster node name.
-	Snapname string `url:"snapname",json:"snapname"` // The name of the snapshot.
-	Vmid     int    `url:"vmid",json:"vmid"`         // The (unique) ID of the VM.
+	Node     string `url:"node" json:"node"`         // The cluster node name.
+	Snapname string `url:"snapname" json:"snapname"` // The name of the snapshot.
+	Vmid     int    `url:"vmid" json:"vmid"`         // The (unique) ID of the VM.
 
 }
 
@@ -136,12 +136,12 @@ func (c *Client) GetSnapshotConfig(ctx context.Context, req *GetSnapshotConfigRe
 }
 
 type UpdateSnapshotConfigRequest struct {
-	Node     string `url:"node",json:"node"`         // The cluster node name.
-	Snapname string `url:"snapname",json:"snapname"` // The name of the snapshot.
-	Vmid     int    `url:"vmid",json:"vmid"`         // The (unique) ID of the VM.
+	Node     string `url:"node" json:"node"`         // The cluster node name.
+	Snapname string `url:"snapname" json:"snapname"` // The name of the snapshot.
+	Vmid     int    `url:"vmid" json:"vmid"`         // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Description *string `url:"description,omitempty",json:"description,omitempty"` // A textual description or comment.
+	Description *string `url:"description,omitempty" json:"description,omitempty"` // A textual description or comment.
 }
 
 type UpdateSnapshotConfigResponse map[string]interface{}

@@ -21,7 +21,7 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexResponse []*struct {
-	Id string `url:"id",json:"id"`
+	Id string `url:"id" json:"id"`
 }
 
 // Index Directory index.
