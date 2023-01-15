@@ -24,17 +24,17 @@ func New(c HTTPClient) *Client {
 type IndexRequest struct {
 
 	// The following parameters are optional
-	Pending *util.SpecialBool `url:"pending,omitempty",json:"pending,omitempty"` // Display pending config.
-	Running *util.SpecialBool `url:"running,omitempty",json:"running,omitempty"` // Display running config.
-	Type    *string           `url:"type,omitempty",json:"type,omitempty"`       // Only list sdn controllers of specific type
+	Pending *util.SpecialBool `url:"pending,omitempty" json:"pending,omitempty"` // Display pending config.
+	Running *util.SpecialBool `url:"running,omitempty" json:"running,omitempty"` // Display running config.
+	Type    *string           `url:"type,omitempty" json:"type,omitempty"`       // Only list sdn controllers of specific type
 }
 
 type IndexResponse []*struct {
-	Controller string `url:"controller",json:"controller"`
-	Type       string `url:"type",json:"type"`
+	Controller string `url:"controller" json:"controller"`
+	Type       string `url:"type" json:"type"`
 
 	// The following parameters are optional
-	State *string `url:"state,omitempty",json:"state,omitempty"`
+	State *string `url:"state,omitempty" json:"state,omitempty"`
 }
 
 // Index SDN controllers index.
@@ -46,17 +46,17 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type CreateRequest struct {
-	Controller string `url:"controller",json:"controller"` // The SDN controller object identifier.
-	Type       string `url:"type",json:"type"`             // Plugin type.
+	Controller string `url:"controller" json:"controller"` // The SDN controller object identifier.
+	Type       string `url:"type" json:"type"`             // Plugin type.
 
 	// The following parameters are optional
-	Asn                     *int              `url:"asn,omitempty",json:"asn,omitempty"` // autonomous system number
-	BgpMultipathAsPathRelax *util.SpecialBool `url:"bgp-multipath-as-path-relax,omitempty",json:"bgp-multipath-as-path-relax,omitempty"`
-	Ebgp                    *util.SpecialBool `url:"ebgp,omitempty",json:"ebgp,omitempty"` // Enable ebgp. (remote-as external)
-	EbgpMultihop            *int              `url:"ebgp-multihop,omitempty",json:"ebgp-multihop,omitempty"`
-	Loopback                *string           `url:"loopback,omitempty",json:"loopback,omitempty"` // source loopback interface.
-	Node                    *string           `url:"node,omitempty",json:"node,omitempty"`         // The cluster node name.
-	Peers                   *string           `url:"peers,omitempty",json:"peers,omitempty"`       // peers address list.
+	Asn                     *int              `url:"asn,omitempty" json:"asn,omitempty"` // autonomous system number
+	BgpMultipathAsPathRelax *util.SpecialBool `url:"bgp-multipath-as-path-relax,omitempty" json:"bgp-multipath-as-path-relax,omitempty"`
+	Ebgp                    *util.SpecialBool `url:"ebgp,omitempty" json:"ebgp,omitempty"` // Enable ebgp. (remote-as external)
+	EbgpMultihop            *int              `url:"ebgp-multihop,omitempty" json:"ebgp-multihop,omitempty"`
+	Loopback                *string           `url:"loopback,omitempty" json:"loopback,omitempty"` // source loopback interface.
+	Node                    *string           `url:"node,omitempty" json:"node,omitempty"`         // The cluster node name.
+	Peers                   *string           `url:"peers,omitempty" json:"peers,omitempty"`       // peers address list.
 }
 
 type CreateResponse map[string]interface{}
@@ -70,11 +70,11 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FindRequest struct {
-	Controller string `url:"controller",json:"controller"` // The SDN controller object identifier.
+	Controller string `url:"controller" json:"controller"` // The SDN controller object identifier.
 
 	// The following parameters are optional
-	Pending *util.SpecialBool `url:"pending,omitempty",json:"pending,omitempty"` // Display pending config.
-	Running *util.SpecialBool `url:"running,omitempty",json:"running,omitempty"` // Display running config.
+	Pending *util.SpecialBool `url:"pending,omitempty" json:"pending,omitempty"` // Display pending config.
+	Running *util.SpecialBool `url:"running,omitempty" json:"running,omitempty"` // Display running config.
 }
 
 type FindResponse map[string]interface{}
@@ -88,18 +88,18 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type UpdateRequest struct {
-	Controller string `url:"controller",json:"controller"` // The SDN controller object identifier.
+	Controller string `url:"controller" json:"controller"` // The SDN controller object identifier.
 
 	// The following parameters are optional
-	Asn                     *int              `url:"asn,omitempty",json:"asn,omitempty"` // autonomous system number
-	BgpMultipathAsPathRelax *util.SpecialBool `url:"bgp-multipath-as-path-relax,omitempty",json:"bgp-multipath-as-path-relax,omitempty"`
-	Delete                  *string           `url:"delete,omitempty",json:"delete,omitempty"` // A list of settings you want to delete.
-	Digest                  *string           `url:"digest,omitempty",json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-	Ebgp                    *util.SpecialBool `url:"ebgp,omitempty",json:"ebgp,omitempty"`     // Enable ebgp. (remote-as external)
-	EbgpMultihop            *int              `url:"ebgp-multihop,omitempty",json:"ebgp-multihop,omitempty"`
-	Loopback                *string           `url:"loopback,omitempty",json:"loopback,omitempty"` // source loopback interface.
-	Node                    *string           `url:"node,omitempty",json:"node,omitempty"`         // The cluster node name.
-	Peers                   *string           `url:"peers,omitempty",json:"peers,omitempty"`       // peers address list.
+	Asn                     *int              `url:"asn,omitempty" json:"asn,omitempty"` // autonomous system number
+	BgpMultipathAsPathRelax *util.SpecialBool `url:"bgp-multipath-as-path-relax,omitempty" json:"bgp-multipath-as-path-relax,omitempty"`
+	Delete                  *string           `url:"delete,omitempty" json:"delete,omitempty"` // A list of settings you want to delete.
+	Digest                  *string           `url:"digest,omitempty" json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Ebgp                    *util.SpecialBool `url:"ebgp,omitempty" json:"ebgp,omitempty"`     // Enable ebgp. (remote-as external)
+	EbgpMultihop            *int              `url:"ebgp-multihop,omitempty" json:"ebgp-multihop,omitempty"`
+	Loopback                *string           `url:"loopback,omitempty" json:"loopback,omitempty"` // source loopback interface.
+	Node                    *string           `url:"node,omitempty" json:"node,omitempty"`         // The cluster node name.
+	Peers                   *string           `url:"peers,omitempty" json:"peers,omitempty"`       // peers address list.
 }
 
 type UpdateResponse map[string]interface{}
@@ -113,7 +113,7 @@ func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateRespons
 }
 
 type DeleteRequest struct {
-	Controller string `url:"controller",json:"controller"` // The SDN controller object identifier.
+	Controller string `url:"controller" json:"controller"` // The SDN controller object identifier.
 
 }
 

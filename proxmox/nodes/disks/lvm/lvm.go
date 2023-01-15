@@ -22,27 +22,27 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
 type IndexResponse struct {
 	Children []*struct {
-		Free int              `url:"free",json:"free"` // The free bytes in the volume group
-		Leaf util.SpecialBool `url:"leaf",json:"leaf"`
-		Name string           `url:"name",json:"name"` // The name of the volume group
-		Size int              `url:"size",json:"size"` // The size of the volume group in bytes
+		Free int              `url:"free" json:"free"` // The free bytes in the volume group
+		Leaf util.SpecialBool `url:"leaf" json:"leaf"`
+		Name string           `url:"name" json:"name"` // The name of the volume group
+		Size int              `url:"size" json:"size"` // The size of the volume group in bytes
 
 		// The following parameters are optional
 		Children []*struct {
-			Free int              `url:"free",json:"free"` // The free bytes in the physical volume
-			Leaf util.SpecialBool `url:"leaf",json:"leaf"`
-			Name string           `url:"name",json:"name"` // The name of the physical volume
-			Size int              `url:"size",json:"size"` // The size of the physical volume in bytes
+			Free int              `url:"free" json:"free"` // The free bytes in the physical volume
+			Leaf util.SpecialBool `url:"leaf" json:"leaf"`
+			Name string           `url:"name" json:"name"` // The name of the physical volume
+			Size int              `url:"size" json:"size"` // The size of the physical volume in bytes
 
-		} `url:"children,omitempty",json:"children,omitempty"` // The underlying physical volumes
-	} `url:"children",json:"children"`
-	Leaf util.SpecialBool `url:"leaf",json:"leaf"`
+		} `url:"children,omitempty" json:"children,omitempty"` // The underlying physical volumes
+	} `url:"children" json:"children"`
+	Leaf util.SpecialBool `url:"leaf" json:"leaf"`
 }
 
 // Index List LVM Volume Groups
@@ -54,12 +54,12 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type CreateRequest struct {
-	Device string `url:"device",json:"device"` // The block device you want to create the volume group on
-	Name   string `url:"name",json:"name"`     // The storage identifier.
-	Node   string `url:"node",json:"node"`     // The cluster node name.
+	Device string `url:"device" json:"device"` // The block device you want to create the volume group on
+	Name   string `url:"name" json:"name"`     // The storage identifier.
+	Node   string `url:"node" json:"node"`     // The cluster node name.
 
 	// The following parameters are optional
-	AddStorage *util.SpecialBool `url:"add_storage,omitempty",json:"add_storage,omitempty"` // Configure storage using the Volume Group
+	AddStorage *util.SpecialBool `url:"add_storage,omitempty" json:"add_storage,omitempty"` // Configure storage using the Volume Group
 }
 
 type CreateResponse string
@@ -73,12 +73,12 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type DeleteRequest struct {
-	Name string `url:"name",json:"name"` // The storage identifier.
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Name string `url:"name" json:"name"` // The storage identifier.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	CleanupConfig *util.SpecialBool `url:"cleanup-config,omitempty",json:"cleanup-config,omitempty"` // Marks associated storage(s) as not available on this node anymore or removes them from the configuration (if configured for this node only).
-	CleanupDisks  *util.SpecialBool `url:"cleanup-disks,omitempty",json:"cleanup-disks,omitempty"`   // Also wipe disks so they can be repurposed afterwards.
+	CleanupConfig *util.SpecialBool `url:"cleanup-config,omitempty" json:"cleanup-config,omitempty"` // Marks associated storage(s) as not available on this node anymore or removes them from the configuration (if configured for this node only).
+	CleanupDisks  *util.SpecialBool `url:"cleanup-disks,omitempty" json:"cleanup-disks,omitempty"`   // Also wipe disks so they can be repurposed afterwards.
 }
 
 type DeleteResponse string

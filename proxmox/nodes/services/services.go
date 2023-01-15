@@ -21,7 +21,7 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
@@ -36,13 +36,13 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type FindRequest struct {
-	Node    string `url:"node",json:"node"`       // The cluster node name.
-	Service string `url:"service",json:"service"` // Service ID
+	Node    string `url:"node" json:"node"`       // The cluster node name.
+	Service string `url:"service" json:"service"` // Service ID
 
 }
 
 type FindResponse []*struct {
-	Subdir string `url:"subdir",json:"subdir"`
+	Subdir string `url:"subdir" json:"subdir"`
 }
 
 // Find Directory index
@@ -54,8 +54,8 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type ServiceStateRequest struct {
-	Node    string `url:"node",json:"node"`       // The cluster node name.
-	Service string `url:"service",json:"service"` // Service ID
+	Node    string `url:"node" json:"node"`       // The cluster node name.
+	Service string `url:"service" json:"service"` // Service ID
 
 }
 
@@ -70,8 +70,8 @@ func (c *Client) ServiceState(ctx context.Context, req *ServiceStateRequest) (*S
 }
 
 type ServiceStartRequest struct {
-	Node    string `url:"node",json:"node"`       // The cluster node name.
-	Service string `url:"service",json:"service"` // Service ID
+	Node    string `url:"node" json:"node"`       // The cluster node name.
+	Service string `url:"service" json:"service"` // Service ID
 
 }
 
@@ -86,8 +86,8 @@ func (c *Client) ServiceStart(ctx context.Context, req *ServiceStartRequest) (*S
 }
 
 type ServiceStopRequest struct {
-	Node    string `url:"node",json:"node"`       // The cluster node name.
-	Service string `url:"service",json:"service"` // Service ID
+	Node    string `url:"node" json:"node"`       // The cluster node name.
+	Service string `url:"service" json:"service"` // Service ID
 
 }
 
@@ -102,8 +102,8 @@ func (c *Client) ServiceStop(ctx context.Context, req *ServiceStopRequest) (*Ser
 }
 
 type ServiceRestartRequest struct {
-	Node    string `url:"node",json:"node"`       // The cluster node name.
-	Service string `url:"service",json:"service"` // Service ID
+	Node    string `url:"node" json:"node"`       // The cluster node name.
+	Service string `url:"service" json:"service"` // Service ID
 
 }
 
@@ -118,8 +118,8 @@ func (c *Client) ServiceRestart(ctx context.Context, req *ServiceRestartRequest)
 }
 
 type ServiceReloadRequest struct {
-	Node    string `url:"node",json:"node"`       // The cluster node name.
-	Service string `url:"service",json:"service"` // Service ID
+	Node    string `url:"node" json:"node"`       // The cluster node name.
+	Service string `url:"service" json:"service"` // Service ID
 
 }
 

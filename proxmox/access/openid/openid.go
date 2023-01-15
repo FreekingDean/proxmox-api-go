@@ -21,7 +21,7 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexResponse []*struct {
-	Subdir string `url:"subdir",json:"subdir"`
+	Subdir string `url:"subdir" json:"subdir"`
 }
 
 // Index Directory index.
@@ -33,8 +33,8 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 }
 
 type AuthUrlRequest struct {
-	Realm       string `url:"realm",json:"realm"`               // Authentication domain ID
-	RedirectUrl string `url:"redirect-url",json:"redirect-url"` // Redirection Url. The client should set this to the used server url (location.origin).
+	Realm       string `url:"realm" json:"realm"`               // Authentication domain ID
+	RedirectUrl string `url:"redirect-url" json:"redirect-url"` // Redirection Url. The client should set this to the used server url (location.origin).
 
 }
 
@@ -49,20 +49,20 @@ func (c *Client) AuthUrl(ctx context.Context, req *AuthUrlRequest) (*AuthUrlResp
 }
 
 type LoginRequest struct {
-	Code        string `url:"code",json:"code"`                 // OpenId authorization code.
-	RedirectUrl string `url:"redirect-url",json:"redirect-url"` // Redirection Url. The client should set this to the used server url (location.origin).
-	State       string `url:"state",json:"state"`               // OpenId state.
+	Code        string `url:"code" json:"code"`                 // OpenId authorization code.
+	RedirectUrl string `url:"redirect-url" json:"redirect-url"` // Redirection Url. The client should set this to the used server url (location.origin).
+	State       string `url:"state" json:"state"`               // OpenId state.
 
 }
 
 type LoginResponse struct {
-	Cap                 map[string]interface{} `url:"cap",json:"cap"`
-	Csrfpreventiontoken string                 `url:"CSRFPreventionToken",json:"CSRFPreventionToken"`
-	Ticket              string                 `url:"ticket",json:"ticket"`
-	Username            string                 `url:"username",json:"username"`
+	Cap                 map[string]interface{} `url:"cap" json:"cap"`
+	Csrfpreventiontoken string                 `url:"CSRFPreventionToken" json:"CSRFPreventionToken"`
+	Ticket              string                 `url:"ticket" json:"ticket"`
+	Username            string                 `url:"username" json:"username"`
 
 	// The following parameters are optional
-	Clustername *string `url:"clustername,omitempty",json:"clustername,omitempty"`
+	Clustername *string `url:"clustername,omitempty" json:"clustername,omitempty"`
 }
 
 // Login  Verify OpenID authorization code and create a ticket.

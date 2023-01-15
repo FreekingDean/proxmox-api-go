@@ -33,7 +33,7 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 type GetTosRequest struct {
 
 	// The following parameters are optional
-	Directory *string `url:"directory,omitempty",json:"directory,omitempty"` // URL of ACME CA directory endpoint.
+	Directory *string `url:"directory,omitempty" json:"directory,omitempty"` // URL of ACME CA directory endpoint.
 }
 
 type GetTosResponse *string
@@ -47,8 +47,8 @@ func (c *Client) GetTos(ctx context.Context, req *GetTosRequest) (*GetTosRespons
 }
 
 type GetDirectoriesResponse []*struct {
-	Name string `url:"name",json:"name"`
-	Url  string `url:"url",json:"url"` // URL of ACME CA directory endpoint.
+	Name string `url:"name" json:"name"`
+	Url  string `url:"url" json:"url"` // URL of ACME CA directory endpoint.
 
 }
 
@@ -61,10 +61,10 @@ func (c *Client) GetDirectories(ctx context.Context) (*GetDirectoriesResponse, e
 }
 
 type ChallengeschemaChallengeSchemaResponse []*struct {
-	Id     string                 `url:"id",json:"id"`
-	Name   string                 `url:"name",json:"name"` // Human readable name, falls back to id
-	Schema map[string]interface{} `url:"schema",json:"schema"`
-	Type   string                 `url:"type",json:"type"`
+	Id     string                 `url:"id" json:"id"`
+	Name   string                 `url:"name" json:"name"` // Human readable name, falls back to id
+	Schema map[string]interface{} `url:"schema" json:"schema"`
+	Type   string                 `url:"type" json:"type"`
 }
 
 // ChallengeschemaChallengeSchema Get schema of ACME challenge types.

@@ -22,7 +22,7 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
@@ -37,29 +37,29 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type ListRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	IncludePartitions *util.SpecialBool `url:"include-partitions,omitempty",json:"include-partitions,omitempty"` // Also include partitions.
-	Skipsmart         *util.SpecialBool `url:"skipsmart,omitempty",json:"skipsmart,omitempty"`                   // Skip smart checks.
-	Type              *string           `url:"type,omitempty",json:"type,omitempty"`                             // Only list specific types of disks.
+	IncludePartitions *util.SpecialBool `url:"include-partitions,omitempty" json:"include-partitions,omitempty"` // Also include partitions.
+	Skipsmart         *util.SpecialBool `url:"skipsmart,omitempty" json:"skipsmart,omitempty"`                   // Skip smart checks.
+	Type              *string           `url:"type,omitempty" json:"type,omitempty"`                             // Only list specific types of disks.
 }
 
 type ListResponse []*struct {
-	Devpath string           `url:"devpath",json:"devpath"` // The device path
-	Gpt     util.SpecialBool `url:"gpt",json:"gpt"`
-	Mounted util.SpecialBool `url:"mounted",json:"mounted"`
-	Osdid   int              `url:"osdid",json:"osdid"`
-	Size    int              `url:"size",json:"size"`
+	Devpath string           `url:"devpath" json:"devpath"` // The device path
+	Gpt     util.SpecialBool `url:"gpt" json:"gpt"`
+	Mounted util.SpecialBool `url:"mounted" json:"mounted"`
+	Osdid   int              `url:"osdid" json:"osdid"`
+	Size    int              `url:"size" json:"size"`
 
 	// The following parameters are optional
-	Health *string `url:"health,omitempty",json:"health,omitempty"`
-	Model  *string `url:"model,omitempty",json:"model,omitempty"`
-	Parent *string `url:"parent,omitempty",json:"parent,omitempty"` // For partitions only. The device path of the disk the partition resides on.
-	Serial *string `url:"serial,omitempty",json:"serial,omitempty"`
-	Used   *string `url:"used,omitempty",json:"used,omitempty"`
-	Vendor *string `url:"vendor,omitempty",json:"vendor,omitempty"`
-	Wwn    *string `url:"wwn,omitempty",json:"wwn,omitempty"`
+	Health *string `url:"health,omitempty" json:"health,omitempty"`
+	Model  *string `url:"model,omitempty" json:"model,omitempty"`
+	Parent *string `url:"parent,omitempty" json:"parent,omitempty"` // For partitions only. The device path of the disk the partition resides on.
+	Serial *string `url:"serial,omitempty" json:"serial,omitempty"`
+	Used   *string `url:"used,omitempty" json:"used,omitempty"`
+	Vendor *string `url:"vendor,omitempty" json:"vendor,omitempty"`
+	Wwn    *string `url:"wwn,omitempty" json:"wwn,omitempty"`
 }
 
 // List List local disks.
@@ -71,20 +71,20 @@ func (c *Client) List(ctx context.Context, req *ListRequest) (*ListResponse, err
 }
 
 type SmartRequest struct {
-	Disk string `url:"disk",json:"disk"` // Block device name
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Disk string `url:"disk" json:"disk"` // Block device name
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Healthonly *util.SpecialBool `url:"healthonly,omitempty",json:"healthonly,omitempty"` // If true returns only the health status
+	Healthonly *util.SpecialBool `url:"healthonly,omitempty" json:"healthonly,omitempty"` // If true returns only the health status
 }
 
 type SmartResponse struct {
-	Health string `url:"health",json:"health"`
+	Health string `url:"health" json:"health"`
 
 	// The following parameters are optional
-	Attributes []*map[string]interface{} `url:"attributes,omitempty",json:"attributes,omitempty"`
-	Text       *string                   `url:"text,omitempty",json:"text,omitempty"`
-	Type       *string                   `url:"type,omitempty",json:"type,omitempty"`
+	Attributes []*map[string]interface{} `url:"attributes,omitempty" json:"attributes,omitempty"`
+	Text       *string                   `url:"text,omitempty" json:"text,omitempty"`
+	Type       *string                   `url:"type,omitempty" json:"type,omitempty"`
 }
 
 // Smart Get SMART Health of a disk.
@@ -96,11 +96,11 @@ func (c *Client) Smart(ctx context.Context, req *SmartRequest) (*SmartResponse, 
 }
 
 type InitgptRequest struct {
-	Disk string `url:"disk",json:"disk"` // Block device name
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Disk string `url:"disk" json:"disk"` // Block device name
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Uuid *string `url:"uuid,omitempty",json:"uuid,omitempty"` // UUID for the GPT table
+	Uuid *string `url:"uuid,omitempty" json:"uuid,omitempty"` // UUID for the GPT table
 }
 
 type InitgptResponse string
@@ -114,8 +114,8 @@ func (c *Client) Initgpt(ctx context.Context, req *InitgptRequest) (*InitgptResp
 }
 
 type WipeDiskWipediskRequest struct {
-	Disk string `url:"disk",json:"disk"` // Block device name
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Disk string `url:"disk" json:"disk"` // Block device name
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 

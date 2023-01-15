@@ -21,12 +21,12 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
 type IndexResponse []*struct {
-	Type string `url:"type",json:"type"`
+	Type string `url:"type" json:"type"`
 }
 
 // Index Index of hardware types
@@ -38,25 +38,25 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type UsbscanUsbRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
 type UsbscanUsbResponse []*struct {
-	Busnum int    `url:"busnum",json:"busnum"`
-	Class  int    `url:"class",json:"class"`
-	Devnum int    `url:"devnum",json:"devnum"`
-	Level  int    `url:"level",json:"level"`
-	Port   int    `url:"port",json:"port"`
-	Prodid string `url:"prodid",json:"prodid"`
-	Speed  string `url:"speed",json:"speed"`
-	Vendid string `url:"vendid",json:"vendid"`
+	Busnum int    `url:"busnum" json:"busnum"`
+	Class  int    `url:"class" json:"class"`
+	Devnum int    `url:"devnum" json:"devnum"`
+	Level  int    `url:"level" json:"level"`
+	Port   int    `url:"port" json:"port"`
+	Prodid string `url:"prodid" json:"prodid"`
+	Speed  string `url:"speed" json:"speed"`
+	Vendid string `url:"vendid" json:"vendid"`
 
 	// The following parameters are optional
-	Manufacturer *string `url:"manufacturer,omitempty",json:"manufacturer,omitempty"`
-	Product      *string `url:"product,omitempty",json:"product,omitempty"`
-	Serial       *string `url:"serial,omitempty",json:"serial,omitempty"`
-	Usbpath      *string `url:"usbpath,omitempty",json:"usbpath,omitempty"`
+	Manufacturer *string `url:"manufacturer,omitempty" json:"manufacturer,omitempty"`
+	Product      *string `url:"product,omitempty" json:"product,omitempty"`
+	Serial       *string `url:"serial,omitempty" json:"serial,omitempty"`
+	Usbpath      *string `url:"usbpath,omitempty" json:"usbpath,omitempty"`
 }
 
 // UsbscanUsb List local USB devices.

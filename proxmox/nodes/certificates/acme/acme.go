@@ -22,7 +22,7 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
@@ -37,10 +37,10 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type NewCertificateRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Force *util.SpecialBool `url:"force,omitempty",json:"force,omitempty"` // Overwrite existing custom certificate.
+	Force *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"` // Overwrite existing custom certificate.
 }
 
 type NewCertificateResponse string
@@ -54,10 +54,10 @@ func (c *Client) NewCertificate(ctx context.Context, req *NewCertificateRequest)
 }
 
 type RenewCertificateRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Force *util.SpecialBool `url:"force,omitempty",json:"force,omitempty"` // Force renewal even if expiry is more than 30 days away.
+	Force *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"` // Force renewal even if expiry is more than 30 days away.
 }
 
 type RenewCertificateResponse string
@@ -71,7 +71,7 @@ func (c *Client) RenewCertificate(ctx context.Context, req *RenewCertificateRequ
 }
 
 type RevokeCertificateRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 

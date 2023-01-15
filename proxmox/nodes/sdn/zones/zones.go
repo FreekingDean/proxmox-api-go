@@ -21,13 +21,13 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
 type IndexResponse []*struct {
-	Status string `url:"status",json:"status"` // Status of zone
-	Zone   string `url:"zone",json:"zone"`     // The SDN zone object identifier.
+	Status string `url:"status" json:"status"` // Status of zone
+	Zone   string `url:"zone" json:"zone"`     // The SDN zone object identifier.
 
 }
 
@@ -40,13 +40,13 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type FindRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
-	Zone string `url:"zone",json:"zone"` // The SDN zone object identifier.
+	Node string `url:"node" json:"node"` // The cluster node name.
+	Zone string `url:"zone" json:"zone"` // The SDN zone object identifier.
 
 }
 
 type FindResponse []*struct {
-	Subdir string `url:"subdir",json:"subdir"`
+	Subdir string `url:"subdir" json:"subdir"`
 }
 
 // Find
@@ -58,17 +58,17 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type IndexContentRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
-	Zone string `url:"zone",json:"zone"` // The SDN zone object identifier.
+	Node string `url:"node" json:"node"` // The cluster node name.
+	Zone string `url:"zone" json:"zone"` // The SDN zone object identifier.
 
 }
 
 type IndexContentResponse []*struct {
-	Vnet string `url:"vnet",json:"vnet"` // Vnet identifier.
+	Vnet string `url:"vnet" json:"vnet"` // Vnet identifier.
 
 	// The following parameters are optional
-	Status    *string `url:"status,omitempty",json:"status,omitempty"`       // Status.
-	Statusmsg *string `url:"statusmsg,omitempty",json:"statusmsg,omitempty"` // Status details
+	Status    *string `url:"status,omitempty" json:"status,omitempty"`       // Status.
+	Statusmsg *string `url:"statusmsg,omitempty" json:"statusmsg,omitempty"` // Status details
 }
 
 // IndexContent List zone content.

@@ -22,7 +22,7 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexResponse []*struct {
-	Poolid string `url:"poolid",json:"poolid"`
+	Poolid string `url:"poolid" json:"poolid"`
 }
 
 // Index Pool index.
@@ -34,10 +34,10 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 }
 
 type CreateRequest struct {
-	Poolid string `url:"poolid",json:"poolid"`
+	Poolid string `url:"poolid" json:"poolid"`
 
 	// The following parameters are optional
-	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
+	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
 }
 
 type CreateResponse map[string]interface{}
@@ -51,25 +51,25 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FindRequest struct {
-	Poolid string `url:"poolid",json:"poolid"`
+	Poolid string `url:"poolid" json:"poolid"`
 
 	// The following parameters are optional
-	Type *string `url:"type,omitempty",json:"type,omitempty"`
+	Type *string `url:"type,omitempty" json:"type,omitempty"`
 }
 
 type FindResponse struct {
 	Members []*struct {
-		Id   string `url:"id",json:"id"`
-		Node string `url:"node",json:"node"`
-		Type string `url:"type",json:"type"`
+		Id   string `url:"id" json:"id"`
+		Node string `url:"node" json:"node"`
+		Type string `url:"type" json:"type"`
 
 		// The following parameters are optional
-		Storage *string `url:"storage,omitempty",json:"storage,omitempty"`
-		Vmid    *int    `url:"vmid,omitempty",json:"vmid,omitempty"`
-	} `url:"members",json:"members"`
+		Storage *string `url:"storage,omitempty" json:"storage,omitempty"`
+		Vmid    *int    `url:"vmid,omitempty" json:"vmid,omitempty"`
+	} `url:"members" json:"members"`
 
 	// The following parameters are optional
-	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
+	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
 }
 
 // Find Get pool configuration.
@@ -81,13 +81,13 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type UpdateRequest struct {
-	Poolid string `url:"poolid",json:"poolid"`
+	Poolid string `url:"poolid" json:"poolid"`
 
 	// The following parameters are optional
-	Comment *string           `url:"comment,omitempty",json:"comment,omitempty"`
-	Delete  *util.SpecialBool `url:"delete,omitempty",json:"delete,omitempty"`   // Remove vms/storage (instead of adding it).
-	Storage *string           `url:"storage,omitempty",json:"storage,omitempty"` // List of storage IDs.
-	Vms     *string           `url:"vms,omitempty",json:"vms,omitempty"`         // List of virtual machines.
+	Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
+	Delete  *util.SpecialBool `url:"delete,omitempty" json:"delete,omitempty"`   // Remove vms/storage (instead of adding it).
+	Storage *string           `url:"storage,omitempty" json:"storage,omitempty"` // List of storage IDs.
+	Vms     *string           `url:"vms,omitempty" json:"vms,omitempty"`         // List of virtual machines.
 }
 
 type UpdateResponse map[string]interface{}
@@ -101,7 +101,7 @@ func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateRespons
 }
 
 type DeleteRequest struct {
-	Poolid string `url:"poolid",json:"poolid"`
+	Poolid string `url:"poolid" json:"poolid"`
 }
 
 type DeleteResponse map[string]interface{}

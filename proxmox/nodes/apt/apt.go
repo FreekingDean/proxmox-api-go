@@ -22,12 +22,12 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
 type IndexResponse []*struct {
-	Id string `url:"id",json:"id"`
+	Id string `url:"id" json:"id"`
 }
 
 // Index Directory index for apt (Advanced Package Tool).
@@ -39,7 +39,7 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type ListUpdatesUpdateRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
@@ -54,11 +54,11 @@ func (c *Client) ListUpdatesUpdate(ctx context.Context, req *ListUpdatesUpdateRe
 }
 
 type UpdateDatabaseUpdateRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Notify *util.SpecialBool `url:"notify,omitempty",json:"notify,omitempty"` // Send notification mail about new packages (to email address specified for user 'root@pam').
-	Quiet  *util.SpecialBool `url:"quiet,omitempty",json:"quiet,omitempty"`   // Only produces output suitable for logging, omitting progress indicators.
+	Notify *util.SpecialBool `url:"notify,omitempty" json:"notify,omitempty"` // Send notification mail about new packages (to email address specified for user 'root@pam').
+	Quiet  *util.SpecialBool `url:"quiet,omitempty" json:"quiet,omitempty"`   // Only produces output suitable for logging, omitting progress indicators.
 }
 
 type UpdateDatabaseUpdateResponse string
@@ -72,11 +72,11 @@ func (c *Client) UpdateDatabaseUpdate(ctx context.Context, req *UpdateDatabaseUp
 }
 
 type ChangelogRequest struct {
-	Name string `url:"name",json:"name"` // Package name.
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Name string `url:"name" json:"name"` // Package name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Version *string `url:"version,omitempty",json:"version,omitempty"` // Package version.
+	Version *string `url:"version,omitempty" json:"version,omitempty"` // Package version.
 }
 
 type ChangelogResponse string
@@ -90,54 +90,54 @@ func (c *Client) Changelog(ctx context.Context, req *ChangelogRequest) (*Changel
 }
 
 type RepositoriesRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
 type RepositoriesResponse struct {
-	Digest string `url:"digest",json:"digest"` // Common digest of all files.
+	Digest string `url:"digest" json:"digest"` // Common digest of all files.
 	Errors []*struct {
-		Error string `url:"error",json:"error"` // The error message
-		Path  string `url:"path",json:"path"`   // Path to the problematic file.
+		Error string `url:"error" json:"error"` // The error message
+		Path  string `url:"path" json:"path"`   // Path to the problematic file.
 
-	} `url:"errors",json:"errors"` // List of problematic repository files.
+	} `url:"errors" json:"errors"` // List of problematic repository files.
 	Files []*struct {
-		Digest       []int  `url:"digest",json:"digest"`       // Digest of the file as bytes.
-		FileType     string `url:"file-type",json:"file-type"` // Format of the file.
-		Path         string `url:"path",json:"path"`           // Path to the problematic file.
+		Digest       []int  `url:"digest" json:"digest"`       // Digest of the file as bytes.
+		FileType     string `url:"file-type" json:"file-type"` // Format of the file.
+		Path         string `url:"path" json:"path"`           // Path to the problematic file.
 		Repositories []*struct {
-			Enabled  util.SpecialBool `url:"Enabled",json:"Enabled"`   // Whether the repository is enabled or not
-			Filetype string           `url:"FileType",json:"FileType"` // Format of the defining file.
-			Suites   []string         `url:"Suites",json:"Suites"`     // List of package distribuitions
-			Types    []string         `url:"Types",json:"Types"`       // List of package types.
-			Uris     []string         `url:"URIs",json:"URIs"`         // List of repository URIs.
+			Enabled  util.SpecialBool `url:"Enabled" json:"Enabled"`   // Whether the repository is enabled or not
+			Filetype string           `url:"FileType" json:"FileType"` // Format of the defining file.
+			Suites   []string         `url:"Suites" json:"Suites"`     // List of package distribuitions
+			Types    []string         `url:"Types" json:"Types"`       // List of package types.
+			Uris     []string         `url:"URIs" json:"URIs"`         // List of repository URIs.
 
 			// The following parameters are optional
-			Comment    *string  `url:"Comment,omitempty",json:"Comment,omitempty"`       // Associated comment
-			Components []string `url:"Components,omitempty",json:"Components,omitempty"` // List of repository components
+			Comment    *string  `url:"Comment,omitempty" json:"Comment,omitempty"`       // Associated comment
+			Components []string `url:"Components,omitempty" json:"Components,omitempty"` // List of repository components
 			Options    []*struct {
-				Key    string   `url:"Key",json:"Key"`
-				Values []string `url:"Values",json:"Values"`
-			} `url:"Options,omitempty",json:"Options,omitempty"` // Additional options
-		} `url:"repositories",json:"repositories"` // The parsed repositories.
+				Key    string   `url:"Key" json:"Key"`
+				Values []string `url:"Values" json:"Values"`
+			} `url:"Options,omitempty" json:"Options,omitempty"` // Additional options
+		} `url:"repositories" json:"repositories"` // The parsed repositories.
 
-	} `url:"files",json:"files"` // List of parsed repository files.
+	} `url:"files" json:"files"` // List of parsed repository files.
 	Infos []*struct {
-		Index   string `url:"index",json:"index"`     // Index of the associated repository within the file.
-		Kind    string `url:"kind",json:"kind"`       // Kind of the information (e.g. warning).
-		Message string `url:"message",json:"message"` // Information message.
-		Path    string `url:"path",json:"path"`       // Path to the associated file.
+		Index   string `url:"index" json:"index"`     // Index of the associated repository within the file.
+		Kind    string `url:"kind" json:"kind"`       // Kind of the information (e.g. warning).
+		Message string `url:"message" json:"message"` // Information message.
+		Path    string `url:"path" json:"path"`       // Path to the associated file.
 
 		// The following parameters are optional
-		Property *string `url:"property,omitempty",json:"property,omitempty"` // Property from which the info originates.
-	} `url:"infos",json:"infos"` // Additional information/warnings for APT repositories.
+		Property *string `url:"property,omitempty" json:"property,omitempty"` // Property from which the info originates.
+	} `url:"infos" json:"infos"` // Additional information/warnings for APT repositories.
 	StandardRepos []*struct {
-		Handle string `url:"handle",json:"handle"` // Handle to identify the repository.
-		Name   string `url:"name",json:"name"`     // Full name of the repository.
+		Handle string `url:"handle" json:"handle"` // Handle to identify the repository.
+		Name   string `url:"name" json:"name"`     // Full name of the repository.
 
 		// The following parameters are optional
-		Status *util.SpecialBool `url:"status,omitempty",json:"status,omitempty"` // Indicating enabled/disabled status, if the repository is configured.
-	} `url:"standard-repos",json:"standard-repos"` // List of standard repositories and their configuration status
+		Status *util.SpecialBool `url:"status,omitempty" json:"status,omitempty"` // Indicating enabled/disabled status, if the repository is configured.
+	} `url:"standard-repos" json:"standard-repos"` // List of standard repositories and their configuration status
 
 }
 
@@ -150,13 +150,13 @@ func (c *Client) Repositories(ctx context.Context, req *RepositoriesRequest) (*R
 }
 
 type ChangeRepositoryRepositoriesRequest struct {
-	Index int    `url:"index",json:"index"` // Index within the file (starting from 0).
-	Node  string `url:"node",json:"node"`   // The cluster node name.
-	Path  string `url:"path",json:"path"`   // Path to the containing file.
+	Index int    `url:"index" json:"index"` // Index within the file (starting from 0).
+	Node  string `url:"node" json:"node"`   // The cluster node name.
+	Path  string `url:"path" json:"path"`   // Path to the containing file.
 
 	// The following parameters are optional
-	Digest  *string           `url:"digest,omitempty",json:"digest,omitempty"`   // Digest to detect modifications.
-	Enabled *util.SpecialBool `url:"enabled,omitempty",json:"enabled,omitempty"` // Whether the repository should be enabled or not.
+	Digest  *string           `url:"digest,omitempty" json:"digest,omitempty"`   // Digest to detect modifications.
+	Enabled *util.SpecialBool `url:"enabled,omitempty" json:"enabled,omitempty"` // Whether the repository should be enabled or not.
 }
 
 type ChangeRepositoryRepositoriesResponse map[string]interface{}
@@ -170,11 +170,11 @@ func (c *Client) ChangeRepositoryRepositories(ctx context.Context, req *ChangeRe
 }
 
 type AddRepositoryRepositoriesRequest struct {
-	Handle string `url:"handle",json:"handle"` // Handle that identifies a repository.
-	Node   string `url:"node",json:"node"`     // The cluster node name.
+	Handle string `url:"handle" json:"handle"` // Handle that identifies a repository.
+	Node   string `url:"node" json:"node"`     // The cluster node name.
 
 	// The following parameters are optional
-	Digest *string `url:"digest,omitempty",json:"digest,omitempty"` // Digest to detect modifications.
+	Digest *string `url:"digest,omitempty" json:"digest,omitempty"` // Digest to detect modifications.
 }
 
 type AddRepositoryRepositoriesResponse map[string]interface{}
@@ -188,7 +188,7 @@ func (c *Client) AddRepositoryRepositories(ctx context.Context, req *AddReposito
 }
 
 type VersionsRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 

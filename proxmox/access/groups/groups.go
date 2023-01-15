@@ -21,11 +21,11 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexResponse []*struct {
-	Groupid string `url:"groupid",json:"groupid"`
+	Groupid string `url:"groupid" json:"groupid"`
 
 	// The following parameters are optional
-	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Users   *string `url:"users,omitempty",json:"users,omitempty"` // list of users which form this group
+	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
+	Users   *string `url:"users,omitempty" json:"users,omitempty"` // list of users which form this group
 }
 
 // Index Group index.
@@ -37,10 +37,10 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 }
 
 type CreateRequest struct {
-	Groupid string `url:"groupid",json:"groupid"`
+	Groupid string `url:"groupid" json:"groupid"`
 
 	// The following parameters are optional
-	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
+	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
 }
 
 type CreateResponse map[string]interface{}
@@ -54,14 +54,14 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FindRequest struct {
-	Groupid string `url:"groupid",json:"groupid"`
+	Groupid string `url:"groupid" json:"groupid"`
 }
 
 type FindResponse struct {
-	Members []string `url:"members",json:"members"`
+	Members []string `url:"members" json:"members"`
 
 	// The following parameters are optional
-	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
+	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
 }
 
 // Find Get group configuration.
@@ -73,10 +73,10 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type UpdateRequest struct {
-	Groupid string `url:"groupid",json:"groupid"`
+	Groupid string `url:"groupid" json:"groupid"`
 
 	// The following parameters are optional
-	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
+	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
 }
 
 type UpdateResponse map[string]interface{}
@@ -90,7 +90,7 @@ func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateRespons
 }
 
 type DeleteRequest struct {
-	Groupid string `url:"groupid",json:"groupid"`
+	Groupid string `url:"groupid" json:"groupid"`
 }
 
 type DeleteResponse map[string]interface{}

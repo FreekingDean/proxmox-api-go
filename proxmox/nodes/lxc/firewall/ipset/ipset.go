@@ -22,17 +22,17 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
-	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+	Node string `url:"node" json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
 
 type IndexResponse []*struct {
-	Digest string `url:"digest",json:"digest"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-	Name   string `url:"name",json:"name"`     // IP set name.
+	Digest string `url:"digest" json:"digest"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Name   string `url:"name" json:"name"`     // IP set name.
 
 	// The following parameters are optional
-	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
+	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
 }
 
 // Index List IPSets
@@ -44,14 +44,14 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type CreateRequest struct {
-	Name string `url:"name",json:"name"` // IP set name.
-	Node string `url:"node",json:"node"` // The cluster node name.
-	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+	Name string `url:"name" json:"name"` // IP set name.
+	Node string `url:"node" json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
-	Digest  *string `url:"digest,omitempty",json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-	Rename  *string `url:"rename,omitempty",json:"rename,omitempty"` // Rename an existing IPSet. You can set 'rename' to the same value as 'name' to update the 'comment' of an existing IPSet.
+	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
+	Digest  *string `url:"digest,omitempty" json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Rename  *string `url:"rename,omitempty" json:"rename,omitempty"` // Rename an existing IPSet. You can set 'rename' to the same value as 'name' to update the 'comment' of an existing IPSet.
 }
 
 type CreateResponse map[string]interface{}
@@ -65,19 +65,19 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FindRequest struct {
-	Name string `url:"name",json:"name"` // IP set name.
-	Node string `url:"node",json:"node"` // The cluster node name.
-	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+	Name string `url:"name" json:"name"` // IP set name.
+	Node string `url:"node" json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
 
 type FindResponse []*struct {
-	Cidr   string `url:"cidr",json:"cidr"`
-	Digest string `url:"digest",json:"digest"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Cidr   string `url:"cidr" json:"cidr"`
+	Digest string `url:"digest" json:"digest"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 
 	// The following parameters are optional
-	Comment *string           `url:"comment,omitempty",json:"comment,omitempty"`
-	Nomatch *util.SpecialBool `url:"nomatch,omitempty",json:"nomatch,omitempty"`
+	Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
+	Nomatch *util.SpecialBool `url:"nomatch,omitempty" json:"nomatch,omitempty"`
 }
 
 // Find List IPSet content
@@ -89,14 +89,14 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type ChildCreateRequest struct {
-	Cidr string `url:"cidr",json:"cidr"` // Network/IP specification in CIDR format.
-	Name string `url:"name",json:"name"` // IP set name.
-	Node string `url:"node",json:"node"` // The cluster node name.
-	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+	Cidr string `url:"cidr" json:"cidr"` // Network/IP specification in CIDR format.
+	Name string `url:"name" json:"name"` // IP set name.
+	Node string `url:"node" json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Comment *string           `url:"comment,omitempty",json:"comment,omitempty"`
-	Nomatch *util.SpecialBool `url:"nomatch,omitempty",json:"nomatch,omitempty"`
+	Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
+	Nomatch *util.SpecialBool `url:"nomatch,omitempty" json:"nomatch,omitempty"`
 }
 
 type ChildCreateResponse map[string]interface{}
@@ -110,12 +110,12 @@ func (c *Client) ChildCreate(ctx context.Context, req *ChildCreateRequest) (*Chi
 }
 
 type DeleteRequest struct {
-	Name string `url:"name",json:"name"` // IP set name.
-	Node string `url:"node",json:"node"` // The cluster node name.
-	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+	Name string `url:"name" json:"name"` // IP set name.
+	Node string `url:"node" json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Force *util.SpecialBool `url:"force,omitempty",json:"force,omitempty"` // Delete all members of the IPSet, if there are any.
+	Force *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"` // Delete all members of the IPSet, if there are any.
 }
 
 type DeleteResponse map[string]interface{}
@@ -129,10 +129,10 @@ func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteRespons
 }
 
 type ReadIpCidrRequest struct {
-	Cidr string `url:"cidr",json:"cidr"` // Network/IP specification in CIDR format.
-	Name string `url:"name",json:"name"` // IP set name.
-	Node string `url:"node",json:"node"` // The cluster node name.
-	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+	Cidr string `url:"cidr" json:"cidr"` // Network/IP specification in CIDR format.
+	Name string `url:"name" json:"name"` // IP set name.
+	Node string `url:"node" json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
 
@@ -147,15 +147,15 @@ func (c *Client) ReadIpCidr(ctx context.Context, req *ReadIpCidrRequest) (*ReadI
 }
 
 type UpdateIpCidrRequest struct {
-	Cidr string `url:"cidr",json:"cidr"` // Network/IP specification in CIDR format.
-	Name string `url:"name",json:"name"` // IP set name.
-	Node string `url:"node",json:"node"` // The cluster node name.
-	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+	Cidr string `url:"cidr" json:"cidr"` // Network/IP specification in CIDR format.
+	Name string `url:"name" json:"name"` // IP set name.
+	Node string `url:"node" json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Comment *string           `url:"comment,omitempty",json:"comment,omitempty"`
-	Digest  *string           `url:"digest,omitempty",json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-	Nomatch *util.SpecialBool `url:"nomatch,omitempty",json:"nomatch,omitempty"`
+	Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
+	Digest  *string           `url:"digest,omitempty" json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Nomatch *util.SpecialBool `url:"nomatch,omitempty" json:"nomatch,omitempty"`
 }
 
 type UpdateIpCidrResponse map[string]interface{}
@@ -169,13 +169,13 @@ func (c *Client) UpdateIpCidr(ctx context.Context, req *UpdateIpCidrRequest) (*U
 }
 
 type RemoveIpCidrRequest struct {
-	Cidr string `url:"cidr",json:"cidr"` // Network/IP specification in CIDR format.
-	Name string `url:"name",json:"name"` // IP set name.
-	Node string `url:"node",json:"node"` // The cluster node name.
-	Vmid int    `url:"vmid",json:"vmid"` // The (unique) ID of the VM.
+	Cidr string `url:"cidr" json:"cidr"` // Network/IP specification in CIDR format.
+	Name string `url:"name" json:"name"` // IP set name.
+	Node string `url:"node" json:"node"` // The cluster node name.
+	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Digest *string `url:"digest,omitempty",json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Digest *string `url:"digest,omitempty" json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 }
 
 type RemoveIpCidrResponse map[string]interface{}

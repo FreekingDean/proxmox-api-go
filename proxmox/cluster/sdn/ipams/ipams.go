@@ -23,12 +23,12 @@ func New(c HTTPClient) *Client {
 type IndexRequest struct {
 
 	// The following parameters are optional
-	Type *string `url:"type,omitempty",json:"type,omitempty"` // Only list sdn ipams of specific type
+	Type *string `url:"type,omitempty" json:"type,omitempty"` // Only list sdn ipams of specific type
 }
 
 type IndexResponse []*struct {
-	Ipam string `url:"ipam",json:"ipam"`
-	Type string `url:"type",json:"type"`
+	Ipam string `url:"ipam" json:"ipam"`
+	Type string `url:"type" json:"type"`
 }
 
 // Index SDN ipams index.
@@ -40,13 +40,13 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type CreateRequest struct {
-	Ipam string `url:"ipam",json:"ipam"` // The SDN ipam object identifier.
-	Type string `url:"type",json:"type"` // Plugin type.
+	Ipam string `url:"ipam" json:"ipam"` // The SDN ipam object identifier.
+	Type string `url:"type" json:"type"` // Plugin type.
 
 	// The following parameters are optional
-	Section *int    `url:"section,omitempty",json:"section,omitempty"`
-	Token   *string `url:"token,omitempty",json:"token,omitempty"`
-	Url     *string `url:"url,omitempty",json:"url,omitempty"`
+	Section *int    `url:"section,omitempty" json:"section,omitempty"`
+	Token   *string `url:"token,omitempty" json:"token,omitempty"`
+	Url     *string `url:"url,omitempty" json:"url,omitempty"`
 }
 
 type CreateResponse map[string]interface{}
@@ -60,7 +60,7 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FindRequest struct {
-	Ipam string `url:"ipam",json:"ipam"` // The SDN ipam object identifier.
+	Ipam string `url:"ipam" json:"ipam"` // The SDN ipam object identifier.
 
 }
 
@@ -75,14 +75,14 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type UpdateRequest struct {
-	Ipam string `url:"ipam",json:"ipam"` // The SDN ipam object identifier.
+	Ipam string `url:"ipam" json:"ipam"` // The SDN ipam object identifier.
 
 	// The following parameters are optional
-	Delete  *string `url:"delete,omitempty",json:"delete,omitempty"` // A list of settings you want to delete.
-	Digest  *string `url:"digest,omitempty",json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-	Section *int    `url:"section,omitempty",json:"section,omitempty"`
-	Token   *string `url:"token,omitempty",json:"token,omitempty"`
-	Url     *string `url:"url,omitempty",json:"url,omitempty"`
+	Delete  *string `url:"delete,omitempty" json:"delete,omitempty"` // A list of settings you want to delete.
+	Digest  *string `url:"digest,omitempty" json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Section *int    `url:"section,omitempty" json:"section,omitempty"`
+	Token   *string `url:"token,omitempty" json:"token,omitempty"`
+	Url     *string `url:"url,omitempty" json:"url,omitempty"`
 }
 
 type UpdateResponse map[string]interface{}
@@ -96,7 +96,7 @@ func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateRespons
 }
 
 type DeleteRequest struct {
-	Ipam string `url:"ipam",json:"ipam"` // The SDN ipam object identifier.
+	Ipam string `url:"ipam" json:"ipam"` // The SDN ipam object identifier.
 
 }
 

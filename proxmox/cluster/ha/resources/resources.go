@@ -23,11 +23,11 @@ func New(c HTTPClient) *Client {
 type IndexRequest struct {
 
 	// The following parameters are optional
-	Type *string `url:"type,omitempty",json:"type,omitempty"` // Only list resources of specific type
+	Type *string `url:"type,omitempty" json:"type,omitempty"` // Only list resources of specific type
 }
 
 type IndexResponse []*struct {
-	Sid string `url:"sid",json:"sid"`
+	Sid string `url:"sid" json:"sid"`
 }
 
 // Index List HA resources.
@@ -39,15 +39,15 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type CreateRequest struct {
-	Sid string `url:"sid",json:"sid"` // HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
+	Sid string `url:"sid" json:"sid"` // HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
 
 	// The following parameters are optional
-	Comment     *string `url:"comment,omitempty",json:"comment,omitempty"`           // Description.
-	Group       *string `url:"group,omitempty",json:"group,omitempty"`               // The HA group identifier.
-	MaxRelocate *int    `url:"max_relocate,omitempty",json:"max_relocate,omitempty"` // Maximal number of service relocate tries when a service failes to start.
-	MaxRestart  *int    `url:"max_restart,omitempty",json:"max_restart,omitempty"`   // Maximal number of tries to restart the service on a node after its start failed.
-	State       *string `url:"state,omitempty",json:"state,omitempty"`               // Requested resource state.
-	Type        *string `url:"type,omitempty",json:"type,omitempty"`                 // Resource type.
+	Comment     *string `url:"comment,omitempty" json:"comment,omitempty"`           // Description.
+	Group       *string `url:"group,omitempty" json:"group,omitempty"`               // The HA group identifier.
+	MaxRelocate *int    `url:"max_relocate,omitempty" json:"max_relocate,omitempty"` // Maximal number of service relocate tries when a service failes to start.
+	MaxRestart  *int    `url:"max_restart,omitempty" json:"max_restart,omitempty"`   // Maximal number of tries to restart the service on a node after its start failed.
+	State       *string `url:"state,omitempty" json:"state,omitempty"`               // Requested resource state.
+	Type        *string `url:"type,omitempty" json:"type,omitempty"`                 // Resource type.
 }
 
 type CreateResponse map[string]interface{}
@@ -61,21 +61,21 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 }
 
 type FindRequest struct {
-	Sid string `url:"sid",json:"sid"` // HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
+	Sid string `url:"sid" json:"sid"` // HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
 
 }
 
 type FindResponse struct {
-	Digest string `url:"digest",json:"digest"` // Can be used to prevent concurrent modifications.
-	Sid    string `url:"sid",json:"sid"`       // HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
-	Type   string `url:"type",json:"type"`     // The type of the resources.
+	Digest string `url:"digest" json:"digest"` // Can be used to prevent concurrent modifications.
+	Sid    string `url:"sid" json:"sid"`       // HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
+	Type   string `url:"type" json:"type"`     // The type of the resources.
 
 	// The following parameters are optional
-	Comment     *string `url:"comment,omitempty",json:"comment,omitempty"`           // Description.
-	Group       *string `url:"group,omitempty",json:"group,omitempty"`               // The HA group identifier.
-	MaxRelocate *int    `url:"max_relocate,omitempty",json:"max_relocate,omitempty"` // Maximal number of service relocate tries when a service failes to start.
-	MaxRestart  *int    `url:"max_restart,omitempty",json:"max_restart,omitempty"`   // Maximal number of tries to restart the service on a node after its start failed.
-	State       *string `url:"state,omitempty",json:"state,omitempty"`               // Requested resource state.
+	Comment     *string `url:"comment,omitempty" json:"comment,omitempty"`           // Description.
+	Group       *string `url:"group,omitempty" json:"group,omitempty"`               // The HA group identifier.
+	MaxRelocate *int    `url:"max_relocate,omitempty" json:"max_relocate,omitempty"` // Maximal number of service relocate tries when a service failes to start.
+	MaxRestart  *int    `url:"max_restart,omitempty" json:"max_restart,omitempty"`   // Maximal number of tries to restart the service on a node after its start failed.
+	State       *string `url:"state,omitempty" json:"state,omitempty"`               // Requested resource state.
 }
 
 // Find Read resource configuration.
@@ -87,16 +87,16 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 }
 
 type UpdateRequest struct {
-	Sid string `url:"sid",json:"sid"` // HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
+	Sid string `url:"sid" json:"sid"` // HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
 
 	// The following parameters are optional
-	Comment     *string `url:"comment,omitempty",json:"comment,omitempty"`           // Description.
-	Delete      *string `url:"delete,omitempty",json:"delete,omitempty"`             // A list of settings you want to delete.
-	Digest      *string `url:"digest,omitempty",json:"digest,omitempty"`             // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-	Group       *string `url:"group,omitempty",json:"group,omitempty"`               // The HA group identifier.
-	MaxRelocate *int    `url:"max_relocate,omitempty",json:"max_relocate,omitempty"` // Maximal number of service relocate tries when a service failes to start.
-	MaxRestart  *int    `url:"max_restart,omitempty",json:"max_restart,omitempty"`   // Maximal number of tries to restart the service on a node after its start failed.
-	State       *string `url:"state,omitempty",json:"state,omitempty"`               // Requested resource state.
+	Comment     *string `url:"comment,omitempty" json:"comment,omitempty"`           // Description.
+	Delete      *string `url:"delete,omitempty" json:"delete,omitempty"`             // A list of settings you want to delete.
+	Digest      *string `url:"digest,omitempty" json:"digest,omitempty"`             // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Group       *string `url:"group,omitempty" json:"group,omitempty"`               // The HA group identifier.
+	MaxRelocate *int    `url:"max_relocate,omitempty" json:"max_relocate,omitempty"` // Maximal number of service relocate tries when a service failes to start.
+	MaxRestart  *int    `url:"max_restart,omitempty" json:"max_restart,omitempty"`   // Maximal number of tries to restart the service on a node after its start failed.
+	State       *string `url:"state,omitempty" json:"state,omitempty"`               // Requested resource state.
 }
 
 type UpdateResponse map[string]interface{}
@@ -110,7 +110,7 @@ func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateRespons
 }
 
 type DeleteRequest struct {
-	Sid string `url:"sid",json:"sid"` // HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
+	Sid string `url:"sid" json:"sid"` // HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
 
 }
 
@@ -125,8 +125,8 @@ func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteRespons
 }
 
 type MigrateRequest struct {
-	Node string `url:"node",json:"node"` // Target node.
-	Sid  string `url:"sid",json:"sid"`   // HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
+	Node string `url:"node" json:"node"` // Target node.
+	Sid  string `url:"sid" json:"sid"`   // HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
 
 }
 
@@ -141,8 +141,8 @@ func (c *Client) Migrate(ctx context.Context, req *MigrateRequest) (*MigrateResp
 }
 
 type RelocateRequest struct {
-	Node string `url:"node",json:"node"` // Target node.
-	Sid  string `url:"sid",json:"sid"`   // HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
+	Node string `url:"node" json:"node"` // Target node.
+	Sid  string `url:"sid" json:"sid"`   // HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
 
 }
 

@@ -21,16 +21,16 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
 type IndexResponse []*struct {
-	Name string `url:"name",json:"name"`
+	Name string `url:"name" json:"name"`
 
 	// The following parameters are optional
-	Addr *string `url:"addr,omitempty",json:"addr,omitempty"`
-	Host *string `url:"host,omitempty",json:"host,omitempty"`
+	Addr *string `url:"addr,omitempty" json:"addr,omitempty"`
+	Host *string `url:"host,omitempty" json:"host,omitempty"`
 }
 
 // Index Get Ceph monitor list.
@@ -42,11 +42,11 @@ func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, 
 }
 
 type ChildCreateRequest struct {
-	Node string `url:"node",json:"node"` // The cluster node name.
+	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	MonAddress *string `url:"mon-address,omitempty",json:"mon-address,omitempty"` // Overwrites autodetected monitor IP address(es). Must be in the public network(s) of Ceph.
-	Monid      *string `url:"monid,omitempty",json:"monid,omitempty"`             // The ID for the monitor, when omitted the same as the nodename
+	MonAddress *string `url:"mon-address,omitempty" json:"mon-address,omitempty"` // Overwrites autodetected monitor IP address(es). Must be in the public network(s) of Ceph.
+	Monid      *string `url:"monid,omitempty" json:"monid,omitempty"`             // The ID for the monitor, when omitted the same as the nodename
 }
 
 type ChildCreateResponse string
@@ -60,8 +60,8 @@ func (c *Client) ChildCreate(ctx context.Context, req *ChildCreateRequest) (*Chi
 }
 
 type DeleteRequest struct {
-	Monid string `url:"monid",json:"monid"` // Monitor ID
-	Node  string `url:"node",json:"node"`   // The cluster node name.
+	Monid string `url:"monid" json:"monid"` // Monitor ID
+	Node  string `url:"node" json:"node"`   // The cluster node name.
 
 }
 

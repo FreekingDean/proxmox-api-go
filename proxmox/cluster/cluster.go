@@ -34,7 +34,7 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 type LogRequest struct {
 
 	// The following parameters are optional
-	Max *int `url:"max,omitempty",json:"max,omitempty"` // Maximum number of entries.
+	Max *int `url:"max,omitempty" json:"max,omitempty"` // Maximum number of entries.
 }
 
 type LogResponse []*map[string]interface{}
@@ -50,32 +50,32 @@ func (c *Client) Log(ctx context.Context, req *LogRequest) (*LogResponse, error)
 type ResourcesRequest struct {
 
 	// The following parameters are optional
-	Type *string `url:"type,omitempty",json:"type,omitempty"`
+	Type *string `url:"type,omitempty" json:"type,omitempty"`
 }
 
 type ResourcesResponse []*struct {
-	Id   string `url:"id",json:"id"`
-	Type string `url:"type",json:"type"` // Resource type.
+	Id   string `url:"id" json:"id"`
+	Type string `url:"type" json:"type"` // Resource type.
 
 	// The following parameters are optional
-	CgroupMode *int     `url:"cgroup-mode,omitempty",json:"cgroup-mode,omitempty"` // The cgroup mode the node operates under (when type == node).
-	Content    *string  `url:"content,omitempty",json:"content,omitempty"`         // Allowed storage content types (when type == storage).
-	Cpu        *float64 `url:"cpu,omitempty",json:"cpu,omitempty"`                 // CPU utilization (when type in node,qemu,lxc).
-	Disk       *int     `url:"disk,omitempty",json:"disk,omitempty"`               // Used disk space in bytes (when type in storage), used root image spave for VMs (type in qemu,lxc).
-	Hastate    *string  `url:"hastate,omitempty",json:"hastate,omitempty"`         // HA service status (for HA managed VMs).
-	Level      *string  `url:"level,omitempty",json:"level,omitempty"`             // Support level (when type == node).
-	Maxcpu     *float64 `url:"maxcpu,omitempty",json:"maxcpu,omitempty"`           // Number of available CPUs (when type in node,qemu,lxc).
-	Maxdisk    *int     `url:"maxdisk,omitempty",json:"maxdisk,omitempty"`         // Storage size in bytes (when type in storage), root image size for VMs (type in qemu,lxc).
-	Maxmem     *int     `url:"maxmem,omitempty",json:"maxmem,omitempty"`           // Number of available memory in bytes (when type in node,qemu,lxc).
-	Mem        *int     `url:"mem,omitempty",json:"mem,omitempty"`                 // Used memory in bytes (when type in node,qemu,lxc).
-	Name       *string  `url:"name,omitempty",json:"name,omitempty"`               // Name of the resource.
-	Node       *string  `url:"node,omitempty",json:"node,omitempty"`               // The cluster node name (when type in node,storage,qemu,lxc).
-	Plugintype *string  `url:"plugintype,omitempty",json:"plugintype,omitempty"`   // More specific type, if available.
-	Pool       *string  `url:"pool,omitempty",json:"pool,omitempty"`               // The pool name (when type in pool,qemu,lxc).
-	Status     *string  `url:"status,omitempty",json:"status,omitempty"`           // Resource type dependent status.
-	Storage    *string  `url:"storage,omitempty",json:"storage,omitempty"`         // The storage identifier (when type == storage).
-	Uptime     *int     `url:"uptime,omitempty",json:"uptime,omitempty"`           // Node uptime in seconds (when type in node,qemu,lxc).
-	Vmid       *int     `url:"vmid,omitempty",json:"vmid,omitempty"`               // The numerical vmid (when type in qemu,lxc).
+	CgroupMode *int     `url:"cgroup-mode,omitempty" json:"cgroup-mode,omitempty"` // The cgroup mode the node operates under (when type == node).
+	Content    *string  `url:"content,omitempty" json:"content,omitempty"`         // Allowed storage content types (when type == storage).
+	Cpu        *float64 `url:"cpu,omitempty" json:"cpu,omitempty"`                 // CPU utilization (when type in node,qemu,lxc).
+	Disk       *int     `url:"disk,omitempty" json:"disk,omitempty"`               // Used disk space in bytes (when type in storage), used root image spave for VMs (type in qemu,lxc).
+	Hastate    *string  `url:"hastate,omitempty" json:"hastate,omitempty"`         // HA service status (for HA managed VMs).
+	Level      *string  `url:"level,omitempty" json:"level,omitempty"`             // Support level (when type == node).
+	Maxcpu     *float64 `url:"maxcpu,omitempty" json:"maxcpu,omitempty"`           // Number of available CPUs (when type in node,qemu,lxc).
+	Maxdisk    *int     `url:"maxdisk,omitempty" json:"maxdisk,omitempty"`         // Storage size in bytes (when type in storage), root image size for VMs (type in qemu,lxc).
+	Maxmem     *int     `url:"maxmem,omitempty" json:"maxmem,omitempty"`           // Number of available memory in bytes (when type in node,qemu,lxc).
+	Mem        *int     `url:"mem,omitempty" json:"mem,omitempty"`                 // Used memory in bytes (when type in node,qemu,lxc).
+	Name       *string  `url:"name,omitempty" json:"name,omitempty"`               // Name of the resource.
+	Node       *string  `url:"node,omitempty" json:"node,omitempty"`               // The cluster node name (when type in node,storage,qemu,lxc).
+	Plugintype *string  `url:"plugintype,omitempty" json:"plugintype,omitempty"`   // More specific type, if available.
+	Pool       *string  `url:"pool,omitempty" json:"pool,omitempty"`               // The pool name (when type in pool,qemu,lxc).
+	Status     *string  `url:"status,omitempty" json:"status,omitempty"`           // Resource type dependent status.
+	Storage    *string  `url:"storage,omitempty" json:"storage,omitempty"`         // The storage identifier (when type == storage).
+	Uptime     *int     `url:"uptime,omitempty" json:"uptime,omitempty"`           // Node uptime in seconds (when type in node,qemu,lxc).
+	Vmid       *int     `url:"vmid,omitempty" json:"vmid,omitempty"`               // The numerical vmid (when type in qemu,lxc).
 }
 
 // Resources Resources index (cluster wide).
@@ -87,7 +87,7 @@ func (c *Client) Resources(ctx context.Context, req *ResourcesRequest) (*Resourc
 }
 
 type TasksResponse []*struct {
-	Upid string `url:"upid",json:"upid"`
+	Upid string `url:"upid" json:"upid"`
 }
 
 // Tasks List recent tasks (cluster wide).
@@ -111,27 +111,27 @@ func (c *Client) GetOptions(ctx context.Context) (*GetOptionsResponse, error) {
 type SetOptionsRequest struct {
 
 	// The following parameters are optional
-	Bwlimit           *string           `url:"bwlimit,omitempty",json:"bwlimit,omitempty"`                       // Set bandwidth/io limits various operations.
-	Console           *string           `url:"console,omitempty",json:"console,omitempty"`                       // Select the default Console viewer. You can either use the builtin java applet (VNC; deprecated and maps to html5), an external virt-viewer comtatible application (SPICE), an HTML5 based vnc viewer (noVNC), or an HTML5 based console client (xtermjs). If the selected viewer is not available (e.g. SPICE not activated for the VM), the fallback is noVNC.
-	Crs               *string           `url:"crs,omitempty",json:"crs,omitempty"`                               // Cluster resource scheduling settings.
-	Delete            *string           `url:"delete,omitempty",json:"delete,omitempty"`                         // A list of settings you want to delete.
-	Description       *string           `url:"description,omitempty",json:"description,omitempty"`               // Datacenter description. Shown in the web-interface datacenter notes panel. This is saved as comment inside the configuration file.
-	EmailFrom         *string           `url:"email_from,omitempty",json:"email_from,omitempty"`                 // Specify email address to send notification from (default is root@$hostname)
-	Fencing           *string           `url:"fencing,omitempty",json:"fencing,omitempty"`                       // Set the fencing mode of the HA cluster. Hardware mode needs a valid configuration of fence devices in /etc/pve/ha/fence.cfg. With both all two modes are used.WARNING: 'hardware' and 'both' are EXPERIMENTAL & WIP
-	Ha                *string           `url:"ha,omitempty",json:"ha,omitempty"`                                 // Cluster wide HA settings.
-	HttpProxy         *string           `url:"http_proxy,omitempty",json:"http_proxy,omitempty"`                 // Specify external http proxy which is used for downloads (example: 'http://username:password@host:port/')
-	Keyboard          *string           `url:"keyboard,omitempty",json:"keyboard,omitempty"`                     // Default keybord layout for vnc server.
-	Language          *string           `url:"language,omitempty",json:"language,omitempty"`                     // Default GUI language.
-	MacPrefix         *string           `url:"mac_prefix,omitempty",json:"mac_prefix,omitempty"`                 // Prefix for autogenerated MAC addresses.
-	MaxWorkers        *int              `url:"max_workers,omitempty",json:"max_workers,omitempty"`               // Defines how many workers (per node) are maximal started  on actions like 'stopall VMs' or task from the ha-manager.
-	Migration         *string           `url:"migration,omitempty",json:"migration,omitempty"`                   // For cluster wide migration settings.
-	MigrationUnsecure *util.SpecialBool `url:"migration_unsecure,omitempty",json:"migration_unsecure,omitempty"` // Migration is secure using SSH tunnel by default. For secure private networks you can disable it to speed up migration. Deprecated, use the 'migration' property instead!
-	NextId            *string           `url:"next-id,omitempty",json:"next-id,omitempty"`                       // Control the range for the free VMID auto-selection pool.
-	RegisteredTags    *string           `url:"registered-tags,omitempty",json:"registered-tags,omitempty"`       // A list of tags that require a `Sys.Modify` on '/' to set and delete. Tags set here that are also in 'user-tag-access' also require `Sys.Modify`.
-	TagStyle          *string           `url:"tag-style,omitempty",json:"tag-style,omitempty"`                   // Tag style options.
-	U2f               *string           `url:"u2f,omitempty",json:"u2f,omitempty"`                               // u2f
-	UserTagAccess     *string           `url:"user-tag-access,omitempty",json:"user-tag-access,omitempty"`       // Privilege options for user-settable tags
-	Webauthn          *string           `url:"webauthn,omitempty",json:"webauthn,omitempty"`                     // webauthn configuration
+	Bwlimit           *string           `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`                       // Set bandwidth/io limits various operations.
+	Console           *string           `url:"console,omitempty" json:"console,omitempty"`                       // Select the default Console viewer. You can either use the builtin java applet (VNC; deprecated and maps to html5), an external virt-viewer comtatible application (SPICE), an HTML5 based vnc viewer (noVNC), or an HTML5 based console client (xtermjs). If the selected viewer is not available (e.g. SPICE not activated for the VM), the fallback is noVNC.
+	Crs               *string           `url:"crs,omitempty" json:"crs,omitempty"`                               // Cluster resource scheduling settings.
+	Delete            *string           `url:"delete,omitempty" json:"delete,omitempty"`                         // A list of settings you want to delete.
+	Description       *string           `url:"description,omitempty" json:"description,omitempty"`               // Datacenter description. Shown in the web-interface datacenter notes panel. This is saved as comment inside the configuration file.
+	EmailFrom         *string           `url:"email_from,omitempty" json:"email_from,omitempty"`                 // Specify email address to send notification from (default is root@$hostname)
+	Fencing           *string           `url:"fencing,omitempty" json:"fencing,omitempty"`                       // Set the fencing mode of the HA cluster. Hardware mode needs a valid configuration of fence devices in /etc/pve/ha/fence.cfg. With both all two modes are used.WARNING: 'hardware' and 'both' are EXPERIMENTAL & WIP
+	Ha                *string           `url:"ha,omitempty" json:"ha,omitempty"`                                 // Cluster wide HA settings.
+	HttpProxy         *string           `url:"http_proxy,omitempty" json:"http_proxy,omitempty"`                 // Specify external http proxy which is used for downloads (example: 'http://username:password@host:port/')
+	Keyboard          *string           `url:"keyboard,omitempty" json:"keyboard,omitempty"`                     // Default keybord layout for vnc server.
+	Language          *string           `url:"language,omitempty" json:"language,omitempty"`                     // Default GUI language.
+	MacPrefix         *string           `url:"mac_prefix,omitempty" json:"mac_prefix,omitempty"`                 // Prefix for autogenerated MAC addresses.
+	MaxWorkers        *int              `url:"max_workers,omitempty" json:"max_workers,omitempty"`               // Defines how many workers (per node) are maximal started  on actions like 'stopall VMs' or task from the ha-manager.
+	Migration         *string           `url:"migration,omitempty" json:"migration,omitempty"`                   // For cluster wide migration settings.
+	MigrationUnsecure *util.SpecialBool `url:"migration_unsecure,omitempty" json:"migration_unsecure,omitempty"` // Migration is secure using SSH tunnel by default. For secure private networks you can disable it to speed up migration. Deprecated, use the 'migration' property instead!
+	NextId            *string           `url:"next-id,omitempty" json:"next-id,omitempty"`                       // Control the range for the free VMID auto-selection pool.
+	RegisteredTags    *string           `url:"registered-tags,omitempty" json:"registered-tags,omitempty"`       // A list of tags that require a `Sys.Modify` on '/' to set and delete. Tags set here that are also in 'user-tag-access' also require `Sys.Modify`.
+	TagStyle          *string           `url:"tag-style,omitempty" json:"tag-style,omitempty"`                   // Tag style options.
+	U2f               *string           `url:"u2f,omitempty" json:"u2f,omitempty"`                               // u2f
+	UserTagAccess     *string           `url:"user-tag-access,omitempty" json:"user-tag-access,omitempty"`       // Privilege options for user-settable tags
+	Webauthn          *string           `url:"webauthn,omitempty" json:"webauthn,omitempty"`                     // webauthn configuration
 }
 
 type SetOptionsResponse map[string]interface{}
@@ -145,19 +145,19 @@ func (c *Client) SetOptions(ctx context.Context, req *SetOptionsRequest) (*SetOp
 }
 
 type GetStatusResponse []*struct {
-	Id   string `url:"id",json:"id"`
-	Name string `url:"name",json:"name"`
-	Type string `url:"type",json:"type"` // Indicates the type, either cluster or node. The type defines the object properties e.g. quorate available for type cluster.
+	Id   string `url:"id" json:"id"`
+	Name string `url:"name" json:"name"`
+	Type string `url:"type" json:"type"` // Indicates the type, either cluster or node. The type defines the object properties e.g. quorate available for type cluster.
 
 	// The following parameters are optional
-	Ip      *string           `url:"ip,omitempty",json:"ip,omitempty"`           // [node] IP of the resolved nodename.
-	Level   *string           `url:"level,omitempty",json:"level,omitempty"`     // [node] Proxmox VE Subscription level, indicates if eligible for enterprise support as well as access to the stable Proxmox VE Enterprise Repository.
-	Local   *util.SpecialBool `url:"local,omitempty",json:"local,omitempty"`     // [node] Indicates if this is the responding node.
-	Nodeid  *int              `url:"nodeid,omitempty",json:"nodeid,omitempty"`   // [node] ID of the node from the corosync configuration.
-	Nodes   *int              `url:"nodes,omitempty",json:"nodes,omitempty"`     // [cluster] Nodes count, including offline nodes.
-	Online  *util.SpecialBool `url:"online,omitempty",json:"online,omitempty"`   // [node] Indicates if the node is online or offline.
-	Quorate *util.SpecialBool `url:"quorate,omitempty",json:"quorate,omitempty"` // [cluster] Indicates if there is a majority of nodes online to make decisions
-	Version *int              `url:"version,omitempty",json:"version,omitempty"` // [cluster] Current version of the corosync configuration file.
+	Ip      *string           `url:"ip,omitempty" json:"ip,omitempty"`           // [node] IP of the resolved nodename.
+	Level   *string           `url:"level,omitempty" json:"level,omitempty"`     // [node] Proxmox VE Subscription level, indicates if eligible for enterprise support as well as access to the stable Proxmox VE Enterprise Repository.
+	Local   *util.SpecialBool `url:"local,omitempty" json:"local,omitempty"`     // [node] Indicates if this is the responding node.
+	Nodeid  *int              `url:"nodeid,omitempty" json:"nodeid,omitempty"`   // [node] ID of the node from the corosync configuration.
+	Nodes   *int              `url:"nodes,omitempty" json:"nodes,omitempty"`     // [cluster] Nodes count, including offline nodes.
+	Online  *util.SpecialBool `url:"online,omitempty" json:"online,omitempty"`   // [node] Indicates if the node is online or offline.
+	Quorate *util.SpecialBool `url:"quorate,omitempty" json:"quorate,omitempty"` // [cluster] Indicates if there is a majority of nodes online to make decisions
+	Version *int              `url:"version,omitempty" json:"version,omitempty"` // [cluster] Current version of the corosync configuration file.
 }
 
 // GetStatus Get cluster status information.
@@ -171,7 +171,7 @@ func (c *Client) GetStatus(ctx context.Context) (*GetStatusResponse, error) {
 type NextidRequest struct {
 
 	// The following parameters are optional
-	Vmid *int `url:"vmid,omitempty",json:"vmid,omitempty"` // The (unique) ID of the VM.
+	Vmid *int `url:"vmid,omitempty" json:"vmid,omitempty"` // The (unique) ID of the VM.
 }
 
 type NextidResponse int
