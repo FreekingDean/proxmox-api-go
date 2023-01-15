@@ -20,7 +20,11 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexRequest map[string]interface{}
+type IndexRequest struct {
+
+	// The following parameters are optional
+	Type *string `url:"type,omitempty",json:"type,omitempty"` // Only list storage of specific type
+}
 
 type IndexResponse []*struct {
 	Storage string `url:"storage",json:"storage"`
@@ -102,7 +106,11 @@ type CreateResponse struct {
 	Type    string `url:"type",json:"type"`       // The type of the created storage.
 
 	// The following parameters are optional
-	Config map[string]interface{} `url:"config,omitempty",json:"config,omitempty"` // Partial, possible server generated, configuration properties.
+	Config struct {
+
+		// The following parameters are optional
+		EncryptionKey *string `url:"encryption-key,omitempty",json:"encryption-key,omitempty"` // The, possible auto-generated, encryption-key.
+	} `url:"config,omitempty",json:"config,omitempty"` // Partial, possible server generated, configuration properties.
 }
 
 // Create Create a new storage.
@@ -185,7 +193,11 @@ type UpdateResponse struct {
 	Type    string `url:"type",json:"type"`       // The type of the created storage.
 
 	// The following parameters are optional
-	Config map[string]interface{} `url:"config,omitempty",json:"config,omitempty"` // Partial, possible server generated, configuration properties.
+	Config struct {
+
+		// The following parameters are optional
+		EncryptionKey *string `url:"encryption-key,omitempty",json:"encryption-key,omitempty"` // The, possible auto-generated, encryption-key.
+	} `url:"config,omitempty",json:"config,omitempty"` // Partial, possible server generated, configuration properties.
 }
 
 // Update Update storage configuration.

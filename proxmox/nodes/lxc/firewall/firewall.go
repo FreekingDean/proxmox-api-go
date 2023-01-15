@@ -42,7 +42,20 @@ type GetOptionsRequest struct {
 
 }
 
-type GetOptionsResponse map[string]interface{}
+type GetOptionsResponse struct {
+
+	// The following parameters are optional
+	Dhcp        *bool   `url:"dhcp,omitempty",json:"dhcp,omitempty"`                   // Enable DHCP.
+	Enable      *bool   `url:"enable,omitempty",json:"enable,omitempty"`               // Enable/disable firewall rules.
+	Ipfilter    *bool   `url:"ipfilter,omitempty",json:"ipfilter,omitempty"`           // Enable default IP filters. This is equivalent to adding an empty ipfilter-net<id> ipset for every interface. Such ipsets implicitly contain sane default restrictions such as restricting IPv6 link local addresses to the one derived from the interface's MAC address. For containers the configured IP addresses will be implicitly added.
+	LogLevelIn  *string `url:"log_level_in,omitempty",json:"log_level_in,omitempty"`   // Log level for incoming traffic.
+	LogLevelOut *string `url:"log_level_out,omitempty",json:"log_level_out,omitempty"` // Log level for outgoing traffic.
+	Macfilter   *bool   `url:"macfilter,omitempty",json:"macfilter,omitempty"`         // Enable/disable MAC address filter.
+	Ndp         *bool   `url:"ndp,omitempty",json:"ndp,omitempty"`                     // Enable NDP (Neighbor Discovery Protocol).
+	PolicyIn    *string `url:"policy_in,omitempty",json:"policy_in,omitempty"`         // Input policy.
+	PolicyOut   *string `url:"policy_out,omitempty",json:"policy_out,omitempty"`       // Output policy.
+	Radv        *bool   `url:"radv,omitempty",json:"radv,omitempty"`                   // Allow sending Router Advertisement.
+}
 
 // GetOptions Get VM firewall options.
 func (c *Client) GetOptions(ctx context.Context, req *GetOptionsRequest) (*GetOptionsResponse, error) {

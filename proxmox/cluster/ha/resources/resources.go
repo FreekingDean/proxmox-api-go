@@ -20,7 +20,11 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexRequest map[string]interface{}
+type IndexRequest struct {
+
+	// The following parameters are optional
+	Type *string `url:"type,omitempty",json:"type,omitempty"` // Only list resources of specific type
+}
 
 type IndexResponse []*struct {
 	Sid string `url:"sid",json:"sid"`

@@ -20,7 +20,12 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexRequest map[string]interface{}
+type IndexRequest struct {
+
+	// The following parameters are optional
+	Pending *bool `url:"pending,omitempty",json:"pending,omitempty"` // Display pending config.
+	Running *bool `url:"running,omitempty",json:"running,omitempty"` // Display running config.
+}
 
 type IndexResponse []*map[string]interface{}
 

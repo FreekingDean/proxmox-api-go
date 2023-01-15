@@ -30,7 +30,15 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 	return resp, err
 }
 
-type GetOptionsResponse map[string]interface{}
+type GetOptionsResponse struct {
+
+	// The following parameters are optional
+	Ebtables     *bool   `url:"ebtables,omitempty",json:"ebtables,omitempty"`           // Enable ebtables rules cluster wide.
+	Enable       *int    `url:"enable,omitempty",json:"enable,omitempty"`               // Enable or disable the firewall cluster wide.
+	LogRatelimit *string `url:"log_ratelimit,omitempty",json:"log_ratelimit,omitempty"` // Log ratelimiting settings
+	PolicyIn     *string `url:"policy_in,omitempty",json:"policy_in,omitempty"`         // Input policy.
+	PolicyOut    *string `url:"policy_out,omitempty",json:"policy_out,omitempty"`       // Output policy.
+}
 
 // GetOptions Get Firewall options.
 func (c *Client) GetOptions(ctx context.Context) (*GetOptionsResponse, error) {
@@ -40,7 +48,17 @@ func (c *Client) GetOptions(ctx context.Context) (*GetOptionsResponse, error) {
 	return resp, err
 }
 
-type SetOptionsRequest map[string]interface{}
+type SetOptionsRequest struct {
+
+	// The following parameters are optional
+	Delete       *string `url:"delete,omitempty",json:"delete,omitempty"`               // A list of settings you want to delete.
+	Digest       *string `url:"digest,omitempty",json:"digest,omitempty"`               // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Ebtables     *bool   `url:"ebtables,omitempty",json:"ebtables,omitempty"`           // Enable ebtables rules cluster wide.
+	Enable       *int    `url:"enable,omitempty",json:"enable,omitempty"`               // Enable or disable the firewall cluster wide.
+	LogRatelimit *string `url:"log_ratelimit,omitempty",json:"log_ratelimit,omitempty"` // Log ratelimiting settings
+	PolicyIn     *string `url:"policy_in,omitempty",json:"policy_in,omitempty"`         // Input policy.
+	PolicyOut    *string `url:"policy_out,omitempty",json:"policy_out,omitempty"`       // Output policy.
+}
 
 type SetOptionsResponse map[string]interface{}
 
@@ -66,7 +84,11 @@ func (c *Client) GetMacros(ctx context.Context) (*GetMacrosResponse, error) {
 	return resp, err
 }
 
-type RefsRequest map[string]interface{}
+type RefsRequest struct {
+
+	// The following parameters are optional
+	Type *string `url:"type,omitempty",json:"type,omitempty"` // Only list references of specified type.
+}
 
 type RefsResponse []*struct {
 	Name string `url:"name",json:"name"`

@@ -127,7 +127,16 @@ type GetConfigRequest struct {
 	Property *string `url:"property,omitempty",json:"property,omitempty"` // Return only a specific property from the node configuration.
 }
 
-type GetConfigResponse map[string]interface{}
+type GetConfigResponse struct {
+
+	// The following parameters are optional
+	Acme                *string `url:"acme,omitempty",json:"acme,omitempty"`                                   // Node specific ACME settings.
+	Acmedomainn         *string `url:"acmedomain[n],omitempty",json:"acmedomain[n],omitempty"`                 // ACME domain and validation plugin
+	Description         *string `url:"description,omitempty",json:"description,omitempty"`                     // Description for the Node. Shown in the web-interface node notes panel. This is saved as comment inside the configuration file.
+	Digest              *string `url:"digest,omitempty",json:"digest,omitempty"`                               // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	StartallOnbootDelay *int    `url:"startall-onboot-delay,omitempty",json:"startall-onboot-delay,omitempty"` // Initial delay in seconds, before starting all the Virtual Guests with on-boot enabled.
+	Wakeonlan           *string `url:"wakeonlan,omitempty",json:"wakeonlan,omitempty"`                         // MAC address for wake on LAN
+}
 
 // GetConfig Get node configuration options.
 func (c *Client) GetConfig(ctx context.Context, req *GetConfigRequest) (*GetConfigResponse, error) {
@@ -441,7 +450,14 @@ type DnsRequest struct {
 
 }
 
-type DnsResponse map[string]interface{}
+type DnsResponse struct {
+
+	// The following parameters are optional
+	Dns1   *string `url:"dns1,omitempty",json:"dns1,omitempty"`     // First name server IP address.
+	Dns2   *string `url:"dns2,omitempty",json:"dns2,omitempty"`     // Second name server IP address.
+	Dns3   *string `url:"dns3,omitempty",json:"dns3,omitempty"`     // Third name server IP address.
+	Search *string `url:"search,omitempty",json:"search,omitempty"` // Search domain for host-name lookup.
+}
 
 // Dns Read DNS settings.
 func (c *Client) Dns(ctx context.Context, req *DnsRequest) (*DnsResponse, error) {
@@ -547,7 +563,13 @@ type QueryUrlMetadataRequest struct {
 	VerifyCertificates *bool `url:"verify-certificates,omitempty",json:"verify-certificates,omitempty"` // If false, no SSL/TLS certificates will be verified.
 }
 
-type QueryUrlMetadataResponse map[string]interface{}
+type QueryUrlMetadataResponse struct {
+
+	// The following parameters are optional
+	Filename *string `url:"filename,omitempty",json:"filename,omitempty"`
+	Mimetype *string `url:"mimetype,omitempty",json:"mimetype,omitempty"`
+	Size     *int    `url:"size,omitempty",json:"size,omitempty"`
+}
 
 // QueryUrlMetadata Query metadata of an URL: file size, file name and mime type.
 func (c *Client) QueryUrlMetadata(ctx context.Context, req *QueryUrlMetadataRequest) (*QueryUrlMetadataResponse, error) {

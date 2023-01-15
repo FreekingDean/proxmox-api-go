@@ -20,7 +20,11 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexRequest map[string]interface{}
+type IndexRequest struct {
+
+	// The following parameters are optional
+	Type *string `url:"type,omitempty",json:"type,omitempty"` // Only list sdn dns of specific type
+}
 
 type IndexResponse []*struct {
 	Dns  string `url:"dns",json:"dns"`

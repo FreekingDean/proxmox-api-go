@@ -20,7 +20,13 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexRequest map[string]interface{}
+type IndexRequest struct {
+
+	// The following parameters are optional
+	Pending *bool   `url:"pending,omitempty",json:"pending,omitempty"` // Display pending config.
+	Running *bool   `url:"running,omitempty",json:"running,omitempty"` // Display running config.
+	Type    *string `url:"type,omitempty",json:"type,omitempty"`       // Only list sdn controllers of specific type
+}
 
 type IndexResponse []*struct {
 	Controller string `url:"controller",json:"controller"`

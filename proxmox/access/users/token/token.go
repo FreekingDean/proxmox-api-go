@@ -48,7 +48,13 @@ type FindRequest struct {
 
 }
 
-type FindResponse map[string]interface{}
+type FindResponse struct {
+
+	// The following parameters are optional
+	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
+	Expire  *int    `url:"expire,omitempty",json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+	Privsep *bool   `url:"privsep,omitempty",json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
+}
 
 // Find Get specific API token information.
 func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
@@ -69,9 +75,15 @@ type ChildCreateRequest struct {
 }
 
 type ChildCreateResponse struct {
-	FullTokenid string                 `url:"full-tokenid",json:"full-tokenid"` // The full token id.
-	Info        map[string]interface{} `url:"info",json:"info"`
-	Value       string                 `url:"value",json:"value"` // API token value used for authentication.
+	FullTokenid string `url:"full-tokenid",json:"full-tokenid"` // The full token id.
+	Info        struct {
+
+		// The following parameters are optional
+		Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
+		Expire  *int    `url:"expire,omitempty",json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+		Privsep *bool   `url:"privsep,omitempty",json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
+	} `url:"info",json:"info"`
+	Value string `url:"value",json:"value"` // API token value used for authentication.
 
 }
 
@@ -93,7 +105,13 @@ type UpdateRequest struct {
 	Privsep *bool   `url:"privsep,omitempty",json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
 
-type UpdateResponse map[string]interface{}
+type UpdateResponse struct {
+
+	// The following parameters are optional
+	Comment *string `url:"comment,omitempty",json:"comment,omitempty"`
+	Expire  *int    `url:"expire,omitempty",json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+	Privsep *bool   `url:"privsep,omitempty",json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
+}
 
 // Update Update API token for a specific user.
 func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateResponse, error) {

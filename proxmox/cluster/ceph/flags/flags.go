@@ -33,7 +33,21 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 	return resp, err
 }
 
-type MassUpdateRequest map[string]interface{}
+type MassUpdateRequest struct {
+
+	// The following parameters are optional
+	Nobackfill  *bool `url:"nobackfill,omitempty",json:"nobackfill,omitempty"`     // Backfilling of PGs is suspended.
+	NodeepScrub *bool `url:"nodeep-scrub,omitempty",json:"nodeep-scrub,omitempty"` // Deep Scrubbing is disabled.
+	Nodown      *bool `url:"nodown,omitempty",json:"nodown,omitempty"`             // OSD failure reports are being ignored, such that the monitors will not mark OSDs down.
+	Noin        *bool `url:"noin,omitempty",json:"noin,omitempty"`                 // OSDs that were previously marked out will not be marked back in when they start.
+	Noout       *bool `url:"noout,omitempty",json:"noout,omitempty"`               // OSDs will not automatically be marked out after the configured interval.
+	Norebalance *bool `url:"norebalance,omitempty",json:"norebalance,omitempty"`   // Rebalancing of PGs is suspended.
+	Norecover   *bool `url:"norecover,omitempty",json:"norecover,omitempty"`       // Recovery of PGs is suspended.
+	Noscrub     *bool `url:"noscrub,omitempty",json:"noscrub,omitempty"`           // Scrubbing is disabled.
+	Notieragent *bool `url:"notieragent,omitempty",json:"notieragent,omitempty"`   // Cache tiering activity is suspended.
+	Noup        *bool `url:"noup,omitempty",json:"noup,omitempty"`                 // OSDs are not allowed to start.
+	Pause       *bool `url:"pause,omitempty",json:"pause,omitempty"`               // Pauses read and writes.
+}
 
 type MassUpdateResponse string
 

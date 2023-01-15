@@ -49,9 +49,20 @@ func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateRespons
 	return resp, err
 }
 
-type FindRequest map[string]interface{}
+type FindRequest struct {
 
-type FindResponse map[string]interface{}
+	// The following parameters are optional
+	Name *string `url:"name,omitempty",json:"name,omitempty"` // ACME account config file name.
+}
+
+type FindResponse struct {
+
+	// The following parameters are optional
+	Account   map[string]interface{} `url:"account,omitempty",json:"account,omitempty"`
+	Directory *string                `url:"directory,omitempty",json:"directory,omitempty"` // URL of ACME CA directory endpoint.
+	Location  *string                `url:"location,omitempty",json:"location,omitempty"`
+	Tos       *string                `url:"tos,omitempty",json:"tos,omitempty"`
+}
 
 // Find Return existing ACME account information.
 func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
@@ -61,7 +72,12 @@ func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, err
 	return resp, err
 }
 
-type UpdateRequest map[string]interface{}
+type UpdateRequest struct {
+
+	// The following parameters are optional
+	Contact *string `url:"contact,omitempty",json:"contact,omitempty"` // Contact email addresses.
+	Name    *string `url:"name,omitempty",json:"name,omitempty"`       // ACME account config file name.
+}
 
 type UpdateResponse string
 
@@ -73,7 +89,11 @@ func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateRespons
 	return resp, err
 }
 
-type DeleteRequest map[string]interface{}
+type DeleteRequest struct {
+
+	// The following parameters are optional
+	Name *string `url:"name,omitempty",json:"name,omitempty"` // ACME account config file name.
+}
 
 type DeleteResponse string
 

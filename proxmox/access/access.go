@@ -128,7 +128,12 @@ func (c *Client) ChangePassword(ctx context.Context, req *ChangePasswordRequest)
 	return resp, err
 }
 
-type PermissionsRequest map[string]interface{}
+type PermissionsRequest struct {
+
+	// The following parameters are optional
+	Path   *string `url:"path,omitempty",json:"path,omitempty"`     // Only dump this specific path, not the whole tree.
+	Userid *string `url:"userid,omitempty",json:"userid,omitempty"` // User ID or full API token ID
+}
 
 type PermissionsResponse map[string]interface{}
 

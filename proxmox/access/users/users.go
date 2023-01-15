@@ -20,7 +20,12 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexRequest map[string]interface{}
+type IndexRequest struct {
+
+	// The following parameters are optional
+	Enabled *bool `url:"enabled,omitempty",json:"enabled,omitempty"` // Optional filter for enable property.
+	Full    *bool `url:"full,omitempty",json:"full,omitempty"`       // Include group and token information.
+}
 
 type IndexResponse []*struct {
 	Userid string `url:"userid",json:"userid"` // User ID
@@ -83,7 +88,19 @@ type FindRequest struct {
 
 }
 
-type FindResponse map[string]interface{}
+type FindResponse struct {
+
+	// The following parameters are optional
+	Comment   *string                `url:"comment,omitempty",json:"comment,omitempty"`
+	Email     *string                `url:"email,omitempty",json:"email,omitempty"`
+	Enable    *bool                  `url:"enable,omitempty",json:"enable,omitempty"` // Enable the account (default). You can set this to '0' to disable the account
+	Expire    *int                   `url:"expire,omitempty",json:"expire,omitempty"` // Account expiration date (seconds since epoch). '0' means no expiration date.
+	Firstname *string                `url:"firstname,omitempty",json:"firstname,omitempty"`
+	Groups    []string               `url:"groups,omitempty",json:"groups,omitempty"`
+	Keys      *string                `url:"keys,omitempty",json:"keys,omitempty"` // Keys for two factor auth (yubico).
+	Lastname  *string                `url:"lastname,omitempty",json:"lastname,omitempty"`
+	Tokens    map[string]interface{} `url:"tokens,omitempty",json:"tokens,omitempty"`
+}
 
 // Find Get user configuration.
 func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
@@ -140,7 +157,13 @@ type ReadUserTfaTypeTfaRequest struct {
 	Multiple *bool `url:"multiple,omitempty",json:"multiple,omitempty"` // Request all entries as an array.
 }
 
-type ReadUserTfaTypeTfaResponse map[string]interface{}
+type ReadUserTfaTypeTfaResponse struct {
+
+	// The following parameters are optional
+	Realm *string  `url:"realm,omitempty",json:"realm,omitempty"` // The type of TFA the users realm has set, if any.
+	Types []string `url:"types,omitempty",json:"types,omitempty"` // Array of the user configured TFA types, if any. Only available if 'multiple' was not passed.
+	User  *string  `url:"user,omitempty",json:"user,omitempty"`   // The type of TFA the user has set, if any. Only set if 'multiple' was not passed.
+}
 
 // ReadUserTfaTypeTfa Get user TFA types (Personal and Realm).
 func (c *Client) ReadUserTfaTypeTfa(ctx context.Context, req *ReadUserTfaTypeTfaRequest) (*ReadUserTfaTypeTfaResponse, error) {

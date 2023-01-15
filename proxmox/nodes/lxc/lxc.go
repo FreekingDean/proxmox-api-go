@@ -588,7 +588,12 @@ type MtunnelwebsocketRequest struct {
 
 }
 
-type MtunnelwebsocketResponse map[string]interface{}
+type MtunnelwebsocketResponse struct {
+
+	// The following parameters are optional
+	Port   *string `url:"port,omitempty",json:"port,omitempty"`
+	Socket *string `url:"socket,omitempty",json:"socket,omitempty"`
+}
 
 // Mtunnelwebsocket Migration tunnel endpoint for websocket upgrade - only for internal use by VM migration.
 func (c *Client) Mtunnelwebsocket(ctx context.Context, req *MtunnelwebsocketRequest) (*MtunnelwebsocketResponse, error) {

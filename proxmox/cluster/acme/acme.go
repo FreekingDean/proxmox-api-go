@@ -30,7 +30,11 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 	return resp, err
 }
 
-type GetTosRequest map[string]interface{}
+type GetTosRequest struct {
+
+	// The following parameters are optional
+	Directory *string `url:"directory,omitempty",json:"directory,omitempty"` // URL of ACME CA directory endpoint.
+}
 
 type GetTosResponse *string
 

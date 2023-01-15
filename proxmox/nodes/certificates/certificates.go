@@ -40,7 +40,20 @@ type InfoRequest struct {
 
 }
 
-type InfoResponse []*map[string]interface{}
+type InfoResponse []*struct {
+
+	// The following parameters are optional
+	Filename      *string  `url:"filename,omitempty",json:"filename,omitempty"`
+	Fingerprint   *string  `url:"fingerprint,omitempty",json:"fingerprint,omitempty"`         // Certificate SHA 256 fingerprint.
+	Issuer        *string  `url:"issuer,omitempty",json:"issuer,omitempty"`                   // Certificate issuer name.
+	Notafter      *int     `url:"notafter,omitempty",json:"notafter,omitempty"`               // Certificate's notAfter timestamp (UNIX epoch).
+	Notbefore     *int     `url:"notbefore,omitempty",json:"notbefore,omitempty"`             // Certificate's notBefore timestamp (UNIX epoch).
+	Pem           *string  `url:"pem,omitempty",json:"pem,omitempty"`                         // Certificate in PEM format
+	PublicKeyBits *int     `url:"public-key-bits,omitempty",json:"public-key-bits,omitempty"` // Certificate's public key size
+	PublicKeyType *string  `url:"public-key-type,omitempty",json:"public-key-type,omitempty"` // Certificate's public key algorithm
+	San           []string `url:"san,omitempty",json:"san,omitempty"`                         // List of Certificate's SubjectAlternativeName entries.
+	Subject       *string  `url:"subject,omitempty",json:"subject,omitempty"`                 // Certificate subject name.
+}
 
 // Info Get information about node's certificates.
 func (c *Client) Info(ctx context.Context, req *InfoRequest) (*InfoResponse, error) {
@@ -60,7 +73,20 @@ type UploadCustomCertCustomRequest struct {
 	Restart *bool   `url:"restart,omitempty",json:"restart,omitempty"` // Restart pveproxy.
 }
 
-type UploadCustomCertCustomResponse map[string]interface{}
+type UploadCustomCertCustomResponse struct {
+
+	// The following parameters are optional
+	Filename      *string  `url:"filename,omitempty",json:"filename,omitempty"`
+	Fingerprint   *string  `url:"fingerprint,omitempty",json:"fingerprint,omitempty"`         // Certificate SHA 256 fingerprint.
+	Issuer        *string  `url:"issuer,omitempty",json:"issuer,omitempty"`                   // Certificate issuer name.
+	Notafter      *int     `url:"notafter,omitempty",json:"notafter,omitempty"`               // Certificate's notAfter timestamp (UNIX epoch).
+	Notbefore     *int     `url:"notbefore,omitempty",json:"notbefore,omitempty"`             // Certificate's notBefore timestamp (UNIX epoch).
+	Pem           *string  `url:"pem,omitempty",json:"pem,omitempty"`                         // Certificate in PEM format
+	PublicKeyBits *int     `url:"public-key-bits,omitempty",json:"public-key-bits,omitempty"` // Certificate's public key size
+	PublicKeyType *string  `url:"public-key-type,omitempty",json:"public-key-type,omitempty"` // Certificate's public key algorithm
+	San           []string `url:"san,omitempty",json:"san,omitempty"`                         // List of Certificate's SubjectAlternativeName entries.
+	Subject       *string  `url:"subject,omitempty",json:"subject,omitempty"`                 // Certificate subject name.
+}
 
 // UploadCustomCertCustom Upload or update custom certificate chain and key.
 func (c *Client) UploadCustomCertCustom(ctx context.Context, req *UploadCustomCertCustomRequest) (*UploadCustomCertCustomResponse, error) {

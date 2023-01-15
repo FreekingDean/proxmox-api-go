@@ -59,7 +59,11 @@ func (c *Client) JoinApiVersionApiversion(ctx context.Context) (*JoinApiVersionA
 	return resp, err
 }
 
-type JoinInfoJoinRequest map[string]interface{}
+type JoinInfoJoinRequest struct {
+
+	// The following parameters are optional
+	Node *string `url:"node,omitempty",json:"node,omitempty"` // The node for which the joinee gets the nodeinfo.
+}
 
 type JoinInfoJoinResponse struct {
 	ConfigDigest string `url:"config_digest",json:"config_digest"`

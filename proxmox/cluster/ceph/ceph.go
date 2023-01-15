@@ -30,7 +30,11 @@ func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
 	return resp, err
 }
 
-type MetadataRequest map[string]interface{}
+type MetadataRequest struct {
+
+	// The following parameters are optional
+	Scope *string `url:"scope,omitempty",json:"scope,omitempty"`
+}
 
 type MetadataResponse map[string]interface{}
 
