@@ -20,6 +20,7 @@ type Client struct {
 	client   *http.Client
 	baseAddr string
 	cookie   string
+	csrf     string
 }
 
 type ClientOption func(*Client)
@@ -38,6 +39,10 @@ type Response struct {
 
 func (c *Client) SetCookie(cookie string) {
 	c.cookie = cookie
+}
+
+func (c *Client) SetCsrf(csrf string) {
+	c.csrf = csrf
 }
 
 func (c *Client) Do(ctx context.Context, route string, method string, response interface{}, request interface{}) error {
@@ -60,6 +65,9 @@ func (c *Client) Do(ctx context.Context, route string, method string, response i
 	}
 	if c.cookie != "" {
 		req.Header.Add("Authorization", fmt.Sprintf("PVEAuthCookie=%s", c.cookie))
+	}
+	if c.csrf != "" && method != "GET" {
+		req.Header.Add("CSRFPreventionToken", c.csrf)
 	}
 	resp, err := c.client.Do(req)
 	if err != nil {
