@@ -20,32 +20,14 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Subdir string `url:"subdir" json:"subdir"`
-}
-
-// Index Directory index.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/access/openid", "GET", &resp, nil)
-	return resp, err
 }
 
 type AuthUrlRequest struct {
 	Realm       string `url:"realm" json:"realm"`               // Authentication domain ID
 	RedirectUrl string `url:"redirect-url" json:"redirect-url"` // Redirection Url. The client should set this to the used server url (location.origin).
 
-}
-
-type AuthUrlResponse string
-
-// AuthUrl Get the OpenId Authorization Url for the specified realm.
-func (c *Client) AuthUrl(ctx context.Context, req *AuthUrlRequest) (*AuthUrlResponse, error) {
-	var resp *AuthUrlResponse
-
-	err := c.httpClient.Do(ctx, "/access/openid/auth-url", "POST", &resp, req)
-	return resp, err
 }
 
 type LoginRequest struct {
@@ -65,9 +47,25 @@ type LoginResponse struct {
 	Clustername *string `url:"clustername,omitempty" json:"clustername,omitempty"`
 }
 
+// Index Directory index.
+func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/access/openid", "GET", &resp, nil)
+	return resp, err
+}
+
+// AuthUrl Get the OpenId Authorization Url for the specified realm.
+func (c *Client) AuthUrl(ctx context.Context, req AuthUrlRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/access/openid/auth-url", "POST", &resp, req)
+	return resp, err
+}
+
 // Login  Verify OpenID authorization code and create a ticket.
-func (c *Client) Login(ctx context.Context, req *LoginRequest) (*LoginResponse, error) {
-	var resp *LoginResponse
+func (c *Client) Login(ctx context.Context, req LoginRequest) (LoginResponse, error) {
+	var resp LoginResponse
 
 	err := c.httpClient.Do(ctx, "/access/openid/login", "POST", &resp, req)
 	return resp, err

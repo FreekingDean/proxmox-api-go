@@ -28,16 +28,6 @@ type IndexRequest struct {
 	Type *string `url:"type,omitempty" json:"type,omitempty"` // Only list specific interface types.
 }
 
-type IndexResponse []*map[string]interface{}
-
-// Index List available networks
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/network", "GET", &resp, req)
-	return resp, err
-}
-
 type CreateRequest struct {
 	Iface string `url:"iface" json:"iface"` // Network interface name.
 	Node  string `url:"node" json:"node"`   // The cluster node name.
@@ -71,44 +61,14 @@ type CreateRequest struct {
 	VlanRawDevice      *string           `url:"vlan-raw-device,omitempty" json:"vlan-raw-device,omitempty"`             // Specify the raw interface for the vlan interface.
 }
 
-type CreateResponse map[string]interface{}
-
-// Create Create network device configuration
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/network", "POST", &resp, req)
-	return resp, err
-}
-
 type MassUpdateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
-type MassUpdateResponse string
-
-// MassUpdate Reload network configuration
-func (c *Client) MassUpdate(ctx context.Context, req *MassUpdateRequest) (*MassUpdateResponse, error) {
-	var resp *MassUpdateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/network", "PUT", &resp, req)
-	return resp, err
-}
-
 type MassDeleteRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
-}
-
-type MassDeleteResponse map[string]interface{}
-
-// MassDelete Revert network configuration changes.
-func (c *Client) MassDelete(ctx context.Context, req *MassDeleteRequest) (*MassDeleteResponse, error) {
-	var resp *MassDeleteResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/network", "DELETE", &resp, req)
-	return resp, err
 }
 
 type FindRequest struct {
@@ -120,14 +80,6 @@ type FindRequest struct {
 type FindResponse struct {
 	Method string `url:"method" json:"method"`
 	Type   string `url:"type" json:"type"`
-}
-
-// Find Read network device configuration
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/network/{iface}", "GET", &resp, req)
-	return resp, err
 }
 
 type UpdateRequest struct {
@@ -164,28 +116,60 @@ type UpdateRequest struct {
 	VlanRawDevice      *string           `url:"vlan-raw-device,omitempty" json:"vlan-raw-device,omitempty"`             // Specify the raw interface for the vlan interface.
 }
 
-type UpdateResponse map[string]interface{}
-
-// Update Update network device configuration
-func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateResponse, error) {
-	var resp *UpdateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/network/{iface}", "PUT", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Iface string `url:"iface" json:"iface"` // Network interface name.
 	Node  string `url:"node" json:"node"`   // The cluster node name.
 
 }
 
-type DeleteResponse map[string]interface{}
+// Index List available networks
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/network", "GET", &resp, req)
+	return resp, err
+}
+
+// Create Create network device configuration
+func (c *Client) Create(ctx context.Context, req CreateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/network", "POST", nil, req)
+	return err
+}
+
+// MassUpdate Reload network configuration
+func (c *Client) MassUpdate(ctx context.Context, req MassUpdateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/network", "PUT", &resp, req)
+	return resp, err
+}
+
+// MassDelete Revert network configuration changes.
+func (c *Client) MassDelete(ctx context.Context, req MassDeleteRequest) error {
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/network", "DELETE", nil, req)
+	return err
+}
+
+// Find Read network device configuration
+func (c *Client) Find(ctx context.Context, req FindRequest) (FindResponse, error) {
+	var resp FindResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/network/{iface}", "GET", &resp, req)
+	return resp, err
+}
+
+// Update Update network device configuration
+func (c *Client) Update(ctx context.Context, req UpdateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/network/{iface}", "PUT", nil, req)
+	return err
+}
 
 // Delete Delete network device configuration
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) error {
 
-	err := c.httpClient.Do(ctx, "/nodes/{node}/network/{iface}", "DELETE", &resp, req)
-	return resp, err
+	err := c.httpClient.Do(ctx, "/nodes/{node}/network/{iface}", "DELETE", nil, req)
+	return err
 }

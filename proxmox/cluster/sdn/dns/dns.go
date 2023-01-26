@@ -26,17 +26,9 @@ type IndexRequest struct {
 	Type *string `url:"type,omitempty" json:"type,omitempty"` // Only list sdn dns of specific type
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Dns  string `url:"dns" json:"dns"`
 	Type string `url:"type" json:"type"`
-}
-
-// Index SDN dns index.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/sdn/dns", "GET", &resp, req)
-	return resp, err
 }
 
 type CreateRequest struct {
@@ -51,29 +43,9 @@ type CreateRequest struct {
 	Ttl           *int `url:"ttl,omitempty" json:"ttl,omitempty"`
 }
 
-type CreateResponse map[string]interface{}
-
-// Create Create a new sdn dns object.
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/sdn/dns", "POST", &resp, req)
-	return resp, err
-}
-
 type FindRequest struct {
 	Dns string `url:"dns" json:"dns"` // The SDN dns object identifier.
 
-}
-
-type FindResponse map[string]interface{}
-
-// Find Read sdn dns configuration.
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/sdn/dns/{dns}", "GET", &resp, req)
-	return resp, err
 }
 
 type UpdateRequest struct {
@@ -88,27 +60,44 @@ type UpdateRequest struct {
 	Url           *string `url:"url,omitempty" json:"url,omitempty"`
 }
 
-type UpdateResponse map[string]interface{}
-
-// Update Update sdn dns object configuration.
-func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateResponse, error) {
-	var resp *UpdateResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/sdn/dns/{dns}", "PUT", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Dns string `url:"dns" json:"dns"` // The SDN dns object identifier.
 
 }
 
-type DeleteResponse map[string]interface{}
+// Index SDN dns index.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/cluster/sdn/dns", "GET", &resp, req)
+	return resp, err
+}
+
+// Create Create a new sdn dns object.
+func (c *Client) Create(ctx context.Context, req CreateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/cluster/sdn/dns", "POST", nil, req)
+	return err
+}
+
+// Find Read sdn dns configuration.
+func (c *Client) Find(ctx context.Context, req FindRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/cluster/sdn/dns/{dns}", "GET", &resp, req)
+	return resp, err
+}
+
+// Update Update sdn dns object configuration.
+func (c *Client) Update(ctx context.Context, req UpdateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/cluster/sdn/dns/{dns}", "PUT", nil, req)
+	return err
+}
 
 // Delete Delete sdn dns object configuration.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) error {
 
-	err := c.httpClient.Do(ctx, "/cluster/sdn/dns/{dns}", "DELETE", &resp, req)
-	return resp, err
+	err := c.httpClient.Do(ctx, "/cluster/sdn/dns/{dns}", "DELETE", nil, req)
+	return err
 }

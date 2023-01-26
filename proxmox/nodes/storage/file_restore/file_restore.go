@@ -29,7 +29,7 @@ type ListRequest struct {
 
 }
 
-type ListResponse []*struct {
+type ListResponse struct {
 	Filepath string           `url:"filepath" json:"filepath"` // base64 path of the current entry
 	Leaf     util.SpecialBool `url:"leaf" json:"leaf"`         // If this entry is a leaf in the directory graph.
 	Text     string           `url:"text" json:"text"`         // Entry display text.
@@ -40,14 +40,6 @@ type ListResponse []*struct {
 	Size  *int `url:"size,omitempty" json:"size,omitempty"`   // Entry file size.
 }
 
-// List List files and directories for single file restore under the given path.
-func (c *Client) List(ctx context.Context, req *ListRequest) (*ListResponse, error) {
-	var resp *ListResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/file-restore/list", "GET", &resp, req)
-	return resp, err
-}
-
 type DownloadRequest struct {
 	Filepath string `url:"filepath" json:"filepath"` // base64-path to the directory or file to download.
 	Node     string `url:"node" json:"node"`         // The cluster node name.
@@ -56,11 +48,17 @@ type DownloadRequest struct {
 
 }
 
-type DownloadResponse interface{}
+// List List files and directories for single file restore under the given path.
+func (c *Client) List(ctx context.Context, req ListRequest) ([]ListResponse, error) {
+	var resp []ListResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/file-restore/list", "GET", &resp, req)
+	return resp, err
+}
 
 // Download Extract a file or directory (as zip archive) from a PBS backup.
-func (c *Client) Download(ctx context.Context, req *DownloadRequest) (*DownloadResponse, error) {
-	var resp *DownloadResponse
+func (c *Client) Download(ctx context.Context, req DownloadRequest) (interface{}, error) {
+	var resp interface{}
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/file-restore/download", "GET", &resp, req)
 	return resp, err

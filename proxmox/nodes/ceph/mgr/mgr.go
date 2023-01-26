@@ -25,20 +25,12 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	State string `url:"state" json:"state"` // State of the MGR
 
 	// The following parameters are optional
 	Addr *string `url:"addr,omitempty" json:"addr,omitempty"`
 	Host *string `url:"host,omitempty" json:"host,omitempty"`
-}
-
-// Index MGR directory index.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/mgr", "GET", &resp, req)
-	return resp, err
 }
 
 type ChildCreateRequest struct {
@@ -48,27 +40,31 @@ type ChildCreateRequest struct {
 	Id *string `url:"id,omitempty" json:"id,omitempty"` // The ID for the manager, when omitted the same as the nodename
 }
 
-type ChildCreateResponse string
-
-// ChildCreate Create Ceph Manager
-func (c *Client) ChildCreate(ctx context.Context, req *ChildCreateRequest) (*ChildCreateResponse, error) {
-	var resp *ChildCreateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/mgr/{id}", "POST", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Id   string `url:"id" json:"id"`     // The ID of the manager
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
-type DeleteResponse string
+// Index MGR directory index.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/mgr", "GET", &resp, req)
+	return resp, err
+}
+
+// ChildCreate Create Ceph Manager
+func (c *Client) ChildCreate(ctx context.Context, req ChildCreateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/mgr/{id}", "POST", &resp, req)
+	return resp, err
+}
 
 // Delete Destroy Ceph Manager.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) (string, error) {
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/mgr/{id}", "DELETE", &resp, req)
 	return resp, err

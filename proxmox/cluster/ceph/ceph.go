@@ -20,37 +20,31 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*map[string]interface{}
-
-// Index Cluster ceph index.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/ceph", "GET", &resp, nil)
-	return resp, err
-}
-
 type MetadataRequest struct {
 
 	// The following parameters are optional
 	Scope *string `url:"scope,omitempty" json:"scope,omitempty"`
 }
 
-type MetadataResponse map[string]interface{}
+// Index Cluster ceph index.
+func (c *Client) Index(ctx context.Context) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/cluster/ceph", "GET", &resp, nil)
+	return resp, err
+}
 
 // Metadata Get ceph metadata.
-func (c *Client) Metadata(ctx context.Context, req *MetadataRequest) (*MetadataResponse, error) {
-	var resp *MetadataResponse
+func (c *Client) Metadata(ctx context.Context, req MetadataRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
 
 	err := c.httpClient.Do(ctx, "/cluster/ceph/metadata", "GET", &resp, req)
 	return resp, err
 }
 
-type StatusResponse map[string]interface{}
-
 // Status Get ceph status.
-func (c *Client) Status(ctx context.Context) (*StatusResponse, error) {
-	var resp *StatusResponse
+func (c *Client) Status(ctx context.Context) (map[string]interface{}, error) {
+	var resp map[string]interface{}
 
 	err := c.httpClient.Do(ctx, "/cluster/ceph/status", "GET", &resp, nil)
 	return resp, err

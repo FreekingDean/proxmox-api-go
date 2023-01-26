@@ -27,31 +27,11 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*map[string]interface{}
-
-// Index Qemu Agent command index.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent", "GET", &resp, req)
-	return resp, err
-}
-
 type CreateRequest struct {
 	Command string `url:"command" json:"command"` // The QGA command.
 	Node    string `url:"node" json:"node"`       // The cluster node name.
 	Vmid    int    `url:"vmid" json:"vmid"`       // The (unique) ID of the VM.
 
-}
-
-type CreateResponse map[string]interface{}
-
-// Create Execute Qemu Guest Agent commands.
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent", "POST", &resp, req)
-	return resp, err
 }
 
 type FsfreezeFreezeRequest struct {
@@ -60,30 +40,10 @@ type FsfreezeFreezeRequest struct {
 
 }
 
-type FsfreezeFreezeResponse map[string]interface{}
-
-// FsfreezeFreeze Execute fsfreeze-freeze.
-func (c *Client) FsfreezeFreeze(ctx context.Context, req *FsfreezeFreezeRequest) (*FsfreezeFreezeResponse, error) {
-	var resp *FsfreezeFreezeResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/fsfreeze-freeze", "POST", &resp, req)
-	return resp, err
-}
-
 type FsfreezeStatusRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
-}
-
-type FsfreezeStatusResponse map[string]interface{}
-
-// FsfreezeStatus Execute fsfreeze-status.
-func (c *Client) FsfreezeStatus(ctx context.Context, req *FsfreezeStatusRequest) (*FsfreezeStatusResponse, error) {
-	var resp *FsfreezeStatusResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/fsfreeze-status", "POST", &resp, req)
-	return resp, err
 }
 
 type FsfreezeThawRequest struct {
@@ -92,30 +52,10 @@ type FsfreezeThawRequest struct {
 
 }
 
-type FsfreezeThawResponse map[string]interface{}
-
-// FsfreezeThaw Execute fsfreeze-thaw.
-func (c *Client) FsfreezeThaw(ctx context.Context, req *FsfreezeThawRequest) (*FsfreezeThawResponse, error) {
-	var resp *FsfreezeThawResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/fsfreeze-thaw", "POST", &resp, req)
-	return resp, err
-}
-
 type FstrimRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
-}
-
-type FstrimResponse map[string]interface{}
-
-// Fstrim Execute fstrim.
-func (c *Client) Fstrim(ctx context.Context, req *FstrimRequest) (*FstrimResponse, error) {
-	var resp *FstrimResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/fstrim", "POST", &resp, req)
-	return resp, err
 }
 
 type GetFsinfoRequest struct {
@@ -124,30 +64,10 @@ type GetFsinfoRequest struct {
 
 }
 
-type GetFsinfoResponse map[string]interface{}
-
-// GetFsinfo Execute get-fsinfo.
-func (c *Client) GetFsinfo(ctx context.Context, req *GetFsinfoRequest) (*GetFsinfoResponse, error) {
-	var resp *GetFsinfoResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/get-fsinfo", "GET", &resp, req)
-	return resp, err
-}
-
 type GetHostNameRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
-}
-
-type GetHostNameResponse map[string]interface{}
-
-// GetHostName Execute get-host-name.
-func (c *Client) GetHostName(ctx context.Context, req *GetHostNameRequest) (*GetHostNameResponse, error) {
-	var resp *GetHostNameResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/get-host-name", "GET", &resp, req)
-	return resp, err
 }
 
 type GetMemoryBlockInfoRequest struct {
@@ -156,30 +76,10 @@ type GetMemoryBlockInfoRequest struct {
 
 }
 
-type GetMemoryBlockInfoResponse map[string]interface{}
-
-// GetMemoryBlockInfo Execute get-memory-block-info.
-func (c *Client) GetMemoryBlockInfo(ctx context.Context, req *GetMemoryBlockInfoRequest) (*GetMemoryBlockInfoResponse, error) {
-	var resp *GetMemoryBlockInfoResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/get-memory-block-info", "GET", &resp, req)
-	return resp, err
-}
-
 type GetMemoryBlocksRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
-}
-
-type GetMemoryBlocksResponse map[string]interface{}
-
-// GetMemoryBlocks Execute get-memory-blocks.
-func (c *Client) GetMemoryBlocks(ctx context.Context, req *GetMemoryBlocksRequest) (*GetMemoryBlocksResponse, error) {
-	var resp *GetMemoryBlocksResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/get-memory-blocks", "GET", &resp, req)
-	return resp, err
 }
 
 type GetOsinfoRequest struct {
@@ -188,30 +88,10 @@ type GetOsinfoRequest struct {
 
 }
 
-type GetOsinfoResponse map[string]interface{}
-
-// GetOsinfo Execute get-osinfo.
-func (c *Client) GetOsinfo(ctx context.Context, req *GetOsinfoRequest) (*GetOsinfoResponse, error) {
-	var resp *GetOsinfoResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/get-osinfo", "GET", &resp, req)
-	return resp, err
-}
-
 type GetTimeRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
-}
-
-type GetTimeResponse map[string]interface{}
-
-// GetTime Execute get-time.
-func (c *Client) GetTime(ctx context.Context, req *GetTimeRequest) (*GetTimeResponse, error) {
-	var resp *GetTimeResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/get-time", "GET", &resp, req)
-	return resp, err
 }
 
 type GetTimezoneRequest struct {
@@ -220,30 +100,10 @@ type GetTimezoneRequest struct {
 
 }
 
-type GetTimezoneResponse map[string]interface{}
-
-// GetTimezone Execute get-timezone.
-func (c *Client) GetTimezone(ctx context.Context, req *GetTimezoneRequest) (*GetTimezoneResponse, error) {
-	var resp *GetTimezoneResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/get-timezone", "GET", &resp, req)
-	return resp, err
-}
-
 type GetUsersRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
-}
-
-type GetUsersResponse map[string]interface{}
-
-// GetUsers Execute get-users.
-func (c *Client) GetUsers(ctx context.Context, req *GetUsersRequest) (*GetUsersResponse, error) {
-	var resp *GetUsersResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/get-users", "GET", &resp, req)
-	return resp, err
 }
 
 type GetVcpusRequest struct {
@@ -252,30 +112,10 @@ type GetVcpusRequest struct {
 
 }
 
-type GetVcpusResponse map[string]interface{}
-
-// GetVcpus Execute get-vcpus.
-func (c *Client) GetVcpus(ctx context.Context, req *GetVcpusRequest) (*GetVcpusResponse, error) {
-	var resp *GetVcpusResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/get-vcpus", "GET", &resp, req)
-	return resp, err
-}
-
 type InfoRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
-}
-
-type InfoResponse map[string]interface{}
-
-// Info Execute info.
-func (c *Client) Info(ctx context.Context, req *InfoRequest) (*InfoResponse, error) {
-	var resp *InfoResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/info", "GET", &resp, req)
-	return resp, err
 }
 
 type NetworkGetInterfacesRequest struct {
@@ -284,30 +124,10 @@ type NetworkGetInterfacesRequest struct {
 
 }
 
-type NetworkGetInterfacesResponse map[string]interface{}
-
-// NetworkGetInterfaces Execute network-get-interfaces.
-func (c *Client) NetworkGetInterfaces(ctx context.Context, req *NetworkGetInterfacesRequest) (*NetworkGetInterfacesResponse, error) {
-	var resp *NetworkGetInterfacesResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/network-get-interfaces", "GET", &resp, req)
-	return resp, err
-}
-
 type PingRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
-}
-
-type PingResponse map[string]interface{}
-
-// Ping Execute ping.
-func (c *Client) Ping(ctx context.Context, req *PingRequest) (*PingResponse, error) {
-	var resp *PingResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/ping", "POST", &resp, req)
-	return resp, err
 }
 
 type ShutdownRequest struct {
@@ -316,30 +136,10 @@ type ShutdownRequest struct {
 
 }
 
-type ShutdownResponse map[string]interface{}
-
-// Shutdown Execute shutdown.
-func (c *Client) Shutdown(ctx context.Context, req *ShutdownRequest) (*ShutdownResponse, error) {
-	var resp *ShutdownResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/shutdown", "POST", &resp, req)
-	return resp, err
-}
-
 type SuspendDiskRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
-}
-
-type SuspendDiskResponse map[string]interface{}
-
-// SuspendDisk Execute suspend-disk.
-func (c *Client) SuspendDisk(ctx context.Context, req *SuspendDiskRequest) (*SuspendDiskResponse, error) {
-	var resp *SuspendDiskResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/suspend-disk", "POST", &resp, req)
-	return resp, err
 }
 
 type SuspendHybridRequest struct {
@@ -348,30 +148,10 @@ type SuspendHybridRequest struct {
 
 }
 
-type SuspendHybridResponse map[string]interface{}
-
-// SuspendHybrid Execute suspend-hybrid.
-func (c *Client) SuspendHybrid(ctx context.Context, req *SuspendHybridRequest) (*SuspendHybridResponse, error) {
-	var resp *SuspendHybridResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/suspend-hybrid", "POST", &resp, req)
-	return resp, err
-}
-
 type SuspendRamRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
-}
-
-type SuspendRamResponse map[string]interface{}
-
-// SuspendRam Execute suspend-ram.
-func (c *Client) SuspendRam(ctx context.Context, req *SuspendRamRequest) (*SuspendRamResponse, error) {
-	var resp *SuspendRamResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/suspend-ram", "POST", &resp, req)
-	return resp, err
 }
 
 type SetUserPasswordRequest struct {
@@ -382,16 +162,6 @@ type SetUserPasswordRequest struct {
 
 	// The following parameters are optional
 	Crypted *util.SpecialBool `url:"crypted,omitempty" json:"crypted,omitempty"` // set to 1 if the password has already been passed through crypt()
-}
-
-type SetUserPasswordResponse map[string]interface{}
-
-// SetUserPassword Sets the password for the given user to the given password
-func (c *Client) SetUserPassword(ctx context.Context, req *SetUserPasswordRequest) (*SetUserPasswordResponse, error) {
-	var resp *SetUserPasswordResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/set-user-password", "POST", &resp, req)
-	return resp, err
 }
 
 type ExecRequest struct {
@@ -406,14 +176,6 @@ type ExecRequest struct {
 type ExecResponse struct {
 	Pid int `url:"pid" json:"pid"` // The PID of the process started by the guest-agent.
 
-}
-
-// Exec Executes the given command in the vm via the guest-agent and returns an object with the pid.
-func (c *Client) Exec(ctx context.Context, req *ExecRequest) (*ExecResponse, error) {
-	var resp *ExecResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/exec", "POST", &resp, req)
-	return resp, err
 }
 
 type ExecStatusRequest struct {
@@ -435,14 +197,6 @@ type ExecStatusResponse struct {
 	Signal       *int              `url:"signal,omitempty" json:"signal,omitempty"`               // signal number or exception code if the process was abnormally terminated.
 }
 
-// ExecStatus Gets the status of the given pid started by the guest-agent
-func (c *Client) ExecStatus(ctx context.Context, req *ExecStatusRequest) (*ExecStatusResponse, error) {
-	var resp *ExecStatusResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/exec-status", "GET", &resp, req)
-	return resp, err
-}
-
 type FileReadRequest struct {
 	File string `url:"file" json:"file"` // The path to the file
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -450,19 +204,12 @@ type FileReadRequest struct {
 
 }
 
+// Returns an object with a `content` property.
 type FileReadResponse struct {
 	Content string `url:"content" json:"content"` // The content of the file, maximum 16777216
 
 	// The following parameters are optional
 	Truncated *util.SpecialBool `url:"truncated,omitempty" json:"truncated,omitempty"` // If set to 1, the output is truncated and not complete
-}
-
-// FileRead Reads the given file via guest agent. Is limited to 16777216 bytes.
-func (c *Client) FileRead(ctx context.Context, req *FileReadRequest) (*FileReadResponse, error) {
-	var resp *FileReadResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/file-read", "GET", &resp, req)
-	return resp, err
 }
 
 type FileWriteRequest struct {
@@ -475,12 +222,217 @@ type FileWriteRequest struct {
 	Encode *util.SpecialBool `url:"encode,omitempty" json:"encode,omitempty"` // If set, the content will be encoded as base64 (required by QEMU).Otherwise the content needs to be encoded beforehand - defaults to true.
 }
 
-type FileWriteResponse map[string]interface{}
+// Index Qemu Agent command index.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent", "GET", &resp, req)
+	return resp, err
+}
+
+// Create Execute Qemu Guest Agent commands.
+func (c *Client) Create(ctx context.Context, req CreateRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent", "POST", &resp, req)
+	return resp, err
+}
+
+// FsfreezeFreeze Execute fsfreeze-freeze.
+func (c *Client) FsfreezeFreeze(ctx context.Context, req FsfreezeFreezeRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/fsfreeze-freeze", "POST", &resp, req)
+	return resp, err
+}
+
+// FsfreezeStatus Execute fsfreeze-status.
+func (c *Client) FsfreezeStatus(ctx context.Context, req FsfreezeStatusRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/fsfreeze-status", "POST", &resp, req)
+	return resp, err
+}
+
+// FsfreezeThaw Execute fsfreeze-thaw.
+func (c *Client) FsfreezeThaw(ctx context.Context, req FsfreezeThawRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/fsfreeze-thaw", "POST", &resp, req)
+	return resp, err
+}
+
+// Fstrim Execute fstrim.
+func (c *Client) Fstrim(ctx context.Context, req FstrimRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/fstrim", "POST", &resp, req)
+	return resp, err
+}
+
+// GetFsinfo Execute get-fsinfo.
+func (c *Client) GetFsinfo(ctx context.Context, req GetFsinfoRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/get-fsinfo", "GET", &resp, req)
+	return resp, err
+}
+
+// GetHostName Execute get-host-name.
+func (c *Client) GetHostName(ctx context.Context, req GetHostNameRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/get-host-name", "GET", &resp, req)
+	return resp, err
+}
+
+// GetMemoryBlockInfo Execute get-memory-block-info.
+func (c *Client) GetMemoryBlockInfo(ctx context.Context, req GetMemoryBlockInfoRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/get-memory-block-info", "GET", &resp, req)
+	return resp, err
+}
+
+// GetMemoryBlocks Execute get-memory-blocks.
+func (c *Client) GetMemoryBlocks(ctx context.Context, req GetMemoryBlocksRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/get-memory-blocks", "GET", &resp, req)
+	return resp, err
+}
+
+// GetOsinfo Execute get-osinfo.
+func (c *Client) GetOsinfo(ctx context.Context, req GetOsinfoRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/get-osinfo", "GET", &resp, req)
+	return resp, err
+}
+
+// GetTime Execute get-time.
+func (c *Client) GetTime(ctx context.Context, req GetTimeRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/get-time", "GET", &resp, req)
+	return resp, err
+}
+
+// GetTimezone Execute get-timezone.
+func (c *Client) GetTimezone(ctx context.Context, req GetTimezoneRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/get-timezone", "GET", &resp, req)
+	return resp, err
+}
+
+// GetUsers Execute get-users.
+func (c *Client) GetUsers(ctx context.Context, req GetUsersRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/get-users", "GET", &resp, req)
+	return resp, err
+}
+
+// GetVcpus Execute get-vcpus.
+func (c *Client) GetVcpus(ctx context.Context, req GetVcpusRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/get-vcpus", "GET", &resp, req)
+	return resp, err
+}
+
+// Info Execute info.
+func (c *Client) Info(ctx context.Context, req InfoRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/info", "GET", &resp, req)
+	return resp, err
+}
+
+// NetworkGetInterfaces Execute network-get-interfaces.
+func (c *Client) NetworkGetInterfaces(ctx context.Context, req NetworkGetInterfacesRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/network-get-interfaces", "GET", &resp, req)
+	return resp, err
+}
+
+// Ping Execute ping.
+func (c *Client) Ping(ctx context.Context, req PingRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/ping", "POST", &resp, req)
+	return resp, err
+}
+
+// Shutdown Execute shutdown.
+func (c *Client) Shutdown(ctx context.Context, req ShutdownRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/shutdown", "POST", &resp, req)
+	return resp, err
+}
+
+// SuspendDisk Execute suspend-disk.
+func (c *Client) SuspendDisk(ctx context.Context, req SuspendDiskRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/suspend-disk", "POST", &resp, req)
+	return resp, err
+}
+
+// SuspendHybrid Execute suspend-hybrid.
+func (c *Client) SuspendHybrid(ctx context.Context, req SuspendHybridRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/suspend-hybrid", "POST", &resp, req)
+	return resp, err
+}
+
+// SuspendRam Execute suspend-ram.
+func (c *Client) SuspendRam(ctx context.Context, req SuspendRamRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/suspend-ram", "POST", &resp, req)
+	return resp, err
+}
+
+// SetUserPassword Sets the password for the given user to the given password
+func (c *Client) SetUserPassword(ctx context.Context, req SetUserPasswordRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/set-user-password", "POST", &resp, req)
+	return resp, err
+}
+
+// Exec Executes the given command in the vm via the guest-agent and returns an object with the pid.
+func (c *Client) Exec(ctx context.Context, req ExecRequest) (ExecResponse, error) {
+	var resp ExecResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/exec", "POST", &resp, req)
+	return resp, err
+}
+
+// ExecStatus Gets the status of the given pid started by the guest-agent
+func (c *Client) ExecStatus(ctx context.Context, req ExecStatusRequest) (ExecStatusResponse, error) {
+	var resp ExecStatusResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/exec-status", "GET", &resp, req)
+	return resp, err
+}
+
+// FileRead Reads the given file via guest agent. Is limited to 16777216 bytes.
+func (c *Client) FileRead(ctx context.Context, req FileReadRequest) (FileReadResponse, error) {
+	var resp FileReadResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/file-read", "GET", &resp, req)
+	return resp, err
+}
 
 // FileWrite Writes the given file via guest agent.
-func (c *Client) FileWrite(ctx context.Context, req *FileWriteRequest) (*FileWriteResponse, error) {
-	var resp *FileWriteResponse
+func (c *Client) FileWrite(ctx context.Context, req FileWriteRequest) error {
 
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/file-write", "POST", &resp, req)
-	return resp, err
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/agent/file-write", "POST", nil, req)
+	return err
 }

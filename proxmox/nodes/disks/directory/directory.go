@@ -26,21 +26,13 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Device   string `url:"device" json:"device"`     // The mounted device.
 	Options  string `url:"options" json:"options"`   // The mount options.
 	Path     string `url:"path" json:"path"`         // The mount path.
 	Type     string `url:"type" json:"type"`         // The filesystem type.
 	Unitfile string `url:"unitfile" json:"unitfile"` // The path of the mount unit.
 
-}
-
-// Index PVE Managed Directory storages.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/directory", "GET", &resp, req)
-	return resp, err
 }
 
 type CreateRequest struct {
@@ -53,16 +45,6 @@ type CreateRequest struct {
 	Filesystem *string           `url:"filesystem,omitempty" json:"filesystem,omitempty"`   // The desired filesystem.
 }
 
-type CreateResponse string
-
-// Create Create a Filesystem on an unused disk. Will be mounted under '/mnt/pve/NAME'.
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/directory", "POST", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Name string `url:"name" json:"name"` // The storage identifier.
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -72,11 +54,25 @@ type DeleteRequest struct {
 	CleanupDisks  *util.SpecialBool `url:"cleanup-disks,omitempty" json:"cleanup-disks,omitempty"`   // Also wipe disk so it can be repurposed afterwards.
 }
 
-type DeleteResponse string
+// Index PVE Managed Directory storages.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/directory", "GET", &resp, req)
+	return resp, err
+}
+
+// Create Create a Filesystem on an unused disk. Will be mounted under '/mnt/pve/NAME'.
+func (c *Client) Create(ctx context.Context, req CreateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/directory", "POST", &resp, req)
+	return resp, err
+}
 
 // Delete Unmounts the storage and removes the mount unit.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) (string, error) {
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/directory/{name}", "DELETE", &resp, req)
 	return resp, err

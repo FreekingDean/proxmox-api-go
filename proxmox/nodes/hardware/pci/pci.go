@@ -29,7 +29,7 @@ type IndexRequest struct {
 	Verbose           *util.SpecialBool `url:"verbose,omitempty" json:"verbose,omitempty"`                         // If disabled, does only print the PCI IDs. Otherwise, additional information like vendor and device will be returned.
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Class      string `url:"class" json:"class"`           // The PCI Class of the device.
 	Device     string `url:"device" json:"device"`         // The Device ID.
 	Id         string `url:"id" json:"id"`                 // The PCI ID.
@@ -46,29 +46,13 @@ type IndexResponse []*struct {
 	VendorName          *string           `url:"vendor_name,omitempty" json:"vendor_name,omitempty"`
 }
 
-// Index List local PCI devices.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/hardware/pci", "GET", &resp, req)
-	return resp, err
-}
-
 type FindRequest struct {
 	Node  string `url:"node" json:"node"` // The cluster node name.
 	Pciid string `url:"pciid" json:"pciid"`
 }
 
-type FindResponse []*struct {
+type FindResponse struct {
 	Method string `url:"method" json:"method"`
-}
-
-// Find Index of available pci methods
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/hardware/pci/{pciid}", "GET", &resp, req)
-	return resp, err
 }
 
 type MdevscanMdevRequest struct {
@@ -77,16 +61,32 @@ type MdevscanMdevRequest struct {
 
 }
 
-type MdevscanMdevResponse []*struct {
+type MdevscanMdevResponse struct {
 	Available   int    `url:"available" json:"available"` // The number of still available instances of this type.
 	Description string `url:"description" json:"description"`
 	Type        string `url:"type" json:"type"` // The name of the mdev type.
 
 }
 
+// Index List local PCI devices.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/hardware/pci", "GET", &resp, req)
+	return resp, err
+}
+
+// Find Index of available pci methods
+func (c *Client) Find(ctx context.Context, req FindRequest) ([]FindResponse, error) {
+	var resp []FindResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/hardware/pci/{pciid}", "GET", &resp, req)
+	return resp, err
+}
+
 // MdevscanMdev List mediated device types for given PCI device.
-func (c *Client) MdevscanMdev(ctx context.Context, req *MdevscanMdevRequest) (*MdevscanMdevResponse, error) {
-	var resp *MdevscanMdevResponse
+func (c *Client) MdevscanMdev(ctx context.Context, req MdevscanMdevRequest) ([]MdevscanMdevResponse, error) {
+	var resp []MdevscanMdevResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/hardware/pci/{pciid}/mdev", "GET", &resp, req)
 	return resp, err

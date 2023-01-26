@@ -20,7 +20,7 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Groupid string `url:"groupid" json:"groupid"`
 
 	// The following parameters are optional
@@ -28,29 +28,11 @@ type IndexResponse []*struct {
 	Users   *string `url:"users,omitempty" json:"users,omitempty"` // list of users which form this group
 }
 
-// Index Group index.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/access/groups", "GET", &resp, nil)
-	return resp, err
-}
-
 type CreateRequest struct {
 	Groupid string `url:"groupid" json:"groupid"`
 
 	// The following parameters are optional
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
-}
-
-type CreateResponse map[string]interface{}
-
-// Create Create new group.
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/access/groups", "POST", &resp, req)
-	return resp, err
 }
 
 type FindRequest struct {
@@ -64,14 +46,6 @@ type FindResponse struct {
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
 }
 
-// Find Get group configuration.
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/access/groups/{groupid}", "GET", &resp, req)
-	return resp, err
-}
-
 type UpdateRequest struct {
 	Groupid string `url:"groupid" json:"groupid"`
 
@@ -79,26 +53,43 @@ type UpdateRequest struct {
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
 }
 
-type UpdateResponse map[string]interface{}
-
-// Update Update group data.
-func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateResponse, error) {
-	var resp *UpdateResponse
-
-	err := c.httpClient.Do(ctx, "/access/groups/{groupid}", "PUT", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Groupid string `url:"groupid" json:"groupid"`
 }
 
-type DeleteResponse map[string]interface{}
+// Index Group index.
+func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/access/groups", "GET", &resp, nil)
+	return resp, err
+}
+
+// Create Create new group.
+func (c *Client) Create(ctx context.Context, req CreateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/access/groups", "POST", nil, req)
+	return err
+}
+
+// Find Get group configuration.
+func (c *Client) Find(ctx context.Context, req FindRequest) (FindResponse, error) {
+	var resp FindResponse
+
+	err := c.httpClient.Do(ctx, "/access/groups/{groupid}", "GET", &resp, req)
+	return resp, err
+}
+
+// Update Update group data.
+func (c *Client) Update(ctx context.Context, req UpdateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/access/groups/{groupid}", "PUT", nil, req)
+	return err
+}
 
 // Delete Delete group.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) error {
 
-	err := c.httpClient.Do(ctx, "/access/groups/{groupid}", "DELETE", &resp, req)
-	return resp, err
+	err := c.httpClient.Do(ctx, "/access/groups/{groupid}", "DELETE", nil, req)
+	return err
 }

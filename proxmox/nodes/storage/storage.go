@@ -28,11 +28,11 @@ type IndexRequest struct {
 	Content *string           `url:"content,omitempty" json:"content,omitempty"` // Only list stores which support this content type.
 	Enabled *util.SpecialBool `url:"enabled,omitempty" json:"enabled,omitempty"` // Only list stores which are enabled (not disabled in config).
 	Format  *util.SpecialBool `url:"format,omitempty" json:"format,omitempty"`   // Include information about formats
-	Storage *string           `url:"storage,omitempty" json:"storage,omitempty"` // Only list status for  specified storage
+	Storage *string           `url:"storage,omitempty" json:"storage,omitempty"` // Only list status for specified storage
 	Target  *string           `url:"target,omitempty" json:"target,omitempty"`   // If target is different to 'node', we only lists shared storages which content is accessible on this 'node' and the specified 'target' node.
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Content string `url:"content" json:"content"` // Allowed storage content types.
 	Storage string `url:"storage" json:"storage"` // The storage identifier.
 	Type    string `url:"type" json:"type"`       // Storage type.
@@ -47,30 +47,14 @@ type IndexResponse []*struct {
 	UsedFraction *float64          `url:"used_fraction,omitempty" json:"used_fraction,omitempty"` // Used fraction (used/total).
 }
 
-// Index Get status for all datastores.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/storage", "GET", &resp, req)
-	return resp, err
-}
-
 type FindRequest struct {
 	Node    string `url:"node" json:"node"`       // The cluster node name.
 	Storage string `url:"storage" json:"storage"` // The storage identifier.
 
 }
 
-type FindResponse []*struct {
+type FindResponse struct {
 	Subdir string `url:"subdir" json:"subdir"`
-}
-
-// Find
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}", "GET", &resp, req)
-	return resp, err
 }
 
 type DryrunPrunebackupsRequest struct {
@@ -83,7 +67,7 @@ type DryrunPrunebackupsRequest struct {
 	Vmid         *int    `url:"vmid,omitempty" json:"vmid,omitempty"`                   // Only consider backups for this guest.
 }
 
-type DryrunPrunebackupsResponse []*struct {
+type DryrunPrunebackupsResponse struct {
 	Ctime int    `url:"ctime" json:"ctime"` // Creation time of the backup (seconds since the UNIX epoch).
 	Mark  string `url:"mark" json:"mark"`   // Whether the backup would be kept or removed. Backups that are protected or don't use the standard naming scheme are not removed.
 	Type  string `url:"type" json:"type"`   // One of 'qemu', 'lxc', 'openvz' or 'unknown'.
@@ -91,14 +75,6 @@ type DryrunPrunebackupsResponse []*struct {
 
 	// The following parameters are optional
 	Vmid *int `url:"vmid,omitempty" json:"vmid,omitempty"` // The VM the backup belongs to.
-}
-
-// DryrunPrunebackups Get prune information for backups. NOTE: this is only a preview and might not be what a subsequent prune call does if backups are removed/added in the meantime.
-func (c *Client) DryrunPrunebackups(ctx context.Context, req *DryrunPrunebackupsRequest) (*DryrunPrunebackupsResponse, error) {
-	var resp *DryrunPrunebackupsResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/prunebackups", "GET", &resp, req)
-	return resp, err
 }
 
 type DeletePrunebackupsRequest struct {
@@ -111,30 +87,10 @@ type DeletePrunebackupsRequest struct {
 	Vmid         *int    `url:"vmid,omitempty" json:"vmid,omitempty"`                   // Only prune backups for this VM.
 }
 
-type DeletePrunebackupsResponse string
-
-// DeletePrunebackups Prune backups. Only those using the standard naming scheme are considered.
-func (c *Client) DeletePrunebackups(ctx context.Context, req *DeletePrunebackupsRequest) (*DeletePrunebackupsResponse, error) {
-	var resp *DeletePrunebackupsResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/prunebackups", "DELETE", &resp, req)
-	return resp, err
-}
-
 type ReadStatusRequest struct {
 	Node    string `url:"node" json:"node"`       // The cluster node name.
 	Storage string `url:"storage" json:"storage"` // The storage identifier.
 
-}
-
-type ReadStatusResponse map[string]interface{}
-
-// ReadStatus Read storage status.
-func (c *Client) ReadStatus(ctx context.Context, req *ReadStatusRequest) (*ReadStatusResponse, error) {
-	var resp *ReadStatusResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/status", "GET", &resp, req)
-	return resp, err
 }
 
 type RrdRequest struct {
@@ -151,14 +107,6 @@ type RrdResponse struct {
 	Filename string `url:"filename" json:"filename"`
 }
 
-// Rrd Read storage RRD statistics (returns PNG).
-func (c *Client) Rrd(ctx context.Context, req *RrdRequest) (*RrdResponse, error) {
-	var resp *RrdResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/rrd", "GET", &resp, req)
-	return resp, err
-}
-
 type RrddataRequest struct {
 	Node      string `url:"node" json:"node"`           // The cluster node name.
 	Storage   string `url:"storage" json:"storage"`     // The storage identifier.
@@ -166,16 +114,6 @@ type RrddataRequest struct {
 
 	// The following parameters are optional
 	Cf *string `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
-}
-
-type RrddataResponse []*map[string]interface{}
-
-// Rrddata Read storage RRD statistics.
-func (c *Client) Rrddata(ctx context.Context, req *RrddataRequest) (*RrddataResponse, error) {
-	var resp *RrddataResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/rrddata", "GET", &resp, req)
-	return resp, err
 }
 
 type UploadRequest struct {
@@ -188,16 +126,6 @@ type UploadRequest struct {
 	Checksum          *string `url:"checksum,omitempty" json:"checksum,omitempty"`                     // The expected checksum of the file.
 	ChecksumAlgorithm *string `url:"checksum-algorithm,omitempty" json:"checksum-algorithm,omitempty"` // The algorithm to calculate the checksum of the file.
 	Tmpfilename       *string `url:"tmpfilename,omitempty" json:"tmpfilename,omitempty"`               // The source file name. This parameter is usually set by the REST handler. You can only overwrite it when connecting to the trusted port on localhost.
-}
-
-type UploadResponse string
-
-// Upload Upload templates and ISO images.
-func (c *Client) Upload(ctx context.Context, req *UploadRequest) (*UploadResponse, error) {
-	var resp *UploadResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/upload", "POST", &resp, req)
-	return resp, err
 }
 
 type DownloadUrlRequest struct {
@@ -213,11 +141,73 @@ type DownloadUrlRequest struct {
 	VerifyCertificates *util.SpecialBool `url:"verify-certificates,omitempty" json:"verify-certificates,omitempty"` // If false, no SSL/TLS certificates will be verified.
 }
 
-type DownloadUrlResponse string
+// Index Get status for all datastores.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/storage", "GET", &resp, req)
+	return resp, err
+}
+
+// Find
+func (c *Client) Find(ctx context.Context, req FindRequest) ([]FindResponse, error) {
+	var resp []FindResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}", "GET", &resp, req)
+	return resp, err
+}
+
+// DryrunPrunebackups Get prune information for backups. NOTE: this is only a preview and might not be what a subsequent prune call does if backups are removed/added in the meantime.
+func (c *Client) DryrunPrunebackups(ctx context.Context, req DryrunPrunebackupsRequest) ([]DryrunPrunebackupsResponse, error) {
+	var resp []DryrunPrunebackupsResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/prunebackups", "GET", &resp, req)
+	return resp, err
+}
+
+// DeletePrunebackups Prune backups. Only those using the standard naming scheme are considered.
+func (c *Client) DeletePrunebackups(ctx context.Context, req DeletePrunebackupsRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/prunebackups", "DELETE", &resp, req)
+	return resp, err
+}
+
+// ReadStatus Read storage status.
+func (c *Client) ReadStatus(ctx context.Context, req ReadStatusRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/status", "GET", &resp, req)
+	return resp, err
+}
+
+// Rrd Read storage RRD statistics (returns PNG).
+func (c *Client) Rrd(ctx context.Context, req RrdRequest) (RrdResponse, error) {
+	var resp RrdResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/rrd", "GET", &resp, req)
+	return resp, err
+}
+
+// Rrddata Read storage RRD statistics.
+func (c *Client) Rrddata(ctx context.Context, req RrddataRequest) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/rrddata", "GET", &resp, req)
+	return resp, err
+}
+
+// Upload Upload templates and ISO images.
+func (c *Client) Upload(ctx context.Context, req UploadRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/upload", "POST", &resp, req)
+	return resp, err
+}
 
 // DownloadUrl Download templates and ISO images by using an URL.
-func (c *Client) DownloadUrl(ctx context.Context, req *DownloadUrlRequest) (*DownloadUrlResponse, error) {
-	var resp *DownloadUrlResponse
+func (c *Client) DownloadUrl(ctx context.Context, req DownloadUrlRequest) (string, error) {
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/download-url", "POST", &resp, req)
 	return resp, err

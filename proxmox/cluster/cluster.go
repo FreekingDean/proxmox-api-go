@@ -4,7 +4,12 @@ package cluster
 
 import (
 	"context"
+	"fmt"
+	"net/url"
+	"strings"
+
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
+	"github.com/google/go-querystring/query"
 )
 
 type HTTPClient interface {
@@ -21,30 +26,10 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*map[string]interface{}
-
-// Index Cluster index.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/cluster", "GET", &resp, nil)
-	return resp, err
-}
-
 type LogRequest struct {
 
 	// The following parameters are optional
 	Max *int `url:"max,omitempty" json:"max,omitempty"` // Maximum number of entries.
-}
-
-type LogResponse []*map[string]interface{}
-
-// Log Read cluster log
-func (c *Client) Log(ctx context.Context, req *LogRequest) (*LogResponse, error) {
-	var resp *LogResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/log", "GET", &resp, req)
-	return resp, err
 }
 
 type ResourcesRequest struct {
@@ -53,7 +38,7 @@ type ResourcesRequest struct {
 	Type *string `url:"type,omitempty" json:"type,omitempty"`
 }
 
-type ResourcesResponse []*struct {
+type ResourcesResponse struct {
 	Id   string `url:"id" json:"id"`
 	Type string `url:"type" json:"type"` // Resource type.
 
@@ -78,73 +63,492 @@ type ResourcesResponse []*struct {
 	Vmid       *int     `url:"vmid,omitempty" json:"vmid,omitempty"`               // The numerical vmid (when type in qemu,lxc).
 }
 
-// Resources Resources index (cluster wide).
-func (c *Client) Resources(ctx context.Context, req *ResourcesRequest) (*ResourcesResponse, error) {
-	var resp *ResourcesResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/resources", "GET", &resp, req)
-	return resp, err
-}
-
-type TasksResponse []*struct {
+type TasksResponse struct {
 	Upid string `url:"upid" json:"upid"`
 }
 
-// Tasks List recent tasks (cluster wide).
-func (c *Client) Tasks(ctx context.Context) (*TasksResponse, error) {
-	var resp *TasksResponse
+// Array of Bwlimit
+type BwlimitArr []Bwlimit
 
-	err := c.httpClient.Do(ctx, "/cluster/tasks", "GET", &resp, nil)
-	return resp, err
+func (t *BwlimitArr) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct {
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
 }
 
-type GetOptionsResponse map[string]interface{}
+// Set bandwidth/io limits various operations.
+type Bwlimit struct {
 
-// GetOptions Get datacenter options. Without 'Sys.Audit' on '/' not all options are returned.
-func (c *Client) GetOptions(ctx context.Context) (*GetOptionsResponse, error) {
-	var resp *GetOptionsResponse
+	// The following parameters are optional
+	Clone     *float64 `url:"clone,omitempty" json:"clone,omitempty"`         // bandwidth limit in KiB/s for cloning disks
+	Default   *float64 `url:"default,omitempty" json:"default,omitempty"`     // default bandwidth limit in KiB/s
+	Migration *float64 `url:"migration,omitempty" json:"migration,omitempty"` // bandwidth limit in KiB/s for migrating guests (including moving local disks)
+	Move      *float64 `url:"move,omitempty" json:"move,omitempty"`           // bandwidth limit in KiB/s for moving disks
+	Restore   *float64 `url:"restore,omitempty" json:"restore,omitempty"`     // bandwidth limit in KiB/s for restoring guests from backups
+}
 
-	err := c.httpClient.Do(ctx, "/cluster/options", "GET", &resp, nil)
-	return resp, err
+func (t *Bwlimit) EncodeValues(key string, v *url.Values) error {
+	valueStrParts := []string{}
+	if t.Clone != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "clone", *t.Clone),
+		)
+	}
+
+	if t.Default != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "default", *t.Default),
+		)
+	}
+
+	if t.Migration != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "migration", *t.Migration),
+		)
+	}
+
+	if t.Move != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "move", *t.Move),
+		)
+	}
+
+	if t.Restore != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "restore", *t.Restore),
+		)
+	}
+
+	v.Set(key, strings.Join(valueStrParts, ", "))
+	return nil
+}
+
+// Array of Ha
+type HaArr []Ha
+
+func (t *HaArr) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct {
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
+}
+
+// Cluster wide HA settings.
+type Ha struct {
+	ShutdownPolicy string `url:"shutdown_policy" json:"shutdown_policy"` // The policy for HA services on node shutdown. 'freeze' disables auto-recovery, 'failover' ensures recovery, 'conditional' recovers on poweroff and freezes on reboot. 'migrate' will migrate running services to other nodes, if possible. With 'freeze' or 'failover', HA Services will always get stopped first on shutdown.
+
+}
+
+func (t *Ha) EncodeValues(key string, v *url.Values) error {
+	valueStrParts := []string{
+		fmt.Sprintf("%s=%v", "shutdown_policy", t.ShutdownPolicy),
+	}
+	v.Set(key, strings.Join(valueStrParts, ", "))
+	return nil
+}
+
+// Array of U2f
+type U2fArr []U2f
+
+func (t *U2fArr) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct {
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
+}
+
+// u2f
+type U2f struct {
+
+	// The following parameters are optional
+	Appid  *string `url:"appid,omitempty" json:"appid,omitempty"`   // U2F AppId URL override. Defaults to the origin.
+	Origin *string `url:"origin,omitempty" json:"origin,omitempty"` // U2F Origin override. Mostly useful for single nodes with a single URL.
+}
+
+func (t *U2f) EncodeValues(key string, v *url.Values) error {
+	valueStrParts := []string{}
+	if t.Appid != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "appid", *t.Appid),
+		)
+	}
+
+	if t.Origin != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "origin", *t.Origin),
+		)
+	}
+
+	v.Set(key, strings.Join(valueStrParts, ", "))
+	return nil
+}
+
+// Array of UserTagAccess
+type UserTagAccessArr []UserTagAccess
+
+func (t *UserTagAccessArr) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct {
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
+}
+
+// Privilege options for user-settable tags
+type UserTagAccess struct {
+
+	// The following parameters are optional
+	UserAllow     *string `url:"user-allow,omitempty" json:"user-allow,omitempty"`           // Controls tag usage for users without `Sys.Modify` on `/` by either allowing `none`, a `list`, already `existing` or anything (`free`).
+	UserAllowList *string `url:"user-allow-list,omitempty" json:"user-allow-list,omitempty"` // List of tags users are allowed to set and delete (semicolon separated) for 'user-allow' values 'list' and 'existing'.
+}
+
+func (t *UserTagAccess) EncodeValues(key string, v *url.Values) error {
+	valueStrParts := []string{}
+	if t.UserAllow != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "user-allow", *t.UserAllow),
+		)
+	}
+
+	if t.UserAllowList != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "user-allow-list", *t.UserAllowList),
+		)
+	}
+
+	v.Set(key, strings.Join(valueStrParts, ", "))
+	return nil
+}
+
+// Array of Webauthn
+type WebauthnArr []Webauthn
+
+func (t *WebauthnArr) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct {
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
+}
+
+// webauthn configuration
+type Webauthn struct {
+
+	// The following parameters are optional
+	AllowSubdomains *util.SpecialBool `url:"allow-subdomains,omitempty" json:"allow-subdomains,omitempty"` // Whether to allow the origin to be a subdomain, rather than the exact URL.
+	Id              *string           `url:"id,omitempty" json:"id,omitempty"`                             // Relying party ID. Must be the domain name without protocol, port or location. Changing this *will* break existing credentials.
+	Origin          *string           `url:"origin,omitempty" json:"origin,omitempty"`                     // Site origin. Must be a `https://` URL (or `http://localhost`). Should contain the address users type in their browsers to access the web interface. Changing this *may* break existing credentials.
+	Rp              *string           `url:"rp,omitempty" json:"rp,omitempty"`                             // Relying party name. Any text identifier. Changing this *may* break existing credentials.
+}
+
+func (t *Webauthn) EncodeValues(key string, v *url.Values) error {
+	valueStrParts := []string{}
+	if t.AllowSubdomains != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "allow-subdomains", *t.AllowSubdomains),
+		)
+	}
+
+	if t.Id != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "id", *t.Id),
+		)
+	}
+
+	if t.Origin != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "origin", *t.Origin),
+		)
+	}
+
+	if t.Rp != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "rp", *t.Rp),
+		)
+	}
+
+	v.Set(key, strings.Join(valueStrParts, ", "))
+	return nil
+}
+
+// Array of Crs
+type CrsArr []Crs
+
+func (t *CrsArr) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct {
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
+}
+
+// Cluster resource scheduling settings.
+type Crs struct {
+	Ha string `url:"ha" json:"ha"` // Use this resource scheduler mode for HA.
+
+}
+
+func (t *Crs) EncodeValues(key string, v *url.Values) error {
+	valueStrParts := []string{
+		fmt.Sprintf("%s=%v", "ha", t.Ha),
+	}
+	v.Set(key, strings.Join(valueStrParts, ", "))
+	return nil
+}
+
+// Array of Migration
+type MigrationArr []Migration
+
+func (t *MigrationArr) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct {
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
+}
+
+// For cluster wide migration settings.
+type Migration struct {
+	Type string `url:"type" json:"type"` // Migration traffic is encrypted using an SSH tunnel by default. On secure, completely private networks this can be disabled to increase performance.
+
+	// The following parameters are optional
+	Network *string `url:"network,omitempty" json:"network,omitempty"` // CIDR of the (sub) network that is used for migration.
+}
+
+func (t *Migration) EncodeValues(key string, v *url.Values) error {
+	valueStrParts := []string{
+		fmt.Sprintf("%s=%v", "type", t.Type),
+	}
+	if t.Network != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "network", *t.Network),
+		)
+	}
+
+	v.Set(key, strings.Join(valueStrParts, ", "))
+	return nil
+}
+
+// Array of NextId
+type NextIdArr []NextId
+
+func (t *NextIdArr) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct {
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
+}
+
+// Control the range for the free VMID auto-selection pool.
+type NextId struct {
+
+	// The following parameters are optional
+	Lower *int `url:"lower,omitempty" json:"lower,omitempty"` // Lower, inclusive boundary for free next-id API range.
+	Upper *int `url:"upper,omitempty" json:"upper,omitempty"` // Upper, exclusive boundary for free next-id API range.
+}
+
+func (t *NextId) EncodeValues(key string, v *url.Values) error {
+	valueStrParts := []string{}
+	if t.Lower != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "lower", *t.Lower),
+		)
+	}
+
+	if t.Upper != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "upper", *t.Upper),
+		)
+	}
+
+	v.Set(key, strings.Join(valueStrParts, ", "))
+	return nil
+}
+
+// Array of TagStyle
+type TagStyleArr []TagStyle
+
+func (t *TagStyleArr) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct {
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
+}
+
+// Tag style options.
+type TagStyle struct {
+
+	// The following parameters are optional
+	CaseSensitive *util.SpecialBool `url:"case-sensitive,omitempty" json:"case-sensitive,omitempty"` // Controls if filtering for unique tags on update should check case-sensitive.
+	ColorMap      *string           `url:"color-map,omitempty" json:"color-map,omitempty"`           // Manual color mapping for tags (semicolon separated).
+	Ordering      *string           `url:"ordering,omitempty" json:"ordering,omitempty"`             // Controls the sorting of the tags in the web-interface and the API update.
+	Shape         *string           `url:"shape,omitempty" json:"shape,omitempty"`                   // Tag shape for the web ui tree. 'full' draws the full tag. 'circle' draws only a circle with the background color. 'dense' only draws a small rectancle (useful when many tags are assigned to each guest).'none' disables showing the tags.
+}
+
+func (t *TagStyle) EncodeValues(key string, v *url.Values) error {
+	valueStrParts := []string{}
+	if t.CaseSensitive != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "case-sensitive", *t.CaseSensitive),
+		)
+	}
+
+	if t.ColorMap != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "color-map", *t.ColorMap),
+		)
+	}
+
+	if t.Ordering != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "ordering", *t.Ordering),
+		)
+	}
+
+	if t.Shape != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "shape", *t.Shape),
+		)
+	}
+
+	v.Set(key, strings.Join(valueStrParts, ", "))
+	return nil
 }
 
 type SetOptionsRequest struct {
 
 	// The following parameters are optional
-	Bwlimit           *string           `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`                       // Set bandwidth/io limits various operations.
+	Bwlimit           *Bwlimit          `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`                       // Set bandwidth/io limits various operations.
 	Console           *string           `url:"console,omitempty" json:"console,omitempty"`                       // Select the default Console viewer. You can either use the builtin java applet (VNC; deprecated and maps to html5), an external virt-viewer comtatible application (SPICE), an HTML5 based vnc viewer (noVNC), or an HTML5 based console client (xtermjs). If the selected viewer is not available (e.g. SPICE not activated for the VM), the fallback is noVNC.
-	Crs               *string           `url:"crs,omitempty" json:"crs,omitempty"`                               // Cluster resource scheduling settings.
+	Crs               *Crs              `url:"crs,omitempty" json:"crs,omitempty"`                               // Cluster resource scheduling settings.
 	Delete            *string           `url:"delete,omitempty" json:"delete,omitempty"`                         // A list of settings you want to delete.
 	Description       *string           `url:"description,omitempty" json:"description,omitempty"`               // Datacenter description. Shown in the web-interface datacenter notes panel. This is saved as comment inside the configuration file.
 	EmailFrom         *string           `url:"email_from,omitempty" json:"email_from,omitempty"`                 // Specify email address to send notification from (default is root@$hostname)
-	Fencing           *string           `url:"fencing,omitempty" json:"fencing,omitempty"`                       // Set the fencing mode of the HA cluster. Hardware mode needs a valid configuration of fence devices in /etc/pve/ha/fence.cfg. With both all two modes are used.WARNING: 'hardware' and 'both' are EXPERIMENTAL & WIP
-	Ha                *string           `url:"ha,omitempty" json:"ha,omitempty"`                                 // Cluster wide HA settings.
+	Fencing           *string           `url:"fencing,omitempty" json:"fencing,omitempty"`                       // Set the fencing mode of the HA cluster. Hardware mode needs a valid configuration of fence devices in /etc/pve/ha/fence.cfg. With both all two modes are used. WARNING: 'hardware' and 'both' are EXPERIMENTAL & WIP
+	Ha                *Ha               `url:"ha,omitempty" json:"ha,omitempty"`                                 // Cluster wide HA settings.
 	HttpProxy         *string           `url:"http_proxy,omitempty" json:"http_proxy,omitempty"`                 // Specify external http proxy which is used for downloads (example: 'http://username:password@host:port/')
 	Keyboard          *string           `url:"keyboard,omitempty" json:"keyboard,omitempty"`                     // Default keybord layout for vnc server.
 	Language          *string           `url:"language,omitempty" json:"language,omitempty"`                     // Default GUI language.
 	MacPrefix         *string           `url:"mac_prefix,omitempty" json:"mac_prefix,omitempty"`                 // Prefix for autogenerated MAC addresses.
-	MaxWorkers        *int              `url:"max_workers,omitempty" json:"max_workers,omitempty"`               // Defines how many workers (per node) are maximal started  on actions like 'stopall VMs' or task from the ha-manager.
-	Migration         *string           `url:"migration,omitempty" json:"migration,omitempty"`                   // For cluster wide migration settings.
+	MaxWorkers        *int              `url:"max_workers,omitempty" json:"max_workers,omitempty"`               // Defines how many workers (per node) are maximal started on actions like 'stopall VMs' or task from the ha-manager.
+	Migration         *Migration        `url:"migration,omitempty" json:"migration,omitempty"`                   // For cluster wide migration settings.
 	MigrationUnsecure *util.SpecialBool `url:"migration_unsecure,omitempty" json:"migration_unsecure,omitempty"` // Migration is secure using SSH tunnel by default. For secure private networks you can disable it to speed up migration. Deprecated, use the 'migration' property instead!
-	NextId            *string           `url:"next-id,omitempty" json:"next-id,omitempty"`                       // Control the range for the free VMID auto-selection pool.
+	NextId            *NextId           `url:"next-id,omitempty" json:"next-id,omitempty"`                       // Control the range for the free VMID auto-selection pool.
 	RegisteredTags    *string           `url:"registered-tags,omitempty" json:"registered-tags,omitempty"`       // A list of tags that require a `Sys.Modify` on '/' to set and delete. Tags set here that are also in 'user-tag-access' also require `Sys.Modify`.
-	TagStyle          *string           `url:"tag-style,omitempty" json:"tag-style,omitempty"`                   // Tag style options.
-	U2f               *string           `url:"u2f,omitempty" json:"u2f,omitempty"`                               // u2f
-	UserTagAccess     *string           `url:"user-tag-access,omitempty" json:"user-tag-access,omitempty"`       // Privilege options for user-settable tags
-	Webauthn          *string           `url:"webauthn,omitempty" json:"webauthn,omitempty"`                     // webauthn configuration
+	TagStyle          *TagStyle         `url:"tag-style,omitempty" json:"tag-style,omitempty"`                   // Tag style options.
+	U2f               *U2f              `url:"u2f,omitempty" json:"u2f,omitempty"`                               // u2f
+	UserTagAccess     *UserTagAccess    `url:"user-tag-access,omitempty" json:"user-tag-access,omitempty"`       // Privilege options for user-settable tags
+	Webauthn          *Webauthn         `url:"webauthn,omitempty" json:"webauthn,omitempty"`                     // webauthn configuration
 }
 
-type SetOptionsResponse map[string]interface{}
-
-// SetOptions Set datacenter options.
-func (c *Client) SetOptions(ctx context.Context, req *SetOptionsRequest) (*SetOptionsResponse, error) {
-	var resp *SetOptionsResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/options", "PUT", &resp, req)
-	return resp, err
-}
-
-type GetStatusResponse []*struct {
+type GetStatusResponse struct {
 	Id   string `url:"id" json:"id"`
 	Name string `url:"name" json:"name"`
 	Type string `url:"type" json:"type"` // Indicates the type, either cluster or node. The type defines the object properties e.g. quorate available for type cluster.
@@ -160,25 +564,70 @@ type GetStatusResponse []*struct {
 	Version *int              `url:"version,omitempty" json:"version,omitempty"` // [cluster] Current version of the corosync configuration file.
 }
 
-// GetStatus Get cluster status information.
-func (c *Client) GetStatus(ctx context.Context) (*GetStatusResponse, error) {
-	var resp *GetStatusResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/status", "GET", &resp, nil)
-	return resp, err
-}
-
 type NextidRequest struct {
 
 	// The following parameters are optional
 	Vmid *int `url:"vmid,omitempty" json:"vmid,omitempty"` // The (unique) ID of the VM.
 }
 
-type NextidResponse int
+// Index Cluster index.
+func (c *Client) Index(ctx context.Context) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/cluster", "GET", &resp, nil)
+	return resp, err
+}
+
+// Log Read cluster log
+func (c *Client) Log(ctx context.Context, req LogRequest) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/cluster/log", "GET", &resp, req)
+	return resp, err
+}
+
+// Resources Resources index (cluster wide).
+func (c *Client) Resources(ctx context.Context, req ResourcesRequest) ([]ResourcesResponse, error) {
+	var resp []ResourcesResponse
+
+	err := c.httpClient.Do(ctx, "/cluster/resources", "GET", &resp, req)
+	return resp, err
+}
+
+// Tasks List recent tasks (cluster wide).
+func (c *Client) Tasks(ctx context.Context) ([]TasksResponse, error) {
+	var resp []TasksResponse
+
+	err := c.httpClient.Do(ctx, "/cluster/tasks", "GET", &resp, nil)
+	return resp, err
+}
+
+// GetOptions Get datacenter options. Without 'Sys.Audit' on '/' not all options are returned.
+func (c *Client) GetOptions(ctx context.Context) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/cluster/options", "GET", &resp, nil)
+	return resp, err
+}
+
+// SetOptions Set datacenter options.
+func (c *Client) SetOptions(ctx context.Context, req SetOptionsRequest) error {
+
+	err := c.httpClient.Do(ctx, "/cluster/options", "PUT", nil, req)
+	return err
+}
+
+// GetStatus Get cluster status information.
+func (c *Client) GetStatus(ctx context.Context) ([]GetStatusResponse, error) {
+	var resp []GetStatusResponse
+
+	err := c.httpClient.Do(ctx, "/cluster/status", "GET", &resp, nil)
+	return resp, err
+}
 
 // Nextid Get next free VMID. Pass a VMID to assert that its free (at time of check).
-func (c *Client) Nextid(ctx context.Context, req *NextidRequest) (*NextidResponse, error) {
-	var resp *NextidResponse
+func (c *Client) Nextid(ctx context.Context, req NextidRequest) (int, error) {
+	var resp int
 
 	err := c.httpClient.Do(ctx, "/cluster/nextid", "GET", &resp, req)
 	return resp, err

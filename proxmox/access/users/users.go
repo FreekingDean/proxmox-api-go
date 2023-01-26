@@ -28,7 +28,16 @@ type IndexRequest struct {
 	Full    *util.SpecialBool `url:"full,omitempty" json:"full,omitempty"`       // Include group and token information.
 }
 
-type IndexResponse []*struct {
+type Tokens struct {
+	Tokenid string `url:"tokenid" json:"tokenid"` // User-specific token identifier.
+
+	// The following parameters are optional
+	Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
+	Expire  *int              `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+	Privsep *util.SpecialBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
+}
+
+type IndexResponse struct {
 	Userid string `url:"userid" json:"userid"` // User ID
 
 	// The following parameters are optional
@@ -41,22 +50,7 @@ type IndexResponse []*struct {
 	Keys      *string           `url:"keys,omitempty" json:"keys,omitempty"` // Keys for two factor auth (yubico).
 	Lastname  *string           `url:"lastname,omitempty" json:"lastname,omitempty"`
 	RealmType *string           `url:"realm-type,omitempty" json:"realm-type,omitempty"` // The type of the users realm
-	Tokens    []*struct {
-		Tokenid string `url:"tokenid" json:"tokenid"` // User-specific token identifier.
-
-		// The following parameters are optional
-		Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
-		Expire  *int              `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
-		Privsep *util.SpecialBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
-	} `url:"tokens,omitempty" json:"tokens,omitempty"`
-}
-
-// Index User index.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/access/users", "GET", &resp, req)
-	return resp, err
+	Tokens    []Tokens          `url:"tokens,omitempty" json:"tokens,omitempty"`
 }
 
 type CreateRequest struct {
@@ -72,16 +66,6 @@ type CreateRequest struct {
 	Keys      *string           `url:"keys,omitempty" json:"keys,omitempty"` // Keys for two factor auth (yubico).
 	Lastname  *string           `url:"lastname,omitempty" json:"lastname,omitempty"`
 	Password  *string           `url:"password,omitempty" json:"password,omitempty"` // Initial password.
-}
-
-type CreateResponse map[string]interface{}
-
-// Create Create new user.
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/access/users", "POST", &resp, req)
-	return resp, err
 }
 
 type FindRequest struct {
@@ -103,14 +87,6 @@ type FindResponse struct {
 	Tokens    map[string]interface{} `url:"tokens,omitempty" json:"tokens,omitempty"`
 }
 
-// Find Get user configuration.
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/access/users/{userid}", "GET", &resp, req)
-	return resp, err
-}
-
 type UpdateRequest struct {
 	Userid string `url:"userid" json:"userid"` // User ID
 
@@ -126,29 +102,9 @@ type UpdateRequest struct {
 	Lastname  *string           `url:"lastname,omitempty" json:"lastname,omitempty"`
 }
 
-type UpdateResponse map[string]interface{}
-
-// Update Update user configuration.
-func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateResponse, error) {
-	var resp *UpdateResponse
-
-	err := c.httpClient.Do(ctx, "/access/users/{userid}", "PUT", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Userid string `url:"userid" json:"userid"` // User ID
 
-}
-
-type DeleteResponse map[string]interface{}
-
-// Delete Delete user.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
-
-	err := c.httpClient.Do(ctx, "/access/users/{userid}", "DELETE", &resp, req)
-	return resp, err
 }
 
 type ReadUserTfaTypeTfaRequest struct {
@@ -166,9 +122,46 @@ type ReadUserTfaTypeTfaResponse struct {
 	User  *string  `url:"user,omitempty" json:"user,omitempty"`   // The type of TFA the user has set, if any. Only set if 'multiple' was not passed.
 }
 
+// Index User index.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/access/users", "GET", &resp, req)
+	return resp, err
+}
+
+// Create Create new user.
+func (c *Client) Create(ctx context.Context, req CreateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/access/users", "POST", nil, req)
+	return err
+}
+
+// Find Get user configuration.
+func (c *Client) Find(ctx context.Context, req FindRequest) (FindResponse, error) {
+	var resp FindResponse
+
+	err := c.httpClient.Do(ctx, "/access/users/{userid}", "GET", &resp, req)
+	return resp, err
+}
+
+// Update Update user configuration.
+func (c *Client) Update(ctx context.Context, req UpdateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/access/users/{userid}", "PUT", nil, req)
+	return err
+}
+
+// Delete Delete user.
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) error {
+
+	err := c.httpClient.Do(ctx, "/access/users/{userid}", "DELETE", nil, req)
+	return err
+}
+
 // ReadUserTfaTypeTfa Get user TFA types (Personal and Realm).
-func (c *Client) ReadUserTfaTypeTfa(ctx context.Context, req *ReadUserTfaTypeTfaRequest) (*ReadUserTfaTypeTfaResponse, error) {
-	var resp *ReadUserTfaTypeTfaResponse
+func (c *Client) ReadUserTfaTypeTfa(ctx context.Context, req ReadUserTfaTypeTfaRequest) (ReadUserTfaTypeTfaResponse, error) {
+	var resp ReadUserTfaTypeTfaResponse
 
 	err := c.httpClient.Do(ctx, "/access/users/{userid}/tfa", "GET", &resp, req)
 	return resp, err

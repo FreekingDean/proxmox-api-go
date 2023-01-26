@@ -4,7 +4,12 @@ package firewall
 
 import (
 	"context"
+	"fmt"
+	"net/url"
+	"strings"
+
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
+	"github.com/google/go-querystring/query"
 )
 
 type HTTPClient interface {
@@ -21,14 +26,55 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*map[string]interface{}
+// Array of LogRatelimit
+type LogRatelimitArr []LogRatelimit
 
-// Index Directory index.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
+func (t *LogRatelimitArr) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct {
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
+}
 
-	err := c.httpClient.Do(ctx, "/cluster/firewall", "GET", &resp, nil)
-	return resp, err
+// Log ratelimiting settings
+type LogRatelimit struct {
+	Enable util.SpecialBool `url:"enable" json:"enable"` // Enable or disable log rate limiting
+
+	// The following parameters are optional
+	Burst *int    `url:"burst,omitempty" json:"burst,omitempty"` // Initial burst of packages which will always get logged before the rate is applied
+	Rate  *string `url:"rate,omitempty" json:"rate,omitempty"`   // Frequency with which the burst bucket gets refilled
+}
+
+func (t *LogRatelimit) EncodeValues(key string, v *url.Values) error {
+	valueStrParts := []string{
+		fmt.Sprintf("%s=%v", "enable", t.Enable),
+	}
+	if t.Burst != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "burst", *t.Burst),
+		)
+	}
+
+	if t.Rate != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "rate", *t.Rate),
+		)
+	}
+
+	v.Set(key, strings.Join(valueStrParts, ", "))
+	return nil
 }
 
 type GetOptionsResponse struct {
@@ -36,17 +82,9 @@ type GetOptionsResponse struct {
 	// The following parameters are optional
 	Ebtables     *util.SpecialBool `url:"ebtables,omitempty" json:"ebtables,omitempty"`           // Enable ebtables rules cluster wide.
 	Enable       *int              `url:"enable,omitempty" json:"enable,omitempty"`               // Enable or disable the firewall cluster wide.
-	LogRatelimit *string           `url:"log_ratelimit,omitempty" json:"log_ratelimit,omitempty"` // Log ratelimiting settings
+	LogRatelimit *LogRatelimit     `url:"log_ratelimit,omitempty" json:"log_ratelimit,omitempty"` // Log ratelimiting settings
 	PolicyIn     *string           `url:"policy_in,omitempty" json:"policy_in,omitempty"`         // Input policy.
 	PolicyOut    *string           `url:"policy_out,omitempty" json:"policy_out,omitempty"`       // Output policy.
-}
-
-// GetOptions Get Firewall options.
-func (c *Client) GetOptions(ctx context.Context) (*GetOptionsResponse, error) {
-	var resp *GetOptionsResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/firewall/options", "GET", &resp, nil)
-	return resp, err
 }
 
 type SetOptionsRequest struct {
@@ -56,33 +94,15 @@ type SetOptionsRequest struct {
 	Digest       *string           `url:"digest,omitempty" json:"digest,omitempty"`               // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 	Ebtables     *util.SpecialBool `url:"ebtables,omitempty" json:"ebtables,omitempty"`           // Enable ebtables rules cluster wide.
 	Enable       *int              `url:"enable,omitempty" json:"enable,omitempty"`               // Enable or disable the firewall cluster wide.
-	LogRatelimit *string           `url:"log_ratelimit,omitempty" json:"log_ratelimit,omitempty"` // Log ratelimiting settings
+	LogRatelimit *LogRatelimit     `url:"log_ratelimit,omitempty" json:"log_ratelimit,omitempty"` // Log ratelimiting settings
 	PolicyIn     *string           `url:"policy_in,omitempty" json:"policy_in,omitempty"`         // Input policy.
 	PolicyOut    *string           `url:"policy_out,omitempty" json:"policy_out,omitempty"`       // Output policy.
 }
 
-type SetOptionsResponse map[string]interface{}
-
-// SetOptions Set Firewall options.
-func (c *Client) SetOptions(ctx context.Context, req *SetOptionsRequest) (*SetOptionsResponse, error) {
-	var resp *SetOptionsResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/firewall/options", "PUT", &resp, req)
-	return resp, err
-}
-
-type GetMacrosResponse []*struct {
+type GetMacrosResponse struct {
 	Descr string `url:"descr" json:"descr"` // More verbose description (if available).
 	Macro string `url:"macro" json:"macro"` // Macro name.
 
-}
-
-// GetMacros List available macros
-func (c *Client) GetMacros(ctx context.Context) (*GetMacrosResponse, error) {
-	var resp *GetMacrosResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/firewall/macros", "GET", &resp, nil)
-	return resp, err
 }
 
 type RefsRequest struct {
@@ -91,7 +111,7 @@ type RefsRequest struct {
 	Type *string `url:"type,omitempty" json:"type,omitempty"` // Only list references of specified type.
 }
 
-type RefsResponse []*struct {
+type RefsResponse struct {
 	Name string `url:"name" json:"name"`
 	Ref  string `url:"ref" json:"ref"`
 	Type string `url:"type" json:"type"`
@@ -100,9 +120,40 @@ type RefsResponse []*struct {
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
 }
 
+// Index Directory index.
+func (c *Client) Index(ctx context.Context) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/cluster/firewall", "GET", &resp, nil)
+	return resp, err
+}
+
+// GetOptions Get Firewall options.
+func (c *Client) GetOptions(ctx context.Context) (GetOptionsResponse, error) {
+	var resp GetOptionsResponse
+
+	err := c.httpClient.Do(ctx, "/cluster/firewall/options", "GET", &resp, nil)
+	return resp, err
+}
+
+// SetOptions Set Firewall options.
+func (c *Client) SetOptions(ctx context.Context, req SetOptionsRequest) error {
+
+	err := c.httpClient.Do(ctx, "/cluster/firewall/options", "PUT", nil, req)
+	return err
+}
+
+// GetMacros List available macros
+func (c *Client) GetMacros(ctx context.Context) ([]GetMacrosResponse, error) {
+	var resp []GetMacrosResponse
+
+	err := c.httpClient.Do(ctx, "/cluster/firewall/macros", "GET", &resp, nil)
+	return resp, err
+}
+
 // Refs Lists possible IPSet/Alias reference which are allowed in source/dest properties.
-func (c *Client) Refs(ctx context.Context, req *RefsRequest) (*RefsResponse, error) {
-	var resp *RefsResponse
+func (c *Client) Refs(ctx context.Context, req RefsRequest) ([]RefsResponse, error) {
+	var resp []RefsResponse
 
 	err := c.httpClient.Do(ctx, "/cluster/firewall/refs", "GET", &resp, req)
 	return resp, err

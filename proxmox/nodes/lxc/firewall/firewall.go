@@ -27,16 +27,6 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*map[string]interface{}
-
-// Index Directory index.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/firewall", "GET", &resp, req)
-	return resp, err
-}
-
 type GetOptionsRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
@@ -58,14 +48,6 @@ type GetOptionsResponse struct {
 	Radv        *util.SpecialBool `url:"radv,omitempty" json:"radv,omitempty"`                   // Allow sending Router Advertisement.
 }
 
-// GetOptions Get VM firewall options.
-func (c *Client) GetOptions(ctx context.Context, req *GetOptionsRequest) (*GetOptionsResponse, error) {
-	var resp *GetOptionsResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/firewall/options", "GET", &resp, req)
-	return resp, err
-}
-
 type SetOptionsRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
@@ -85,16 +67,6 @@ type SetOptionsRequest struct {
 	Radv        *util.SpecialBool `url:"radv,omitempty" json:"radv,omitempty"`                   // Allow sending Router Advertisement.
 }
 
-type SetOptionsResponse map[string]interface{}
-
-// SetOptions Set Firewall options.
-func (c *Client) SetOptions(ctx context.Context, req *SetOptionsRequest) (*SetOptionsResponse, error) {
-	var resp *SetOptionsResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/firewall/options", "PUT", &resp, req)
-	return resp, err
-}
-
 type LogRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
@@ -104,18 +76,10 @@ type LogRequest struct {
 	Start *int `url:"start,omitempty" json:"start,omitempty"`
 }
 
-type LogResponse []*struct {
+type LogResponse struct {
 	N int    `url:"n" json:"n"` // Line number
 	T string `url:"t" json:"t"` // Line text
 
-}
-
-// Log Read firewall log
-func (c *Client) Log(ctx context.Context, req *LogRequest) (*LogResponse, error) {
-	var resp *LogResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/firewall/log", "GET", &resp, req)
-	return resp, err
 }
 
 type RefsRequest struct {
@@ -126,7 +90,7 @@ type RefsRequest struct {
 	Type *string `url:"type,omitempty" json:"type,omitempty"` // Only list references of specified type.
 }
 
-type RefsResponse []*struct {
+type RefsResponse struct {
 	Name string `url:"name" json:"name"`
 	Type string `url:"type" json:"type"`
 
@@ -134,9 +98,40 @@ type RefsResponse []*struct {
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
 }
 
+// Index Directory index.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/firewall", "GET", &resp, req)
+	return resp, err
+}
+
+// GetOptions Get VM firewall options.
+func (c *Client) GetOptions(ctx context.Context, req GetOptionsRequest) (GetOptionsResponse, error) {
+	var resp GetOptionsResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/firewall/options", "GET", &resp, req)
+	return resp, err
+}
+
+// SetOptions Set Firewall options.
+func (c *Client) SetOptions(ctx context.Context, req SetOptionsRequest) error {
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/firewall/options", "PUT", nil, req)
+	return err
+}
+
+// Log Read firewall log
+func (c *Client) Log(ctx context.Context, req LogRequest) ([]LogResponse, error) {
+	var resp []LogResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/firewall/log", "GET", &resp, req)
+	return resp, err
+}
+
 // Refs Lists possible IPSet/Alias reference which are allowed in source/dest properties.
-func (c *Client) Refs(ctx context.Context, req *RefsRequest) (*RefsResponse, error) {
-	var resp *RefsResponse
+func (c *Client) Refs(ctx context.Context, req RefsRequest) ([]RefsResponse, error) {
+	var resp []RefsResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/firewall/refs", "GET", &resp, req)
 	return resp, err

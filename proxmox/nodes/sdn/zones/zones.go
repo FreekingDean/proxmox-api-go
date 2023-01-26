@@ -25,18 +25,10 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Status string `url:"status" json:"status"` // Status of zone
 	Zone   string `url:"zone" json:"zone"`     // The SDN zone object identifier.
 
-}
-
-// Index Get status for all zones.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/sdn/zones", "GET", &resp, req)
-	return resp, err
 }
 
 type FindRequest struct {
@@ -45,16 +37,8 @@ type FindRequest struct {
 
 }
 
-type FindResponse []*struct {
+type FindResponse struct {
 	Subdir string `url:"subdir" json:"subdir"`
-}
-
-// Find
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/sdn/zones/{zone}", "GET", &resp, req)
-	return resp, err
 }
 
 type IndexContentRequest struct {
@@ -63,7 +47,7 @@ type IndexContentRequest struct {
 
 }
 
-type IndexContentResponse []*struct {
+type IndexContentResponse struct {
 	Vnet string `url:"vnet" json:"vnet"` // Vnet identifier.
 
 	// The following parameters are optional
@@ -71,9 +55,25 @@ type IndexContentResponse []*struct {
 	Statusmsg *string `url:"statusmsg,omitempty" json:"statusmsg,omitempty"` // Status details
 }
 
+// Index Get status for all zones.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/sdn/zones", "GET", &resp, req)
+	return resp, err
+}
+
+// Find
+func (c *Client) Find(ctx context.Context, req FindRequest) ([]FindResponse, error) {
+	var resp []FindResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/sdn/zones/{zone}", "GET", &resp, req)
+	return resp, err
+}
+
 // IndexContent List zone content.
-func (c *Client) IndexContent(ctx context.Context, req *IndexContentRequest) (*IndexContentResponse, error) {
-	var resp *IndexContentResponse
+func (c *Client) IndexContent(ctx context.Context, req IndexContentRequest) ([]IndexContentResponse, error) {
+	var resp []IndexContentResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/sdn/zones/{zone}/content", "GET", &resp, req)
 	return resp, err

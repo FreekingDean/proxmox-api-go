@@ -20,16 +20,6 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*map[string]interface{}
-
-// Index ACMEAccount index.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/acme/account", "GET", &resp, nil)
-	return resp, err
-}
-
 type CreateRequest struct {
 	Contact string `url:"contact" json:"contact"` // Contact email addresses.
 
@@ -37,16 +27,6 @@ type CreateRequest struct {
 	Directory *string `url:"directory,omitempty" json:"directory,omitempty"` // URL of ACME CA directory endpoint.
 	Name      *string `url:"name,omitempty" json:"name,omitempty"`           // ACME account config file name.
 	TosUrl    *string `url:"tos_url,omitempty" json:"tos_url,omitempty"`     // URL of CA TermsOfService - setting this indicates agreement.
-}
-
-type CreateResponse string
-
-// Create Register a new ACME account with CA.
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/acme/account", "POST", &resp, req)
-	return resp, err
 }
 
 type FindRequest struct {
@@ -64,29 +44,11 @@ type FindResponse struct {
 	Tos       *string                `url:"tos,omitempty" json:"tos,omitempty"`
 }
 
-// Find Return existing ACME account information.
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/acme/account/{name}", "GET", &resp, req)
-	return resp, err
-}
-
 type UpdateRequest struct {
 
 	// The following parameters are optional
 	Contact *string `url:"contact,omitempty" json:"contact,omitempty"` // Contact email addresses.
 	Name    *string `url:"name,omitempty" json:"name,omitempty"`       // ACME account config file name.
-}
-
-type UpdateResponse string
-
-// Update Update existing ACME account information with CA. Note: not specifying any new account information triggers a refresh.
-func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateResponse, error) {
-	var resp *UpdateResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/acme/account/{name}", "PUT", &resp, req)
-	return resp, err
 }
 
 type DeleteRequest struct {
@@ -95,11 +57,41 @@ type DeleteRequest struct {
 	Name *string `url:"name,omitempty" json:"name,omitempty"` // ACME account config file name.
 }
 
-type DeleteResponse string
+// Index ACMEAccount index.
+func (c *Client) Index(ctx context.Context) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/cluster/acme/account", "GET", &resp, nil)
+	return resp, err
+}
+
+// Create Register a new ACME account with CA.
+func (c *Client) Create(ctx context.Context, req CreateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/cluster/acme/account", "POST", &resp, req)
+	return resp, err
+}
+
+// Find Return existing ACME account information.
+func (c *Client) Find(ctx context.Context, req FindRequest) (FindResponse, error) {
+	var resp FindResponse
+
+	err := c.httpClient.Do(ctx, "/cluster/acme/account/{name}", "GET", &resp, req)
+	return resp, err
+}
+
+// Update Update existing ACME account information with CA. Note: not specifying any new account information triggers a refresh.
+func (c *Client) Update(ctx context.Context, req UpdateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/cluster/acme/account/{name}", "PUT", &resp, req)
+	return resp, err
+}
 
 // Delete Deactivate existing ACME account at CA.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) (string, error) {
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/cluster/acme/account/{name}", "DELETE", &resp, req)
 	return resp, err

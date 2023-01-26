@@ -26,19 +26,11 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	DataPool     string `url:"data_pool" json:"data_pool"`         // The name of the data pool.
 	MetadataPool string `url:"metadata_pool" json:"metadata_pool"` // The name of the metadata pool.
 	Name         string `url:"name" json:"name"`                   // The ceph filesystem name.
 
-}
-
-// Index Directory index.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/fs", "GET", &resp, req)
-	return resp, err
 }
 
 type ChildCreateRequest struct {
@@ -50,11 +42,17 @@ type ChildCreateRequest struct {
 	PgNum      *int              `url:"pg_num,omitempty" json:"pg_num,omitempty"`           // Number of placement groups for the backing data pool. The metadata pool will use a quarter of this.
 }
 
-type ChildCreateResponse string
+// Index Directory index.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/fs", "GET", &resp, req)
+	return resp, err
+}
 
 // ChildCreate Create a Ceph filesystem
-func (c *Client) ChildCreate(ctx context.Context, req *ChildCreateRequest) (*ChildCreateResponse, error) {
-	var resp *ChildCreateResponse
+func (c *Client) ChildCreate(ctx context.Context, req ChildCreateRequest) (string, error) {
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/fs/{name}", "POST", &resp, req)
 	return resp, err

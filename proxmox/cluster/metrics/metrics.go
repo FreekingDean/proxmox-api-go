@@ -20,11 +20,9 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*map[string]interface{}
-
 // Index Metrics index.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
+func (c *Client) Index(ctx context.Context) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
 
 	err := c.httpClient.Do(ctx, "/cluster/metrics", "GET", &resp, nil)
 	return resp, err

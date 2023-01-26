@@ -29,20 +29,12 @@ type IndexRequest struct {
 	Type    *string           `url:"type,omitempty" json:"type,omitempty"`       // Only list sdn controllers of specific type
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Controller string `url:"controller" json:"controller"`
 	Type       string `url:"type" json:"type"`
 
 	// The following parameters are optional
 	State *string `url:"state,omitempty" json:"state,omitempty"`
-}
-
-// Index SDN controllers index.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/sdn/controllers", "GET", &resp, req)
-	return resp, err
 }
 
 type CreateRequest struct {
@@ -59,32 +51,12 @@ type CreateRequest struct {
 	Peers                   *string           `url:"peers,omitempty" json:"peers,omitempty"`       // peers address list.
 }
 
-type CreateResponse map[string]interface{}
-
-// Create Create a new sdn controller object.
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/sdn/controllers", "POST", &resp, req)
-	return resp, err
-}
-
 type FindRequest struct {
 	Controller string `url:"controller" json:"controller"` // The SDN controller object identifier.
 
 	// The following parameters are optional
 	Pending *util.SpecialBool `url:"pending,omitempty" json:"pending,omitempty"` // Display pending config.
 	Running *util.SpecialBool `url:"running,omitempty" json:"running,omitempty"` // Display running config.
-}
-
-type FindResponse map[string]interface{}
-
-// Find Read sdn controller configuration.
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/sdn/controllers/{controller}", "GET", &resp, req)
-	return resp, err
 }
 
 type UpdateRequest struct {
@@ -102,27 +74,44 @@ type UpdateRequest struct {
 	Peers                   *string           `url:"peers,omitempty" json:"peers,omitempty"`       // peers address list.
 }
 
-type UpdateResponse map[string]interface{}
-
-// Update Update sdn controller object configuration.
-func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateResponse, error) {
-	var resp *UpdateResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/sdn/controllers/{controller}", "PUT", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Controller string `url:"controller" json:"controller"` // The SDN controller object identifier.
 
 }
 
-type DeleteResponse map[string]interface{}
+// Index SDN controllers index.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/cluster/sdn/controllers", "GET", &resp, req)
+	return resp, err
+}
+
+// Create Create a new sdn controller object.
+func (c *Client) Create(ctx context.Context, req CreateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/cluster/sdn/controllers", "POST", nil, req)
+	return err
+}
+
+// Find Read sdn controller configuration.
+func (c *Client) Find(ctx context.Context, req FindRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/cluster/sdn/controllers/{controller}", "GET", &resp, req)
+	return resp, err
+}
+
+// Update Update sdn controller object configuration.
+func (c *Client) Update(ctx context.Context, req UpdateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/cluster/sdn/controllers/{controller}", "PUT", nil, req)
+	return err
+}
 
 // Delete Delete sdn controller object configuration.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) error {
 
-	err := c.httpClient.Do(ctx, "/cluster/sdn/controllers/{controller}", "DELETE", &resp, req)
-	return resp, err
+	err := c.httpClient.Do(ctx, "/cluster/sdn/controllers/{controller}", "DELETE", nil, req)
+	return err
 }

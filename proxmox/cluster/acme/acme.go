@@ -20,56 +20,52 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*map[string]interface{}
-
-// Index ACMEAccount index.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/acme", "GET", &resp, nil)
-	return resp, err
-}
-
 type GetTosRequest struct {
 
 	// The following parameters are optional
 	Directory *string `url:"directory,omitempty" json:"directory,omitempty"` // URL of ACME CA directory endpoint.
 }
 
-type GetTosResponse *string
-
-// GetTos Retrieve ACME TermsOfService URL from CA.
-func (c *Client) GetTos(ctx context.Context, req *GetTosRequest) (*GetTosResponse, error) {
-	var resp *GetTosResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/acme/tos", "GET", &resp, req)
-	return resp, err
-}
-
-type GetDirectoriesResponse []*struct {
+type GetDirectoriesResponse struct {
 	Name string `url:"name" json:"name"`
 	Url  string `url:"url" json:"url"` // URL of ACME CA directory endpoint.
 
 }
 
-// GetDirectories Get named known ACME directory endpoints.
-func (c *Client) GetDirectories(ctx context.Context) (*GetDirectoriesResponse, error) {
-	var resp *GetDirectoriesResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/acme/directories", "GET", &resp, nil)
-	return resp, err
-}
-
-type ChallengeschemaChallengeSchemaResponse []*struct {
+type ChallengeschemaChallengeSchemaResponse struct {
 	Id     string                 `url:"id" json:"id"`
 	Name   string                 `url:"name" json:"name"` // Human readable name, falls back to id
 	Schema map[string]interface{} `url:"schema" json:"schema"`
 	Type   string                 `url:"type" json:"type"`
 }
 
+// Index ACMEAccount index.
+func (c *Client) Index(ctx context.Context) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/cluster/acme", "GET", &resp, nil)
+	return resp, err
+}
+
+// GetTos Retrieve ACME TermsOfService URL from CA.
+func (c *Client) GetTos(ctx context.Context, req GetTosRequest) (*string, error) {
+	var resp *string
+
+	err := c.httpClient.Do(ctx, "/cluster/acme/tos", "GET", &resp, req)
+	return resp, err
+}
+
+// GetDirectories Get named known ACME directory endpoints.
+func (c *Client) GetDirectories(ctx context.Context) ([]GetDirectoriesResponse, error) {
+	var resp []GetDirectoriesResponse
+
+	err := c.httpClient.Do(ctx, "/cluster/acme/directories", "GET", &resp, nil)
+	return resp, err
+}
+
 // ChallengeschemaChallengeSchema Get schema of ACME challenge types.
-func (c *Client) ChallengeschemaChallengeSchema(ctx context.Context) (*ChallengeschemaChallengeSchemaResponse, error) {
-	var resp *ChallengeschemaChallengeSchemaResponse
+func (c *Client) ChallengeschemaChallengeSchema(ctx context.Context) ([]ChallengeschemaChallengeSchemaResponse, error) {
+	var resp []ChallengeschemaChallengeSchemaResponse
 
 	err := c.httpClient.Do(ctx, "/cluster/acme/challenge-schema", "GET", &resp, nil)
 	return resp, err

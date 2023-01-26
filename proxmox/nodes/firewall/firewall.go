@@ -26,16 +26,6 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*map[string]interface{}
-
-// Index Directory index.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/firewall", "GET", &resp, req)
-	return resp, err
-}
-
 type GetOptionsRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
@@ -62,14 +52,6 @@ type GetOptionsResponse struct {
 	Tcpflags                         *util.SpecialBool `url:"tcpflags,omitempty" json:"tcpflags,omitempty"`                                                         // Filter illegal combinations of TCP flags.
 }
 
-// GetOptions Get host firewall options.
-func (c *Client) GetOptions(ctx context.Context, req *GetOptionsRequest) (*GetOptionsResponse, error) {
-	var resp *GetOptionsResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/firewall/options", "GET", &resp, req)
-	return resp, err
-}
-
 type SetOptionsRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
@@ -94,16 +76,6 @@ type SetOptionsRequest struct {
 	Tcpflags                         *util.SpecialBool `url:"tcpflags,omitempty" json:"tcpflags,omitempty"`                                                         // Filter illegal combinations of TCP flags.
 }
 
-type SetOptionsResponse map[string]interface{}
-
-// SetOptions Set Firewall options.
-func (c *Client) SetOptions(ctx context.Context, req *SetOptionsRequest) (*SetOptionsResponse, error) {
-	var resp *SetOptionsResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/firewall/options", "PUT", &resp, req)
-	return resp, err
-}
-
 type LogRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
@@ -112,15 +84,38 @@ type LogRequest struct {
 	Start *int `url:"start,omitempty" json:"start,omitempty"`
 }
 
-type LogResponse []*struct {
+type LogResponse struct {
 	N int    `url:"n" json:"n"` // Line number
 	T string `url:"t" json:"t"` // Line text
 
 }
 
+// Index Directory index.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/firewall", "GET", &resp, req)
+	return resp, err
+}
+
+// GetOptions Get host firewall options.
+func (c *Client) GetOptions(ctx context.Context, req GetOptionsRequest) (GetOptionsResponse, error) {
+	var resp GetOptionsResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/firewall/options", "GET", &resp, req)
+	return resp, err
+}
+
+// SetOptions Set Firewall options.
+func (c *Client) SetOptions(ctx context.Context, req SetOptionsRequest) error {
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/firewall/options", "PUT", nil, req)
+	return err
+}
+
 // Log Read firewall log
-func (c *Client) Log(ctx context.Context, req *LogRequest) (*LogResponse, error) {
-	var resp *LogResponse
+func (c *Client) Log(ctx context.Context, req LogRequest) ([]LogResponse, error) {
+	var resp []LogResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/firewall/log", "GET", &resp, req)
 	return resp, err

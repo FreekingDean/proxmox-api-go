@@ -26,7 +26,7 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Lv           string `url:"lv" json:"lv"`                       // The name of the thinpool.
 	LvSize       int    `url:"lv_size" json:"lv_size"`             // The size of the thinpool in bytes.
 	MetadataSize int    `url:"metadata_size" json:"metadata_size"` // The size of the metadata lv in bytes.
@@ -36,14 +36,6 @@ type IndexResponse []*struct {
 
 }
 
-// Index List LVM thinpools
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/lvmthin", "GET", &resp, req)
-	return resp, err
-}
-
 type CreateRequest struct {
 	Device string `url:"device" json:"device"` // The block device you want to create the thinpool on.
 	Name   string `url:"name" json:"name"`     // The storage identifier.
@@ -51,16 +43,6 @@ type CreateRequest struct {
 
 	// The following parameters are optional
 	AddStorage *util.SpecialBool `url:"add_storage,omitempty" json:"add_storage,omitempty"` // Configure storage using the thinpool.
-}
-
-type CreateResponse string
-
-// Create Create an LVM thinpool
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/lvmthin", "POST", &resp, req)
-	return resp, err
 }
 
 type DeleteRequest struct {
@@ -73,11 +55,25 @@ type DeleteRequest struct {
 	CleanupDisks  *util.SpecialBool `url:"cleanup-disks,omitempty" json:"cleanup-disks,omitempty"`   // Also wipe disks so they can be repurposed afterwards.
 }
 
-type DeleteResponse string
+// Index List LVM thinpools
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/lvmthin", "GET", &resp, req)
+	return resp, err
+}
+
+// Create Create an LVM thinpool
+func (c *Client) Create(ctx context.Context, req CreateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/lvmthin", "POST", &resp, req)
+	return resp, err
+}
 
 // Delete Remove an LVM thin pool.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) (string, error) {
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/lvmthin/{name}", "DELETE", &resp, req)
 	return resp, err

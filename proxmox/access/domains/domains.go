@@ -21,21 +21,13 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Realm string `url:"realm" json:"realm"`
 	Type  string `url:"type" json:"type"`
 
 	// The following parameters are optional
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"` // A comment. The GUI use this text when you select a domain (Realm) on the login window.
 	Tfa     *string `url:"tfa,omitempty" json:"tfa,omitempty"`         // Two-factor authentication provider.
-}
-
-// Index Authentication domain index.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/access/domains", "GET", &resp, nil)
-	return resp, err
 }
 
 type CreateRequest struct {
@@ -71,7 +63,7 @@ type CreateRequest struct {
 	Server1             *string           `url:"server1,omitempty" json:"server1,omitempty"`                             // Server IP address (or DNS name)
 	Server2             *string           `url:"server2,omitempty" json:"server2,omitempty"`                             // Fallback Server IP address (or DNS name)
 	Sslversion          *string           `url:"sslversion,omitempty" json:"sslversion,omitempty"`                       // LDAPS TLS/SSL version. It's not recommended to use version older than 1.2!
-	SyncAttributes      *string           `url:"sync_attributes,omitempty" json:"sync_attributes,omitempty"`             // Comma separated list of key=value pairs for specifying which LDAP attributes map to which PVE user field. For example, to map the LDAP attribute 'mail' to PVEs 'email', write  'email=mail'. By default, each PVE user field is represented  by an LDAP attribute of the same name.
+	SyncAttributes      *string           `url:"sync_attributes,omitempty" json:"sync_attributes,omitempty"`             // Comma separated list of key=value pairs for specifying which LDAP attributes map to which PVE user field. For example, to map the LDAP attribute 'mail' to PVEs 'email', write 'email=mail'. By default, each PVE user field is represented by an LDAP attribute of the same name.
 	SyncDefaultsOptions *string           `url:"sync-defaults-options,omitempty" json:"sync-defaults-options,omitempty"` // The default options for behavior of synchronizations.
 	Tfa                 *string           `url:"tfa,omitempty" json:"tfa,omitempty"`                                     // Use Two-factor authentication.
 	UserAttr            *string           `url:"user_attr,omitempty" json:"user_attr,omitempty"`                         // LDAP user attribute name
@@ -80,26 +72,9 @@ type CreateRequest struct {
 	Verify              *util.SpecialBool `url:"verify,omitempty" json:"verify,omitempty"`                               // Verify the server's SSL certificate
 }
 
-type CreateResponse map[string]interface{}
-
-// Create Add an authentication server.
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/access/domains", "POST", &resp, req)
-	return resp, err
-}
-
 type FindRequest struct {
 	Realm string `url:"realm" json:"realm"` // Authentication domain ID
 
-}
-
-// Find Get auth server configuration.
-func (c *Client) Find(ctx context.Context, req *FindRequest) error {
-
-	err := c.httpClient.Do(ctx, "/access/domains/{realm}", "GET", nil, req)
-	return err
 }
 
 type UpdateRequest struct {
@@ -136,7 +111,7 @@ type UpdateRequest struct {
 	Server1             *string           `url:"server1,omitempty" json:"server1,omitempty"`                             // Server IP address (or DNS name)
 	Server2             *string           `url:"server2,omitempty" json:"server2,omitempty"`                             // Fallback Server IP address (or DNS name)
 	Sslversion          *string           `url:"sslversion,omitempty" json:"sslversion,omitempty"`                       // LDAPS TLS/SSL version. It's not recommended to use version older than 1.2!
-	SyncAttributes      *string           `url:"sync_attributes,omitempty" json:"sync_attributes,omitempty"`             // Comma separated list of key=value pairs for specifying which LDAP attributes map to which PVE user field. For example, to map the LDAP attribute 'mail' to PVEs 'email', write  'email=mail'. By default, each PVE user field is represented  by an LDAP attribute of the same name.
+	SyncAttributes      *string           `url:"sync_attributes,omitempty" json:"sync_attributes,omitempty"`             // Comma separated list of key=value pairs for specifying which LDAP attributes map to which PVE user field. For example, to map the LDAP attribute 'mail' to PVEs 'email', write 'email=mail'. By default, each PVE user field is represented by an LDAP attribute of the same name.
 	SyncDefaultsOptions *string           `url:"sync-defaults-options,omitempty" json:"sync-defaults-options,omitempty"` // The default options for behavior of synchronizations.
 	Tfa                 *string           `url:"tfa,omitempty" json:"tfa,omitempty"`                                     // Use Two-factor authentication.
 	UserAttr            *string           `url:"user_attr,omitempty" json:"user_attr,omitempty"`                         // LDAP user attribute name
@@ -144,29 +119,9 @@ type UpdateRequest struct {
 	Verify              *util.SpecialBool `url:"verify,omitempty" json:"verify,omitempty"`                               // Verify the server's SSL certificate
 }
 
-type UpdateResponse map[string]interface{}
-
-// Update Update authentication server settings.
-func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateResponse, error) {
-	var resp *UpdateResponse
-
-	err := c.httpClient.Do(ctx, "/access/domains/{realm}", "PUT", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Realm string `url:"realm" json:"realm"` // Authentication domain ID
 
-}
-
-type DeleteResponse map[string]interface{}
-
-// Delete Delete an authentication server.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
-
-	err := c.httpClient.Do(ctx, "/access/domains/{realm}", "DELETE", &resp, req)
-	return resp, err
 }
 
 type SyncRequest struct {
@@ -181,11 +136,45 @@ type SyncRequest struct {
 	Scope          *string           `url:"scope,omitempty" json:"scope,omitempty"`                     // Select what to sync.
 }
 
-type SyncResponse string
+// Index Authentication domain index.
+func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/access/domains", "GET", &resp, nil)
+	return resp, err
+}
+
+// Create Add an authentication server.
+func (c *Client) Create(ctx context.Context, req CreateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/access/domains", "POST", nil, req)
+	return err
+}
+
+// Find Get auth server configuration.
+func (c *Client) Find(ctx context.Context, req FindRequest) error {
+
+	err := c.httpClient.Do(ctx, "/access/domains/{realm}", "GET", nil, req)
+	return err
+}
+
+// Update Update authentication server settings.
+func (c *Client) Update(ctx context.Context, req UpdateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/access/domains/{realm}", "PUT", nil, req)
+	return err
+}
+
+// Delete Delete an authentication server.
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) error {
+
+	err := c.httpClient.Do(ctx, "/access/domains/{realm}", "DELETE", nil, req)
+	return err
+}
 
 // Sync Syncs users and/or groups from the configured LDAP to user.cfg. NOTE: Synced groups will have the name 'name-$realm', so make sure those groups do not exist to prevent overwriting.
-func (c *Client) Sync(ctx context.Context, req *SyncRequest) (*SyncResponse, error) {
-	var resp *SyncResponse
+func (c *Client) Sync(ctx context.Context, req SyncRequest) (string, error) {
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/access/domains/{realm}/sync", "POST", &resp, req)
 	return resp, err

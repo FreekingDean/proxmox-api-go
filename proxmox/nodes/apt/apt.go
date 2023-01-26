@@ -26,31 +26,13 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Id string `url:"id" json:"id"`
-}
-
-// Index Directory index for apt (Advanced Package Tool).
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/apt", "GET", &resp, req)
-	return resp, err
 }
 
 type ListUpdatesUpdateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
-}
-
-type ListUpdatesUpdateResponse []*map[string]interface{}
-
-// ListUpdatesUpdate List available updates.
-func (c *Client) ListUpdatesUpdate(ctx context.Context, req *ListUpdatesUpdateRequest) (*ListUpdatesUpdateResponse, error) {
-	var resp *ListUpdatesUpdateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/apt/update", "GET", &resp, req)
-	return resp, err
 }
 
 type UpdateDatabaseUpdateRequest struct {
@@ -61,16 +43,6 @@ type UpdateDatabaseUpdateRequest struct {
 	Quiet  *util.SpecialBool `url:"quiet,omitempty" json:"quiet,omitempty"`   // Only produces output suitable for logging, omitting progress indicators.
 }
 
-type UpdateDatabaseUpdateResponse string
-
-// UpdateDatabaseUpdate This is used to resynchronize the package index files from their sources (apt-get update).
-func (c *Client) UpdateDatabaseUpdate(ctx context.Context, req *UpdateDatabaseUpdateRequest) (*UpdateDatabaseUpdateResponse, error) {
-	var resp *UpdateDatabaseUpdateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/apt/update", "POST", &resp, req)
-	return resp, err
-}
-
 type ChangelogRequest struct {
 	Name string `url:"name" json:"name"` // Package name.
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -79,74 +51,69 @@ type ChangelogRequest struct {
 	Version *string `url:"version,omitempty" json:"version,omitempty"` // Package version.
 }
 
-type ChangelogResponse string
-
-// Changelog Get package changelogs.
-func (c *Client) Changelog(ctx context.Context, req *ChangelogRequest) (*ChangelogResponse, error) {
-	var resp *ChangelogResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/apt/changelog", "GET", &resp, req)
-	return resp, err
-}
-
 type RepositoriesRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
-type RepositoriesResponse struct {
-	Digest string `url:"digest" json:"digest"` // Common digest of all files.
-	Errors []*struct {
-		Error string `url:"error" json:"error"` // The error message
-		Path  string `url:"path" json:"path"`   // Path to the problematic file.
+type Options struct {
+	Key    string   `url:"Key" json:"Key"`
+	Values []string `url:"Values" json:"Values"`
+}
 
-	} `url:"errors" json:"errors"` // List of problematic repository files.
-	Files []*struct {
-		Digest       []int  `url:"digest" json:"digest"`       // Digest of the file as bytes.
-		FileType     string `url:"file-type" json:"file-type"` // Format of the file.
-		Path         string `url:"path" json:"path"`           // Path to the problematic file.
-		Repositories []*struct {
-			Enabled  util.SpecialBool `url:"Enabled" json:"Enabled"`   // Whether the repository is enabled or not
-			Filetype string           `url:"FileType" json:"FileType"` // Format of the defining file.
-			Suites   []string         `url:"Suites" json:"Suites"`     // List of package distribuitions
-			Types    []string         `url:"Types" json:"Types"`       // List of package types.
-			Uris     []string         `url:"URIs" json:"URIs"`         // List of repository URIs.
+type Repositories struct {
+	Enabled  util.SpecialBool `url:"Enabled" json:"Enabled"`   // Whether the repository is enabled or not
+	Filetype string           `url:"FileType" json:"FileType"` // Format of the defining file.
+	Suites   []string         `url:"Suites" json:"Suites"`     // List of package distribuitions
+	Types    []string         `url:"Types" json:"Types"`       // List of package types.
+	Uris     []string         `url:"URIs" json:"URIs"`         // List of repository URIs.
 
-			// The following parameters are optional
-			Comment    *string  `url:"Comment,omitempty" json:"Comment,omitempty"`       // Associated comment
-			Components []string `url:"Components,omitempty" json:"Components,omitempty"` // List of repository components
-			Options    []*struct {
-				Key    string   `url:"Key" json:"Key"`
-				Values []string `url:"Values" json:"Values"`
-			} `url:"Options,omitempty" json:"Options,omitempty"` // Additional options
-		} `url:"repositories" json:"repositories"` // The parsed repositories.
+	// The following parameters are optional
+	Comment    *string   `url:"Comment,omitempty" json:"Comment,omitempty"`       // Associated comment
+	Components []string  `url:"Components,omitempty" json:"Components,omitempty"` // List of repository components
+	Options    []Options `url:"Options,omitempty" json:"Options,omitempty"`       // Additional options
+}
 
-	} `url:"files" json:"files"` // List of parsed repository files.
-	Infos []*struct {
-		Index   string `url:"index" json:"index"`     // Index of the associated repository within the file.
-		Kind    string `url:"kind" json:"kind"`       // Kind of the information (e.g. warning).
-		Message string `url:"message" json:"message"` // Information message.
-		Path    string `url:"path" json:"path"`       // Path to the associated file.
-
-		// The following parameters are optional
-		Property *string `url:"property,omitempty" json:"property,omitempty"` // Property from which the info originates.
-	} `url:"infos" json:"infos"` // Additional information/warnings for APT repositories.
-	StandardRepos []*struct {
-		Handle string `url:"handle" json:"handle"` // Handle to identify the repository.
-		Name   string `url:"name" json:"name"`     // Full name of the repository.
-
-		// The following parameters are optional
-		Status *util.SpecialBool `url:"status,omitempty" json:"status,omitempty"` // Indicating enabled/disabled status, if the repository is configured.
-	} `url:"standard-repos" json:"standard-repos"` // List of standard repositories and their configuration status
+type Files struct {
+	Digest       []int          `url:"digest" json:"digest"`             // Digest of the file as bytes.
+	FileType     string         `url:"file-type" json:"file-type"`       // Format of the file.
+	Path         string         `url:"path" json:"path"`                 // Path to the problematic file.
+	Repositories []Repositories `url:"repositories" json:"repositories"` // The parsed repositories.
 
 }
 
-// Repositories Get APT repository information.
-func (c *Client) Repositories(ctx context.Context, req *RepositoriesRequest) (*RepositoriesResponse, error) {
-	var resp *RepositoriesResponse
+type Infos struct {
+	Index   string `url:"index" json:"index"`     // Index of the associated repository within the file.
+	Kind    string `url:"kind" json:"kind"`       // Kind of the information (e.g. warning).
+	Message string `url:"message" json:"message"` // Information message.
+	Path    string `url:"path" json:"path"`       // Path to the associated file.
 
-	err := c.httpClient.Do(ctx, "/nodes/{node}/apt/repositories", "GET", &resp, req)
-	return resp, err
+	// The following parameters are optional
+	Property *string `url:"property,omitempty" json:"property,omitempty"` // Property from which the info originates.
+}
+
+type StandardRepos struct {
+	Handle string `url:"handle" json:"handle"` // Handle to identify the repository.
+	Name   string `url:"name" json:"name"`     // Full name of the repository.
+
+	// The following parameters are optional
+	Status *util.SpecialBool `url:"status,omitempty" json:"status,omitempty"` // Indicating enabled/disabled status, if the repository is configured.
+}
+
+type Errors struct {
+	Error string `url:"error" json:"error"` // The error message
+	Path  string `url:"path" json:"path"`   // Path to the problematic file.
+
+}
+
+// Result from parsing the APT repository files in /etc/apt/.
+type RepositoriesResponse struct {
+	Digest        string          `url:"digest" json:"digest"`                 // Common digest of all files.
+	Errors        []Errors        `url:"errors" json:"errors"`                 // List of problematic repository files.
+	Files         []Files         `url:"files" json:"files"`                   // List of parsed repository files.
+	Infos         []Infos         `url:"infos" json:"infos"`                   // Additional information/warnings for APT repositories.
+	StandardRepos []StandardRepos `url:"standard-repos" json:"standard-repos"` // List of standard repositories and their configuration status
+
 }
 
 type ChangeRepositoryRepositoriesRequest struct {
@@ -159,16 +126,6 @@ type ChangeRepositoryRepositoriesRequest struct {
 	Enabled *util.SpecialBool `url:"enabled,omitempty" json:"enabled,omitempty"` // Whether the repository should be enabled or not.
 }
 
-type ChangeRepositoryRepositoriesResponse map[string]interface{}
-
-// ChangeRepositoryRepositories Change the properties of a repository. Currently only allows enabling/disabling.
-func (c *Client) ChangeRepositoryRepositories(ctx context.Context, req *ChangeRepositoryRepositoriesRequest) (*ChangeRepositoryRepositoriesResponse, error) {
-	var resp *ChangeRepositoryRepositoriesResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/apt/repositories", "POST", &resp, req)
-	return resp, err
-}
-
 type AddRepositoryRepositoriesRequest struct {
 	Handle string `url:"handle" json:"handle"` // Handle that identifies a repository.
 	Node   string `url:"node" json:"node"`     // The cluster node name.
@@ -177,26 +134,68 @@ type AddRepositoryRepositoriesRequest struct {
 	Digest *string `url:"digest,omitempty" json:"digest,omitempty"` // Digest to detect modifications.
 }
 
-type AddRepositoryRepositoriesResponse map[string]interface{}
-
-// AddRepositoryRepositories Add a standard repository to the configuration
-func (c *Client) AddRepositoryRepositories(ctx context.Context, req *AddRepositoryRepositoriesRequest) (*AddRepositoryRepositoriesResponse, error) {
-	var resp *AddRepositoryRepositoriesResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/apt/repositories", "PUT", &resp, req)
-	return resp, err
-}
-
 type VersionsRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
-type VersionsResponse []*map[string]interface{}
+// Index Directory index for apt (Advanced Package Tool).
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/apt", "GET", &resp, req)
+	return resp, err
+}
+
+// ListUpdatesUpdate List available updates.
+func (c *Client) ListUpdatesUpdate(ctx context.Context, req ListUpdatesUpdateRequest) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/apt/update", "GET", &resp, req)
+	return resp, err
+}
+
+// UpdateDatabaseUpdate This is used to resynchronize the package index files from their sources (apt-get update).
+func (c *Client) UpdateDatabaseUpdate(ctx context.Context, req UpdateDatabaseUpdateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/apt/update", "POST", &resp, req)
+	return resp, err
+}
+
+// Changelog Get package changelogs.
+func (c *Client) Changelog(ctx context.Context, req ChangelogRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/apt/changelog", "GET", &resp, req)
+	return resp, err
+}
+
+// Repositories Get APT repository information.
+func (c *Client) Repositories(ctx context.Context, req RepositoriesRequest) (RepositoriesResponse, error) {
+	var resp RepositoriesResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/apt/repositories", "GET", &resp, req)
+	return resp, err
+}
+
+// ChangeRepositoryRepositories Change the properties of a repository. Currently only allows enabling/disabling.
+func (c *Client) ChangeRepositoryRepositories(ctx context.Context, req ChangeRepositoryRepositoriesRequest) error {
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/apt/repositories", "POST", nil, req)
+	return err
+}
+
+// AddRepositoryRepositories Add a standard repository to the configuration
+func (c *Client) AddRepositoryRepositories(ctx context.Context, req AddRepositoryRepositoriesRequest) error {
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/apt/repositories", "PUT", nil, req)
+	return err
+}
 
 // Versions Get package information for important Proxmox packages.
-func (c *Client) Versions(ctx context.Context, req *VersionsRequest) (*VersionsResponse, error) {
-	var resp *VersionsResponse
+func (c *Client) Versions(ctx context.Context, req VersionsRequest) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/apt/versions", "GET", &resp, req)
 	return resp, err

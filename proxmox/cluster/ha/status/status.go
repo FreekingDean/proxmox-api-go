@@ -20,31 +20,25 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*map[string]interface{}
-
 // Index Directory index.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
+func (c *Client) Index(ctx context.Context) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
 
 	err := c.httpClient.Do(ctx, "/cluster/ha/status", "GET", &resp, nil)
 	return resp, err
 }
 
-type StatusCurrentResponse []*map[string]interface{}
-
 // StatusCurrent Get HA manger status.
-func (c *Client) StatusCurrent(ctx context.Context) (*StatusCurrentResponse, error) {
-	var resp *StatusCurrentResponse
+func (c *Client) StatusCurrent(ctx context.Context) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
 
 	err := c.httpClient.Do(ctx, "/cluster/ha/status/current", "GET", &resp, nil)
 	return resp, err
 }
 
-type ManagerStatusResponse map[string]interface{}
-
 // ManagerStatus Get full HA manger status, including LRM status.
-func (c *Client) ManagerStatus(ctx context.Context) (*ManagerStatusResponse, error) {
-	var resp *ManagerStatusResponse
+func (c *Client) ManagerStatus(ctx context.Context) (map[string]interface{}, error) {
+	var resp map[string]interface{}
 
 	err := c.httpClient.Do(ctx, "/cluster/ha/status/manager_status", "GET", &resp, nil)
 	return resp, err

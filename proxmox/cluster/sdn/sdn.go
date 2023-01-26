@@ -20,23 +20,21 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Id string `url:"id" json:"id"`
 }
 
 // Index Directory index.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
+func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {
+	var resp []IndexResponse
 
 	err := c.httpClient.Do(ctx, "/cluster/sdn", "GET", &resp, nil)
 	return resp, err
 }
 
-type MassUpdateResponse string
-
 // MassUpdate Apply sdn controller changes && reload.
-func (c *Client) MassUpdate(ctx context.Context) (*MassUpdateResponse, error) {
-	var resp *MassUpdateResponse
+func (c *Client) MassUpdate(ctx context.Context) (string, error) {
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/cluster/sdn", "PUT", &resp, nil)
 	return resp, err

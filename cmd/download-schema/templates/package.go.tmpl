@@ -4,6 +4,13 @@ package {{.Name}}
 
 import (
   "context"
+	{{- if .ImportURL }}
+	"strings"
+	"fmt"
+	"net/url"
+
+	"github.com/google/go-querystring/query"
+	{{- end -}}
   {{- if .Util }}
   "github.com/FreekingDean/proxmox-api-go/internal/util"
   {{ end }}
@@ -26,7 +33,7 @@ func New(c HTTPClient) *Client {
 {{- define "type" -}}
 {{- if eq .Type "struct" -}}
 {{- if or .Properties .OptionalProperties -}}
-struct{
+struct {
 {{- range $_, $prop := .Properties }}
   {{$prop.Name}} {{template "type" $prop}} `url:"{{$prop.JSONName}}" json:"{{$prop.JSONName}}"` {{ if $prop.Description }}// {{ $prop.Description }}{{ end }}
 {{- end}}
@@ -36,38 +43,74 @@ struct{
   {{$prop.Name}} {{template "type" $prop}} `url:"{{$prop.JSONName}},omitempty" json:"{{$prop.JSONName}},omitempty"` {{ if $prop.Description }}// {{ $prop.Description }}{{ end }}
 {{- end}}
 {{- end }}
-} 
+}
 {{- else -}}
 map[string]interface{}
 {{- end}}
-{{- else if eq .Type "slice" -}}
-[]{{if eq (index .Properties 0).Type "struct"}}*{{end}}{{template "type" (index .Properties 0)}}
 {{- else -}}
 {{.Type}}
 {{- end}}
 {{- end}}
 
 {{ define "operation" }}
-{{if .Request}}
-type {{.Operation}}Request {{ template "type" .Request}}
-{{end}}
-
-{{if .Response}}
-type {{.Operation}}Response {{ template "type" .Response}}
-{{end}}
 
 // {{.Operation}} {{.Description}}
 func (c *Client) {{.Operation}}(ctx context.Context
-{{- if .Request}}, req *{{.Operation}}Request{{end -}}
-  ) ({{ if .Response -}}*{{.Operation}}Response, {{ end }}error) {
+{{- if .Request}}, req {{.Request.Type}}{{end -}}
+  ) ({{ if .Response -}}{{.Response.Type}}, {{ end }}error) {
   {{ if .Response -}}
-	var resp *{{.Operation}}Response
+	var resp {{.Response.Type}}
   {{ end }}
   err := c.httpClient.Do(ctx, "{{.Path}}", "{{.Method}}", {{ if .Response }}&resp{{ else }}nil{{ end }}, {{if .Request}}req{{else}}nil{{end}})
   return {{ if .Response }}resp, {{ end }}err
 }
 {{ end }}
 
+
+{{ range $t := .Types }}
+{{ if $t.Description }}
+// {{ $t.Description }}
+{{ end -}}
+type {{ $t.Name }} {{ template "type" $t }}
+{{ if ne $t.Format ""}}
+{{ if eq $t.Format "array" }}
+func (t *{{ $t.Name }}) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct{
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
+}
+{{ else }}
+func (t *{{ $t.Name }}) EncodeValues(key string, v *url.Values) error {
+	valueStrParts := []string{
+	{{- range $_, $prop := $t.Properties }}
+		fmt.Sprintf("%s=%v", "{{ $prop.JSONName }}", t.{{ $prop.Name }}),
+	{{ end }}
+	}
+{{- range $_, $prop := $t.OptionalProperties }}
+	if t.{{ $prop.Name }} != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "{{ $prop.JSONName }}", *t.{{ $prop.Name }}),
+		)
+	}
+{{ end }}
+	v.Set(key, strings.Join(valueStrParts, ", "))
+	return nil
+}
+{{ end }}
+{{ end }}
+{{ end }}
 
 {{ range $_, $method := .Methods }}
 {{ template "operation" $method }}

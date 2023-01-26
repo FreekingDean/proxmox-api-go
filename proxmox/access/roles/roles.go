@@ -21,7 +21,7 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Roleid string `url:"roleid" json:"roleid"`
 
 	// The following parameters are optional
@@ -29,29 +29,11 @@ type IndexResponse []*struct {
 	Special *util.SpecialBool `url:"special,omitempty" json:"special,omitempty"`
 }
 
-// Index Role index.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/access/roles", "GET", &resp, nil)
-	return resp, err
-}
-
 type CreateRequest struct {
 	Roleid string `url:"roleid" json:"roleid"`
 
 	// The following parameters are optional
 	Privs *string `url:"privs,omitempty" json:"privs,omitempty"`
-}
-
-type CreateResponse map[string]interface{}
-
-// Create Create new role.
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/access/roles", "POST", &resp, req)
-	return resp, err
 }
 
 type FindRequest struct {
@@ -100,14 +82,6 @@ type FindResponse struct {
 	VmSnapshotRollback        *util.SpecialBool `url:"VM.Snapshot.Rollback,omitempty" json:"VM.Snapshot.Rollback,omitempty"`
 }
 
-// Find Get role configuration.
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/access/roles/{roleid}", "GET", &resp, req)
-	return resp, err
-}
-
 type UpdateRequest struct {
 	Roleid string `url:"roleid" json:"roleid"`
 
@@ -116,26 +90,43 @@ type UpdateRequest struct {
 	Privs  *string           `url:"privs,omitempty" json:"privs,omitempty"`
 }
 
-type UpdateResponse map[string]interface{}
-
-// Update Update an existing role.
-func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateResponse, error) {
-	var resp *UpdateResponse
-
-	err := c.httpClient.Do(ctx, "/access/roles/{roleid}", "PUT", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Roleid string `url:"roleid" json:"roleid"`
 }
 
-type DeleteResponse map[string]interface{}
+// Index Role index.
+func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/access/roles", "GET", &resp, nil)
+	return resp, err
+}
+
+// Create Create new role.
+func (c *Client) Create(ctx context.Context, req CreateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/access/roles", "POST", nil, req)
+	return err
+}
+
+// Find Get role configuration.
+func (c *Client) Find(ctx context.Context, req FindRequest) (FindResponse, error) {
+	var resp FindResponse
+
+	err := c.httpClient.Do(ctx, "/access/roles/{roleid}", "GET", &resp, req)
+	return resp, err
+}
+
+// Update Update an existing role.
+func (c *Client) Update(ctx context.Context, req UpdateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/access/roles/{roleid}", "PUT", nil, req)
+	return err
+}
 
 // Delete Delete role.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) error {
 
-	err := c.httpClient.Do(ctx, "/access/roles/{roleid}", "DELETE", &resp, req)
-	return resp, err
+	err := c.httpClient.Do(ctx, "/access/roles/{roleid}", "DELETE", nil, req)
+	return err
 }

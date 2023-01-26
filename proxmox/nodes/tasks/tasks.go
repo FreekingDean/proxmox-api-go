@@ -37,7 +37,7 @@ type IndexRequest struct {
 	Vmid         *int              `url:"vmid,omitempty" json:"vmid,omitempty"`                 // Only list tasks for this VM.
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Id        string `url:"id" json:"id"`
 	Node      string `url:"node" json:"node"`
 	Pid       int    `url:"pid" json:"pid"`
@@ -52,42 +52,14 @@ type IndexResponse []*struct {
 	Status  *string `url:"status,omitempty" json:"status,omitempty"`
 }
 
-// Index Read task list for one node (finished tasks).
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/tasks", "GET", &resp, req)
-	return resp, err
-}
-
 type FindRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Upid string `url:"upid" json:"upid"`
 }
 
-type FindResponse []*map[string]interface{}
-
-// Find
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/tasks/{upid}", "GET", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Upid string `url:"upid" json:"upid"`
-}
-
-type DeleteResponse map[string]interface{}
-
-// Delete Stop a task.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/tasks/{upid}", "DELETE", &resp, req)
-	return resp, err
 }
 
 type ReadTaskLogRequest struct {
@@ -99,18 +71,10 @@ type ReadTaskLogRequest struct {
 	Start *int `url:"start,omitempty" json:"start,omitempty"` // The line number to start printing at.
 }
 
-type ReadTaskLogResponse []*struct {
+type ReadTaskLogResponse struct {
 	N int    `url:"n" json:"n"` // Line number
 	T string `url:"t" json:"t"` // Line text
 
-}
-
-// ReadTaskLog Read task log.
-func (c *Client) ReadTaskLog(ctx context.Context, req *ReadTaskLogRequest) (*ReadTaskLogResponse, error) {
-	var resp *ReadTaskLogResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/tasks/{upid}/log", "GET", &resp, req)
-	return resp, err
 }
 
 type ReadTaskStatusRequest struct {
@@ -133,9 +97,40 @@ type ReadTaskStatusResponse struct {
 	Exitstatus *string `url:"exitstatus,omitempty" json:"exitstatus,omitempty"`
 }
 
+// Index Read task list for one node (finished tasks).
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/tasks", "GET", &resp, req)
+	return resp, err
+}
+
+// Find
+func (c *Client) Find(ctx context.Context, req FindRequest) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/tasks/{upid}", "GET", &resp, req)
+	return resp, err
+}
+
+// Delete Stop a task.
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) error {
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/tasks/{upid}", "DELETE", nil, req)
+	return err
+}
+
+// ReadTaskLog Read task log.
+func (c *Client) ReadTaskLog(ctx context.Context, req ReadTaskLogRequest) ([]ReadTaskLogResponse, error) {
+	var resp []ReadTaskLogResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/tasks/{upid}/log", "GET", &resp, req)
+	return resp, err
+}
+
 // ReadTaskStatus Read task status.
-func (c *Client) ReadTaskStatus(ctx context.Context, req *ReadTaskStatusRequest) (*ReadTaskStatusResponse, error) {
-	var resp *ReadTaskStatusResponse
+func (c *Client) ReadTaskStatus(ctx context.Context, req ReadTaskStatusRequest) (ReadTaskStatusResponse, error) {
+	var resp ReadTaskStatusResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/tasks/{upid}/status", "GET", &resp, req)
 	return resp, err

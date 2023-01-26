@@ -26,21 +26,13 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Tokenid string `url:"tokenid" json:"tokenid"` // User-specific token identifier.
 
 	// The following parameters are optional
 	Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
 	Expire  *int              `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
 	Privsep *util.SpecialBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
-}
-
-// Index Get user API tokens.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/access/users/{userid}/token", "GET", &resp, req)
-	return resp, err
 }
 
 type FindRequest struct {
@@ -57,14 +49,6 @@ type FindResponse struct {
 	Privsep *util.SpecialBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
 
-// Find Get specific API token information.
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/access/users/{userid}/token/{tokenid}", "GET", &resp, req)
-	return resp, err
-}
-
 type ChildCreateRequest struct {
 	Tokenid string `url:"tokenid" json:"tokenid"` // User-specific token identifier.
 	Userid  string `url:"userid" json:"userid"`   // User ID
@@ -75,25 +59,19 @@ type ChildCreateRequest struct {
 	Privsep *util.SpecialBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
 
-type ChildCreateResponse struct {
-	FullTokenid string `url:"full-tokenid" json:"full-tokenid"` // The full token id.
-	Info        struct {
+type Info struct {
 
-		// The following parameters are optional
-		Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
-		Expire  *int              `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
-		Privsep *util.SpecialBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
-	} `url:"info" json:"info"`
-	Value string `url:"value" json:"value"` // API token value used for authentication.
-
+	// The following parameters are optional
+	Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
+	Expire  *int              `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+	Privsep *util.SpecialBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
 
-// ChildCreate Generate a new API token for a specific user. NOTE: returns API token value, which needs to be stored as it cannot be retrieved afterwards!
-func (c *Client) ChildCreate(ctx context.Context, req *ChildCreateRequest) (*ChildCreateResponse, error) {
-	var resp *ChildCreateResponse
+type ChildCreateResponse struct {
+	FullTokenid string `url:"full-tokenid" json:"full-tokenid"` // The full token id.
+	Info        Info   `url:"info" json:"info"`
+	Value       string `url:"value" json:"value"` // API token value used for authentication.
 
-	err := c.httpClient.Do(ctx, "/access/users/{userid}/token/{tokenid}", "POST", &resp, req)
-	return resp, err
 }
 
 type UpdateRequest struct {
@@ -106,6 +84,7 @@ type UpdateRequest struct {
 	Privsep *util.SpecialBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
 
+// Updated token information.
 type UpdateResponse struct {
 
 	// The following parameters are optional
@@ -114,26 +93,47 @@ type UpdateResponse struct {
 	Privsep *util.SpecialBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
 
-// Update Update API token for a specific user.
-func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateResponse, error) {
-	var resp *UpdateResponse
-
-	err := c.httpClient.Do(ctx, "/access/users/{userid}/token/{tokenid}", "PUT", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Tokenid string `url:"tokenid" json:"tokenid"` // User-specific token identifier.
 	Userid  string `url:"userid" json:"userid"`   // User ID
 
 }
 
-type DeleteResponse map[string]interface{}
+// Index Get user API tokens.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/access/users/{userid}/token", "GET", &resp, req)
+	return resp, err
+}
+
+// Find Get specific API token information.
+func (c *Client) Find(ctx context.Context, req FindRequest) (FindResponse, error) {
+	var resp FindResponse
+
+	err := c.httpClient.Do(ctx, "/access/users/{userid}/token/{tokenid}", "GET", &resp, req)
+	return resp, err
+}
+
+// ChildCreate Generate a new API token for a specific user. NOTE: returns API token value, which needs to be stored as it cannot be retrieved afterwards!
+func (c *Client) ChildCreate(ctx context.Context, req ChildCreateRequest) (ChildCreateResponse, error) {
+	var resp ChildCreateResponse
+
+	err := c.httpClient.Do(ctx, "/access/users/{userid}/token/{tokenid}", "POST", &resp, req)
+	return resp, err
+}
+
+// Update Update API token for a specific user.
+func (c *Client) Update(ctx context.Context, req UpdateRequest) (UpdateResponse, error) {
+	var resp UpdateResponse
+
+	err := c.httpClient.Do(ctx, "/access/users/{userid}/token/{tokenid}", "PUT", &resp, req)
+	return resp, err
+}
 
 // Delete Remove API token for a specific user.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) error {
 
-	err := c.httpClient.Do(ctx, "/access/users/{userid}/token/{tokenid}", "DELETE", &resp, req)
-	return resp, err
+	err := c.httpClient.Do(ctx, "/access/users/{userid}/token/{tokenid}", "DELETE", nil, req)
+	return err
 }

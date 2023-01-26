@@ -26,16 +26,6 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*map[string]interface{}
-
-// Index Node index.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/disks", "GET", &resp, req)
-	return resp, err
-}
-
 type ListRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
@@ -45,7 +35,7 @@ type ListRequest struct {
 	Type              *string           `url:"type,omitempty" json:"type,omitempty"`                             // Only list specific types of disks.
 }
 
-type ListResponse []*struct {
+type ListResponse struct {
 	Devpath string           `url:"devpath" json:"devpath"` // The device path
 	Gpt     util.SpecialBool `url:"gpt" json:"gpt"`
 	Mounted util.SpecialBool `url:"mounted" json:"mounted"`
@@ -62,14 +52,6 @@ type ListResponse []*struct {
 	Wwn    *string `url:"wwn,omitempty" json:"wwn,omitempty"`
 }
 
-// List List local disks.
-func (c *Client) List(ctx context.Context, req *ListRequest) (*ListResponse, error) {
-	var resp *ListResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/list", "GET", &resp, req)
-	return resp, err
-}
-
 type SmartRequest struct {
 	Disk string `url:"disk" json:"disk"` // Block device name
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -82,17 +64,9 @@ type SmartResponse struct {
 	Health string `url:"health" json:"health"`
 
 	// The following parameters are optional
-	Attributes []*map[string]interface{} `url:"attributes,omitempty" json:"attributes,omitempty"`
-	Text       *string                   `url:"text,omitempty" json:"text,omitempty"`
-	Type       *string                   `url:"type,omitempty" json:"type,omitempty"`
-}
-
-// Smart Get SMART Health of a disk.
-func (c *Client) Smart(ctx context.Context, req *SmartRequest) (*SmartResponse, error) {
-	var resp *SmartResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/smart", "GET", &resp, req)
-	return resp, err
+	Attributes []map[string]interface{} `url:"attributes,omitempty" json:"attributes,omitempty"`
+	Text       *string                  `url:"text,omitempty" json:"text,omitempty"`
+	Type       *string                  `url:"type,omitempty" json:"type,omitempty"`
 }
 
 type InitgptRequest struct {
@@ -103,27 +77,47 @@ type InitgptRequest struct {
 	Uuid *string `url:"uuid,omitempty" json:"uuid,omitempty"` // UUID for the GPT table
 }
 
-type InitgptResponse string
-
-// Initgpt Initialize Disk with GPT
-func (c *Client) Initgpt(ctx context.Context, req *InitgptRequest) (*InitgptResponse, error) {
-	var resp *InitgptResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/initgpt", "POST", &resp, req)
-	return resp, err
-}
-
 type WipeDiskWipediskRequest struct {
 	Disk string `url:"disk" json:"disk"` // Block device name
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
-type WipeDiskWipediskResponse string
+// Index Node index.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/disks", "GET", &resp, req)
+	return resp, err
+}
+
+// List List local disks.
+func (c *Client) List(ctx context.Context, req ListRequest) ([]ListResponse, error) {
+	var resp []ListResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/list", "GET", &resp, req)
+	return resp, err
+}
+
+// Smart Get SMART Health of a disk.
+func (c *Client) Smart(ctx context.Context, req SmartRequest) (SmartResponse, error) {
+	var resp SmartResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/smart", "GET", &resp, req)
+	return resp, err
+}
+
+// Initgpt Initialize Disk with GPT
+func (c *Client) Initgpt(ctx context.Context, req InitgptRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/initgpt", "POST", &resp, req)
+	return resp, err
+}
 
 // WipeDiskWipedisk Wipe a disk or partition.
-func (c *Client) WipeDiskWipedisk(ctx context.Context, req *WipeDiskWipediskRequest) (*WipeDiskWipediskResponse, error) {
-	var resp *WipeDiskWipediskResponse
+func (c *Client) WipeDiskWipedisk(ctx context.Context, req WipeDiskWipediskRequest) (string, error) {
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/wipedisk", "PUT", &resp, req)
 	return resp, err

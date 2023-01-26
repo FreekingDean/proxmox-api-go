@@ -27,7 +27,7 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Description string `url:"description" json:"description"` // Snapshot description.
 	Name        string `url:"name" json:"name"`               // Snapshot identifier. Value 'current' identifies the current VM.
 
@@ -35,14 +35,6 @@ type IndexResponse []*struct {
 	Parent   *string           `url:"parent,omitempty" json:"parent,omitempty"`     // Parent snapshot identifier.
 	Snaptime *int              `url:"snaptime,omitempty" json:"snaptime,omitempty"` // Snapshot creation time
 	Vmstate  *util.SpecialBool `url:"vmstate,omitempty" json:"vmstate,omitempty"`   // Snapshot includes RAM.
-}
-
-// Index List all snapshots.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/snapshot", "GET", &resp, req)
-	return resp, err
 }
 
 type CreateRequest struct {
@@ -55,31 +47,11 @@ type CreateRequest struct {
 	Vmstate     *util.SpecialBool `url:"vmstate,omitempty" json:"vmstate,omitempty"`         // Save the vmstate
 }
 
-type CreateResponse string
-
-// Create Snapshot a VM.
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/snapshot", "POST", &resp, req)
-	return resp, err
-}
-
 type FindRequest struct {
 	Node     string `url:"node" json:"node"`         // The cluster node name.
 	Snapname string `url:"snapname" json:"snapname"` // The name of the snapshot.
 	Vmid     int    `url:"vmid" json:"vmid"`         // The (unique) ID of the VM.
 
-}
-
-type FindResponse []*map[string]interface{}
-
-// Find
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/snapshot/{snapname}", "GET", &resp, req)
-	return resp, err
 }
 
 type DeleteRequest struct {
@@ -91,31 +63,11 @@ type DeleteRequest struct {
 	Force *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"` // For removal from config file, even if removing disk snapshots fails.
 }
 
-type DeleteResponse string
-
-// Delete Delete a VM snapshot.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/snapshot/{snapname}", "DELETE", &resp, req)
-	return resp, err
-}
-
 type GetSnapshotConfigRequest struct {
 	Node     string `url:"node" json:"node"`         // The cluster node name.
 	Snapname string `url:"snapname" json:"snapname"` // The name of the snapshot.
 	Vmid     int    `url:"vmid" json:"vmid"`         // The (unique) ID of the VM.
 
-}
-
-type GetSnapshotConfigResponse map[string]interface{}
-
-// GetSnapshotConfig Get snapshot configuration
-func (c *Client) GetSnapshotConfig(ctx context.Context, req *GetSnapshotConfigRequest) (*GetSnapshotConfigResponse, error) {
-	var resp *GetSnapshotConfigResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/snapshot/{snapname}/config", "GET", &resp, req)
-	return resp, err
 }
 
 type UpdateSnapshotConfigRequest struct {
@@ -127,16 +79,6 @@ type UpdateSnapshotConfigRequest struct {
 	Description *string `url:"description,omitempty" json:"description,omitempty"` // A textual description or comment.
 }
 
-type UpdateSnapshotConfigResponse map[string]interface{}
-
-// UpdateSnapshotConfig Update snapshot metadata.
-func (c *Client) UpdateSnapshotConfig(ctx context.Context, req *UpdateSnapshotConfigRequest) (*UpdateSnapshotConfigResponse, error) {
-	var resp *UpdateSnapshotConfigResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/snapshot/{snapname}/config", "PUT", &resp, req)
-	return resp, err
-}
-
 type RollbackRequest struct {
 	Node     string `url:"node" json:"node"`         // The cluster node name.
 	Snapname string `url:"snapname" json:"snapname"` // The name of the snapshot.
@@ -146,11 +88,56 @@ type RollbackRequest struct {
 	Start *util.SpecialBool `url:"start,omitempty" json:"start,omitempty"` // Whether the VM should get started after rolling back successfully
 }
 
-type RollbackResponse string
+// Index List all snapshots.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/snapshot", "GET", &resp, req)
+	return resp, err
+}
+
+// Create Snapshot a VM.
+func (c *Client) Create(ctx context.Context, req CreateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/snapshot", "POST", &resp, req)
+	return resp, err
+}
+
+// Find
+func (c *Client) Find(ctx context.Context, req FindRequest) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/snapshot/{snapname}", "GET", &resp, req)
+	return resp, err
+}
+
+// Delete Delete a VM snapshot.
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/snapshot/{snapname}", "DELETE", &resp, req)
+	return resp, err
+}
+
+// GetSnapshotConfig Get snapshot configuration
+func (c *Client) GetSnapshotConfig(ctx context.Context, req GetSnapshotConfigRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/snapshot/{snapname}/config", "GET", &resp, req)
+	return resp, err
+}
+
+// UpdateSnapshotConfig Update snapshot metadata.
+func (c *Client) UpdateSnapshotConfig(ctx context.Context, req UpdateSnapshotConfigRequest) error {
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/snapshot/{snapname}/config", "PUT", nil, req)
+	return err
+}
 
 // Rollback Rollback VM state to specified snapshot.
-func (c *Client) Rollback(ctx context.Context, req *RollbackRequest) (*RollbackResponse, error) {
-	var resp *RollbackResponse
+func (c *Client) Rollback(ctx context.Context, req RollbackRequest) (string, error) {
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/snapshot/{snapname}/rollback", "POST", &resp, req)
 	return resp, err

@@ -26,7 +26,7 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	State string `url:"state" json:"state"` // State of the MDS
 
 	// The following parameters are optional
@@ -34,14 +34,6 @@ type IndexResponse []*struct {
 	Host          *string           `url:"host,omitempty" json:"host,omitempty"`
 	Rank          *int              `url:"rank,omitempty" json:"rank,omitempty"`
 	StandbyReplay *util.SpecialBool `url:"standby_replay,omitempty" json:"standby_replay,omitempty"` // If true, the standby MDS is polling the active MDS for faster recovery (hot standby).
-}
-
-// Index MDS directory index.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/mds", "GET", &resp, req)
-	return resp, err
 }
 
 type ChildCreateRequest struct {
@@ -52,27 +44,31 @@ type ChildCreateRequest struct {
 	Name       *string           `url:"name,omitempty" json:"name,omitempty"`             // The ID for the mds, when omitted the same as the nodename
 }
 
-type ChildCreateResponse string
-
-// ChildCreate Create Ceph Metadata Server (MDS)
-func (c *Client) ChildCreate(ctx context.Context, req *ChildCreateRequest) (*ChildCreateResponse, error) {
-	var resp *ChildCreateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/mds/{name}", "POST", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Name string `url:"name" json:"name"` // The name (ID) of the mds
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
-type DeleteResponse string
+// Index MDS directory index.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/mds", "GET", &resp, req)
+	return resp, err
+}
+
+// ChildCreate Create Ceph Metadata Server (MDS)
+func (c *Client) ChildCreate(ctx context.Context, req ChildCreateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/mds/{name}", "POST", &resp, req)
+	return resp, err
+}
 
 // Delete Destroy Ceph Metadata Server
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) (string, error) {
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/mds/{name}", "DELETE", &resp, req)
 	return resp, err

@@ -26,22 +26,12 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*map[string]interface{}
-
-// Index Node index.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates", "GET", &resp, req)
-	return resp, err
-}
-
 type InfoRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
-type InfoResponse []*struct {
+type InfoResponse struct {
 
 	// The following parameters are optional
 	Filename      *string  `url:"filename,omitempty" json:"filename,omitempty"`
@@ -54,14 +44,6 @@ type InfoResponse []*struct {
 	PublicKeyType *string  `url:"public-key-type,omitempty" json:"public-key-type,omitempty"` // Certificate's public key algorithm
 	San           []string `url:"san,omitempty" json:"san,omitempty"`                         // List of Certificate's SubjectAlternativeName entries.
 	Subject       *string  `url:"subject,omitempty" json:"subject,omitempty"`                 // Certificate subject name.
-}
-
-// Info Get information about node's certificates.
-func (c *Client) Info(ctx context.Context, req *InfoRequest) (*InfoResponse, error) {
-	var resp *InfoResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates/info", "GET", &resp, req)
-	return resp, err
 }
 
 type UploadCustomCertCustomRequest struct {
@@ -89,14 +71,6 @@ type UploadCustomCertCustomResponse struct {
 	Subject       *string  `url:"subject,omitempty" json:"subject,omitempty"`                 // Certificate subject name.
 }
 
-// UploadCustomCertCustom Upload or update custom certificate chain and key.
-func (c *Client) UploadCustomCertCustom(ctx context.Context, req *UploadCustomCertCustomRequest) (*UploadCustomCertCustomResponse, error) {
-	var resp *UploadCustomCertCustomResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates/custom", "POST", &resp, req)
-	return resp, err
-}
-
 type RemoveCustomCertCustomRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
@@ -104,12 +78,33 @@ type RemoveCustomCertCustomRequest struct {
 	Restart *util.SpecialBool `url:"restart,omitempty" json:"restart,omitempty"` // Restart pveproxy.
 }
 
-type RemoveCustomCertCustomResponse map[string]interface{}
+// Index Node index.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates", "GET", &resp, req)
+	return resp, err
+}
+
+// Info Get information about node's certificates.
+func (c *Client) Info(ctx context.Context, req InfoRequest) ([]InfoResponse, error) {
+	var resp []InfoResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates/info", "GET", &resp, req)
+	return resp, err
+}
+
+// UploadCustomCertCustom Upload or update custom certificate chain and key.
+func (c *Client) UploadCustomCertCustom(ctx context.Context, req UploadCustomCertCustomRequest) (UploadCustomCertCustomResponse, error) {
+	var resp UploadCustomCertCustomResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates/custom", "POST", &resp, req)
+	return resp, err
+}
 
 // RemoveCustomCertCustom DELETE custom certificate chain and key.
-func (c *Client) RemoveCustomCertCustom(ctx context.Context, req *RemoveCustomCertCustomRequest) (*RemoveCustomCertCustomResponse, error) {
-	var resp *RemoveCustomCertCustomResponse
+func (c *Client) RemoveCustomCertCustom(ctx context.Context, req RemoveCustomCertCustomRequest) error {
 
-	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates/custom", "DELETE", &resp, req)
-	return resp, err
+	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates/custom", "DELETE", nil, req)
+	return err
 }

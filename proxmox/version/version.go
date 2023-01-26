@@ -30,8 +30,8 @@ type IndexResponse struct {
 }
 
 // Index API version details, including some parts of the global datacenter config.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
+func (c *Client) Index(ctx context.Context) (IndexResponse, error) {
+	var resp IndexResponse
 
 	err := c.httpClient.Do(ctx, "/version", "GET", &resp, nil)
 	return resp, err

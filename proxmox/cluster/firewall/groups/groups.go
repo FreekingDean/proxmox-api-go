@@ -20,20 +20,12 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Digest string `url:"digest" json:"digest"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 	Group  string `url:"group" json:"group"`   // Security Group name.
 
 	// The following parameters are optional
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
-}
-
-// Index List security groups.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/firewall/groups", "GET", &resp, nil)
-	return resp, err
 }
 
 type CreateRequest struct {
@@ -45,31 +37,13 @@ type CreateRequest struct {
 	Rename  *string `url:"rename,omitempty" json:"rename,omitempty"` // Rename/update an existing security group. You can set 'rename' to the same value as 'name' to update the 'comment' of an existing group.
 }
 
-type CreateResponse map[string]interface{}
-
-// Create Create new security group.
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/firewall/groups", "POST", &resp, req)
-	return resp, err
-}
-
 type FindRequest struct {
 	Group string `url:"group" json:"group"` // Security Group name.
 
 }
 
-type FindResponse []*struct {
+type FindResponse struct {
 	Pos int `url:"pos" json:"pos"`
-}
-
-// Find List rules.
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/firewall/groups/{group}", "GET", &resp, req)
-	return resp, err
 }
 
 type ChildCreateRequest struct {
@@ -93,29 +67,9 @@ type ChildCreateRequest struct {
 	Sport    *string `url:"sport,omitempty" json:"sport,omitempty"`         // Restrict TCP/UDP source port. You can use service names or simple numbers (0-65535), as defined in '/etc/services'. Port ranges can be specified with '\d+:\d+', for example '80:85', and you can use comma separated list to match several ports or ranges.
 }
 
-type ChildCreateResponse map[string]interface{}
-
-// ChildCreate Create new rule.
-func (c *Client) ChildCreate(ctx context.Context, req *ChildCreateRequest) (*ChildCreateResponse, error) {
-	var resp *ChildCreateResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/firewall/groups/{group}", "POST", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Group string `url:"group" json:"group"` // Security Group name.
 
-}
-
-type DeleteResponse map[string]interface{}
-
-// Delete Delete security group.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/firewall/groups/{group}", "DELETE", &resp, req)
-	return resp, err
 }
 
 type GetRulePosRequest struct {
@@ -145,14 +99,6 @@ type GetRulePosResponse struct {
 	Sport     *string `url:"sport,omitempty" json:"sport,omitempty"`
 }
 
-// GetRulePos Get single rule data.
-func (c *Client) GetRulePos(ctx context.Context, req *GetRulePosRequest) (*GetRulePosResponse, error) {
-	var resp *GetRulePosResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/firewall/groups/{group}/{pos}", "GET", &resp, req)
-	return resp, err
-}
-
 type UpdateRulePosRequest struct {
 	Group string `url:"group" json:"group"` // Security Group name.
 
@@ -176,16 +122,6 @@ type UpdateRulePosRequest struct {
 	Type     *string `url:"type,omitempty" json:"type,omitempty"`           // Rule type.
 }
 
-type UpdateRulePosResponse map[string]interface{}
-
-// UpdateRulePos Modify rule data.
-func (c *Client) UpdateRulePos(ctx context.Context, req *UpdateRulePosRequest) (*UpdateRulePosResponse, error) {
-	var resp *UpdateRulePosResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/firewall/groups/{group}/{pos}", "PUT", &resp, req)
-	return resp, err
-}
-
 type DeleteRulePosRequest struct {
 	Group string `url:"group" json:"group"` // Security Group name.
 
@@ -194,12 +130,61 @@ type DeleteRulePosRequest struct {
 	Pos    *int    `url:"pos,omitempty" json:"pos,omitempty"`       // Update rule at position <pos>.
 }
 
-type DeleteRulePosResponse map[string]interface{}
+// Index List security groups.
+func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/cluster/firewall/groups", "GET", &resp, nil)
+	return resp, err
+}
+
+// Create Create new security group.
+func (c *Client) Create(ctx context.Context, req CreateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/cluster/firewall/groups", "POST", nil, req)
+	return err
+}
+
+// Find List rules.
+func (c *Client) Find(ctx context.Context, req FindRequest) ([]FindResponse, error) {
+	var resp []FindResponse
+
+	err := c.httpClient.Do(ctx, "/cluster/firewall/groups/{group}", "GET", &resp, req)
+	return resp, err
+}
+
+// ChildCreate Create new rule.
+func (c *Client) ChildCreate(ctx context.Context, req ChildCreateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/cluster/firewall/groups/{group}", "POST", nil, req)
+	return err
+}
+
+// Delete Delete security group.
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) error {
+
+	err := c.httpClient.Do(ctx, "/cluster/firewall/groups/{group}", "DELETE", nil, req)
+	return err
+}
+
+// GetRulePos Get single rule data.
+func (c *Client) GetRulePos(ctx context.Context, req GetRulePosRequest) (GetRulePosResponse, error) {
+	var resp GetRulePosResponse
+
+	err := c.httpClient.Do(ctx, "/cluster/firewall/groups/{group}/{pos}", "GET", &resp, req)
+	return resp, err
+}
+
+// UpdateRulePos Modify rule data.
+func (c *Client) UpdateRulePos(ctx context.Context, req UpdateRulePosRequest) error {
+
+	err := c.httpClient.Do(ctx, "/cluster/firewall/groups/{group}/{pos}", "PUT", nil, req)
+	return err
+}
 
 // DeleteRulePos Delete rule.
-func (c *Client) DeleteRulePos(ctx context.Context, req *DeleteRulePosRequest) (*DeleteRulePosResponse, error) {
-	var resp *DeleteRulePosResponse
+func (c *Client) DeleteRulePos(ctx context.Context, req DeleteRulePosRequest) error {
 
-	err := c.httpClient.Do(ctx, "/cluster/firewall/groups/{group}/{pos}", "DELETE", &resp, req)
-	return resp, err
+	err := c.httpClient.Do(ctx, "/cluster/firewall/groups/{group}/{pos}", "DELETE", nil, req)
+	return err
 }

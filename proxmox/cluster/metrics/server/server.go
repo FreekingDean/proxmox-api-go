@@ -21,7 +21,7 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Disable util.SpecialBool `url:"disable" json:"disable"` // Flag to disable the plugin.
 	Id      string           `url:"id" json:"id"`           // The ID of the entry.
 	Port    int              `url:"port" json:"port"`       // Server network port
@@ -30,26 +30,8 @@ type IndexResponse []*struct {
 
 }
 
-// Index List configured metric servers.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/metrics/server", "GET", &resp, nil)
-	return resp, err
-}
-
 type FindRequest struct {
 	Id string `url:"id" json:"id"`
-}
-
-type FindResponse map[string]interface{}
-
-// Find Read metric server configuration.
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/metrics/server/{id}", "GET", &resp, req)
-	return resp, err
 }
 
 type ChildCreateRequest struct {
@@ -71,16 +53,6 @@ type ChildCreateRequest struct {
 	Timeout           *int              `url:"timeout,omitempty" json:"timeout,omitempty"`                       // graphite TCP socket timeout (default=1)
 	Token             *string           `url:"token,omitempty" json:"token,omitempty"`                           // The InfluxDB access token. Only necessary when using the http v2 api. If the v2 compatibility api is used, use 'user:password' instead.
 	VerifyCertificate *util.SpecialBool `url:"verify-certificate,omitempty" json:"verify-certificate,omitempty"` // Set to 0 to disable certificate verification for https endpoints.
-}
-
-type ChildCreateResponse map[string]interface{}
-
-// ChildCreate Create a new external metric server config
-func (c *Client) ChildCreate(ctx context.Context, req *ChildCreateRequest) (*ChildCreateResponse, error) {
-	var resp *ChildCreateResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/metrics/server/{id}", "POST", &resp, req)
-	return resp, err
 }
 
 type UpdateRequest struct {
@@ -105,26 +77,43 @@ type UpdateRequest struct {
 	VerifyCertificate *util.SpecialBool `url:"verify-certificate,omitempty" json:"verify-certificate,omitempty"` // Set to 0 to disable certificate verification for https endpoints.
 }
 
-type UpdateResponse map[string]interface{}
-
-// Update Update metric server configuration.
-func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateResponse, error) {
-	var resp *UpdateResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/metrics/server/{id}", "PUT", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Id string `url:"id" json:"id"`
 }
 
-type DeleteResponse map[string]interface{}
+// Index List configured metric servers.
+func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/cluster/metrics/server", "GET", &resp, nil)
+	return resp, err
+}
+
+// Find Read metric server configuration.
+func (c *Client) Find(ctx context.Context, req FindRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/cluster/metrics/server/{id}", "GET", &resp, req)
+	return resp, err
+}
+
+// ChildCreate Create a new external metric server config
+func (c *Client) ChildCreate(ctx context.Context, req ChildCreateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/cluster/metrics/server/{id}", "POST", nil, req)
+	return err
+}
+
+// Update Update metric server configuration.
+func (c *Client) Update(ctx context.Context, req UpdateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/cluster/metrics/server/{id}", "PUT", nil, req)
+	return err
+}
 
 // Delete Remove Metric server.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) error {
 
-	err := c.httpClient.Do(ctx, "/cluster/metrics/server/{id}", "DELETE", &resp, req)
-	return resp, err
+	err := c.httpClient.Do(ctx, "/cluster/metrics/server/{id}", "DELETE", nil, req)
+	return err
 }

@@ -21,16 +21,8 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Group string `url:"group" json:"group"`
-}
-
-// Index Get HA groups.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/ha/groups", "GET", &resp, nil)
-	return resp, err
 }
 
 type CreateRequest struct {
@@ -44,26 +36,9 @@ type CreateRequest struct {
 	Type       *string           `url:"type,omitempty" json:"type,omitempty"`             // Group type.
 }
 
-type CreateResponse map[string]interface{}
-
-// Create Create a new HA group.
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/ha/groups", "POST", &resp, req)
-	return resp, err
-}
-
 type FindRequest struct {
 	Group string `url:"group" json:"group"` // The HA group identifier.
 
-}
-
-// Find Read ha group configuration.
-func (c *Client) Find(ctx context.Context, req *FindRequest) error {
-
-	err := c.httpClient.Do(ctx, "/cluster/ha/groups/{group}", "GET", nil, req)
-	return err
 }
 
 type UpdateRequest struct {
@@ -78,27 +53,43 @@ type UpdateRequest struct {
 	Restricted *util.SpecialBool `url:"restricted,omitempty" json:"restricted,omitempty"` // Resources bound to restricted groups may only run on nodes defined by the group.
 }
 
-type UpdateResponse map[string]interface{}
-
-// Update Update ha group configuration.
-func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateResponse, error) {
-	var resp *UpdateResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/ha/groups/{group}", "PUT", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Group string `url:"group" json:"group"` // The HA group identifier.
 
 }
 
-type DeleteResponse map[string]interface{}
+// Index Get HA groups.
+func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/cluster/ha/groups", "GET", &resp, nil)
+	return resp, err
+}
+
+// Create Create a new HA group.
+func (c *Client) Create(ctx context.Context, req CreateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/cluster/ha/groups", "POST", nil, req)
+	return err
+}
+
+// Find Read ha group configuration.
+func (c *Client) Find(ctx context.Context, req FindRequest) error {
+
+	err := c.httpClient.Do(ctx, "/cluster/ha/groups/{group}", "GET", nil, req)
+	return err
+}
+
+// Update Update ha group configuration.
+func (c *Client) Update(ctx context.Context, req UpdateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/cluster/ha/groups/{group}", "PUT", nil, req)
+	return err
+}
 
 // Delete Delete ha group configuration.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) error {
 
-	err := c.httpClient.Do(ctx, "/cluster/ha/groups/{group}", "DELETE", &resp, req)
-	return resp, err
+	err := c.httpClient.Do(ctx, "/cluster/ha/groups/{group}", "DELETE", nil, req)
+	return err
 }

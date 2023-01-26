@@ -21,16 +21,6 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*map[string]interface{}
-
-// Index List replication jobs.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/replication", "GET", &resp, nil)
-	return resp, err
-}
-
 type CreateRequest struct {
 	Id     string `url:"id" json:"id"`         // Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. '<GUEST>-<JOBNUM>'.
 	Target string `url:"target" json:"target"` // Target node.
@@ -45,29 +35,9 @@ type CreateRequest struct {
 	Source    *string           `url:"source,omitempty" json:"source,omitempty"`         // For internal use, to detect if the guest was stolen.
 }
 
-type CreateResponse map[string]interface{}
-
-// Create Create a new replication job
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/replication", "POST", &resp, req)
-	return resp, err
-}
-
 type FindRequest struct {
 	Id string `url:"id" json:"id"` // Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. '<GUEST>-<JOBNUM>'.
 
-}
-
-type FindResponse map[string]interface{}
-
-// Find Read replication job configuration.
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/replication/{id}", "GET", &resp, req)
-	return resp, err
 }
 
 type UpdateRequest struct {
@@ -84,16 +54,6 @@ type UpdateRequest struct {
 	Source    *string           `url:"source,omitempty" json:"source,omitempty"`         // For internal use, to detect if the guest was stolen.
 }
 
-type UpdateResponse map[string]interface{}
-
-// Update Update replication job configuration.
-func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateResponse, error) {
-	var resp *UpdateResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/replication/{id}", "PUT", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Id string `url:"id" json:"id"` // Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. '<GUEST>-<JOBNUM>'.
 
@@ -102,12 +62,39 @@ type DeleteRequest struct {
 	Keep  *util.SpecialBool `url:"keep,omitempty" json:"keep,omitempty"`   // Keep replicated data at target (do not remove).
 }
 
-type DeleteResponse map[string]interface{}
+// Index List replication jobs.
+func (c *Client) Index(ctx context.Context) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/cluster/replication", "GET", &resp, nil)
+	return resp, err
+}
+
+// Create Create a new replication job
+func (c *Client) Create(ctx context.Context, req CreateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/cluster/replication", "POST", nil, req)
+	return err
+}
+
+// Find Read replication job configuration.
+func (c *Client) Find(ctx context.Context, req FindRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/cluster/replication/{id}", "GET", &resp, req)
+	return resp, err
+}
+
+// Update Update replication job configuration.
+func (c *Client) Update(ctx context.Context, req UpdateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/cluster/replication/{id}", "PUT", nil, req)
+	return err
+}
 
 // Delete Mark replication job for removal.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) error {
 
-	err := c.httpClient.Do(ctx, "/cluster/replication/{id}", "DELETE", &resp, req)
-	return resp, err
+	err := c.httpClient.Do(ctx, "/cluster/replication/{id}", "DELETE", nil, req)
+	return err
 }

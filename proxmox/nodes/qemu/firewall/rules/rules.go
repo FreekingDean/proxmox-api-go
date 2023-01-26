@@ -26,16 +26,8 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Pos int `url:"pos" json:"pos"`
-}
-
-// Index List rules.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/firewall/rules", "GET", &resp, req)
-	return resp, err
 }
 
 type CreateRequest struct {
@@ -58,16 +50,6 @@ type CreateRequest struct {
 	Proto    *string `url:"proto,omitempty" json:"proto,omitempty"`         // IP protocol. You can use protocol names ('tcp'/'udp') or simple numbers, as defined in '/etc/protocols'.
 	Source   *string `url:"source,omitempty" json:"source,omitempty"`       // Restrict packet source address. This can refer to a single IP address, an IP set ('+ipsetname') or an IP alias definition. You can also specify an address range like '20.34.101.207-201.3.9.99', or a list of IP addresses and networks (entries are separated by comma). Please do not mix IPv4 and IPv6 addresses inside such lists.
 	Sport    *string `url:"sport,omitempty" json:"sport,omitempty"`         // Restrict TCP/UDP source port. You can use service names or simple numbers (0-65535), as defined in '/etc/services'. Port ranges can be specified with '\d+:\d+', for example '80:85', and you can use comma separated list to match several ports or ranges.
-}
-
-type CreateResponse map[string]interface{}
-
-// Create Create new rule.
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/firewall/rules", "POST", &resp, req)
-	return resp, err
 }
 
 type FindRequest struct {
@@ -98,14 +80,6 @@ type FindResponse struct {
 	Sport     *string `url:"sport,omitempty" json:"sport,omitempty"`
 }
 
-// Find Get single rule data.
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/firewall/rules/{pos}", "GET", &resp, req)
-	return resp, err
-}
-
 type UpdateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
@@ -130,16 +104,6 @@ type UpdateRequest struct {
 	Type     *string `url:"type,omitempty" json:"type,omitempty"`           // Rule type.
 }
 
-type UpdateResponse map[string]interface{}
-
-// Update Modify rule data.
-func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateResponse, error) {
-	var resp *UpdateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/firewall/rules/{pos}", "PUT", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
@@ -149,12 +113,39 @@ type DeleteRequest struct {
 	Pos    *int    `url:"pos,omitempty" json:"pos,omitempty"`       // Update rule at position <pos>.
 }
 
-type DeleteResponse map[string]interface{}
+// Index List rules.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/firewall/rules", "GET", &resp, req)
+	return resp, err
+}
+
+// Create Create new rule.
+func (c *Client) Create(ctx context.Context, req CreateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/firewall/rules", "POST", nil, req)
+	return err
+}
+
+// Find Get single rule data.
+func (c *Client) Find(ctx context.Context, req FindRequest) (FindResponse, error) {
+	var resp FindResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/firewall/rules/{pos}", "GET", &resp, req)
+	return resp, err
+}
+
+// Update Modify rule data.
+func (c *Client) Update(ctx context.Context, req UpdateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/firewall/rules/{pos}", "PUT", nil, req)
+	return err
+}
 
 // Delete Delete rule.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) error {
 
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/firewall/rules/{pos}", "DELETE", &resp, req)
-	return resp, err
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/firewall/rules/{pos}", "DELETE", nil, req)
+	return err
 }

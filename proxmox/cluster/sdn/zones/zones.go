@@ -29,7 +29,7 @@ type IndexRequest struct {
 	Type    *string           `url:"type,omitempty" json:"type,omitempty"`       // Only list SDN zones of specific type
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Type string `url:"type" json:"type"`
 	Zone string `url:"zone" json:"zone"`
 
@@ -43,14 +43,6 @@ type IndexResponse []*struct {
 	State      *string `url:"state,omitempty" json:"state,omitempty"`
 }
 
-// Index SDN zones index.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/sdn/zones", "GET", &resp, req)
-	return resp, err
-}
-
 type CreateRequest struct {
 	Type string `url:"type" json:"type"` // Plugin type.
 	Zone string `url:"zone" json:"zone"` // The SDN zone object identifier.
@@ -62,7 +54,7 @@ type CreateRequest struct {
 	Controller               *string           `url:"controller,omitempty" json:"controller,omitempty"`                                   // Frr router name
 	DisableArpNdSuppression  *util.SpecialBool `url:"disable-arp-nd-suppression,omitempty" json:"disable-arp-nd-suppression,omitempty"`   // Disable ipv4 arp && ipv6 neighbour discovery suppression
 	Dns                      *string           `url:"dns,omitempty" json:"dns,omitempty"`                                                 // dns api server
-	Dnszone                  *string           `url:"dnszone,omitempty" json:"dnszone,omitempty"`                                         // dns domain zone  ex: mydomain.com
+	Dnszone                  *string           `url:"dnszone,omitempty" json:"dnszone,omitempty"`                                         // dns domain zone ex: mydomain.com
 	DpId                     *int              `url:"dp-id,omitempty" json:"dp-id,omitempty"`                                             // Faucet dataplane id
 	Exitnodes                *string           `url:"exitnodes,omitempty" json:"exitnodes,omitempty"`                                     // List of cluster node names.
 	ExitnodesLocalRouting    *util.SpecialBool `url:"exitnodes-local-routing,omitempty" json:"exitnodes-local-routing,omitempty"`         // Allow exitnodes to connect to evpn guests
@@ -79,32 +71,12 @@ type CreateRequest struct {
 	VrfVxlan                 *int              `url:"vrf-vxlan,omitempty" json:"vrf-vxlan,omitempty"` // l3vni.
 }
 
-type CreateResponse map[string]interface{}
-
-// Create Create a new sdn zone object.
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/sdn/zones", "POST", &resp, req)
-	return resp, err
-}
-
 type FindRequest struct {
 	Zone string `url:"zone" json:"zone"` // The SDN zone object identifier.
 
 	// The following parameters are optional
 	Pending *util.SpecialBool `url:"pending,omitempty" json:"pending,omitempty"` // Display pending config.
 	Running *util.SpecialBool `url:"running,omitempty" json:"running,omitempty"` // Display running config.
-}
-
-type FindResponse map[string]interface{}
-
-// Find Read sdn zone configuration.
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/sdn/zones/{zone}", "GET", &resp, req)
-	return resp, err
 }
 
 type UpdateRequest struct {
@@ -119,7 +91,7 @@ type UpdateRequest struct {
 	Digest                   *string           `url:"digest,omitempty" json:"digest,omitempty"`                                           // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 	DisableArpNdSuppression  *util.SpecialBool `url:"disable-arp-nd-suppression,omitempty" json:"disable-arp-nd-suppression,omitempty"`   // Disable ipv4 arp && ipv6 neighbour discovery suppression
 	Dns                      *string           `url:"dns,omitempty" json:"dns,omitempty"`                                                 // dns api server
-	Dnszone                  *string           `url:"dnszone,omitempty" json:"dnszone,omitempty"`                                         // dns domain zone  ex: mydomain.com
+	Dnszone                  *string           `url:"dnszone,omitempty" json:"dnszone,omitempty"`                                         // dns domain zone ex: mydomain.com
 	DpId                     *int              `url:"dp-id,omitempty" json:"dp-id,omitempty"`                                             // Faucet dataplane id
 	Exitnodes                *string           `url:"exitnodes,omitempty" json:"exitnodes,omitempty"`                                     // List of cluster node names.
 	ExitnodesLocalRouting    *util.SpecialBool `url:"exitnodes-local-routing,omitempty" json:"exitnodes-local-routing,omitempty"`         // Allow exitnodes to connect to evpn guests
@@ -136,27 +108,44 @@ type UpdateRequest struct {
 	VrfVxlan                 *int              `url:"vrf-vxlan,omitempty" json:"vrf-vxlan,omitempty"` // l3vni.
 }
 
-type UpdateResponse map[string]interface{}
-
-// Update Update sdn zone object configuration.
-func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateResponse, error) {
-	var resp *UpdateResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/sdn/zones/{zone}", "PUT", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Zone string `url:"zone" json:"zone"` // The SDN zone object identifier.
 
 }
 
-type DeleteResponse map[string]interface{}
+// Index SDN zones index.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/cluster/sdn/zones", "GET", &resp, req)
+	return resp, err
+}
+
+// Create Create a new sdn zone object.
+func (c *Client) Create(ctx context.Context, req CreateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/cluster/sdn/zones", "POST", nil, req)
+	return err
+}
+
+// Find Read sdn zone configuration.
+func (c *Client) Find(ctx context.Context, req FindRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/cluster/sdn/zones/{zone}", "GET", &resp, req)
+	return resp, err
+}
+
+// Update Update sdn zone object configuration.
+func (c *Client) Update(ctx context.Context, req UpdateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/cluster/sdn/zones/{zone}", "PUT", nil, req)
+	return err
+}
 
 // Delete Delete sdn zone object configuration.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) error {
 
-	err := c.httpClient.Do(ctx, "/cluster/sdn/zones/{zone}", "DELETE", &resp, req)
-	return resp, err
+	err := c.httpClient.Do(ctx, "/cluster/sdn/zones/{zone}", "DELETE", nil, req)
+	return err
 }

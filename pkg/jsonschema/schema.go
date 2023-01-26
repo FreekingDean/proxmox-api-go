@@ -34,6 +34,7 @@ type JSONSchema struct {
 	Links                []*Link                `json:"links"`
 	Optional             SpecialBool            `json:"optional"`
 	TypeText             string                 `json:"typeText"`
+	Format               *StringOrMap           `json:"format"`
 }
 
 type Link struct {
@@ -51,7 +52,26 @@ type SchemaOrString struct {
 	String string
 }
 
+type StringOrMap struct {
+	Map    map[string]*JSONSchema
+	String string
+}
+
 type SpecialBool bool
+
+func (s *StringOrMap) UnmarshalJSON(data []byte) error {
+	if data[0] == '{' {
+		s.String = "object"
+		var v map[string]*JSONSchema
+		if err := json.Unmarshal(data, &v); err != nil {
+			return err
+		}
+		s.Map = v
+		return nil
+	}
+	s.String = string(data[1 : len(data)-1])
+	return nil
+}
 
 func (s *SpecialBool) UnmarshalJSON(data []byte) error {
 	if string(data[0:1]) == "1" || string(data[0:3]) == `"1"` {

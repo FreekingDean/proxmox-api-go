@@ -4,7 +4,12 @@ package lxc
 
 import (
 	"context"
+	"fmt"
+	"net/url"
+	"strings"
+
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
+	"github.com/google/go-querystring/query"
 )
 
 type HTTPClient interface {
@@ -26,7 +31,7 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Status string `url:"status" json:"status"` // LXC Container status.
 	Vmid   int    `url:"vmid" json:"vmid"`     // The (unique) ID of the VM.
 
@@ -41,12 +46,442 @@ type IndexResponse []*struct {
 	Uptime  *int     `url:"uptime,omitempty" json:"uptime,omitempty"`   // Uptime.
 }
 
-// Index LXC container index (per node).
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
+// Array of Mpn
+type MpnArr []Mpn
 
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc", "GET", &resp, req)
-	return resp, err
+func (t *MpnArr) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct {
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
+}
+
+// Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
+type Mpn struct {
+	Mp     string `url:"mp" json:"mp"`         // Path to the mount point as seen from inside the container (must not contain symlinks).
+	Volume string `url:"volume" json:"volume"` // Volume, device or directory to mount into the container.
+
+	// The following parameters are optional
+	Acl          *util.SpecialBool `url:"acl,omitempty" json:"acl,omitempty"`                   // Explicitly enable or disable ACL support.
+	Backup       *util.SpecialBool `url:"backup,omitempty" json:"backup,omitempty"`             // Whether to include the mount point in backups.
+	Mountoptions *string           `url:"mountoptions,omitempty" json:"mountoptions,omitempty"` // Extra mount options for rootfs/mps.
+	Quota        *util.SpecialBool `url:"quota,omitempty" json:"quota,omitempty"`               // Enable user quotas inside the container (not supported with zfs subvolumes)
+	Replicate    *util.SpecialBool `url:"replicate,omitempty" json:"replicate,omitempty"`       // Will include this volume to a storage replica job.
+	Ro           *util.SpecialBool `url:"ro,omitempty" json:"ro,omitempty"`                     // Read-only mount point
+	Shared       *util.SpecialBool `url:"shared,omitempty" json:"shared,omitempty"`             // Mark this non-volume mount point as available on multiple nodes (see 'nodes')
+	Size         *string           `url:"size,omitempty" json:"size,omitempty"`                 // Volume size (read only value).
+}
+
+func (t *Mpn) EncodeValues(key string, v *url.Values) error {
+	valueStrParts := []string{
+		fmt.Sprintf("%s=%v", "mp", t.Mp),
+
+		fmt.Sprintf("%s=%v", "volume", t.Volume),
+	}
+	if t.Acl != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "acl", *t.Acl),
+		)
+	}
+
+	if t.Backup != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "backup", *t.Backup),
+		)
+	}
+
+	if t.Mountoptions != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "mountoptions", *t.Mountoptions),
+		)
+	}
+
+	if t.Quota != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "quota", *t.Quota),
+		)
+	}
+
+	if t.Replicate != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "replicate", *t.Replicate),
+		)
+	}
+
+	if t.Ro != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "ro", *t.Ro),
+		)
+	}
+
+	if t.Shared != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "shared", *t.Shared),
+		)
+	}
+
+	if t.Size != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "size", *t.Size),
+		)
+	}
+
+	v.Set(key, strings.Join(valueStrParts, ", "))
+	return nil
+}
+
+// Array of Features
+type FeaturesArr []Features
+
+func (t *FeaturesArr) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct {
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
+}
+
+// Allow containers access to advanced features.
+type Features struct {
+
+	// The following parameters are optional
+	ForceRwSys *util.SpecialBool `url:"force_rw_sys,omitempty" json:"force_rw_sys,omitempty"` // Mount /sys in unprivileged containers as `rw` instead of `mixed`. This can break networking under newer (>= v245) systemd-network use.
+	Fuse       *util.SpecialBool `url:"fuse,omitempty" json:"fuse,omitempty"`                 // Allow using 'fuse' file systems in a container. Note that interactions between fuse and the freezer cgroup can potentially cause I/O deadlocks.
+	Keyctl     *util.SpecialBool `url:"keyctl,omitempty" json:"keyctl,omitempty"`             // For unprivileged containers only: Allow the use of the keyctl() system call. This is required to use docker inside a container. By default unprivileged containers will see this system call as non-existent. This is mostly a workaround for systemd-networkd, as it will treat it as a fatal error when some keyctl() operations are denied by the kernel due to lacking permissions. Essentially, you can choose between running systemd-networkd or docker.
+	Mknod      *util.SpecialBool `url:"mknod,omitempty" json:"mknod,omitempty"`               // Allow unprivileged containers to use mknod() to add certain device nodes. This requires a kernel with seccomp trap to user space support (5.3 or newer). This is experimental.
+	Mount      *string           `url:"mount,omitempty" json:"mount,omitempty"`               // Allow mounting file systems of specific types. This should be a list of file system types as used with the mount command. Note that this can have negative effects on the container's security. With access to a loop device, mounting a file can circumvent the mknod permission of the devices cgroup, mounting an NFS file system can block the host's I/O completely and prevent it from rebooting, etc.
+	Nesting    *util.SpecialBool `url:"nesting,omitempty" json:"nesting,omitempty"`           // Allow nesting. Best used with unprivileged containers with additional id mapping. Note that this will expose procfs and sysfs contents of the host to the guest.
+}
+
+func (t *Features) EncodeValues(key string, v *url.Values) error {
+	valueStrParts := []string{}
+	if t.ForceRwSys != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "force_rw_sys", *t.ForceRwSys),
+		)
+	}
+
+	if t.Fuse != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "fuse", *t.Fuse),
+		)
+	}
+
+	if t.Keyctl != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "keyctl", *t.Keyctl),
+		)
+	}
+
+	if t.Mknod != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "mknod", *t.Mknod),
+		)
+	}
+
+	if t.Mount != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "mount", *t.Mount),
+		)
+	}
+
+	if t.Nesting != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "nesting", *t.Nesting),
+		)
+	}
+
+	v.Set(key, strings.Join(valueStrParts, ", "))
+	return nil
+}
+
+// Array of Unusedn
+type UnusednArr []Unusedn
+
+func (t *UnusednArr) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct {
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
+}
+
+// Reference to unused volumes. This is used internally, and should not be modified manually.
+type Unusedn struct {
+	Volume string `url:"volume" json:"volume"` // The volume that is not used currently.
+
+}
+
+func (t *Unusedn) EncodeValues(key string, v *url.Values) error {
+	valueStrParts := []string{
+		fmt.Sprintf("%s=%v", "volume", t.Volume),
+	}
+	v.Set(key, strings.Join(valueStrParts, ", "))
+	return nil
+}
+
+// Array of Netn
+type NetnArr []Netn
+
+func (t *NetnArr) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct {
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
+}
+
+// Specifies network interfaces for the container.
+type Netn struct {
+	Name string `url:"name" json:"name"` // Name of the network device as seen from inside the container. (lxc.network.name)
+
+	// The following parameters are optional
+	Bridge   *string           `url:"bridge,omitempty" json:"bridge,omitempty"`     // Bridge to attach the network device to.
+	Firewall *util.SpecialBool `url:"firewall,omitempty" json:"firewall,omitempty"` // Controls whether this interface's firewall rules should be used.
+	Gw       *string           `url:"gw,omitempty" json:"gw,omitempty"`             // Default gateway for IPv4 traffic.
+	Gw6      *string           `url:"gw6,omitempty" json:"gw6,omitempty"`           // Default gateway for IPv6 traffic.
+	Hwaddr   *string           `url:"hwaddr,omitempty" json:"hwaddr,omitempty"`     // The interface MAC address. This is dynamically allocated by default, but you can set that statically if needed, for example to always have the same link-local IPv6 address. (lxc.network.hwaddr)
+	Ip       *string           `url:"ip,omitempty" json:"ip,omitempty"`             // IPv4 address in CIDR format.
+	Ip6      *string           `url:"ip6,omitempty" json:"ip6,omitempty"`           // IPv6 address in CIDR format.
+	Mtu      *int              `url:"mtu,omitempty" json:"mtu,omitempty"`           // Maximum transfer unit of the interface. (lxc.network.mtu)
+	Rate     *float64          `url:"rate,omitempty" json:"rate,omitempty"`         // Apply rate limiting to the interface
+	Tag      *int              `url:"tag,omitempty" json:"tag,omitempty"`           // VLAN tag for this interface.
+	Trunks   *string           `url:"trunks,omitempty" json:"trunks,omitempty"`     // VLAN ids to pass through the interface
+	Type     *string           `url:"type,omitempty" json:"type,omitempty"`         // Network interface type.
+}
+
+func (t *Netn) EncodeValues(key string, v *url.Values) error {
+	valueStrParts := []string{
+		fmt.Sprintf("%s=%v", "name", t.Name),
+	}
+	if t.Bridge != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "bridge", *t.Bridge),
+		)
+	}
+
+	if t.Firewall != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "firewall", *t.Firewall),
+		)
+	}
+
+	if t.Gw != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "gw", *t.Gw),
+		)
+	}
+
+	if t.Gw6 != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "gw6", *t.Gw6),
+		)
+	}
+
+	if t.Hwaddr != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "hwaddr", *t.Hwaddr),
+		)
+	}
+
+	if t.Ip != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "ip", *t.Ip),
+		)
+	}
+
+	if t.Ip6 != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "ip6", *t.Ip6),
+		)
+	}
+
+	if t.Mtu != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "mtu", *t.Mtu),
+		)
+	}
+
+	if t.Rate != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "rate", *t.Rate),
+		)
+	}
+
+	if t.Tag != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "tag", *t.Tag),
+		)
+	}
+
+	if t.Trunks != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "trunks", *t.Trunks),
+		)
+	}
+
+	if t.Type != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "type", *t.Type),
+		)
+	}
+
+	v.Set(key, strings.Join(valueStrParts, ", "))
+	return nil
+}
+
+// Array of Rootfs
+type RootfsArr []Rootfs
+
+func (t *RootfsArr) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct {
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
+}
+
+// Use volume as container root.
+type Rootfs struct {
+	Volume string `url:"volume" json:"volume"` // Volume, device or directory to mount into the container.
+
+	// The following parameters are optional
+	Acl          *util.SpecialBool `url:"acl,omitempty" json:"acl,omitempty"`                   // Explicitly enable or disable ACL support.
+	Mountoptions *string           `url:"mountoptions,omitempty" json:"mountoptions,omitempty"` // Extra mount options for rootfs/mps.
+	Quota        *util.SpecialBool `url:"quota,omitempty" json:"quota,omitempty"`               // Enable user quotas inside the container (not supported with zfs subvolumes)
+	Replicate    *util.SpecialBool `url:"replicate,omitempty" json:"replicate,omitempty"`       // Will include this volume to a storage replica job.
+	Ro           *util.SpecialBool `url:"ro,omitempty" json:"ro,omitempty"`                     // Read-only mount point
+	Shared       *util.SpecialBool `url:"shared,omitempty" json:"shared,omitempty"`             // Mark this non-volume mount point as available on multiple nodes (see 'nodes')
+	Size         *string           `url:"size,omitempty" json:"size,omitempty"`                 // Volume size (read only value).
+}
+
+func (t *Rootfs) EncodeValues(key string, v *url.Values) error {
+	valueStrParts := []string{
+		fmt.Sprintf("%s=%v", "volume", t.Volume),
+	}
+	if t.Acl != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "acl", *t.Acl),
+		)
+	}
+
+	if t.Mountoptions != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "mountoptions", *t.Mountoptions),
+		)
+	}
+
+	if t.Quota != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "quota", *t.Quota),
+		)
+	}
+
+	if t.Replicate != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "replicate", *t.Replicate),
+		)
+	}
+
+	if t.Ro != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "ro", *t.Ro),
+		)
+	}
+
+	if t.Shared != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "shared", *t.Shared),
+		)
+	}
+
+	if t.Size != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "size", *t.Size),
+		)
+	}
+
+	v.Set(key, strings.Join(valueStrParts, ", "))
+	return nil
 }
 
 type CreateRequest struct {
@@ -60,27 +495,27 @@ type CreateRequest struct {
 	Cmode              *string           `url:"cmode,omitempty" json:"cmode,omitempty"`                               // Console mode. By default, the console command tries to open a connection to one of the available tty devices. By setting cmode to 'console' it tries to attach to /dev/console instead. If you set cmode to 'shell', it simply invokes a shell inside the container (no login).
 	Console            *util.SpecialBool `url:"console,omitempty" json:"console,omitempty"`                           // Attach a console device (/dev/console) to the container.
 	Cores              *int              `url:"cores,omitempty" json:"cores,omitempty"`                               // The number of cores assigned to the container. A container can use all available cores by default.
-	Cpulimit           *float64          `url:"cpulimit,omitempty" json:"cpulimit,omitempty"`                         // Limit of CPU usage.NOTE: If the computer has 2 CPUs, it has a total of '2' CPU time. Value '0' indicates no CPU limit.
+	Cpulimit           *float64          `url:"cpulimit,omitempty" json:"cpulimit,omitempty"`                         // Limit of CPU usage. NOTE: If the computer has 2 CPUs, it has a total of '2' CPU time. Value '0' indicates no CPU limit.
 	Cpuunits           *int              `url:"cpuunits,omitempty" json:"cpuunits,omitempty"`                         // CPU weight for a container, will be clamped to [1, 10000] in cgroup v2.
 	Debug              *util.SpecialBool `url:"debug,omitempty" json:"debug,omitempty"`                               // Try to be more verbose. For now this only enables debug log-level on start.
 	Description        *string           `url:"description,omitempty" json:"description,omitempty"`                   // Description for the Container. Shown in the web-interface CT's summary. This is saved as comment inside the configuration file.
-	Features           *string           `url:"features,omitempty" json:"features,omitempty"`                         // Allow containers access to advanced features.
+	Features           *Features         `url:"features,omitempty" json:"features,omitempty"`                         // Allow containers access to advanced features.
 	Force              *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"`                               // Allow to overwrite existing container.
 	Hookscript         *string           `url:"hookscript,omitempty" json:"hookscript,omitempty"`                     // Script that will be exectued during various steps in the containers lifetime.
 	Hostname           *string           `url:"hostname,omitempty" json:"hostname,omitempty"`                         // Set a host name for the container.
 	IgnoreUnpackErrors *util.SpecialBool `url:"ignore-unpack-errors,omitempty" json:"ignore-unpack-errors,omitempty"` // Ignore errors when extracting the template.
 	Lock               *string           `url:"lock,omitempty" json:"lock,omitempty"`                                 // Lock/unlock the container.
 	Memory             *int              `url:"memory,omitempty" json:"memory,omitempty"`                             // Amount of RAM for the container in MB.
-	Mpn                *string           `url:"mp[n],omitempty" json:"mp[n],omitempty"`                               // Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
+	Mps                *MpnArr           `url:"mp[n],omitempty" json:"mp[n],omitempty"`                               // Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
 	Nameserver         *string           `url:"nameserver,omitempty" json:"nameserver,omitempty"`                     // Sets DNS server IP address for a container. Create will automatically use the setting from the host if you neither set searchdomain nor nameserver.
-	Netn               *string           `url:"net[n],omitempty" json:"net[n],omitempty"`                             // Specifies network interfaces for the container.
+	Nets               *NetnArr          `url:"net[n],omitempty" json:"net[n],omitempty"`                             // Specifies network interfaces for the container.
 	Onboot             *util.SpecialBool `url:"onboot,omitempty" json:"onboot,omitempty"`                             // Specifies whether a container will be started during system bootup.
 	Ostype             *string           `url:"ostype,omitempty" json:"ostype,omitempty"`                             // OS type. This is used to setup configuration inside the container, and corresponds to lxc setup scripts in /usr/share/lxc/config/<ostype>.common.conf. Value 'unmanaged' can be used to skip and OS specific setup.
 	Password           *string           `url:"password,omitempty" json:"password,omitempty"`                         // Sets root password inside container.
 	Pool               *string           `url:"pool,omitempty" json:"pool,omitempty"`                                 // Add the VM to the specified pool.
 	Protection         *util.SpecialBool `url:"protection,omitempty" json:"protection,omitempty"`                     // Sets the protection flag of the container. This will prevent the CT or CT's disk remove/update operation.
 	Restore            *util.SpecialBool `url:"restore,omitempty" json:"restore,omitempty"`                           // Mark this as restore task.
-	Rootfs             *string           `url:"rootfs,omitempty" json:"rootfs,omitempty"`                             // Use volume as container root.
+	Rootfs             *Rootfs           `url:"rootfs,omitempty" json:"rootfs,omitempty"`                             // Use volume as container root.
 	Searchdomain       *string           `url:"searchdomain,omitempty" json:"searchdomain,omitempty"`                 // Sets DNS search domains for a container. Create will automatically use the setting from the host if you neither set searchdomain nor nameserver.
 	SshPublicKeys      *string           `url:"ssh-public-keys,omitempty" json:"ssh-public-keys,omitempty"`           // Setup public SSH keys (one key per line, OpenSSH format).
 	Start              *util.SpecialBool `url:"start,omitempty" json:"start,omitempty"`                               // Start the CT after its creation finished successfully.
@@ -93,17 +528,7 @@ type CreateRequest struct {
 	Tty                *int              `url:"tty,omitempty" json:"tty,omitempty"`                                   // Specify the number of tty available to the container
 	Unique             *util.SpecialBool `url:"unique,omitempty" json:"unique,omitempty"`                             // Assign a unique random ethernet address.
 	Unprivileged       *util.SpecialBool `url:"unprivileged,omitempty" json:"unprivileged,omitempty"`                 // Makes the container run as unprivileged user. (Should not be modified manually.)
-	Unusedn            *string           `url:"unused[n],omitempty" json:"unused[n],omitempty"`                       // Reference to unused volumes. This is used internally, and should not be modified manually.
-}
-
-type CreateResponse string
-
-// Create Create or restore a container.
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc", "POST", &resp, req)
-	return resp, err
+	Unuseds            *UnusednArr       `url:"unused[n],omitempty" json:"unused[n],omitempty"`                       // Reference to unused volumes. This is used internally, and should not be modified manually.
 }
 
 type FindRequest struct {
@@ -112,16 +537,8 @@ type FindRequest struct {
 
 }
 
-type FindResponse []*struct {
+type FindResponse struct {
 	Subdir string `url:"subdir" json:"subdir"`
-}
-
-// Find Directory index
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}", "GET", &resp, req)
-	return resp, err
 }
 
 type DeleteRequest struct {
@@ -132,16 +549,6 @@ type DeleteRequest struct {
 	DestroyUnreferencedDisks *util.SpecialBool `url:"destroy-unreferenced-disks,omitempty" json:"destroy-unreferenced-disks,omitempty"` // If set, destroy additionally all disks with the VMID from all enabled storages which are not referenced in the config.
 	Force                    *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"`                                           // Force destroy, even if running.
 	Purge                    *util.SpecialBool `url:"purge,omitempty" json:"purge,omitempty"`                                           // Remove container from all related configurations. For example, backup jobs, replication jobs or HA. Related ACLs and Firewall entries will *always* be removed.
-}
-
-type DeleteResponse string
-
-// Delete Destroy the container (also delete all uses files).
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}", "DELETE", &resp, req)
-	return resp, err
 }
 
 type VmConfigRequest struct {
@@ -161,23 +568,23 @@ type VmConfigResponse struct {
 	Cmode        *string           `url:"cmode,omitempty" json:"cmode,omitempty"`               // Console mode. By default, the console command tries to open a connection to one of the available tty devices. By setting cmode to 'console' it tries to attach to /dev/console instead. If you set cmode to 'shell', it simply invokes a shell inside the container (no login).
 	Console      *util.SpecialBool `url:"console,omitempty" json:"console,omitempty"`           // Attach a console device (/dev/console) to the container.
 	Cores        *int              `url:"cores,omitempty" json:"cores,omitempty"`               // The number of cores assigned to the container. A container can use all available cores by default.
-	Cpulimit     *float64          `url:"cpulimit,omitempty" json:"cpulimit,omitempty"`         // Limit of CPU usage.NOTE: If the computer has 2 CPUs, it has a total of '2' CPU time. Value '0' indicates no CPU limit.
+	Cpulimit     *float64          `url:"cpulimit,omitempty" json:"cpulimit,omitempty"`         // Limit of CPU usage. NOTE: If the computer has 2 CPUs, it has a total of '2' CPU time. Value '0' indicates no CPU limit.
 	Cpuunits     *int              `url:"cpuunits,omitempty" json:"cpuunits,omitempty"`         // CPU weight for a container, will be clamped to [1, 10000] in cgroup v2.
 	Debug        *util.SpecialBool `url:"debug,omitempty" json:"debug,omitempty"`               // Try to be more verbose. For now this only enables debug log-level on start.
 	Description  *string           `url:"description,omitempty" json:"description,omitempty"`   // Description for the Container. Shown in the web-interface CT's summary. This is saved as comment inside the configuration file.
-	Features     *string           `url:"features,omitempty" json:"features,omitempty"`         // Allow containers access to advanced features.
+	Features     *Features         `url:"features,omitempty" json:"features,omitempty"`         // Allow containers access to advanced features.
 	Hookscript   *string           `url:"hookscript,omitempty" json:"hookscript,omitempty"`     // Script that will be exectued during various steps in the containers lifetime.
 	Hostname     *string           `url:"hostname,omitempty" json:"hostname,omitempty"`         // Set a host name for the container.
 	Lock         *string           `url:"lock,omitempty" json:"lock,omitempty"`                 // Lock/unlock the container.
 	Lxc          [][]string        `url:"lxc,omitempty" json:"lxc,omitempty"`                   // Array of lxc low-level configurations ([[key1, value1], [key2, value2] ...]).
 	Memory       *int              `url:"memory,omitempty" json:"memory,omitempty"`             // Amount of RAM for the container in MB.
-	Mpn          *string           `url:"mp[n],omitempty" json:"mp[n],omitempty"`               // Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
+	Mps          *MpnArr           `url:"mp[n],omitempty" json:"mp[n],omitempty"`               // Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
 	Nameserver   *string           `url:"nameserver,omitempty" json:"nameserver,omitempty"`     // Sets DNS server IP address for a container. Create will automatically use the setting from the host if you neither set searchdomain nor nameserver.
-	Netn         *string           `url:"net[n],omitempty" json:"net[n],omitempty"`             // Specifies network interfaces for the container.
+	Nets         *NetnArr          `url:"net[n],omitempty" json:"net[n],omitempty"`             // Specifies network interfaces for the container.
 	Onboot       *util.SpecialBool `url:"onboot,omitempty" json:"onboot,omitempty"`             // Specifies whether a container will be started during system bootup.
 	Ostype       *string           `url:"ostype,omitempty" json:"ostype,omitempty"`             // OS type. This is used to setup configuration inside the container, and corresponds to lxc setup scripts in /usr/share/lxc/config/<ostype>.common.conf. Value 'unmanaged' can be used to skip and OS specific setup.
 	Protection   *util.SpecialBool `url:"protection,omitempty" json:"protection,omitempty"`     // Sets the protection flag of the container. This will prevent the CT or CT's disk remove/update operation.
-	Rootfs       *string           `url:"rootfs,omitempty" json:"rootfs,omitempty"`             // Use volume as container root.
+	Rootfs       *Rootfs           `url:"rootfs,omitempty" json:"rootfs,omitempty"`             // Use volume as container root.
 	Searchdomain *string           `url:"searchdomain,omitempty" json:"searchdomain,omitempty"` // Sets DNS search domains for a container. Create will automatically use the setting from the host if you neither set searchdomain nor nameserver.
 	Startup      *string           `url:"startup,omitempty" json:"startup,omitempty"`           // Startup and shutdown behavior. Order is a non-negative number defining the general startup order. Shutdown in done with reverse ordering. Additionally you can set the 'up' or 'down' delay in seconds, which specifies a delay to wait before the next VM is started or stopped.
 	Swap         *int              `url:"swap,omitempty" json:"swap,omitempty"`                 // Amount of SWAP for the container in MB.
@@ -186,15 +593,7 @@ type VmConfigResponse struct {
 	Timezone     *string           `url:"timezone,omitempty" json:"timezone,omitempty"`         // Time zone to use in the container. If option isn't set, then nothing will be done. Can be set to 'host' to match the host time zone, or an arbitrary time zone option from /usr/share/zoneinfo/zone.tab
 	Tty          *int              `url:"tty,omitempty" json:"tty,omitempty"`                   // Specify the number of tty available to the container
 	Unprivileged *util.SpecialBool `url:"unprivileged,omitempty" json:"unprivileged,omitempty"` // Makes the container run as unprivileged user. (Should not be modified manually.)
-	Unusedn      *string           `url:"unused[n],omitempty" json:"unused[n],omitempty"`       // Reference to unused volumes. This is used internally, and should not be modified manually.
-}
-
-// VmConfig Get container configuration.
-func (c *Client) VmConfig(ctx context.Context, req *VmConfigRequest) (*VmConfigResponse, error) {
-	var resp *VmConfigResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/config", "GET", &resp, req)
-	return resp, err
+	Unuseds      *UnusednArr       `url:"unused[n],omitempty" json:"unused[n],omitempty"`       // Reference to unused volumes. This is used internally, and should not be modified manually.
 }
 
 type UpdateVmConfigRequest struct {
@@ -206,25 +605,25 @@ type UpdateVmConfigRequest struct {
 	Cmode        *string           `url:"cmode,omitempty" json:"cmode,omitempty"`               // Console mode. By default, the console command tries to open a connection to one of the available tty devices. By setting cmode to 'console' it tries to attach to /dev/console instead. If you set cmode to 'shell', it simply invokes a shell inside the container (no login).
 	Console      *util.SpecialBool `url:"console,omitempty" json:"console,omitempty"`           // Attach a console device (/dev/console) to the container.
 	Cores        *int              `url:"cores,omitempty" json:"cores,omitempty"`               // The number of cores assigned to the container. A container can use all available cores by default.
-	Cpulimit     *float64          `url:"cpulimit,omitempty" json:"cpulimit,omitempty"`         // Limit of CPU usage.NOTE: If the computer has 2 CPUs, it has a total of '2' CPU time. Value '0' indicates no CPU limit.
+	Cpulimit     *float64          `url:"cpulimit,omitempty" json:"cpulimit,omitempty"`         // Limit of CPU usage. NOTE: If the computer has 2 CPUs, it has a total of '2' CPU time. Value '0' indicates no CPU limit.
 	Cpuunits     *int              `url:"cpuunits,omitempty" json:"cpuunits,omitempty"`         // CPU weight for a container, will be clamped to [1, 10000] in cgroup v2.
 	Debug        *util.SpecialBool `url:"debug,omitempty" json:"debug,omitempty"`               // Try to be more verbose. For now this only enables debug log-level on start.
 	Delete       *string           `url:"delete,omitempty" json:"delete,omitempty"`             // A list of settings you want to delete.
 	Description  *string           `url:"description,omitempty" json:"description,omitempty"`   // Description for the Container. Shown in the web-interface CT's summary. This is saved as comment inside the configuration file.
 	Digest       *string           `url:"digest,omitempty" json:"digest,omitempty"`             // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-	Features     *string           `url:"features,omitempty" json:"features,omitempty"`         // Allow containers access to advanced features.
+	Features     *Features         `url:"features,omitempty" json:"features,omitempty"`         // Allow containers access to advanced features.
 	Hookscript   *string           `url:"hookscript,omitempty" json:"hookscript,omitempty"`     // Script that will be exectued during various steps in the containers lifetime.
 	Hostname     *string           `url:"hostname,omitempty" json:"hostname,omitempty"`         // Set a host name for the container.
 	Lock         *string           `url:"lock,omitempty" json:"lock,omitempty"`                 // Lock/unlock the container.
 	Memory       *int              `url:"memory,omitempty" json:"memory,omitempty"`             // Amount of RAM for the container in MB.
-	Mpn          *string           `url:"mp[n],omitempty" json:"mp[n],omitempty"`               // Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
+	Mps          *MpnArr           `url:"mp[n],omitempty" json:"mp[n],omitempty"`               // Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
 	Nameserver   *string           `url:"nameserver,omitempty" json:"nameserver,omitempty"`     // Sets DNS server IP address for a container. Create will automatically use the setting from the host if you neither set searchdomain nor nameserver.
-	Netn         *string           `url:"net[n],omitempty" json:"net[n],omitempty"`             // Specifies network interfaces for the container.
+	Nets         *NetnArr          `url:"net[n],omitempty" json:"net[n],omitempty"`             // Specifies network interfaces for the container.
 	Onboot       *util.SpecialBool `url:"onboot,omitempty" json:"onboot,omitempty"`             // Specifies whether a container will be started during system bootup.
 	Ostype       *string           `url:"ostype,omitempty" json:"ostype,omitempty"`             // OS type. This is used to setup configuration inside the container, and corresponds to lxc setup scripts in /usr/share/lxc/config/<ostype>.common.conf. Value 'unmanaged' can be used to skip and OS specific setup.
 	Protection   *util.SpecialBool `url:"protection,omitempty" json:"protection,omitempty"`     // Sets the protection flag of the container. This will prevent the CT or CT's disk remove/update operation.
 	Revert       *string           `url:"revert,omitempty" json:"revert,omitempty"`             // Revert a pending change.
-	Rootfs       *string           `url:"rootfs,omitempty" json:"rootfs,omitempty"`             // Use volume as container root.
+	Rootfs       *Rootfs           `url:"rootfs,omitempty" json:"rootfs,omitempty"`             // Use volume as container root.
 	Searchdomain *string           `url:"searchdomain,omitempty" json:"searchdomain,omitempty"` // Sets DNS search domains for a container. Create will automatically use the setting from the host if you neither set searchdomain nor nameserver.
 	Startup      *string           `url:"startup,omitempty" json:"startup,omitempty"`           // Startup and shutdown behavior. Order is a non-negative number defining the general startup order. Shutdown in done with reverse ordering. Additionally you can set the 'up' or 'down' delay in seconds, which specifies a delay to wait before the next VM is started or stopped.
 	Swap         *int              `url:"swap,omitempty" json:"swap,omitempty"`                 // Amount of SWAP for the container in MB.
@@ -233,17 +632,7 @@ type UpdateVmConfigRequest struct {
 	Timezone     *string           `url:"timezone,omitempty" json:"timezone,omitempty"`         // Time zone to use in the container. If option isn't set, then nothing will be done. Can be set to 'host' to match the host time zone, or an arbitrary time zone option from /usr/share/zoneinfo/zone.tab
 	Tty          *int              `url:"tty,omitempty" json:"tty,omitempty"`                   // Specify the number of tty available to the container
 	Unprivileged *util.SpecialBool `url:"unprivileged,omitempty" json:"unprivileged,omitempty"` // Makes the container run as unprivileged user. (Should not be modified manually.)
-	Unusedn      *string           `url:"unused[n],omitempty" json:"unused[n],omitempty"`       // Reference to unused volumes. This is used internally, and should not be modified manually.
-}
-
-type UpdateVmConfigResponse map[string]interface{}
-
-// UpdateVmConfig Set container options.
-func (c *Client) UpdateVmConfig(ctx context.Context, req *UpdateVmConfigRequest) (*UpdateVmConfigResponse, error) {
-	var resp *UpdateVmConfigResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/config", "PUT", &resp, req)
-	return resp, err
+	Unuseds      *UnusednArr       `url:"unused[n],omitempty" json:"unused[n],omitempty"`       // Reference to unused volumes. This is used internally, and should not be modified manually.
 }
 
 type RrdRequest struct {
@@ -260,14 +649,6 @@ type RrdResponse struct {
 	Filename string `url:"filename" json:"filename"`
 }
 
-// Rrd Read VM RRD statistics (returns PNG)
-func (c *Client) Rrd(ctx context.Context, req *RrdRequest) (*RrdResponse, error) {
-	var resp *RrdResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/rrd", "GET", &resp, req)
-	return resp, err
-}
-
 type RrddataRequest struct {
 	Node      string `url:"node" json:"node"`           // The cluster node name.
 	Timeframe string `url:"timeframe" json:"timeframe"` // Specify the time frame you are interested in.
@@ -275,16 +656,6 @@ type RrddataRequest struct {
 
 	// The following parameters are optional
 	Cf *string `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
-}
-
-type RrddataResponse []*map[string]interface{}
-
-// Rrddata Read VM RRD statistics
-func (c *Client) Rrddata(ctx context.Context, req *RrddataRequest) (*RrddataResponse, error) {
-	var resp *RrddataResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/rrddata", "GET", &resp, req)
-	return resp, err
 }
 
 type VncproxyRequest struct {
@@ -305,14 +676,6 @@ type VncproxyResponse struct {
 	User   string `url:"user" json:"user"`
 }
 
-// Vncproxy Creates a TCP VNC proxy connections.
-func (c *Client) Vncproxy(ctx context.Context, req *VncproxyRequest) (*VncproxyResponse, error) {
-	var resp *VncproxyResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/vncproxy", "POST", &resp, req)
-	return resp, err
-}
-
 type TermproxyRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
@@ -324,14 +687,6 @@ type TermproxyResponse struct {
 	Ticket string `url:"ticket" json:"ticket"`
 	Upid   string `url:"upid" json:"upid"`
 	User   string `url:"user" json:"user"`
-}
-
-// Termproxy Creates a TCP proxy connection.
-func (c *Client) Termproxy(ctx context.Context, req *TermproxyRequest) (*TermproxyResponse, error) {
-	var resp *TermproxyResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/termproxy", "POST", &resp, req)
-	return resp, err
 }
 
 type VncwebsocketRequest struct {
@@ -346,14 +701,6 @@ type VncwebsocketResponse struct {
 	Port string `url:"port" json:"port"`
 }
 
-// Vncwebsocket Opens a weksocket for VNC traffic.
-func (c *Client) Vncwebsocket(ctx context.Context, req *VncwebsocketRequest) (*VncwebsocketResponse, error) {
-	var resp *VncwebsocketResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/vncwebsocket", "GET", &resp, req)
-	return resp, err
-}
-
 type SpiceproxyRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
@@ -362,20 +709,13 @@ type SpiceproxyRequest struct {
 	Proxy *string `url:"proxy,omitempty" json:"proxy,omitempty"` // SPICE proxy server. This can be used by the client to specify the proxy server. All nodes in a cluster runs 'spiceproxy', so it is up to the client to choose one. By default, we return the node where the VM is currently running. As reasonable setting is to use same node you use to connect to the API (This is window.location.hostname for the JS GUI).
 }
 
+// Returned values can be directly passed to the 'remote-viewer' application.
 type SpiceproxyResponse struct {
 	Host     string `url:"host" json:"host"`
 	Password string `url:"password" json:"password"`
 	Proxy    string `url:"proxy" json:"proxy"`
 	TlsPort  int    `url:"tls-port" json:"tls-port"`
 	Type     string `url:"type" json:"type"`
-}
-
-// Spiceproxy Returns a SPICE configuration to connect to the CT.
-func (c *Client) Spiceproxy(ctx context.Context, req *SpiceproxyRequest) (*SpiceproxyResponse, error) {
-	var resp *SpiceproxyResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/spiceproxy", "POST", &resp, req)
-	return resp, err
 }
 
 type RemoteMigrateVmRemoteMigrateRequest struct {
@@ -394,16 +734,6 @@ type RemoteMigrateVmRemoteMigrateRequest struct {
 	Timeout    *int              `url:"timeout,omitempty" json:"timeout,omitempty"`         // Timeout in seconds for shutdown for restart migration
 }
 
-type RemoteMigrateVmRemoteMigrateResponse string
-
-// RemoteMigrateVmRemoteMigrate Migrate the container to another cluster. Creates a new migration task. EXPERIMENTAL feature!
-func (c *Client) RemoteMigrateVmRemoteMigrate(ctx context.Context, req *RemoteMigrateVmRemoteMigrateRequest) (*RemoteMigrateVmRemoteMigrateResponse, error) {
-	var resp *RemoteMigrateVmRemoteMigrateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/remote_migrate", "POST", &resp, req)
-	return resp, err
-}
-
 type MigrateVmMigrateRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
 	Target string `url:"target" json:"target"` // Target node.
@@ -415,16 +745,6 @@ type MigrateVmMigrateRequest struct {
 	Restart       *util.SpecialBool `url:"restart,omitempty" json:"restart,omitempty"`               // Use restart migration
 	TargetStorage *string           `url:"target-storage,omitempty" json:"target-storage,omitempty"` // Mapping from source to target storages. Providing only a single storage ID maps all source storages to that storage. Providing the special value '1' will map each source storage to itself.
 	Timeout       *int              `url:"timeout,omitempty" json:"timeout,omitempty"`               // Timeout in seconds for shutdown for restart migration
-}
-
-type MigrateVmMigrateResponse string
-
-// MigrateVmMigrate Migrate the container to another node. Creates a new migration task.
-func (c *Client) MigrateVmMigrate(ctx context.Context, req *MigrateVmMigrateRequest) (*MigrateVmMigrateResponse, error) {
-	var resp *MigrateVmMigrateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/migrate", "POST", &resp, req)
-	return resp, err
 }
 
 type VmFeatureRequest struct {
@@ -440,28 +760,10 @@ type VmFeatureResponse struct {
 	Hasfeature util.SpecialBool `url:"hasFeature" json:"hasFeature"`
 }
 
-// VmFeature Check if feature for virtual machine is available.
-func (c *Client) VmFeature(ctx context.Context, req *VmFeatureRequest) (*VmFeatureResponse, error) {
-	var resp *VmFeatureResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/feature", "GET", &resp, req)
-	return resp, err
-}
-
 type TemplateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
-}
-
-type TemplateResponse map[string]interface{}
-
-// Template Create a Template.
-func (c *Client) Template(ctx context.Context, req *TemplateRequest) (*TemplateResponse, error) {
-	var resp *TemplateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/template", "POST", &resp, req)
-	return resp, err
 }
 
 type CloneVmCloneRequest struct {
@@ -480,16 +782,6 @@ type CloneVmCloneRequest struct {
 	Target      *string           `url:"target,omitempty" json:"target,omitempty"`           // Target node. Only allowed if the original VM is on shared storage.
 }
 
-type CloneVmCloneResponse string
-
-// CloneVmClone Create a container clone/copy
-func (c *Client) CloneVmClone(ctx context.Context, req *CloneVmCloneRequest) (*CloneVmCloneResponse, error) {
-	var resp *CloneVmCloneResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/clone", "POST", &resp, req)
-	return resp, err
-}
-
 type ResizeVmResizeRequest struct {
 	Disk string `url:"disk" json:"disk"` // The disk you want to resize.
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -500,16 +792,6 @@ type ResizeVmResizeRequest struct {
 	Digest *string `url:"digest,omitempty" json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 }
 
-type ResizeVmResizeResponse string
-
-// ResizeVmResize Resize a container mount point.
-func (c *Client) ResizeVmResize(ctx context.Context, req *ResizeVmResizeRequest) (*ResizeVmResizeResponse, error) {
-	var resp *ResizeVmResizeResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/resize", "PUT", &resp, req)
-	return resp, err
-}
-
 type MoveVolumeRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
 	Vmid   int    `url:"vmid" json:"vmid"`     // The (unique) ID of the VM.
@@ -518,21 +800,11 @@ type MoveVolumeRequest struct {
 	// The following parameters are optional
 	Bwlimit      *float64          `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`             // Override I/O bandwidth limit (in KiB/s).
 	Delete       *util.SpecialBool `url:"delete,omitempty" json:"delete,omitempty"`               // Delete the original volume after successful copy. By default the original is kept as an unused volume entry.
-	Digest       *string           `url:"digest,omitempty" json:"digest,omitempty"`               // Prevent changes if current configuration file has different SHA1 " .		    "digest. This can be used to prevent concurrent modifications.
+	Digest       *string           `url:"digest,omitempty" json:"digest,omitempty"`               // Prevent changes if current configuration file has different SHA1 " . 		  "digest. This can be used to prevent concurrent modifications.
 	Storage      *string           `url:"storage,omitempty" json:"storage,omitempty"`             // Target Storage.
-	TargetDigest *string           `url:"target-digest,omitempty" json:"target-digest,omitempty"` // Prevent changes if current configuration file of the target " .		    "container has a different SHA1 digest. This can be used to prevent " .		    "concurrent modifications.
+	TargetDigest *string           `url:"target-digest,omitempty" json:"target-digest,omitempty"` // Prevent changes if current configuration file of the target " . 		  "container has a different SHA1 digest. This can be used to prevent " . 		  "concurrent modifications.
 	TargetVmid   *int              `url:"target-vmid,omitempty" json:"target-vmid,omitempty"`     // The (unique) ID of the VM.
 	TargetVolume *string           `url:"target-volume,omitempty" json:"target-volume,omitempty"` // The config key the volume will be moved to. Default is the source volume key.
-}
-
-type MoveVolumeResponse string
-
-// MoveVolume Move a rootfs-/mp-volume to a different storage or to a different container.
-func (c *Client) MoveVolume(ctx context.Context, req *MoveVolumeRequest) (*MoveVolumeResponse, error) {
-	var resp *MoveVolumeResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/move_volume", "POST", &resp, req)
-	return resp, err
 }
 
 type VmPendingRequest struct {
@@ -541,21 +813,13 @@ type VmPendingRequest struct {
 
 }
 
-type VmPendingResponse []*struct {
+type VmPendingResponse struct {
 	Key string `url:"key" json:"key"` // Configuration option name.
 
 	// The following parameters are optional
 	Delete  *int    `url:"delete,omitempty" json:"delete,omitempty"`   // Indicates a pending delete request if present and not 0.
 	Pending *string `url:"pending,omitempty" json:"pending,omitempty"` // Pending value.
 	Value   *string `url:"value,omitempty" json:"value,omitempty"`     // Current value.
-}
-
-// VmPending Get container configuration, including pending changes.
-func (c *Client) VmPending(ctx context.Context, req *VmPendingRequest) (*VmPendingResponse, error) {
-	var resp *VmPendingResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/pending", "GET", &resp, req)
-	return resp, err
 }
 
 type MtunnelRequest struct {
@@ -573,14 +837,6 @@ type MtunnelResponse struct {
 	Upid   string `url:"upid" json:"upid"`
 }
 
-// Mtunnel Migration tunnel endpoint - only for internal use by CT migration.
-func (c *Client) Mtunnel(ctx context.Context, req *MtunnelRequest) (*MtunnelResponse, error) {
-	var resp *MtunnelResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/mtunnel", "POST", &resp, req)
-	return resp, err
-}
-
 type MtunnelwebsocketRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
 	Socket string `url:"socket" json:"socket"` // unix socket to forward to
@@ -596,9 +852,175 @@ type MtunnelwebsocketResponse struct {
 	Socket *string `url:"socket,omitempty" json:"socket,omitempty"`
 }
 
+// Index LXC container index (per node).
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc", "GET", &resp, req)
+	return resp, err
+}
+
+// Create Create or restore a container.
+func (c *Client) Create(ctx context.Context, req CreateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc", "POST", &resp, req)
+	return resp, err
+}
+
+// Find Directory index
+func (c *Client) Find(ctx context.Context, req FindRequest) ([]FindResponse, error) {
+	var resp []FindResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}", "GET", &resp, req)
+	return resp, err
+}
+
+// Delete Destroy the container (also delete all uses files).
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}", "DELETE", &resp, req)
+	return resp, err
+}
+
+// VmConfig Get container configuration.
+func (c *Client) VmConfig(ctx context.Context, req VmConfigRequest) (VmConfigResponse, error) {
+	var resp VmConfigResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/config", "GET", &resp, req)
+	return resp, err
+}
+
+// UpdateVmConfig Set container options.
+func (c *Client) UpdateVmConfig(ctx context.Context, req UpdateVmConfigRequest) error {
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/config", "PUT", nil, req)
+	return err
+}
+
+// Rrd Read VM RRD statistics (returns PNG)
+func (c *Client) Rrd(ctx context.Context, req RrdRequest) (RrdResponse, error) {
+	var resp RrdResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/rrd", "GET", &resp, req)
+	return resp, err
+}
+
+// Rrddata Read VM RRD statistics
+func (c *Client) Rrddata(ctx context.Context, req RrddataRequest) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/rrddata", "GET", &resp, req)
+	return resp, err
+}
+
+// Vncproxy Creates a TCP VNC proxy connections.
+func (c *Client) Vncproxy(ctx context.Context, req VncproxyRequest) (VncproxyResponse, error) {
+	var resp VncproxyResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/vncproxy", "POST", &resp, req)
+	return resp, err
+}
+
+// Termproxy Creates a TCP proxy connection.
+func (c *Client) Termproxy(ctx context.Context, req TermproxyRequest) (TermproxyResponse, error) {
+	var resp TermproxyResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/termproxy", "POST", &resp, req)
+	return resp, err
+}
+
+// Vncwebsocket Opens a weksocket for VNC traffic.
+func (c *Client) Vncwebsocket(ctx context.Context, req VncwebsocketRequest) (VncwebsocketResponse, error) {
+	var resp VncwebsocketResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/vncwebsocket", "GET", &resp, req)
+	return resp, err
+}
+
+// Spiceproxy Returns a SPICE configuration to connect to the CT.
+func (c *Client) Spiceproxy(ctx context.Context, req SpiceproxyRequest) (SpiceproxyResponse, error) {
+	var resp SpiceproxyResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/spiceproxy", "POST", &resp, req)
+	return resp, err
+}
+
+// RemoteMigrateVmRemoteMigrate Migrate the container to another cluster. Creates a new migration task. EXPERIMENTAL feature!
+func (c *Client) RemoteMigrateVmRemoteMigrate(ctx context.Context, req RemoteMigrateVmRemoteMigrateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/remote_migrate", "POST", &resp, req)
+	return resp, err
+}
+
+// MigrateVmMigrate Migrate the container to another node. Creates a new migration task.
+func (c *Client) MigrateVmMigrate(ctx context.Context, req MigrateVmMigrateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/migrate", "POST", &resp, req)
+	return resp, err
+}
+
+// VmFeature Check if feature for virtual machine is available.
+func (c *Client) VmFeature(ctx context.Context, req VmFeatureRequest) (VmFeatureResponse, error) {
+	var resp VmFeatureResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/feature", "GET", &resp, req)
+	return resp, err
+}
+
+// Template Create a Template.
+func (c *Client) Template(ctx context.Context, req TemplateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/template", "POST", nil, req)
+	return err
+}
+
+// CloneVmClone Create a container clone/copy
+func (c *Client) CloneVmClone(ctx context.Context, req CloneVmCloneRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/clone", "POST", &resp, req)
+	return resp, err
+}
+
+// ResizeVmResize Resize a container mount point.
+func (c *Client) ResizeVmResize(ctx context.Context, req ResizeVmResizeRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/resize", "PUT", &resp, req)
+	return resp, err
+}
+
+// MoveVolume Move a rootfs-/mp-volume to a different storage or to a different container.
+func (c *Client) MoveVolume(ctx context.Context, req MoveVolumeRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/move_volume", "POST", &resp, req)
+	return resp, err
+}
+
+// VmPending Get container configuration, including pending changes.
+func (c *Client) VmPending(ctx context.Context, req VmPendingRequest) ([]VmPendingResponse, error) {
+	var resp []VmPendingResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/pending", "GET", &resp, req)
+	return resp, err
+}
+
+// Mtunnel Migration tunnel endpoint - only for internal use by CT migration.
+func (c *Client) Mtunnel(ctx context.Context, req MtunnelRequest) (MtunnelResponse, error) {
+	var resp MtunnelResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/mtunnel", "POST", &resp, req)
+	return resp, err
+}
+
 // Mtunnelwebsocket Migration tunnel endpoint for websocket upgrade - only for internal use by VM migration.
-func (c *Client) Mtunnelwebsocket(ctx context.Context, req *MtunnelwebsocketRequest) (*MtunnelwebsocketResponse, error) {
-	var resp *MtunnelwebsocketResponse
+func (c *Client) Mtunnelwebsocket(ctx context.Context, req MtunnelwebsocketRequest) (MtunnelwebsocketResponse, error) {
+	var resp MtunnelwebsocketResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/mtunnelwebsocket", "GET", &resp, req)
 	return resp, err

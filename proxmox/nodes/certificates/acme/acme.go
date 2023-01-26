@@ -26,31 +26,11 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*map[string]interface{}
-
-// Index ACME index.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates/acme", "GET", &resp, req)
-	return resp, err
-}
-
 type NewCertificateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
 	Force *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"` // Overwrite existing custom certificate.
-}
-
-type NewCertificateResponse string
-
-// NewCertificate Order a new certificate from ACME-compatible CA.
-func (c *Client) NewCertificate(ctx context.Context, req *NewCertificateRequest) (*NewCertificateResponse, error) {
-	var resp *NewCertificateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates/acme/certificate", "POST", &resp, req)
-	return resp, err
 }
 
 type RenewCertificateRequest struct {
@@ -60,26 +40,38 @@ type RenewCertificateRequest struct {
 	Force *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"` // Force renewal even if expiry is more than 30 days away.
 }
 
-type RenewCertificateResponse string
-
-// RenewCertificate Renew existing certificate from CA.
-func (c *Client) RenewCertificate(ctx context.Context, req *RenewCertificateRequest) (*RenewCertificateResponse, error) {
-	var resp *RenewCertificateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates/acme/certificate", "PUT", &resp, req)
-	return resp, err
-}
-
 type RevokeCertificateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
-type RevokeCertificateResponse string
+// Index ACME index.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates/acme", "GET", &resp, req)
+	return resp, err
+}
+
+// NewCertificate Order a new certificate from ACME-compatible CA.
+func (c *Client) NewCertificate(ctx context.Context, req NewCertificateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates/acme/certificate", "POST", &resp, req)
+	return resp, err
+}
+
+// RenewCertificate Renew existing certificate from CA.
+func (c *Client) RenewCertificate(ctx context.Context, req RenewCertificateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates/acme/certificate", "PUT", &resp, req)
+	return resp, err
+}
 
 // RevokeCertificate Revoke existing certificate from CA.
-func (c *Client) RevokeCertificate(ctx context.Context, req *RevokeCertificateRequest) (*RevokeCertificateResponse, error) {
-	var resp *RevokeCertificateResponse
+func (c *Client) RevokeCertificate(ctx context.Context, req RevokeCertificateRequest) (string, error) {
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/certificates/acme/certificate", "DELETE", &resp, req)
 	return resp, err

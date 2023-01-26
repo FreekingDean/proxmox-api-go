@@ -21,26 +21,21 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*struct {
-	Entries []*struct {
-		Created     int    `url:"created" json:"created"`         // Creation time of this entry as unix epoch.
-		Description string `url:"description" json:"description"` // User chosen description for this entry.
-		Id          string `url:"id" json:"id"`                   // The id used to reference this entry.
-		Type        string `url:"type" json:"type"`               // TFA Entry Type.
+// TFA Entry.
+type Entries struct {
+	Created     int    `url:"created" json:"created"`         // Creation time of this entry as unix epoch.
+	Description string `url:"description" json:"description"` // User chosen description for this entry.
+	Id          string `url:"id" json:"id"`                   // The id used to reference this entry.
+	Type        string `url:"type" json:"type"`               // TFA Entry Type.
 
-		// The following parameters are optional
-		Enable *util.SpecialBool `url:"enable,omitempty" json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
-	} `url:"entries" json:"entries"`
-	Userid string `url:"userid" json:"userid"` // User this entry belongs to.
-
+	// The following parameters are optional
+	Enable *util.SpecialBool `url:"enable,omitempty" json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
 }
 
-// Index List TFA configurations of users.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
+type IndexResponse struct {
+	Entries []Entries `url:"entries" json:"entries"`
+	Userid  string    `url:"userid" json:"userid"` // User this entry belongs to.
 
-	err := c.httpClient.Do(ctx, "/access/tfa", "GET", &resp, nil)
-	return resp, err
 }
 
 type CreateRequest struct {
@@ -52,20 +47,13 @@ type CreateResponse struct {
 	Ticket string `url:"ticket" json:"ticket"`
 }
 
-// Create Finish a u2f challenge.
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/access/tfa", "POST", &resp, req)
-	return resp, err
-}
-
 type FindRequest struct {
 	Userid string `url:"userid" json:"userid"` // User ID
 
 }
 
-type FindResponse []*struct {
+// TFA Entry.
+type FindResponse struct {
 	Created     int    `url:"created" json:"created"`         // Creation time of this entry as unix epoch.
 	Description string `url:"description" json:"description"` // User chosen description for this entry.
 	Id          string `url:"id" json:"id"`                   // The id used to reference this entry.
@@ -73,14 +61,6 @@ type FindResponse []*struct {
 
 	// The following parameters are optional
 	Enable *util.SpecialBool `url:"enable,omitempty" json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
-}
-
-// Find List TFA configurations of users.
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/access/tfa/{userid}", "GET", &resp, req)
-	return resp, err
 }
 
 type ChildCreateRequest struct {
@@ -103,20 +83,13 @@ type ChildCreateResponse struct {
 	Recovery  []string `url:"recovery,omitempty" json:"recovery,omitempty"`   // When adding recovery codes, this contains the list of codes to be displayed to the user
 }
 
-// ChildCreate Add a TFA entry for a user.
-func (c *Client) ChildCreate(ctx context.Context, req *ChildCreateRequest) (*ChildCreateResponse, error) {
-	var resp *ChildCreateResponse
-
-	err := c.httpClient.Do(ctx, "/access/tfa/{userid}", "POST", &resp, req)
-	return resp, err
-}
-
 type GetTfaEntryIdRequest struct {
 	Id     string `url:"id" json:"id"`         // A TFA entry id.
 	Userid string `url:"userid" json:"userid"` // User ID
 
 }
 
+// TFA Entry.
 type GetTfaEntryIdResponse struct {
 	Created     int    `url:"created" json:"created"`         // Creation time of this entry as unix epoch.
 	Description string `url:"description" json:"description"` // User chosen description for this entry.
@@ -125,14 +98,6 @@ type GetTfaEntryIdResponse struct {
 
 	// The following parameters are optional
 	Enable *util.SpecialBool `url:"enable,omitempty" json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
-}
-
-// GetTfaEntryId Fetch a requested TFA entry if present.
-func (c *Client) GetTfaEntryId(ctx context.Context, req *GetTfaEntryIdRequest) (*GetTfaEntryIdResponse, error) {
-	var resp *GetTfaEntryIdResponse
-
-	err := c.httpClient.Do(ctx, "/access/tfa/{userid}/{id}", "GET", &resp, req)
-	return resp, err
 }
 
 type UpdateTfaEntryIdRequest struct {
@@ -145,16 +110,6 @@ type UpdateTfaEntryIdRequest struct {
 	Password    *string           `url:"password,omitempty" json:"password,omitempty"`       // The current password.
 }
 
-type UpdateTfaEntryIdResponse map[string]interface{}
-
-// UpdateTfaEntryId Add a TFA entry for a user.
-func (c *Client) UpdateTfaEntryId(ctx context.Context, req *UpdateTfaEntryIdRequest) (*UpdateTfaEntryIdResponse, error) {
-	var resp *UpdateTfaEntryIdResponse
-
-	err := c.httpClient.Do(ctx, "/access/tfa/{userid}/{id}", "PUT", &resp, req)
-	return resp, err
-}
-
 type DeleteTfaIdRequest struct {
 	Id     string `url:"id" json:"id"`         // A TFA entry id.
 	Userid string `url:"userid" json:"userid"` // User ID
@@ -163,12 +118,56 @@ type DeleteTfaIdRequest struct {
 	Password *string `url:"password,omitempty" json:"password,omitempty"` // The current password.
 }
 
-type DeleteTfaIdResponse map[string]interface{}
+// Index List TFA configurations of users.
+func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/access/tfa", "GET", &resp, nil)
+	return resp, err
+}
+
+// Create Finish a u2f challenge.
+func (c *Client) Create(ctx context.Context, req CreateRequest) (CreateResponse, error) {
+	var resp CreateResponse
+
+	err := c.httpClient.Do(ctx, "/access/tfa", "POST", &resp, req)
+	return resp, err
+}
+
+// Find List TFA configurations of users.
+func (c *Client) Find(ctx context.Context, req FindRequest) ([]FindResponse, error) {
+	var resp []FindResponse
+
+	err := c.httpClient.Do(ctx, "/access/tfa/{userid}", "GET", &resp, req)
+	return resp, err
+}
+
+// ChildCreate Add a TFA entry for a user.
+func (c *Client) ChildCreate(ctx context.Context, req ChildCreateRequest) (ChildCreateResponse, error) {
+	var resp ChildCreateResponse
+
+	err := c.httpClient.Do(ctx, "/access/tfa/{userid}", "POST", &resp, req)
+	return resp, err
+}
+
+// GetTfaEntryId Fetch a requested TFA entry if present.
+func (c *Client) GetTfaEntryId(ctx context.Context, req GetTfaEntryIdRequest) (GetTfaEntryIdResponse, error) {
+	var resp GetTfaEntryIdResponse
+
+	err := c.httpClient.Do(ctx, "/access/tfa/{userid}/{id}", "GET", &resp, req)
+	return resp, err
+}
+
+// UpdateTfaEntryId Add a TFA entry for a user.
+func (c *Client) UpdateTfaEntryId(ctx context.Context, req UpdateTfaEntryIdRequest) error {
+
+	err := c.httpClient.Do(ctx, "/access/tfa/{userid}/{id}", "PUT", nil, req)
+	return err
+}
 
 // DeleteTfaId Delete a TFA entry by ID.
-func (c *Client) DeleteTfaId(ctx context.Context, req *DeleteTfaIdRequest) (*DeleteTfaIdResponse, error) {
-	var resp *DeleteTfaIdResponse
+func (c *Client) DeleteTfaId(ctx context.Context, req DeleteTfaIdRequest) error {
 
-	err := c.httpClient.Do(ctx, "/access/tfa/{userid}/{id}", "DELETE", &resp, req)
-	return resp, err
+	err := c.httpClient.Do(ctx, "/access/tfa/{userid}/{id}", "DELETE", nil, req)
+	return err
 }

@@ -25,11 +25,9 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*map[string]interface{}
-
 // Index SDN index.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/sdn", "GET", &resp, req)
 	return resp, err

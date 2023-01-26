@@ -25,32 +25,14 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*map[string]interface{}
-
-// Index Service list.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/services", "GET", &resp, req)
-	return resp, err
-}
-
 type FindRequest struct {
 	Node    string `url:"node" json:"node"`       // The cluster node name.
 	Service string `url:"service" json:"service"` // Service ID
 
 }
 
-type FindResponse []*struct {
+type FindResponse struct {
 	Subdir string `url:"subdir" json:"subdir"`
-}
-
-// Find Directory index
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/services/{service}", "GET", &resp, req)
-	return resp, err
 }
 
 type ServiceStateRequest struct {
@@ -59,30 +41,10 @@ type ServiceStateRequest struct {
 
 }
 
-type ServiceStateResponse map[string]interface{}
-
-// ServiceState Read service properties
-func (c *Client) ServiceState(ctx context.Context, req *ServiceStateRequest) (*ServiceStateResponse, error) {
-	var resp *ServiceStateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/services/{service}/state", "GET", &resp, req)
-	return resp, err
-}
-
 type ServiceStartRequest struct {
 	Node    string `url:"node" json:"node"`       // The cluster node name.
 	Service string `url:"service" json:"service"` // Service ID
 
-}
-
-type ServiceStartResponse string
-
-// ServiceStart Start service.
-func (c *Client) ServiceStart(ctx context.Context, req *ServiceStartRequest) (*ServiceStartResponse, error) {
-	var resp *ServiceStartResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/services/{service}/start", "POST", &resp, req)
-	return resp, err
 }
 
 type ServiceStopRequest struct {
@@ -91,30 +53,10 @@ type ServiceStopRequest struct {
 
 }
 
-type ServiceStopResponse string
-
-// ServiceStop Stop service.
-func (c *Client) ServiceStop(ctx context.Context, req *ServiceStopRequest) (*ServiceStopResponse, error) {
-	var resp *ServiceStopResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/services/{service}/stop", "POST", &resp, req)
-	return resp, err
-}
-
 type ServiceRestartRequest struct {
 	Node    string `url:"node" json:"node"`       // The cluster node name.
 	Service string `url:"service" json:"service"` // Service ID
 
-}
-
-type ServiceRestartResponse string
-
-// ServiceRestart Hard restart service. Use reload if you want to reduce interruptions.
-func (c *Client) ServiceRestart(ctx context.Context, req *ServiceRestartRequest) (*ServiceRestartResponse, error) {
-	var resp *ServiceRestartResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/services/{service}/restart", "POST", &resp, req)
-	return resp, err
 }
 
 type ServiceReloadRequest struct {
@@ -123,11 +65,57 @@ type ServiceReloadRequest struct {
 
 }
 
-type ServiceReloadResponse string
+// Index Service list.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/services", "GET", &resp, req)
+	return resp, err
+}
+
+// Find Directory index
+func (c *Client) Find(ctx context.Context, req FindRequest) ([]FindResponse, error) {
+	var resp []FindResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/services/{service}", "GET", &resp, req)
+	return resp, err
+}
+
+// ServiceState Read service properties
+func (c *Client) ServiceState(ctx context.Context, req ServiceStateRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/services/{service}/state", "GET", &resp, req)
+	return resp, err
+}
+
+// ServiceStart Start service.
+func (c *Client) ServiceStart(ctx context.Context, req ServiceStartRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/services/{service}/start", "POST", &resp, req)
+	return resp, err
+}
+
+// ServiceStop Stop service.
+func (c *Client) ServiceStop(ctx context.Context, req ServiceStopRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/services/{service}/stop", "POST", &resp, req)
+	return resp, err
+}
+
+// ServiceRestart Hard restart service. Use reload if you want to reduce interruptions.
+func (c *Client) ServiceRestart(ctx context.Context, req ServiceRestartRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/services/{service}/restart", "POST", &resp, req)
+	return resp, err
+}
 
 // ServiceReload Reload service. Falls back to restart if service cannot be reloaded.
-func (c *Client) ServiceReload(ctx context.Context, req *ServiceReloadRequest) (*ServiceReloadResponse, error) {
-	var resp *ServiceReloadResponse
+func (c *Client) ServiceReload(ctx context.Context, req ServiceReloadRequest) (string, error) {
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/services/{service}/reload", "POST", &resp, req)
 	return resp, err

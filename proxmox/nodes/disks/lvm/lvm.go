@@ -26,31 +26,27 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse struct {
-	Children []*struct {
-		Free int              `url:"free" json:"free"` // The free bytes in the volume group
-		Leaf util.SpecialBool `url:"leaf" json:"leaf"`
-		Name string           `url:"name" json:"name"` // The name of the volume group
-		Size int              `url:"size" json:"size"` // The size of the volume group in bytes
-
-		// The following parameters are optional
-		Children []*struct {
-			Free int              `url:"free" json:"free"` // The free bytes in the physical volume
-			Leaf util.SpecialBool `url:"leaf" json:"leaf"`
-			Name string           `url:"name" json:"name"` // The name of the physical volume
-			Size int              `url:"size" json:"size"` // The size of the physical volume in bytes
-
-		} `url:"children,omitempty" json:"children,omitempty"` // The underlying physical volumes
-	} `url:"children" json:"children"`
+type Children struct {
+	Free int              `url:"free" json:"free"` // The free bytes in the physical volume
 	Leaf util.SpecialBool `url:"leaf" json:"leaf"`
+	Name string           `url:"name" json:"name"` // The name of the physical volume
+	Size int              `url:"size" json:"size"` // The size of the physical volume in bytes
+
 }
 
-// Index List LVM Volume Groups
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
+type SubChildren struct {
+	Free int              `url:"free" json:"free"` // The free bytes in the volume group
+	Leaf util.SpecialBool `url:"leaf" json:"leaf"`
+	Name string           `url:"name" json:"name"` // The name of the volume group
+	Size int              `url:"size" json:"size"` // The size of the volume group in bytes
 
-	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/lvm", "GET", &resp, req)
-	return resp, err
+	// The following parameters are optional
+	Children []Children `url:"children,omitempty" json:"children,omitempty"` // The underlying physical volumes
+}
+
+type IndexResponse struct {
+	Children []Children       `url:"children" json:"children"`
+	Leaf     util.SpecialBool `url:"leaf" json:"leaf"`
 }
 
 type CreateRequest struct {
@@ -62,16 +58,6 @@ type CreateRequest struct {
 	AddStorage *util.SpecialBool `url:"add_storage,omitempty" json:"add_storage,omitempty"` // Configure storage using the Volume Group
 }
 
-type CreateResponse string
-
-// Create Create an LVM Volume Group
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/lvm", "POST", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Name string `url:"name" json:"name"` // The storage identifier.
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -81,11 +67,25 @@ type DeleteRequest struct {
 	CleanupDisks  *util.SpecialBool `url:"cleanup-disks,omitempty" json:"cleanup-disks,omitempty"`   // Also wipe disks so they can be repurposed afterwards.
 }
 
-type DeleteResponse string
+// Index List LVM Volume Groups
+func (c *Client) Index(ctx context.Context, req IndexRequest) (IndexResponse, error) {
+	var resp IndexResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/lvm", "GET", &resp, req)
+	return resp, err
+}
+
+// Create Create an LVM Volume Group
+func (c *Client) Create(ctx context.Context, req CreateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/lvm", "POST", &resp, req)
+	return resp, err
+}
 
 // Delete Remove an LVM Volume Group.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) (string, error) {
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/lvm/{name}", "DELETE", &resp, req)
 	return resp, err

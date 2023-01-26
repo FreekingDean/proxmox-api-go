@@ -25,20 +25,12 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Name string `url:"name" json:"name"`
 
 	// The following parameters are optional
 	Addr *string `url:"addr,omitempty" json:"addr,omitempty"`
 	Host *string `url:"host,omitempty" json:"host,omitempty"`
-}
-
-// Index Get Ceph monitor list.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/mon", "GET", &resp, req)
-	return resp, err
 }
 
 type ChildCreateRequest struct {
@@ -49,27 +41,31 @@ type ChildCreateRequest struct {
 	Monid      *string `url:"monid,omitempty" json:"monid,omitempty"`             // The ID for the monitor, when omitted the same as the nodename
 }
 
-type ChildCreateResponse string
-
-// ChildCreate Create Ceph Monitor and Manager
-func (c *Client) ChildCreate(ctx context.Context, req *ChildCreateRequest) (*ChildCreateResponse, error) {
-	var resp *ChildCreateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/mon/{monid}", "POST", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Monid string `url:"monid" json:"monid"` // Monitor ID
 	Node  string `url:"node" json:"node"`   // The cluster node name.
 
 }
 
-type DeleteResponse string
+// Index Get Ceph monitor list.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/mon", "GET", &resp, req)
+	return resp, err
+}
+
+// ChildCreate Create Ceph Monitor and Manager
+func (c *Client) ChildCreate(ctx context.Context, req ChildCreateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/mon/{monid}", "POST", &resp, req)
+	return resp, err
+}
 
 // Delete Destroy Ceph Monitor and Manager.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) (string, error) {
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/mon/{monid}", "DELETE", &resp, req)
 	return resp, err

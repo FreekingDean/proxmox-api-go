@@ -20,20 +20,12 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Subdir string `url:"subdir" json:"subdir"` // API sub-directory endpoint
 
 }
 
-// Index Index for backup info related endpoints
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/backup-info", "GET", &resp, nil)
-	return resp, err
-}
-
-type GetGuestsNotInBackupNotBackedUpResponse []*struct {
+type GetGuestsNotInBackupNotBackedUpResponse struct {
 	Type string `url:"type" json:"type"` // Type of the guest.
 	Vmid int    `url:"vmid" json:"vmid"` // VMID of the guest.
 
@@ -41,9 +33,17 @@ type GetGuestsNotInBackupNotBackedUpResponse []*struct {
 	Name *string `url:"name,omitempty" json:"name,omitempty"` // Name of the guest
 }
 
+// Index Index for backup info related endpoints
+func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/cluster/backup-info", "GET", &resp, nil)
+	return resp, err
+}
+
 // GetGuestsNotInBackupNotBackedUp Shows all guests which are not covered by any backup job.
-func (c *Client) GetGuestsNotInBackupNotBackedUp(ctx context.Context) (*GetGuestsNotInBackupNotBackedUpResponse, error) {
-	var resp *GetGuestsNotInBackupNotBackedUpResponse
+func (c *Client) GetGuestsNotInBackupNotBackedUp(ctx context.Context) ([]GetGuestsNotInBackupNotBackedUpResponse, error) {
+	var resp []GetGuestsNotInBackupNotBackedUpResponse
 
 	err := c.httpClient.Do(ctx, "/cluster/backup-info/not-backed-up", "GET", &resp, nil)
 	return resp, err

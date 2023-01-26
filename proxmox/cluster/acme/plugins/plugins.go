@@ -27,17 +27,9 @@ type IndexRequest struct {
 	Type *string `url:"type,omitempty" json:"type,omitempty"` // Only list ACME plugins of a specific type
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Plugin string `url:"plugin" json:"plugin"` // Unique identifier for ACME plugin instance.
 
-}
-
-// Index ACME plugin index.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/acme/plugins", "GET", &resp, req)
-	return resp, err
 }
 
 type CreateRequest struct {
@@ -52,29 +44,9 @@ type CreateRequest struct {
 	ValidationDelay *int              `url:"validation-delay,omitempty" json:"validation-delay,omitempty"` // Extra delay in seconds to wait before requesting validation. Allows to cope with a long TTL of DNS records.
 }
 
-type CreateResponse map[string]interface{}
-
-// Create Add ACME plugin configuration.
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/acme/plugins", "POST", &resp, req)
-	return resp, err
-}
-
 type FindRequest struct {
 	Id string `url:"id" json:"id"` // Unique identifier for ACME plugin instance.
 
-}
-
-type FindResponse map[string]interface{}
-
-// Find Get ACME plugin configuration.
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/acme/plugins/{id}", "GET", &resp, req)
-	return resp, err
 }
 
 type UpdateRequest struct {
@@ -90,27 +62,44 @@ type UpdateRequest struct {
 	ValidationDelay *int              `url:"validation-delay,omitempty" json:"validation-delay,omitempty"` // Extra delay in seconds to wait before requesting validation. Allows to cope with a long TTL of DNS records.
 }
 
-type UpdateResponse map[string]interface{}
-
-// Update Update ACME plugin configuration.
-func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateResponse, error) {
-	var resp *UpdateResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/acme/plugins/{id}", "PUT", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Id string `url:"id" json:"id"` // Unique identifier for ACME plugin instance.
 
 }
 
-type DeleteResponse map[string]interface{}
+// Index ACME plugin index.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/cluster/acme/plugins", "GET", &resp, req)
+	return resp, err
+}
+
+// Create Add ACME plugin configuration.
+func (c *Client) Create(ctx context.Context, req CreateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/cluster/acme/plugins", "POST", nil, req)
+	return err
+}
+
+// Find Get ACME plugin configuration.
+func (c *Client) Find(ctx context.Context, req FindRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/cluster/acme/plugins/{id}", "GET", &resp, req)
+	return resp, err
+}
+
+// Update Update ACME plugin configuration.
+func (c *Client) Update(ctx context.Context, req UpdateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/cluster/acme/plugins/{id}", "PUT", nil, req)
+	return err
+}
 
 // Delete Delete ACME plugin configuration.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) error {
 
-	err := c.httpClient.Do(ctx, "/cluster/acme/plugins/{id}", "DELETE", &resp, req)
-	return resp, err
+	err := c.httpClient.Do(ctx, "/cluster/acme/plugins/{id}", "DELETE", nil, req)
+	return err
 }

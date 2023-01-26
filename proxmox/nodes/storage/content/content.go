@@ -30,32 +30,27 @@ type IndexRequest struct {
 	Vmid    *int    `url:"vmid,omitempty" json:"vmid,omitempty"`       // Only list images for this VM
 }
 
-type IndexResponse []*struct {
+// Last backup verification result, only useful for PBS storages.
+type Verification struct {
+	State string `url:"state" json:"state"` // Last backup verification state.
+	Upid  string `url:"upid" json:"upid"`   // Last backup verification UPID.
+
+}
+
+type IndexResponse struct {
 	Format string `url:"format" json:"format"` // Format identifier ('raw', 'qcow2', 'subvol', 'iso', 'tgz' ...)
 	Size   int    `url:"size" json:"size"`     // Volume size in bytes.
 	Volid  string `url:"volid" json:"volid"`   // Volume identifier.
 
 	// The following parameters are optional
-	Ctime        *int              `url:"ctime,omitempty" json:"ctime,omitempty"`         // Creation time (seconds since the UNIX Epoch).
-	Encrypted    *string           `url:"encrypted,omitempty" json:"encrypted,omitempty"` // If whole backup is encrypted, value is the fingerprint or '1'  if encrypted. Only useful for the Proxmox Backup Server storage type.
-	Notes        *string           `url:"notes,omitempty" json:"notes,omitempty"`         // Optional notes. If they contain multiple lines, only the first one is returned here.
-	Parent       *string           `url:"parent,omitempty" json:"parent,omitempty"`       // Volume identifier of parent (for linked cloned).
-	Protected    *util.SpecialBool `url:"protected,omitempty" json:"protected,omitempty"` // Protection status. Currently only supported for backups.
-	Used         *int              `url:"used,omitempty" json:"used,omitempty"`           // Used space. Please note that most storage plugins do not report anything useful here.
-	Verification struct {
-		State string `url:"state" json:"state"` // Last backup verification state.
-		Upid  string `url:"upid" json:"upid"`   // Last backup verification UPID.
-
-	} `url:"verification,omitempty" json:"verification,omitempty"` // Last backup verification result, only useful for PBS storages.
-	Vmid *int `url:"vmid,omitempty" json:"vmid,omitempty"` // Associated Owner VMID.
-}
-
-// Index List storage content.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/content", "GET", &resp, req)
-	return resp, err
+	Ctime        *int              `url:"ctime,omitempty" json:"ctime,omitempty"`               // Creation time (seconds since the UNIX Epoch).
+	Encrypted    *string           `url:"encrypted,omitempty" json:"encrypted,omitempty"`       // If whole backup is encrypted, value is the fingerprint or '1' if encrypted. Only useful for the Proxmox Backup Server storage type.
+	Notes        *string           `url:"notes,omitempty" json:"notes,omitempty"`               // Optional notes. If they contain multiple lines, only the first one is returned here.
+	Parent       *string           `url:"parent,omitempty" json:"parent,omitempty"`             // Volume identifier of parent (for linked cloned).
+	Protected    *util.SpecialBool `url:"protected,omitempty" json:"protected,omitempty"`       // Protection status. Currently only supported for backups.
+	Used         *int              `url:"used,omitempty" json:"used,omitempty"`                 // Used space. Please note that most storage plugins do not report anything useful here.
+	Verification Verification      `url:"verification,omitempty" json:"verification,omitempty"` // Last backup verification result, only useful for PBS storages.
+	Vmid         *int              `url:"vmid,omitempty" json:"vmid,omitempty"`                 // Associated Owner VMID.
 }
 
 type CreateRequest struct {
@@ -67,16 +62,6 @@ type CreateRequest struct {
 
 	// The following parameters are optional
 	Format *string `url:"format,omitempty" json:"format,omitempty"`
-}
-
-type CreateResponse string
-
-// Create Allocate disk images.
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/content", "POST", &resp, req)
-	return resp, err
 }
 
 type FindRequest struct {
@@ -98,14 +83,6 @@ type FindResponse struct {
 	Protected *util.SpecialBool `url:"protected,omitempty" json:"protected,omitempty"` // Protection status. Currently only supported for backups.
 }
 
-// Find Get volume attributes
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/content/{volume}", "GET", &resp, req)
-	return resp, err
-}
-
 type ChildCreateRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
 	Target string `url:"target" json:"target"` // Target volume identifier
@@ -114,16 +91,6 @@ type ChildCreateRequest struct {
 	// The following parameters are optional
 	Storage    *string `url:"storage,omitempty" json:"storage,omitempty"`         // The storage identifier.
 	TargetNode *string `url:"target_node,omitempty" json:"target_node,omitempty"` // Target node. Default is local node.
-}
-
-type ChildCreateResponse string
-
-// ChildCreate Copy a volume. This is experimental code - do not use.
-func (c *Client) ChildCreate(ctx context.Context, req *ChildCreateRequest) (*ChildCreateResponse, error) {
-	var resp *ChildCreateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/content/{volume}", "POST", &resp, req)
-	return resp, err
 }
 
 type UpdateRequest struct {
@@ -136,16 +103,6 @@ type UpdateRequest struct {
 	Storage   *string           `url:"storage,omitempty" json:"storage,omitempty"`     // The storage identifier.
 }
 
-type UpdateResponse map[string]interface{}
-
-// Update Update volume attributes
-func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateResponse, error) {
-	var resp *UpdateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/content/{volume}", "PUT", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
 	Volume string `url:"volume" json:"volume"` // Volume identifier
@@ -155,11 +112,48 @@ type DeleteRequest struct {
 	Storage *string `url:"storage,omitempty" json:"storage,omitempty"` // The storage identifier.
 }
 
-type DeleteResponse *string
+// Index List storage content.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/content", "GET", &resp, req)
+	return resp, err
+}
+
+// Create Allocate disk images.
+func (c *Client) Create(ctx context.Context, req CreateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/content", "POST", &resp, req)
+	return resp, err
+}
+
+// Find Get volume attributes
+func (c *Client) Find(ctx context.Context, req FindRequest) (FindResponse, error) {
+	var resp FindResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/content/{volume}", "GET", &resp, req)
+	return resp, err
+}
+
+// ChildCreate Copy a volume. This is experimental code - do not use.
+func (c *Client) ChildCreate(ctx context.Context, req ChildCreateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/content/{volume}", "POST", &resp, req)
+	return resp, err
+}
+
+// Update Update volume attributes
+func (c *Client) Update(ctx context.Context, req UpdateRequest) error {
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/content/{volume}", "PUT", nil, req)
+	return err
+}
 
 // Delete Delete volume
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) (*string, error) {
+	var resp *string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/content/{volume}", "DELETE", &resp, req)
 	return resp, err

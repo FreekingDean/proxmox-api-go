@@ -25,16 +25,8 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Type string `url:"type" json:"type"`
-}
-
-// Index Index of hardware types
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/hardware", "GET", &resp, req)
-	return resp, err
 }
 
 type UsbscanUsbRequest struct {
@@ -42,7 +34,7 @@ type UsbscanUsbRequest struct {
 
 }
 
-type UsbscanUsbResponse []*struct {
+type UsbscanUsbResponse struct {
 	Busnum int    `url:"busnum" json:"busnum"`
 	Class  int    `url:"class" json:"class"`
 	Devnum int    `url:"devnum" json:"devnum"`
@@ -59,9 +51,17 @@ type UsbscanUsbResponse []*struct {
 	Usbpath      *string `url:"usbpath,omitempty" json:"usbpath,omitempty"`
 }
 
+// Index Index of hardware types
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/hardware", "GET", &resp, req)
+	return resp, err
+}
+
 // UsbscanUsb List local USB devices.
-func (c *Client) UsbscanUsb(ctx context.Context, req *UsbscanUsbRequest) (*UsbscanUsbResponse, error) {
-	var resp *UsbscanUsbResponse
+func (c *Client) UsbscanUsb(ctx context.Context, req UsbscanUsbRequest) ([]UsbscanUsbResponse, error) {
+	var resp []UsbscanUsbResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/hardware/usb", "GET", &resp, req)
 	return resp, err

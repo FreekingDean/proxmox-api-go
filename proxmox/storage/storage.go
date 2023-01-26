@@ -4,7 +4,12 @@ package storage
 
 import (
 	"context"
+	"fmt"
+	"net/url"
+	"strings"
+
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
+	"github.com/google/go-querystring/query"
 )
 
 type HTTPClient interface {
@@ -27,16 +32,80 @@ type IndexRequest struct {
 	Type *string `url:"type,omitempty" json:"type,omitempty"` // Only list storage of specific type
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Storage string `url:"storage" json:"storage"`
 }
 
-// Index Storage index.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
+// Array of Bwlimit
+type BwlimitArr []Bwlimit
 
-	err := c.httpClient.Do(ctx, "/storage", "GET", &resp, req)
-	return resp, err
+func (t *BwlimitArr) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct {
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
+}
+
+// Set bandwidth/io limits various operations.
+type Bwlimit struct {
+
+	// The following parameters are optional
+	Clone     *float64 `url:"clone,omitempty" json:"clone,omitempty"`         // bandwidth limit in KiB/s for cloning disks
+	Default   *float64 `url:"default,omitempty" json:"default,omitempty"`     // default bandwidth limit in KiB/s
+	Migration *float64 `url:"migration,omitempty" json:"migration,omitempty"` // bandwidth limit in KiB/s for migrating guests (including moving local disks)
+	Move      *float64 `url:"move,omitempty" json:"move,omitempty"`           // bandwidth limit in KiB/s for moving disks
+	Restore   *float64 `url:"restore,omitempty" json:"restore,omitempty"`     // bandwidth limit in KiB/s for restoring guests from backups
+}
+
+func (t *Bwlimit) EncodeValues(key string, v *url.Values) error {
+	valueStrParts := []string{}
+	if t.Clone != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "clone", *t.Clone),
+		)
+	}
+
+	if t.Default != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "default", *t.Default),
+		)
+	}
+
+	if t.Migration != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "migration", *t.Migration),
+		)
+	}
+
+	if t.Move != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "move", *t.Move),
+		)
+	}
+
+	if t.Restore != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "restore", *t.Restore),
+		)
+	}
+
+	v.Set(key, strings.Join(valueStrParts, ", "))
+	return nil
 }
 
 type CreateRequest struct {
@@ -47,10 +116,10 @@ type CreateRequest struct {
 	Authsupported        *string           `url:"authsupported,omitempty" json:"authsupported,omitempty"`                 // Authsupported.
 	Base                 *string           `url:"base,omitempty" json:"base,omitempty"`                                   // Base volume. This volume is automatically activated.
 	Blocksize            *string           `url:"blocksize,omitempty" json:"blocksize,omitempty"`                         // block size
-	Bwlimit              *string           `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`                             // Set bandwidth/io limits various operations.
+	Bwlimit              *Bwlimit          `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`                             // Set bandwidth/io limits various operations.
 	ComstarHg            *string           `url:"comstar_hg,omitempty" json:"comstar_hg,omitempty"`                       // host group for comstar views
 	ComstarTg            *string           `url:"comstar_tg,omitempty" json:"comstar_tg,omitempty"`                       // target group for comstar views
-	Content              *string           `url:"content,omitempty" json:"content,omitempty"`                             // Allowed content types.NOTE: the value 'rootdir' is used for Containers, and value 'images' for VMs.
+	Content              *string           `url:"content,omitempty" json:"content,omitempty"`                             // Allowed content types. NOTE: the value 'rootdir' is used for Containers, and value 'images' for VMs.
 	DataPool             *string           `url:"data-pool,omitempty" json:"data-pool,omitempty"`                         // Data Pool (for erasure coding only)
 	Datastore            *string           `url:"datastore,omitempty" json:"datastore,omitempty"`                         // Proxmox Backup Server datastore name.
 	Disable              *util.SpecialBool `url:"disable,omitempty" json:"disable,omitempty"`                             // Flag to disable the storage.
@@ -102,24 +171,19 @@ type CreateRequest struct {
 	Volume               *string           `url:"volume,omitempty" json:"volume,omitempty"`                               // Glusterfs Volume.
 }
 
+// Partial, possible server generated, configuration properties.
+type Config struct {
+
+	// The following parameters are optional
+	EncryptionKey *string `url:"encryption-key,omitempty" json:"encryption-key,omitempty"` // The, possible auto-generated, encryption-key.
+}
+
 type CreateResponse struct {
 	Storage string `url:"storage" json:"storage"` // The ID of the created storage.
 	Type    string `url:"type" json:"type"`       // The type of the created storage.
 
 	// The following parameters are optional
-	Config struct {
-
-		// The following parameters are optional
-		EncryptionKey *string `url:"encryption-key,omitempty" json:"encryption-key,omitempty"` // The, possible auto-generated, encryption-key.
-	} `url:"config,omitempty" json:"config,omitempty"` // Partial, possible server generated, configuration properties.
-}
-
-// Create Create a new storage.
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/storage", "POST", &resp, req)
-	return resp, err
+	Config Config `url:"config,omitempty" json:"config,omitempty"` // Partial, possible server generated, configuration properties.
 }
 
 type FindRequest struct {
@@ -127,25 +191,15 @@ type FindRequest struct {
 
 }
 
-type FindResponse map[string]interface{}
-
-// Find Read storage configuration.
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/storage/{storage}", "GET", &resp, req)
-	return resp, err
-}
-
 type UpdateRequest struct {
 	Storage string `url:"storage" json:"storage"` // The storage identifier.
 
 	// The following parameters are optional
 	Blocksize            *string           `url:"blocksize,omitempty" json:"blocksize,omitempty"`                         // block size
-	Bwlimit              *string           `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`                             // Set bandwidth/io limits various operations.
+	Bwlimit              *Bwlimit          `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`                             // Set bandwidth/io limits various operations.
 	ComstarHg            *string           `url:"comstar_hg,omitempty" json:"comstar_hg,omitempty"`                       // host group for comstar views
 	ComstarTg            *string           `url:"comstar_tg,omitempty" json:"comstar_tg,omitempty"`                       // target group for comstar views
-	Content              *string           `url:"content,omitempty" json:"content,omitempty"`                             // Allowed content types.NOTE: the value 'rootdir' is used for Containers, and value 'images' for VMs.
+	Content              *string           `url:"content,omitempty" json:"content,omitempty"`                             // Allowed content types. NOTE: the value 'rootdir' is used for Containers, and value 'images' for VMs.
 	DataPool             *string           `url:"data-pool,omitempty" json:"data-pool,omitempty"`                         // Data Pool (for erasure coding only)
 	Delete               *string           `url:"delete,omitempty" json:"delete,omitempty"`                               // A list of settings you want to delete.
 	Digest               *string           `url:"digest,omitempty" json:"digest,omitempty"`                               // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
@@ -194,19 +248,7 @@ type UpdateResponse struct {
 	Type    string `url:"type" json:"type"`       // The type of the created storage.
 
 	// The following parameters are optional
-	Config struct {
-
-		// The following parameters are optional
-		EncryptionKey *string `url:"encryption-key,omitempty" json:"encryption-key,omitempty"` // The, possible auto-generated, encryption-key.
-	} `url:"config,omitempty" json:"config,omitempty"` // Partial, possible server generated, configuration properties.
-}
-
-// Update Update storage configuration.
-func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateResponse, error) {
-	var resp *UpdateResponse
-
-	err := c.httpClient.Do(ctx, "/storage/{storage}", "PUT", &resp, req)
-	return resp, err
+	Config Config `url:"config,omitempty" json:"config,omitempty"` // Partial, possible server generated, configuration properties.
 }
 
 type DeleteRequest struct {
@@ -214,12 +256,41 @@ type DeleteRequest struct {
 
 }
 
-type DeleteResponse map[string]interface{}
+// Index Storage index.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/storage", "GET", &resp, req)
+	return resp, err
+}
+
+// Create Create a new storage.
+func (c *Client) Create(ctx context.Context, req CreateRequest) (CreateResponse, error) {
+	var resp CreateResponse
+
+	err := c.httpClient.Do(ctx, "/storage", "POST", &resp, req)
+	return resp, err
+}
+
+// Find Read storage configuration.
+func (c *Client) Find(ctx context.Context, req FindRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/storage/{storage}", "GET", &resp, req)
+	return resp, err
+}
+
+// Update Update storage configuration.
+func (c *Client) Update(ctx context.Context, req UpdateRequest) (UpdateResponse, error) {
+	var resp UpdateResponse
+
+	err := c.httpClient.Do(ctx, "/storage/{storage}", "PUT", &resp, req)
+	return resp, err
+}
 
 // Delete Delete storage configuration.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) error {
 
-	err := c.httpClient.Do(ctx, "/storage/{storage}", "DELETE", &resp, req)
-	return resp, err
+	err := c.httpClient.Do(ctx, "/storage/{storage}", "DELETE", nil, req)
+	return err
 }

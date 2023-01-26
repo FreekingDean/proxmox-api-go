@@ -4,7 +4,12 @@ package nodes
 
 import (
 	"context"
+	"fmt"
+	"net/url"
+	"strings"
+
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
+	"github.com/google/go-querystring/query"
 )
 
 type HTTPClient interface {
@@ -21,7 +26,7 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
 	Status string `url:"status" json:"status"` // Node status.
 
@@ -35,42 +40,14 @@ type IndexResponse []*struct {
 	Uptime         *int     `url:"uptime,omitempty" json:"uptime,omitempty"`                   // Node uptime in seconds.
 }
 
-// Index Cluster node index.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes", "GET", &resp, nil)
-	return resp, err
-}
-
 type FindRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
-type FindResponse []*map[string]interface{}
-
-// Find Node index.
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}", "GET", &resp, req)
-	return resp, err
-}
-
 type GetSubscriptionRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
-}
-
-type GetSubscriptionResponse map[string]interface{}
-
-// GetSubscription Read subscription info.
-func (c *Client) GetSubscription(ctx context.Context, req *GetSubscriptionRequest) (*GetSubscriptionResponse, error) {
-	var resp *GetSubscriptionResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/subscription", "GET", &resp, req)
-	return resp, err
 }
 
 type UpdateSubscriptionRequest struct {
@@ -80,45 +57,15 @@ type UpdateSubscriptionRequest struct {
 	Force *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"` // Always connect to server, even if we have up to date info inside local cache.
 }
 
-type UpdateSubscriptionResponse map[string]interface{}
-
-// UpdateSubscription Update subscription info.
-func (c *Client) UpdateSubscription(ctx context.Context, req *UpdateSubscriptionRequest) (*UpdateSubscriptionResponse, error) {
-	var resp *UpdateSubscriptionResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/subscription", "POST", &resp, req)
-	return resp, err
-}
-
 type SetSubscriptionRequest struct {
 	Key  string `url:"key" json:"key"`   // Proxmox VE subscription key
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
-type SetSubscriptionResponse map[string]interface{}
-
-// SetSubscription Set subscription key.
-func (c *Client) SetSubscription(ctx context.Context, req *SetSubscriptionRequest) (*SetSubscriptionResponse, error) {
-	var resp *SetSubscriptionResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/subscription", "PUT", &resp, req)
-	return resp, err
-}
-
 type DeleteSubscriptionRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
-}
-
-type DeleteSubscriptionResponse map[string]interface{}
-
-// DeleteSubscription Delete subscription key of this node.
-func (c *Client) DeleteSubscription(ctx context.Context, req *DeleteSubscriptionRequest) (*DeleteSubscriptionResponse, error) {
-	var resp *DeleteSubscriptionResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/subscription", "DELETE", &resp, req)
-	return resp, err
 }
 
 type GetConfigRequest struct {
@@ -128,46 +75,127 @@ type GetConfigRequest struct {
 	Property *string `url:"property,omitempty" json:"property,omitempty"` // Return only a specific property from the node configuration.
 }
 
+// Array of Acme
+type AcmeArr []Acme
+
+func (t *AcmeArr) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct {
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
+}
+
+// Node specific ACME settings.
+type Acme struct {
+
+	// The following parameters are optional
+	Account *string `url:"account,omitempty" json:"account,omitempty"` // ACME account config file name.
+	Domains *string `url:"domains,omitempty" json:"domains,omitempty"` // List of domains for this node's ACME certificate
+}
+
+func (t *Acme) EncodeValues(key string, v *url.Values) error {
+	valueStrParts := []string{}
+	if t.Account != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "account", *t.Account),
+		)
+	}
+
+	if t.Domains != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "domains", *t.Domains),
+		)
+	}
+
+	v.Set(key, strings.Join(valueStrParts, ", "))
+	return nil
+}
+
+// Array of Acmedomainn
+type AcmedomainnArr []Acmedomainn
+
+func (t *AcmedomainnArr) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct {
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
+}
+
+// ACME domain and validation plugin
+type Acmedomainn struct {
+	Domain string `url:"domain" json:"domain"` // domain for this node's ACME certificate
+
+	// The following parameters are optional
+	Alias  *string `url:"alias,omitempty" json:"alias,omitempty"`   // Alias for the Domain to verify ACME Challenge over DNS
+	Plugin *string `url:"plugin,omitempty" json:"plugin,omitempty"` // The ACME plugin ID
+}
+
+func (t *Acmedomainn) EncodeValues(key string, v *url.Values) error {
+	valueStrParts := []string{
+		fmt.Sprintf("%s=%v", "domain", t.Domain),
+	}
+	if t.Alias != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "alias", *t.Alias),
+		)
+	}
+
+	if t.Plugin != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "plugin", *t.Plugin),
+		)
+	}
+
+	v.Set(key, strings.Join(valueStrParts, ", "))
+	return nil
+}
+
 type GetConfigResponse struct {
 
 	// The following parameters are optional
-	Acme                *string `url:"acme,omitempty" json:"acme,omitempty"`                                   // Node specific ACME settings.
-	Acmedomainn         *string `url:"acmedomain[n],omitempty" json:"acmedomain[n],omitempty"`                 // ACME domain and validation plugin
-	Description         *string `url:"description,omitempty" json:"description,omitempty"`                     // Description for the Node. Shown in the web-interface node notes panel. This is saved as comment inside the configuration file.
-	Digest              *string `url:"digest,omitempty" json:"digest,omitempty"`                               // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-	StartallOnbootDelay *int    `url:"startall-onboot-delay,omitempty" json:"startall-onboot-delay,omitempty"` // Initial delay in seconds, before starting all the Virtual Guests with on-boot enabled.
-	Wakeonlan           *string `url:"wakeonlan,omitempty" json:"wakeonlan,omitempty"`                         // MAC address for wake on LAN
-}
-
-// GetConfig Get node configuration options.
-func (c *Client) GetConfig(ctx context.Context, req *GetConfigRequest) (*GetConfigResponse, error) {
-	var resp *GetConfigResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/config", "GET", &resp, req)
-	return resp, err
+	Acme                *Acme           `url:"acme,omitempty" json:"acme,omitempty"`                                   // Node specific ACME settings.
+	Acmedomains         *AcmedomainnArr `url:"acmedomain[n],omitempty" json:"acmedomain[n],omitempty"`                 // ACME domain and validation plugin
+	Description         *string         `url:"description,omitempty" json:"description,omitempty"`                     // Description for the Node. Shown in the web-interface node notes panel. This is saved as comment inside the configuration file.
+	Digest              *string         `url:"digest,omitempty" json:"digest,omitempty"`                               // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	StartallOnbootDelay *int            `url:"startall-onboot-delay,omitempty" json:"startall-onboot-delay,omitempty"` // Initial delay in seconds, before starting all the Virtual Guests with on-boot enabled.
+	Wakeonlan           *string         `url:"wakeonlan,omitempty" json:"wakeonlan,omitempty"`                         // MAC address for wake on LAN
 }
 
 type SetOptionsConfigRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Acme                *string `url:"acme,omitempty" json:"acme,omitempty"`                                   // Node specific ACME settings.
-	Acmedomainn         *string `url:"acmedomain[n],omitempty" json:"acmedomain[n],omitempty"`                 // ACME domain and validation plugin
-	Delete              *string `url:"delete,omitempty" json:"delete,omitempty"`                               // A list of settings you want to delete.
-	Description         *string `url:"description,omitempty" json:"description,omitempty"`                     // Description for the Node. Shown in the web-interface node notes panel. This is saved as comment inside the configuration file.
-	Digest              *string `url:"digest,omitempty" json:"digest,omitempty"`                               // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-	StartallOnbootDelay *int    `url:"startall-onboot-delay,omitempty" json:"startall-onboot-delay,omitempty"` // Initial delay in seconds, before starting all the Virtual Guests with on-boot enabled.
-	Wakeonlan           *string `url:"wakeonlan,omitempty" json:"wakeonlan,omitempty"`                         // MAC address for wake on LAN
-}
-
-type SetOptionsConfigResponse map[string]interface{}
-
-// SetOptionsConfig Set node configuration options.
-func (c *Client) SetOptionsConfig(ctx context.Context, req *SetOptionsConfigRequest) (*SetOptionsConfigResponse, error) {
-	var resp *SetOptionsConfigResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/config", "PUT", &resp, req)
-	return resp, err
+	Acme                *Acme           `url:"acme,omitempty" json:"acme,omitempty"`                                   // Node specific ACME settings.
+	Acmedomains         *AcmedomainnArr `url:"acmedomain[n],omitempty" json:"acmedomain[n],omitempty"`                 // ACME domain and validation plugin
+	Delete              *string         `url:"delete,omitempty" json:"delete,omitempty"`                               // A list of settings you want to delete.
+	Description         *string         `url:"description,omitempty" json:"description,omitempty"`                     // Description for the Node. Shown in the web-interface node notes panel. This is saved as comment inside the configuration file.
+	Digest              *string         `url:"digest,omitempty" json:"digest,omitempty"`                               // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	StartallOnbootDelay *int            `url:"startall-onboot-delay,omitempty" json:"startall-onboot-delay,omitempty"` // Initial delay in seconds, before starting all the Virtual Guests with on-boot enabled.
+	Wakeonlan           *string         `url:"wakeonlan,omitempty" json:"wakeonlan,omitempty"`                         // MAC address for wake on LAN
 }
 
 type VersionRequest struct {
@@ -182,27 +210,9 @@ type VersionResponse struct {
 
 }
 
-// Version API version details
-func (c *Client) Version(ctx context.Context, req *VersionRequest) (*VersionResponse, error) {
-	var resp *VersionResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/version", "GET", &resp, req)
-	return resp, err
-}
-
 type StatusRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
-}
-
-type StatusResponse map[string]interface{}
-
-// Status Read node status
-func (c *Client) Status(ctx context.Context, req *StatusRequest) (*StatusResponse, error) {
-	var resp *StatusResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/status", "GET", &resp, req)
-	return resp, err
 }
 
 type NodeCmdStatusRequest struct {
@@ -211,29 +221,9 @@ type NodeCmdStatusRequest struct {
 
 }
 
-type NodeCmdStatusResponse map[string]interface{}
-
-// NodeCmdStatus Reboot or shutdown a node.
-func (c *Client) NodeCmdStatus(ctx context.Context, req *NodeCmdStatusRequest) (*NodeCmdStatusResponse, error) {
-	var resp *NodeCmdStatusResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/status", "POST", &resp, req)
-	return resp, err
-}
-
 type NetstatRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
-}
-
-type NetstatResponse []*map[string]interface{}
-
-// Netstat Read tap/vm network device interface counters
-func (c *Client) Netstat(ctx context.Context, req *NetstatRequest) (*NetstatResponse, error) {
-	var resp *NetstatResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/netstat", "GET", &resp, req)
-	return resp, err
 }
 
 type ExecuteRequest struct {
@@ -242,29 +232,9 @@ type ExecuteRequest struct {
 
 }
 
-type ExecuteResponse []*map[string]interface{}
-
-// Execute Execute multiple commands in order.
-func (c *Client) Execute(ctx context.Context, req *ExecuteRequest) (*ExecuteResponse, error) {
-	var resp *ExecuteResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/execute", "POST", &resp, req)
-	return resp, err
-}
-
 type WakeonlanRequest struct {
 	Node string `url:"node" json:"node"` // target node for wake on LAN packet
 
-}
-
-type WakeonlanResponse string
-
-// Wakeonlan Try to wake a node via 'wake on LAN' network packet.
-func (c *Client) Wakeonlan(ctx context.Context, req *WakeonlanRequest) (*WakeonlanResponse, error) {
-	var resp *WakeonlanResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/wakeonlan", "POST", &resp, req)
-	return resp, err
 }
 
 type RrdRequest struct {
@@ -280,30 +250,12 @@ type RrdResponse struct {
 	Filename string `url:"filename" json:"filename"`
 }
 
-// Rrd Read node RRD statistics (returns PNG)
-func (c *Client) Rrd(ctx context.Context, req *RrdRequest) (*RrdResponse, error) {
-	var resp *RrdResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/rrd", "GET", &resp, req)
-	return resp, err
-}
-
 type RrddataRequest struct {
 	Node      string `url:"node" json:"node"`           // The cluster node name.
 	Timeframe string `url:"timeframe" json:"timeframe"` // Specify the time frame you are interested in.
 
 	// The following parameters are optional
 	Cf *string `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
-}
-
-type RrddataResponse []*map[string]interface{}
-
-// Rrddata Read node RRD statistics
-func (c *Client) Rrddata(ctx context.Context, req *RrddataRequest) (*RrddataResponse, error) {
-	var resp *RrddataResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/rrddata", "GET", &resp, req)
-	return resp, err
 }
 
 type SyslogRequest struct {
@@ -317,18 +269,10 @@ type SyslogRequest struct {
 	Until   *string `url:"until,omitempty" json:"until,omitempty"` // Display all log until this date-time string.
 }
 
-type SyslogResponse []*struct {
+type SyslogResponse struct {
 	N int    `url:"n" json:"n"` // Line number
 	T string `url:"t" json:"t"` // Line text
 
-}
-
-// Syslog Read system log
-func (c *Client) Syslog(ctx context.Context, req *SyslogRequest) (*SyslogResponse, error) {
-	var resp *SyslogResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/syslog", "GET", &resp, req)
-	return resp, err
 }
 
 type JournalRequest struct {
@@ -340,16 +284,6 @@ type JournalRequest struct {
 	Since       *int    `url:"since,omitempty" json:"since,omitempty"`             // Display all log since this UNIX epoch. Conflicts with 'startcursor'.
 	Startcursor *string `url:"startcursor,omitempty" json:"startcursor,omitempty"` // Start after the given Cursor. Conflicts with 'since'
 	Until       *int    `url:"until,omitempty" json:"until,omitempty"`             // Display all log until this UNIX epoch. Conflicts with 'endcursor'.
-}
-
-type JournalResponse []string
-
-// Journal Read Journal
-func (c *Client) Journal(ctx context.Context, req *JournalRequest) (*JournalResponse, error) {
-	var resp *JournalResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/journal", "GET", &resp, req)
-	return resp, err
 }
 
 type VncshellRequest struct {
@@ -371,14 +305,6 @@ type VncshellResponse struct {
 	User   string `url:"user" json:"user"`
 }
 
-// Vncshell Creates a VNC Shell proxy.
-func (c *Client) Vncshell(ctx context.Context, req *VncshellRequest) (*VncshellResponse, error) {
-	var resp *VncshellResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/vncshell", "POST", &resp, req)
-	return resp, err
-}
-
 type TermproxyRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
@@ -394,14 +320,6 @@ type TermproxyResponse struct {
 	User   string `url:"user" json:"user"`
 }
 
-// Termproxy Creates a VNC Shell proxy.
-func (c *Client) Termproxy(ctx context.Context, req *TermproxyRequest) (*TermproxyResponse, error) {
-	var resp *TermproxyResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/termproxy", "POST", &resp, req)
-	return resp, err
-}
-
 type VncwebsocketRequest struct {
 	Node      string `url:"node" json:"node"`           // The cluster node name.
 	Port      int    `url:"port" json:"port"`           // Port number returned by previous vncproxy call.
@@ -413,14 +331,6 @@ type VncwebsocketResponse struct {
 	Port string `url:"port" json:"port"`
 }
 
-// Vncwebsocket Opens a websocket for VNC traffic.
-func (c *Client) Vncwebsocket(ctx context.Context, req *VncwebsocketRequest) (*VncwebsocketResponse, error) {
-	var resp *VncwebsocketResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/vncwebsocket", "GET", &resp, req)
-	return resp, err
-}
-
 type SpiceshellRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
@@ -430,20 +340,13 @@ type SpiceshellRequest struct {
 	Proxy   *string `url:"proxy,omitempty" json:"proxy,omitempty"`       // SPICE proxy server. This can be used by the client to specify the proxy server. All nodes in a cluster runs 'spiceproxy', so it is up to the client to choose one. By default, we return the node where the VM is currently running. As reasonable setting is to use same node you use to connect to the API (This is window.location.hostname for the JS GUI).
 }
 
+// Returned values can be directly passed to the 'remote-viewer' application.
 type SpiceshellResponse struct {
 	Host     string `url:"host" json:"host"`
 	Password string `url:"password" json:"password"`
 	Proxy    string `url:"proxy" json:"proxy"`
 	TlsPort  int    `url:"tls-port" json:"tls-port"`
 	Type     string `url:"type" json:"type"`
-}
-
-// Spiceshell Creates a SPICE shell.
-func (c *Client) Spiceshell(ctx context.Context, req *SpiceshellRequest) (*SpiceshellResponse, error) {
-	var resp *SpiceshellResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/spiceshell", "POST", &resp, req)
-	return resp, err
 }
 
 type DnsRequest struct {
@@ -460,14 +363,6 @@ type DnsResponse struct {
 	Search *string `url:"search,omitempty" json:"search,omitempty"` // Search domain for host-name lookup.
 }
 
-// Dns Read DNS settings.
-func (c *Client) Dns(ctx context.Context, req *DnsRequest) (*DnsResponse, error) {
-	var resp *DnsResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/dns", "GET", &resp, req)
-	return resp, err
-}
-
 type UpdateDnsRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
 	Search string `url:"search" json:"search"` // Search domain for host-name lookup.
@@ -476,16 +371,6 @@ type UpdateDnsRequest struct {
 	Dns1 *string `url:"dns1,omitempty" json:"dns1,omitempty"` // First name server IP address.
 	Dns2 *string `url:"dns2,omitempty" json:"dns2,omitempty"` // Second name server IP address.
 	Dns3 *string `url:"dns3,omitempty" json:"dns3,omitempty"` // Third name server IP address.
-}
-
-type UpdateDnsResponse map[string]interface{}
-
-// UpdateDns Write DNS settings.
-func (c *Client) UpdateDns(ctx context.Context, req *UpdateDnsRequest) (*UpdateDnsResponse, error) {
-	var resp *UpdateDnsResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/dns", "PUT", &resp, req)
-	return resp, err
 }
 
 type TimeRequest struct {
@@ -500,28 +385,10 @@ type TimeResponse struct {
 
 }
 
-// Time Read server time and time zone settings.
-func (c *Client) Time(ctx context.Context, req *TimeRequest) (*TimeResponse, error) {
-	var resp *TimeResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/time", "GET", &resp, req)
-	return resp, err
-}
-
 type SetTimezoneTimeRequest struct {
 	Node     string `url:"node" json:"node"`         // The cluster node name.
 	Timezone string `url:"timezone" json:"timezone"` // Time zone. The file '/usr/share/zoneinfo/zone.tab' contains the list of valid names.
 
-}
-
-type SetTimezoneTimeResponse map[string]interface{}
-
-// SetTimezoneTime Set time zone.
-func (c *Client) SetTimezoneTime(ctx context.Context, req *SetTimezoneTimeRequest) (*SetTimezoneTimeResponse, error) {
-	var resp *SetTimezoneTimeResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/time", "PUT", &resp, req)
-	return resp, err
 }
 
 type AplinfoRequest struct {
@@ -529,31 +396,11 @@ type AplinfoRequest struct {
 
 }
 
-type AplinfoResponse []*map[string]interface{}
-
-// Aplinfo Get list of appliances.
-func (c *Client) Aplinfo(ctx context.Context, req *AplinfoRequest) (*AplinfoResponse, error) {
-	var resp *AplinfoResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/aplinfo", "GET", &resp, req)
-	return resp, err
-}
-
 type AplDownloadAplinfoRequest struct {
 	Node     string `url:"node" json:"node"`         // The cluster node name.
 	Storage  string `url:"storage" json:"storage"`   // The storage where the template will be stored
 	Template string `url:"template" json:"template"` // The template which will downloaded
 
-}
-
-type AplDownloadAplinfoResponse string
-
-// AplDownloadAplinfo Download appliance templates.
-func (c *Client) AplDownloadAplinfo(ctx context.Context, req *AplDownloadAplinfoRequest) (*AplDownloadAplinfoResponse, error) {
-	var resp *AplDownloadAplinfoResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/aplinfo", "POST", &resp, req)
-	return resp, err
 }
 
 type QueryUrlMetadataRequest struct {
@@ -572,27 +419,9 @@ type QueryUrlMetadataResponse struct {
 	Size     *int    `url:"size,omitempty" json:"size,omitempty"`
 }
 
-// QueryUrlMetadata Query metadata of an URL: file size, file name and mime type.
-func (c *Client) QueryUrlMetadata(ctx context.Context, req *QueryUrlMetadataRequest) (*QueryUrlMetadataResponse, error) {
-	var resp *QueryUrlMetadataResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/query-url-metadata", "GET", &resp, req)
-	return resp, err
-}
-
 type ReportRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
-}
-
-type ReportResponse string
-
-// Report Gather various systems information about a node
-func (c *Client) Report(ctx context.Context, req *ReportRequest) (*ReportResponse, error) {
-	var resp *ReportResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/report", "GET", &resp, req)
-	return resp, err
 }
 
 type StartallRequest struct {
@@ -603,31 +432,11 @@ type StartallRequest struct {
 	Vms   *string           `url:"vms,omitempty" json:"vms,omitempty"`     // Only consider guests from this comma separated list of VMIDs.
 }
 
-type StartallResponse string
-
-// Startall Start all VMs and containers located on this node (by default only those with onboot=1).
-func (c *Client) Startall(ctx context.Context, req *StartallRequest) (*StartallResponse, error) {
-	var resp *StartallResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/startall", "POST", &resp, req)
-	return resp, err
-}
-
 type StopallRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
 	Vms *string `url:"vms,omitempty" json:"vms,omitempty"` // Only consider Guests with these IDs.
-}
-
-type StopallResponse string
-
-// Stopall Stop all VMs and Containers.
-func (c *Client) Stopall(ctx context.Context, req *StopallRequest) (*StopallResponse, error) {
-	var resp *StopallResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/stopall", "POST", &resp, req)
-	return resp, err
 }
 
 type MigrateallRequest struct {
@@ -638,16 +447,6 @@ type MigrateallRequest struct {
 	Maxworkers     *int              `url:"maxworkers,omitempty" json:"maxworkers,omitempty"`             // Maximal number of parallel migration job. If not set use 'max_workers' from datacenter.cfg, one of both must be set!
 	Vms            *string           `url:"vms,omitempty" json:"vms,omitempty"`                           // Only consider Guests with these IDs.
 	WithLocalDisks *util.SpecialBool `url:"with-local-disks,omitempty" json:"with-local-disks,omitempty"` // Enable live storage migration for local disk
-}
-
-type MigrateallResponse string
-
-// Migrateall Migrate all VMs and Containers.
-func (c *Client) Migrateall(ctx context.Context, req *MigrateallRequest) (*MigrateallResponse, error) {
-	var resp *MigrateallResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/migrateall", "POST", &resp, req)
-	return resp, err
 }
 
 type GetEtcHostsRequest struct {
@@ -662,14 +461,6 @@ type GetEtcHostsResponse struct {
 	Digest *string `url:"digest,omitempty" json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 }
 
-// GetEtcHosts Get the content of /etc/hosts.
-func (c *Client) GetEtcHosts(ctx context.Context, req *GetEtcHostsRequest) (*GetEtcHostsResponse, error) {
-	var resp *GetEtcHostsResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/hosts", "GET", &resp, req)
-	return resp, err
-}
-
 type WriteEtcHostsRequest struct {
 	Data string `url:"data" json:"data"` // The target content of /etc/hosts.
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -678,12 +469,274 @@ type WriteEtcHostsRequest struct {
 	Digest *string `url:"digest,omitempty" json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 }
 
-type WriteEtcHostsResponse map[string]interface{}
+// Index Cluster node index.
+func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/nodes", "GET", &resp, nil)
+	return resp, err
+}
+
+// Find Node index.
+func (c *Client) Find(ctx context.Context, req FindRequest) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}", "GET", &resp, req)
+	return resp, err
+}
+
+// GetSubscription Read subscription info.
+func (c *Client) GetSubscription(ctx context.Context, req GetSubscriptionRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/subscription", "GET", &resp, req)
+	return resp, err
+}
+
+// UpdateSubscription Update subscription info.
+func (c *Client) UpdateSubscription(ctx context.Context, req UpdateSubscriptionRequest) error {
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/subscription", "POST", nil, req)
+	return err
+}
+
+// SetSubscription Set subscription key.
+func (c *Client) SetSubscription(ctx context.Context, req SetSubscriptionRequest) error {
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/subscription", "PUT", nil, req)
+	return err
+}
+
+// DeleteSubscription Delete subscription key of this node.
+func (c *Client) DeleteSubscription(ctx context.Context, req DeleteSubscriptionRequest) error {
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/subscription", "DELETE", nil, req)
+	return err
+}
+
+// GetConfig Get node configuration options.
+func (c *Client) GetConfig(ctx context.Context, req GetConfigRequest) (GetConfigResponse, error) {
+	var resp GetConfigResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/config", "GET", &resp, req)
+	return resp, err
+}
+
+// SetOptionsConfig Set node configuration options.
+func (c *Client) SetOptionsConfig(ctx context.Context, req SetOptionsConfigRequest) error {
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/config", "PUT", nil, req)
+	return err
+}
+
+// Version API version details
+func (c *Client) Version(ctx context.Context, req VersionRequest) (VersionResponse, error) {
+	var resp VersionResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/version", "GET", &resp, req)
+	return resp, err
+}
+
+// Status Read node status
+func (c *Client) Status(ctx context.Context, req StatusRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/status", "GET", &resp, req)
+	return resp, err
+}
+
+// NodeCmdStatus Reboot or shutdown a node.
+func (c *Client) NodeCmdStatus(ctx context.Context, req NodeCmdStatusRequest) error {
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/status", "POST", nil, req)
+	return err
+}
+
+// Netstat Read tap/vm network device interface counters
+func (c *Client) Netstat(ctx context.Context, req NetstatRequest) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/netstat", "GET", &resp, req)
+	return resp, err
+}
+
+// Execute Execute multiple commands in order.
+func (c *Client) Execute(ctx context.Context, req ExecuteRequest) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/execute", "POST", &resp, req)
+	return resp, err
+}
+
+// Wakeonlan Try to wake a node via 'wake on LAN' network packet.
+func (c *Client) Wakeonlan(ctx context.Context, req WakeonlanRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/wakeonlan", "POST", &resp, req)
+	return resp, err
+}
+
+// Rrd Read node RRD statistics (returns PNG)
+func (c *Client) Rrd(ctx context.Context, req RrdRequest) (RrdResponse, error) {
+	var resp RrdResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/rrd", "GET", &resp, req)
+	return resp, err
+}
+
+// Rrddata Read node RRD statistics
+func (c *Client) Rrddata(ctx context.Context, req RrddataRequest) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/rrddata", "GET", &resp, req)
+	return resp, err
+}
+
+// Syslog Read system log
+func (c *Client) Syslog(ctx context.Context, req SyslogRequest) ([]SyslogResponse, error) {
+	var resp []SyslogResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/syslog", "GET", &resp, req)
+	return resp, err
+}
+
+// Journal Read Journal
+func (c *Client) Journal(ctx context.Context, req JournalRequest) ([]string, error) {
+	var resp []string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/journal", "GET", &resp, req)
+	return resp, err
+}
+
+// Vncshell Creates a VNC Shell proxy.
+func (c *Client) Vncshell(ctx context.Context, req VncshellRequest) (VncshellResponse, error) {
+	var resp VncshellResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/vncshell", "POST", &resp, req)
+	return resp, err
+}
+
+// Termproxy Creates a VNC Shell proxy.
+func (c *Client) Termproxy(ctx context.Context, req TermproxyRequest) (TermproxyResponse, error) {
+	var resp TermproxyResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/termproxy", "POST", &resp, req)
+	return resp, err
+}
+
+// Vncwebsocket Opens a websocket for VNC traffic.
+func (c *Client) Vncwebsocket(ctx context.Context, req VncwebsocketRequest) (VncwebsocketResponse, error) {
+	var resp VncwebsocketResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/vncwebsocket", "GET", &resp, req)
+	return resp, err
+}
+
+// Spiceshell Creates a SPICE shell.
+func (c *Client) Spiceshell(ctx context.Context, req SpiceshellRequest) (SpiceshellResponse, error) {
+	var resp SpiceshellResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/spiceshell", "POST", &resp, req)
+	return resp, err
+}
+
+// Dns Read DNS settings.
+func (c *Client) Dns(ctx context.Context, req DnsRequest) (DnsResponse, error) {
+	var resp DnsResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/dns", "GET", &resp, req)
+	return resp, err
+}
+
+// UpdateDns Write DNS settings.
+func (c *Client) UpdateDns(ctx context.Context, req UpdateDnsRequest) error {
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/dns", "PUT", nil, req)
+	return err
+}
+
+// Time Read server time and time zone settings.
+func (c *Client) Time(ctx context.Context, req TimeRequest) (TimeResponse, error) {
+	var resp TimeResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/time", "GET", &resp, req)
+	return resp, err
+}
+
+// SetTimezoneTime Set time zone.
+func (c *Client) SetTimezoneTime(ctx context.Context, req SetTimezoneTimeRequest) error {
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/time", "PUT", nil, req)
+	return err
+}
+
+// Aplinfo Get list of appliances.
+func (c *Client) Aplinfo(ctx context.Context, req AplinfoRequest) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/aplinfo", "GET", &resp, req)
+	return resp, err
+}
+
+// AplDownloadAplinfo Download appliance templates.
+func (c *Client) AplDownloadAplinfo(ctx context.Context, req AplDownloadAplinfoRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/aplinfo", "POST", &resp, req)
+	return resp, err
+}
+
+// QueryUrlMetadata Query metadata of an URL: file size, file name and mime type.
+func (c *Client) QueryUrlMetadata(ctx context.Context, req QueryUrlMetadataRequest) (QueryUrlMetadataResponse, error) {
+	var resp QueryUrlMetadataResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/query-url-metadata", "GET", &resp, req)
+	return resp, err
+}
+
+// Report Gather various systems information about a node
+func (c *Client) Report(ctx context.Context, req ReportRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/report", "GET", &resp, req)
+	return resp, err
+}
+
+// Startall Start all VMs and containers located on this node (by default only those with onboot=1).
+func (c *Client) Startall(ctx context.Context, req StartallRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/startall", "POST", &resp, req)
+	return resp, err
+}
+
+// Stopall Stop all VMs and Containers.
+func (c *Client) Stopall(ctx context.Context, req StopallRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/stopall", "POST", &resp, req)
+	return resp, err
+}
+
+// Migrateall Migrate all VMs and Containers.
+func (c *Client) Migrateall(ctx context.Context, req MigrateallRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/migrateall", "POST", &resp, req)
+	return resp, err
+}
+
+// GetEtcHosts Get the content of /etc/hosts.
+func (c *Client) GetEtcHosts(ctx context.Context, req GetEtcHostsRequest) (GetEtcHostsResponse, error) {
+	var resp GetEtcHostsResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/hosts", "GET", &resp, req)
+	return resp, err
+}
 
 // WriteEtcHosts Write /etc/hosts.
-func (c *Client) WriteEtcHosts(ctx context.Context, req *WriteEtcHostsRequest) (*WriteEtcHostsResponse, error) {
-	var resp *WriteEtcHostsResponse
+func (c *Client) WriteEtcHosts(ctx context.Context, req WriteEtcHostsRequest) error {
 
-	err := c.httpClient.Do(ctx, "/nodes/{node}/hosts", "POST", &resp, req)
-	return resp, err
+	err := c.httpClient.Do(ctx, "/nodes/{node}/hosts", "POST", nil, req)
+	return err
 }

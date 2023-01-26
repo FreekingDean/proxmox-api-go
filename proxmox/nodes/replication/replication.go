@@ -27,16 +27,8 @@ type IndexRequest struct {
 	Guest *int `url:"guest,omitempty" json:"guest,omitempty"` // Only list replication jobs for this guest.
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Id string `url:"id" json:"id"`
-}
-
-// Index List status of all replication jobs on this node.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/replication", "GET", &resp, req)
-	return resp, err
 }
 
 type FindRequest struct {
@@ -45,30 +37,10 @@ type FindRequest struct {
 
 }
 
-type FindResponse []*map[string]interface{}
-
-// Find Directory index.
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/replication/{id}", "GET", &resp, req)
-	return resp, err
-}
-
 type JobStatusRequest struct {
 	Id   string `url:"id" json:"id"`     // Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. '<GUEST>-<JOBNUM>'.
 	Node string `url:"node" json:"node"` // The cluster node name.
 
-}
-
-type JobStatusResponse map[string]interface{}
-
-// JobStatus Get replication job status.
-func (c *Client) JobStatus(ctx context.Context, req *JobStatusRequest) (*JobStatusResponse, error) {
-	var resp *JobStatusResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/replication/{id}/status", "GET", &resp, req)
-	return resp, err
 }
 
 type ReadJobLogRequest struct {
@@ -80,18 +52,10 @@ type ReadJobLogRequest struct {
 	Start *int `url:"start,omitempty" json:"start,omitempty"`
 }
 
-type ReadJobLogResponse []*struct {
+type ReadJobLogResponse struct {
 	N int    `url:"n" json:"n"` // Line number
 	T string `url:"t" json:"t"` // Line text
 
-}
-
-// ReadJobLog Read replication job log.
-func (c *Client) ReadJobLog(ctx context.Context, req *ReadJobLogRequest) (*ReadJobLogResponse, error) {
-	var resp *ReadJobLogResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/replication/{id}/log", "GET", &resp, req)
-	return resp, err
 }
 
 type ScheduleNowRequest struct {
@@ -100,11 +64,41 @@ type ScheduleNowRequest struct {
 
 }
 
-type ScheduleNowResponse string
+// Index List status of all replication jobs on this node.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/replication", "GET", &resp, req)
+	return resp, err
+}
+
+// Find Directory index.
+func (c *Client) Find(ctx context.Context, req FindRequest) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/replication/{id}", "GET", &resp, req)
+	return resp, err
+}
+
+// JobStatus Get replication job status.
+func (c *Client) JobStatus(ctx context.Context, req JobStatusRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/replication/{id}/status", "GET", &resp, req)
+	return resp, err
+}
+
+// ReadJobLog Read replication job log.
+func (c *Client) ReadJobLog(ctx context.Context, req ReadJobLogRequest) ([]ReadJobLogResponse, error) {
+	var resp []ReadJobLogResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/replication/{id}/log", "GET", &resp, req)
+	return resp, err
+}
 
 // ScheduleNow Schedule replication job to start as soon as possible.
-func (c *Client) ScheduleNow(ctx context.Context, req *ScheduleNowRequest) (*ScheduleNowResponse, error) {
-	var resp *ScheduleNowResponse
+func (c *Client) ScheduleNow(ctx context.Context, req ScheduleNowRequest) (string, error) {
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/replication/{id}/schedule_now", "POST", &resp, req)
 	return resp, err

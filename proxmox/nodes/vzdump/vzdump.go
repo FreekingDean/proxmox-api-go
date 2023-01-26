@@ -29,7 +29,7 @@ type CreateRequest struct {
 	Compress         *string           `url:"compress,omitempty" json:"compress,omitempty"`                 // Compress dump file.
 	Dumpdir          *string           `url:"dumpdir,omitempty" json:"dumpdir,omitempty"`                   // Store resulting files to specified directory.
 	Exclude          *string           `url:"exclude,omitempty" json:"exclude,omitempty"`                   // Exclude specified guest systems (assumes --all)
-	ExcludePath      *string           `url:"exclude-path,omitempty" json:"exclude-path,omitempty"`         // Exclude certain files/directories (shell globs). Paths starting with '/' are anchored to the container's root,  other paths match relative to each subdirectory.
+	ExcludePath      *string           `url:"exclude-path,omitempty" json:"exclude-path,omitempty"`         // Exclude certain files/directories (shell globs). Paths starting with '/' are anchored to the container's root, other paths match relative to each subdirectory.
 	Ionice           *int              `url:"ionice,omitempty" json:"ionice,omitempty"`                     // Set CFQ ionice priority.
 	Lockwait         *int              `url:"lockwait,omitempty" json:"lockwait,omitempty"`                 // Maximal time to wait for the global lock (minutes).
 	Mailnotification *string           `url:"mailnotification,omitempty" json:"mailnotification,omitempty"` // Specify when to send an email
@@ -56,16 +56,6 @@ type CreateRequest struct {
 	Zstd             *int              `url:"zstd,omitempty" json:"zstd,omitempty"`                         // Zstd threads. N=0 uses half of the available cores, N>0 uses N as thread count.
 }
 
-type CreateResponse string
-
-// Create Create backup.
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/vzdump", "POST", &resp, req)
-	return resp, err
-}
-
 type DefaultsRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
@@ -81,7 +71,7 @@ type DefaultsResponse struct {
 	Compress         *string           `url:"compress,omitempty" json:"compress,omitempty"`                 // Compress dump file.
 	Dumpdir          *string           `url:"dumpdir,omitempty" json:"dumpdir,omitempty"`                   // Store resulting files to specified directory.
 	Exclude          *string           `url:"exclude,omitempty" json:"exclude,omitempty"`                   // Exclude specified guest systems (assumes --all)
-	ExcludePath      *string           `url:"exclude-path,omitempty" json:"exclude-path,omitempty"`         // Exclude certain files/directories (shell globs). Paths starting with '/' are anchored to the container's root,  other paths match relative to each subdirectory.
+	ExcludePath      *string           `url:"exclude-path,omitempty" json:"exclude-path,omitempty"`         // Exclude certain files/directories (shell globs). Paths starting with '/' are anchored to the container's root, other paths match relative to each subdirectory.
 	Ionice           *int              `url:"ionice,omitempty" json:"ionice,omitempty"`                     // Set CFQ ionice priority.
 	Lockwait         *int              `url:"lockwait,omitempty" json:"lockwait,omitempty"`                 // Maximal time to wait for the global lock (minutes).
 	Mailnotification *string           `url:"mailnotification,omitempty" json:"mailnotification,omitempty"` // Specify when to send an email
@@ -107,25 +97,31 @@ type DefaultsResponse struct {
 	Zstd             *int              `url:"zstd,omitempty" json:"zstd,omitempty"`                         // Zstd threads. N=0 uses half of the available cores, N>0 uses N as thread count.
 }
 
-// Defaults Get the currently configured vzdump defaults.
-func (c *Client) Defaults(ctx context.Context, req *DefaultsRequest) (*DefaultsResponse, error) {
-	var resp *DefaultsResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/vzdump/defaults", "GET", &resp, req)
-	return resp, err
-}
-
 type ExtractconfigRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
 	Volume string `url:"volume" json:"volume"` // Volume identifier
 
 }
 
-type ExtractconfigResponse string
+// Create Create backup.
+func (c *Client) Create(ctx context.Context, req CreateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/vzdump", "POST", &resp, req)
+	return resp, err
+}
+
+// Defaults Get the currently configured vzdump defaults.
+func (c *Client) Defaults(ctx context.Context, req DefaultsRequest) (DefaultsResponse, error) {
+	var resp DefaultsResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/vzdump/defaults", "GET", &resp, req)
+	return resp, err
+}
 
 // Extractconfig Extract configuration from vzdump backup archive.
-func (c *Client) Extractconfig(ctx context.Context, req *ExtractconfigRequest) (*ExtractconfigResponse, error) {
-	var resp *ExtractconfigResponse
+func (c *Client) Extractconfig(ctx context.Context, req ExtractconfigRequest) (string, error) {
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/vzdump/extractconfig", "GET", &resp, req)
 	return resp, err

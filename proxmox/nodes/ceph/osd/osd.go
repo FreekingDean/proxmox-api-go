@@ -26,16 +26,6 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse map[string]interface{}
-
-// Index Get Ceph osd list/tree.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/osd", "GET", &resp, req)
-	return resp, err
-}
-
 type CreateRequest struct {
 	Dev  string `url:"dev" json:"dev"`   // Block device name.
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -49,16 +39,6 @@ type CreateRequest struct {
 	WalDevSize       *float64          `url:"wal_dev_size,omitempty" json:"wal_dev_size,omitempty"`             // Size in GiB for block.wal.
 }
 
-type CreateResponse string
-
-// Create Create OSD
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/osd", "POST", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Node  string `url:"node" json:"node"`   // The cluster node name.
 	Osdid int    `url:"osdid" json:"osdid"` // OSD ID
@@ -67,46 +47,16 @@ type DeleteRequest struct {
 	Cleanup *util.SpecialBool `url:"cleanup,omitempty" json:"cleanup,omitempty"` // If set, we remove partition table entries.
 }
 
-type DeleteResponse string
-
-// Delete Destroy OSD
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/osd/{osdid}", "DELETE", &resp, req)
-	return resp, err
-}
-
 type InRequest struct {
 	Node  string `url:"node" json:"node"`   // The cluster node name.
 	Osdid int    `url:"osdid" json:"osdid"` // OSD ID
 
 }
 
-type InResponse map[string]interface{}
-
-// In ceph osd in
-func (c *Client) In(ctx context.Context, req *InRequest) (*InResponse, error) {
-	var resp *InResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/osd/{osdid}/in", "POST", &resp, req)
-	return resp, err
-}
-
 type OutRequest struct {
 	Node  string `url:"node" json:"node"`   // The cluster node name.
 	Osdid int    `url:"osdid" json:"osdid"` // OSD ID
 
-}
-
-type OutResponse map[string]interface{}
-
-// Out ceph osd out
-func (c *Client) Out(ctx context.Context, req *OutRequest) (*OutResponse, error) {
-	var resp *OutResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/osd/{osdid}/out", "POST", &resp, req)
-	return resp, err
 }
 
 type ScrubRequest struct {
@@ -117,12 +67,47 @@ type ScrubRequest struct {
 	Deep *util.SpecialBool `url:"deep,omitempty" json:"deep,omitempty"` // If set, instructs a deep scrub instead of a normal one.
 }
 
-type ScrubResponse map[string]interface{}
+// Index Get Ceph osd list/tree.
+func (c *Client) Index(ctx context.Context, req IndexRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/osd", "GET", &resp, req)
+	return resp, err
+}
+
+// Create Create OSD
+func (c *Client) Create(ctx context.Context, req CreateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/osd", "POST", &resp, req)
+	return resp, err
+}
+
+// Delete Destroy OSD
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/osd/{osdid}", "DELETE", &resp, req)
+	return resp, err
+}
+
+// In ceph osd in
+func (c *Client) In(ctx context.Context, req InRequest) error {
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/osd/{osdid}/in", "POST", nil, req)
+	return err
+}
+
+// Out ceph osd out
+func (c *Client) Out(ctx context.Context, req OutRequest) error {
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/osd/{osdid}/out", "POST", nil, req)
+	return err
+}
 
 // Scrub Instruct the OSD to scrub.
-func (c *Client) Scrub(ctx context.Context, req *ScrubRequest) (*ScrubResponse, error) {
-	var resp *ScrubResponse
+func (c *Client) Scrub(ctx context.Context, req ScrubRequest) error {
 
-	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/osd/{osdid}/scrub", "POST", &resp, req)
-	return resp, err
+	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/osd/{osdid}/scrub", "POST", nil, req)
+	return err
 }

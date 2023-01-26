@@ -27,16 +27,8 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Subdir string `url:"subdir" json:"subdir"`
-}
-
-// Index Directory index
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/status", "GET", &resp, req)
-	return resp, err
 }
 
 type VmStatusCurrentRequest struct {
@@ -66,14 +58,6 @@ type VmStatusCurrentResponse struct {
 	Uptime         *int              `url:"uptime,omitempty" json:"uptime,omitempty"`                   // Uptime.
 }
 
-// VmStatusCurrent Get virtual machine status.
-func (c *Client) VmStatusCurrent(ctx context.Context, req *VmStatusCurrentRequest) (*VmStatusCurrentResponse, error) {
-	var resp *VmStatusCurrentResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/status/current", "GET", &resp, req)
-	return resp, err
-}
-
 type VmStartRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
@@ -90,16 +74,6 @@ type VmStartRequest struct {
 	Timeout          *int              `url:"timeout,omitempty" json:"timeout,omitempty"`                     // Wait maximal timeout seconds.
 }
 
-type VmStartResponse string
-
-// VmStart Start virtual machine.
-func (c *Client) VmStart(ctx context.Context, req *VmStartRequest) (*VmStartResponse, error) {
-	var resp *VmStartResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/status/start", "POST", &resp, req)
-	return resp, err
-}
-
 type VmStopRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
@@ -111,32 +85,12 @@ type VmStopRequest struct {
 	Timeout      *int              `url:"timeout,omitempty" json:"timeout,omitempty"`           // Wait maximal timeout seconds.
 }
 
-type VmStopResponse string
-
-// VmStop Stop virtual machine. The qemu process will exit immediately. Thisis akin to pulling the power plug of a running computer and may damage the VM data
-func (c *Client) VmStop(ctx context.Context, req *VmStopRequest) (*VmStopResponse, error) {
-	var resp *VmStopResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/status/stop", "POST", &resp, req)
-	return resp, err
-}
-
 type VmResetRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 	// The following parameters are optional
 	Skiplock *util.SpecialBool `url:"skiplock,omitempty" json:"skiplock,omitempty"` // Ignore locks - only root is allowed to use this option.
-}
-
-type VmResetResponse string
-
-// VmReset Reset virtual machine.
-func (c *Client) VmReset(ctx context.Context, req *VmResetRequest) (*VmResetResponse, error) {
-	var resp *VmResetResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/status/reset", "POST", &resp, req)
-	return resp, err
 }
 
 type VmShutdownRequest struct {
@@ -150,32 +104,12 @@ type VmShutdownRequest struct {
 	Timeout    *int              `url:"timeout,omitempty" json:"timeout,omitempty"`       // Wait maximal timeout seconds.
 }
 
-type VmShutdownResponse string
-
-// VmShutdown Shutdown virtual machine. This is similar to pressing the power button on a physical machine.This will send an ACPI event for the guest OS, which should then proceed to a clean shutdown.
-func (c *Client) VmShutdown(ctx context.Context, req *VmShutdownRequest) (*VmShutdownResponse, error) {
-	var resp *VmShutdownResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/status/shutdown", "POST", &resp, req)
-	return resp, err
-}
-
 type VmRebootRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 	// The following parameters are optional
 	Timeout *int `url:"timeout,omitempty" json:"timeout,omitempty"` // Wait maximal timeout seconds for the shutdown.
-}
-
-type VmRebootResponse string
-
-// VmReboot Reboot the VM by shutting it down, and starting it again. Applies pending changes.
-func (c *Client) VmReboot(ctx context.Context, req *VmRebootRequest) (*VmRebootResponse, error) {
-	var resp *VmRebootResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/status/reboot", "POST", &resp, req)
-	return resp, err
 }
 
 type VmSuspendRequest struct {
@@ -188,16 +122,6 @@ type VmSuspendRequest struct {
 	Todisk       *util.SpecialBool `url:"todisk,omitempty" json:"todisk,omitempty"`             // If set, suspends the VM to disk. Will be resumed on next VM start.
 }
 
-type VmSuspendResponse string
-
-// VmSuspend Suspend virtual machine.
-func (c *Client) VmSuspend(ctx context.Context, req *VmSuspendRequest) (*VmSuspendResponse, error) {
-	var resp *VmSuspendResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/status/suspend", "POST", &resp, req)
-	return resp, err
-}
-
 type VmResumeRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
@@ -207,11 +131,73 @@ type VmResumeRequest struct {
 	Skiplock *util.SpecialBool `url:"skiplock,omitempty" json:"skiplock,omitempty"` // Ignore locks - only root is allowed to use this option.
 }
 
-type VmResumeResponse string
+// Index Directory index
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/status", "GET", &resp, req)
+	return resp, err
+}
+
+// VmStatusCurrent Get virtual machine status.
+func (c *Client) VmStatusCurrent(ctx context.Context, req VmStatusCurrentRequest) (VmStatusCurrentResponse, error) {
+	var resp VmStatusCurrentResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/status/current", "GET", &resp, req)
+	return resp, err
+}
+
+// VmStart Start virtual machine.
+func (c *Client) VmStart(ctx context.Context, req VmStartRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/status/start", "POST", &resp, req)
+	return resp, err
+}
+
+// VmStop Stop virtual machine. The qemu process will exit immediately. Thisis akin to pulling the power plug of a running computer and may damage the VM data
+func (c *Client) VmStop(ctx context.Context, req VmStopRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/status/stop", "POST", &resp, req)
+	return resp, err
+}
+
+// VmReset Reset virtual machine.
+func (c *Client) VmReset(ctx context.Context, req VmResetRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/status/reset", "POST", &resp, req)
+	return resp, err
+}
+
+// VmShutdown Shutdown virtual machine. This is similar to pressing the power button on a physical machine.This will send an ACPI event for the guest OS, which should then proceed to a clean shutdown.
+func (c *Client) VmShutdown(ctx context.Context, req VmShutdownRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/status/shutdown", "POST", &resp, req)
+	return resp, err
+}
+
+// VmReboot Reboot the VM by shutting it down, and starting it again. Applies pending changes.
+func (c *Client) VmReboot(ctx context.Context, req VmRebootRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/status/reboot", "POST", &resp, req)
+	return resp, err
+}
+
+// VmSuspend Suspend virtual machine.
+func (c *Client) VmSuspend(ctx context.Context, req VmSuspendRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/status/suspend", "POST", &resp, req)
+	return resp, err
+}
 
 // VmResume Resume virtual machine.
-func (c *Client) VmResume(ctx context.Context, req *VmResumeRequest) (*VmResumeResponse, error) {
-	var resp *VmResumeResponse
+func (c *Client) VmResume(ctx context.Context, req VmResumeRequest) (string, error) {
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/qemu/{vmid}/status/resume", "POST", &resp, req)
 	return resp, err

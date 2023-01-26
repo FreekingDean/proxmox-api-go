@@ -4,7 +4,12 @@ package pools
 
 import (
 	"context"
+	"fmt"
+	"net/url"
+	"strings"
+
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
+	"github.com/google/go-querystring/query"
 )
 
 type HTTPClient interface {
@@ -26,7 +31,7 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	BytesUsed     int     `url:"bytes_used" json:"bytes_used"`
 	CrushRule     int     `url:"crush_rule" json:"crush_rule"`
 	CrushRuleName string  `url:"crush_rule_name" json:"crush_rule_name"`
@@ -48,12 +53,66 @@ type IndexResponse []*struct {
 	TargetSizeRatio     *float64               `url:"target_size_ratio,omitempty" json:"target_size_ratio,omitempty"`
 }
 
-// Index List all pools.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
+// Array of ErasureCoding
+type ErasureCodingArr []ErasureCoding
 
-	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/pools", "GET", &resp, req)
-	return resp, err
+func (t *ErasureCodingArr) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct {
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
+}
+
+// Create an erasure coded pool for RBD with an accompaning replicated pool for metadata storage. With EC, the common ceph options 'size', 'min_size' and 'crush_rule' parameters will be applied to the metadata pool.
+type ErasureCoding struct {
+	K int `url:"k" json:"k"` // Number of data chunks. Will create an erasure coded pool plus a replicated pool for metadata.
+	M int `url:"m" json:"m"` // Number of coding chunks. Will create an erasure coded pool plus a replicated pool for metadata.
+
+	// The following parameters are optional
+	DeviceClass   *string `url:"device-class,omitempty" json:"device-class,omitempty"`     // CRUSH device class. Will create an erasure coded pool plus a replicated pool for metadata.
+	FailureDomain *string `url:"failure-domain,omitempty" json:"failure-domain,omitempty"` // CRUSH failure domain. Default is 'host'. Will create an erasure coded pool plus a replicated pool for metadata.
+	Profile       *string `url:"profile,omitempty" json:"profile,omitempty"`               // Override the erasure code (EC) profile to use. Will create an erasure coded pool plus a replicated pool for metadata.
+}
+
+func (t *ErasureCoding) EncodeValues(key string, v *url.Values) error {
+	valueStrParts := []string{
+		fmt.Sprintf("%s=%v", "k", t.K),
+
+		fmt.Sprintf("%s=%v", "m", t.M),
+	}
+	if t.DeviceClass != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "device-class", *t.DeviceClass),
+		)
+	}
+
+	if t.FailureDomain != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "failure-domain", *t.FailureDomain),
+		)
+	}
+
+	if t.Profile != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "profile", *t.Profile),
+		)
+	}
+
+	v.Set(key, strings.Join(valueStrParts, ", "))
+	return nil
 }
 
 type CreateRequest struct {
@@ -64,7 +123,7 @@ type CreateRequest struct {
 	AddStorages     *util.SpecialBool `url:"add_storages,omitempty" json:"add_storages,omitempty"`           // Configure VM and CT storage using the new pool.
 	Application     *string           `url:"application,omitempty" json:"application,omitempty"`             // The application of the pool.
 	CrushRule       *string           `url:"crush_rule,omitempty" json:"crush_rule,omitempty"`               // The rule to use for mapping object placement in the cluster.
-	ErasureCoding   *string           `url:"erasure-coding,omitempty" json:"erasure-coding,omitempty"`       // Create an erasure coded pool for RBD with an accompaning replicated pool for metadata storage. With EC, the common ceph options 'size', 'min_size' and 'crush_rule' parameters will be applied to the metadata pool.
+	ErasureCoding   *ErasureCoding    `url:"erasure-coding,omitempty" json:"erasure-coding,omitempty"`       // Create an erasure coded pool for RBD with an accompaning replicated pool for metadata storage. With EC, the common ceph options 'size', 'min_size' and 'crush_rule' parameters will be applied to the metadata pool.
 	MinSize         *int              `url:"min_size,omitempty" json:"min_size,omitempty"`                   // Minimum number of replicas per object
 	PgAutoscaleMode *string           `url:"pg_autoscale_mode,omitempty" json:"pg_autoscale_mode,omitempty"` // The automatic PG scaling mode of the pool.
 	PgNum           *int              `url:"pg_num,omitempty" json:"pg_num,omitempty"`                       // Number of placement groups.
@@ -72,16 +131,6 @@ type CreateRequest struct {
 	Size            *int              `url:"size,omitempty" json:"size,omitempty"`                           // Number of replicas per object
 	TargetSize      *string           `url:"target_size,omitempty" json:"target_size,omitempty"`             // The estimated target size of the pool for the PG autoscaler.
 	TargetSizeRatio *float64          `url:"target_size_ratio,omitempty" json:"target_size_ratio,omitempty"` // The estimated target ratio of the pool for the PG autoscaler.
-}
-
-type CreateResponse string
-
-// Create Create Ceph pool
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/pools", "POST", &resp, req)
-	return resp, err
 }
 
 type FindRequest struct {
@@ -107,26 +156,18 @@ type FindResponse struct {
 	WriteFadviseDontneed util.SpecialBool `url:"write_fadvise_dontneed" json:"write_fadvise_dontneed"`
 
 	// The following parameters are optional
-	Application     *string                   `url:"application,omitempty" json:"application,omitempty"` // The application of the pool.
-	ApplicationList []*map[string]interface{} `url:"application_list,omitempty" json:"application_list,omitempty"`
-	AutoscaleStatus map[string]interface{}    `url:"autoscale_status,omitempty" json:"autoscale_status,omitempty"`
-	CrushRule       *string                   `url:"crush_rule,omitempty" json:"crush_rule,omitempty"`               // The rule to use for mapping object placement in the cluster.
-	MinSize         *int                      `url:"min_size,omitempty" json:"min_size,omitempty"`                   // Minimum number of replicas per object
-	PgAutoscaleMode *string                   `url:"pg_autoscale_mode,omitempty" json:"pg_autoscale_mode,omitempty"` // The automatic PG scaling mode of the pool.
-	PgNum           *int                      `url:"pg_num,omitempty" json:"pg_num,omitempty"`                       // Number of placement groups.
-	PgNumMin        *int                      `url:"pg_num_min,omitempty" json:"pg_num_min,omitempty"`               // Minimal number of placement groups.
-	Size            *int                      `url:"size,omitempty" json:"size,omitempty"`                           // Number of replicas per object
-	Statistics      map[string]interface{}    `url:"statistics,omitempty" json:"statistics,omitempty"`
-	TargetSize      *string                   `url:"target_size,omitempty" json:"target_size,omitempty"`             // The estimated target size of the pool for the PG autoscaler.
-	TargetSizeRatio *float64                  `url:"target_size_ratio,omitempty" json:"target_size_ratio,omitempty"` // The estimated target ratio of the pool for the PG autoscaler.
-}
-
-// Find List pool settings.
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/pools/{name}", "GET", &resp, req)
-	return resp, err
+	Application     *string                  `url:"application,omitempty" json:"application,omitempty"` // The application of the pool.
+	ApplicationList []map[string]interface{} `url:"application_list,omitempty" json:"application_list,omitempty"`
+	AutoscaleStatus map[string]interface{}   `url:"autoscale_status,omitempty" json:"autoscale_status,omitempty"`
+	CrushRule       *string                  `url:"crush_rule,omitempty" json:"crush_rule,omitempty"`               // The rule to use for mapping object placement in the cluster.
+	MinSize         *int                     `url:"min_size,omitempty" json:"min_size,omitempty"`                   // Minimum number of replicas per object
+	PgAutoscaleMode *string                  `url:"pg_autoscale_mode,omitempty" json:"pg_autoscale_mode,omitempty"` // The automatic PG scaling mode of the pool.
+	PgNum           *int                     `url:"pg_num,omitempty" json:"pg_num,omitempty"`                       // Number of placement groups.
+	PgNumMin        *int                     `url:"pg_num_min,omitempty" json:"pg_num_min,omitempty"`               // Minimal number of placement groups.
+	Size            *int                     `url:"size,omitempty" json:"size,omitempty"`                           // Number of replicas per object
+	Statistics      map[string]interface{}   `url:"statistics,omitempty" json:"statistics,omitempty"`
+	TargetSize      *string                  `url:"target_size,omitempty" json:"target_size,omitempty"`             // The estimated target size of the pool for the PG autoscaler.
+	TargetSizeRatio *float64                 `url:"target_size_ratio,omitempty" json:"target_size_ratio,omitempty"` // The estimated target ratio of the pool for the PG autoscaler.
 }
 
 type UpdateRequest struct {
@@ -145,16 +186,6 @@ type UpdateRequest struct {
 	TargetSizeRatio *float64 `url:"target_size_ratio,omitempty" json:"target_size_ratio,omitempty"` // The estimated target ratio of the pool for the PG autoscaler.
 }
 
-type UpdateResponse string
-
-// Update Change POOL settings
-func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateResponse, error) {
-	var resp *UpdateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/pools/{name}", "PUT", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Name string `url:"name" json:"name"` // The name of the pool. It must be unique.
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -165,11 +196,41 @@ type DeleteRequest struct {
 	RemoveStorages  *util.SpecialBool `url:"remove_storages,omitempty" json:"remove_storages,omitempty"`   // Remove all pveceph-managed storages configured for this pool
 }
 
-type DeleteResponse string
+// Index List all pools.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/pools", "GET", &resp, req)
+	return resp, err
+}
+
+// Create Create Ceph pool
+func (c *Client) Create(ctx context.Context, req CreateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/pools", "POST", &resp, req)
+	return resp, err
+}
+
+// Find List pool settings.
+func (c *Client) Find(ctx context.Context, req FindRequest) (FindResponse, error) {
+	var resp FindResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/pools/{name}", "GET", &resp, req)
+	return resp, err
+}
+
+// Update Change POOL settings
+func (c *Client) Update(ctx context.Context, req UpdateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/pools/{name}", "PUT", &resp, req)
+	return resp, err
+}
 
 // Delete Destroy pool
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) (string, error) {
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/pools/{name}", "DELETE", &resp, req)
 	return resp, err

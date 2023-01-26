@@ -20,17 +20,9 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Subdir string `url:"subdir" json:"subdir"` // API sub-directory endpoint
 
-}
-
-// Index Index for jobs related endpoints.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/jobs", "GET", &resp, nil)
-	return resp, err
 }
 
 type ScheduleAnalyzeRequest struct {
@@ -41,15 +33,23 @@ type ScheduleAnalyzeRequest struct {
 	Starttime  *int `url:"starttime,omitempty" json:"starttime,omitempty"`   // UNIX timestamp to start the calculation from. Defaults to the current time.
 }
 
-type ScheduleAnalyzeResponse []*struct {
+type ScheduleAnalyzeResponse struct {
 	Timestamp int    `url:"timestamp" json:"timestamp"` // UNIX timestamp for the run.
 	Utc       string `url:"utc" json:"utc"`             // UTC timestamp for the run.
 
 }
 
+// Index Index for jobs related endpoints.
+func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/cluster/jobs", "GET", &resp, nil)
+	return resp, err
+}
+
 // ScheduleAnalyze Returns a list of future schedule runtimes.
-func (c *Client) ScheduleAnalyze(ctx context.Context, req *ScheduleAnalyzeRequest) (*ScheduleAnalyzeResponse, error) {
-	var resp *ScheduleAnalyzeResponse
+func (c *Client) ScheduleAnalyze(ctx context.Context, req ScheduleAnalyzeRequest) ([]ScheduleAnalyzeResponse, error) {
+	var resp []ScheduleAnalyzeResponse
 
 	err := c.httpClient.Do(ctx, "/cluster/jobs/schedule-analyze", "GET", &resp, req)
 	return resp, err

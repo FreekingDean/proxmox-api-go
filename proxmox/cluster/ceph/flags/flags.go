@@ -21,17 +21,9 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Name string `url:"name" json:"name"` // Flag name.
 
-}
-
-// Index get the status of all ceph flags
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/ceph/flags", "GET", &resp, nil)
-	return resp, err
 }
 
 type MassUpdateRequest struct {
@@ -50,29 +42,9 @@ type MassUpdateRequest struct {
 	Pause       *util.SpecialBool `url:"pause,omitempty" json:"pause,omitempty"`               // Pauses read and writes.
 }
 
-type MassUpdateResponse string
-
-// MassUpdate Set/Unset multiple ceph flags at once.
-func (c *Client) MassUpdate(ctx context.Context, req *MassUpdateRequest) (*MassUpdateResponse, error) {
-	var resp *MassUpdateResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/ceph/flags", "PUT", &resp, req)
-	return resp, err
-}
-
 type FindRequest struct {
 	Flag string `url:"flag" json:"flag"` // The name of the flag name to get.
 
-}
-
-type FindResponse util.SpecialBool
-
-// Find Get the status of a specific ceph flag.
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/ceph/flags/{flag}", "GET", &resp, req)
-	return resp, err
 }
 
 type UpdateRequest struct {
@@ -81,12 +53,33 @@ type UpdateRequest struct {
 
 }
 
-type UpdateResponse map[string]interface{}
+// Index get the status of all ceph flags
+func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/cluster/ceph/flags", "GET", &resp, nil)
+	return resp, err
+}
+
+// MassUpdate Set/Unset multiple ceph flags at once.
+func (c *Client) MassUpdate(ctx context.Context, req MassUpdateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/cluster/ceph/flags", "PUT", &resp, req)
+	return resp, err
+}
+
+// Find Get the status of a specific ceph flag.
+func (c *Client) Find(ctx context.Context, req FindRequest) (util.SpecialBool, error) {
+	var resp util.SpecialBool
+
+	err := c.httpClient.Do(ctx, "/cluster/ceph/flags/{flag}", "GET", &resp, req)
+	return resp, err
+}
 
 // Update Set or clear (unset) a specific ceph flag
-func (c *Client) Update(ctx context.Context, req *UpdateRequest) (*UpdateResponse, error) {
-	var resp *UpdateResponse
+func (c *Client) Update(ctx context.Context, req UpdateRequest) error {
 
-	err := c.httpClient.Do(ctx, "/cluster/ceph/flags/{flag}", "PUT", &resp, req)
-	return resp, err
+	err := c.httpClient.Do(ctx, "/cluster/ceph/flags/{flag}", "PUT", nil, req)
+	return err
 }

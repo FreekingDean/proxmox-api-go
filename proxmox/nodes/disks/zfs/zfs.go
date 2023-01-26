@@ -4,7 +4,12 @@ package zfs
 
 import (
 	"context"
+	"fmt"
+	"net/url"
+	"strings"
+
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
+	"github.com/google/go-querystring/query"
 )
 
 type HTTPClient interface {
@@ -26,7 +31,7 @@ type IndexRequest struct {
 
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Alloc  int     `url:"alloc" json:"alloc"`
 	Dedup  float64 `url:"dedup" json:"dedup"`
 	Frag   int     `url:"frag" json:"frag"`
@@ -36,12 +41,40 @@ type IndexResponse []*struct {
 	Size   int     `url:"size" json:"size"`
 }
 
-// Index List Zpools.
-func (c *Client) Index(ctx context.Context, req *IndexRequest) (*IndexResponse, error) {
-	var resp *IndexResponse
+// Array of DraidConfig
+type DraidConfigArr []DraidConfig
 
-	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/zfs", "GET", &resp, req)
-	return resp, err
+func (t *DraidConfigArr) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct {
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
+}
+
+type DraidConfig struct {
+	Data   int `url:"data" json:"data"`     // The number of data devices per redundancy group. (dRAID)
+	Spares int `url:"spares" json:"spares"` // Number of dRAID spares.
+
+}
+
+func (t *DraidConfig) EncodeValues(key string, v *url.Values) error {
+	valueStrParts := []string{
+		fmt.Sprintf("%s=%v", "data", t.Data),
+
+		fmt.Sprintf("%s=%v", "spares", t.Spares),
+	}
+	v.Set(key, strings.Join(valueStrParts, ", "))
+	return nil
 }
 
 type CreateRequest struct {
@@ -54,17 +87,7 @@ type CreateRequest struct {
 	AddStorage  *util.SpecialBool `url:"add_storage,omitempty" json:"add_storage,omitempty"` // Configure storage using the zpool.
 	Ashift      *int              `url:"ashift,omitempty" json:"ashift,omitempty"`           // Pool sector size exponent.
 	Compression *string           `url:"compression,omitempty" json:"compression,omitempty"` // The compression algorithm to use.
-	DraidConfig *string           `url:"draid-config,omitempty" json:"draid-config,omitempty"`
-}
-
-type CreateResponse string
-
-// Create Create a ZFS pool.
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/zfs", "POST", &resp, req)
-	return resp, err
+	DraidConfig *DraidConfig      `url:"draid-config,omitempty" json:"draid-config,omitempty"`
 }
 
 type FindRequest struct {
@@ -73,33 +96,27 @@ type FindRequest struct {
 
 }
 
-type FindResponse struct {
-	Children []*struct {
-		Msg  string `url:"msg" json:"msg"`   // An optional message about the vdev.
-		Name string `url:"name" json:"name"` // The name of the vdev or section.
+type Children struct {
+	Msg  string `url:"msg" json:"msg"`   // An optional message about the vdev.
+	Name string `url:"name" json:"name"` // The name of the vdev or section.
 
-		// The following parameters are optional
-		Cksum *float64 `url:"cksum,omitempty" json:"cksum,omitempty"`
-		Read  *float64 `url:"read,omitempty" json:"read,omitempty"`
-		State *string  `url:"state,omitempty" json:"state,omitempty"` // The state of the vdev.
-		Write *float64 `url:"write,omitempty" json:"write,omitempty"`
-	} `url:"children" json:"children"` // The pool configuration information, including the vdevs for each section (e.g. spares, cache), may be nested.
-	Errors string `url:"errors" json:"errors"` // Information about the errors on the zpool.
-	Name   string `url:"name" json:"name"`     // The name of the zpool.
-	State  string `url:"state" json:"state"`   // The state of the zpool.
+	// The following parameters are optional
+	Cksum *float64 `url:"cksum,omitempty" json:"cksum,omitempty"`
+	Read  *float64 `url:"read,omitempty" json:"read,omitempty"`
+	State *string  `url:"state,omitempty" json:"state,omitempty"` // The state of the vdev.
+	Write *float64 `url:"write,omitempty" json:"write,omitempty"`
+}
+
+type FindResponse struct {
+	Children []Children `url:"children" json:"children"` // The pool configuration information, including the vdevs for each section (e.g. spares, cache), may be nested.
+	Errors   string     `url:"errors" json:"errors"`     // Information about the errors on the zpool.
+	Name     string     `url:"name" json:"name"`         // The name of the zpool.
+	State    string     `url:"state" json:"state"`       // The state of the zpool.
 
 	// The following parameters are optional
 	Action *string `url:"action,omitempty" json:"action,omitempty"` // Information about the recommended action to fix the state.
 	Scan   *string `url:"scan,omitempty" json:"scan,omitempty"`     // Information about the last/current scrub.
 	Status *string `url:"status,omitempty" json:"status,omitempty"` // Information about the state of the zpool.
-}
-
-// Find Get details about a zpool.
-func (c *Client) Find(ctx context.Context, req *FindRequest) (*FindResponse, error) {
-	var resp *FindResponse
-
-	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/zfs/{name}", "GET", &resp, req)
-	return resp, err
 }
 
 type DeleteRequest struct {
@@ -111,11 +128,33 @@ type DeleteRequest struct {
 	CleanupDisks  *util.SpecialBool `url:"cleanup-disks,omitempty" json:"cleanup-disks,omitempty"`   // Also wipe disks so they can be repurposed afterwards.
 }
 
-type DeleteResponse string
+// Index List Zpools.
+func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/zfs", "GET", &resp, req)
+	return resp, err
+}
+
+// Create Create a ZFS pool.
+func (c *Client) Create(ctx context.Context, req CreateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/zfs", "POST", &resp, req)
+	return resp, err
+}
+
+// Find Get details about a zpool.
+func (c *Client) Find(ctx context.Context, req FindRequest) (FindResponse, error) {
+	var resp FindResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/zfs/{name}", "GET", &resp, req)
+	return resp, err
+}
 
 // Delete Destroy a ZFS pool.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) (string, error) {
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/disks/zfs/{name}", "DELETE", &resp, req)
 	return resp, err

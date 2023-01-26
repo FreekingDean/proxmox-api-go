@@ -21,19 +21,11 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Subdir string `url:"subdir" json:"subdir"`
 }
 
-// Index Directory index.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
-
-	err := c.httpClient.Do(ctx, "/access", "GET", &resp, nil)
-	return resp, err
-}
-
-type ReadAclResponse []*struct {
+type ReadAclResponse struct {
 	Path   string `url:"path" json:"path"` // Access control path
 	Roleid string `url:"roleid" json:"roleid"`
 	Type   string `url:"type" json:"type"`
@@ -41,14 +33,6 @@ type ReadAclResponse []*struct {
 
 	// The following parameters are optional
 	Propagate *util.SpecialBool `url:"propagate,omitempty" json:"propagate,omitempty"` // Allow to propagate (inherit) permissions.
-}
-
-// ReadAcl Get Access Control List (ACLs).
-func (c *Client) ReadAcl(ctx context.Context) (*ReadAclResponse, error) {
-	var resp *ReadAclResponse
-
-	err := c.httpClient.Do(ctx, "/access/acl", "GET", &resp, nil)
-	return resp, err
 }
 
 type UpdateAclRequest struct {
@@ -61,26 +45,6 @@ type UpdateAclRequest struct {
 	Propagate *util.SpecialBool `url:"propagate,omitempty" json:"propagate,omitempty"` // Allow to propagate (inherit) permissions.
 	Tokens    *string           `url:"tokens,omitempty" json:"tokens,omitempty"`       // List of API tokens.
 	Users     *string           `url:"users,omitempty" json:"users,omitempty"`         // List of users.
-}
-
-type UpdateAclResponse map[string]interface{}
-
-// UpdateAcl Update Access Control List (add or remove permissions).
-func (c *Client) UpdateAcl(ctx context.Context, req *UpdateAclRequest) (*UpdateAclResponse, error) {
-	var resp *UpdateAclResponse
-
-	err := c.httpClient.Do(ctx, "/access/acl", "PUT", &resp, req)
-	return resp, err
-}
-
-type GetTicketResponse map[string]interface{}
-
-// GetTicket Dummy. Useful for formatters which want to provide a login page.
-func (c *Client) GetTicket(ctx context.Context) (*GetTicketResponse, error) {
-	var resp *GetTicketResponse
-
-	err := c.httpClient.Do(ctx, "/access/ticket", "GET", &resp, nil)
-	return resp, err
 }
 
 type CreateTicketRequest struct {
@@ -105,28 +69,10 @@ type CreateTicketResponse struct {
 	Ticket              *string `url:"ticket,omitempty" json:"ticket,omitempty"`
 }
 
-// CreateTicket Create or verify authentication ticket.
-func (c *Client) CreateTicket(ctx context.Context, req *CreateTicketRequest) (*CreateTicketResponse, error) {
-	var resp *CreateTicketResponse
-
-	err := c.httpClient.Do(ctx, "/access/ticket", "POST", &resp, req)
-	return resp, err
-}
-
 type ChangePasswordRequest struct {
 	Password string `url:"password" json:"password"` // The new password.
 	Userid   string `url:"userid" json:"userid"`     // User ID
 
-}
-
-type ChangePasswordResponse map[string]interface{}
-
-// ChangePassword Change user password.
-func (c *Client) ChangePassword(ctx context.Context, req *ChangePasswordRequest) (*ChangePasswordResponse, error) {
-	var resp *ChangePasswordResponse
-
-	err := c.httpClient.Do(ctx, "/access/password", "PUT", &resp, req)
-	return resp, err
 }
 
 type PermissionsRequest struct {
@@ -136,11 +82,54 @@ type PermissionsRequest struct {
 	Userid *string `url:"userid,omitempty" json:"userid,omitempty"` // User ID or full API token ID
 }
 
-type PermissionsResponse map[string]interface{}
+// Index Directory index.
+func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/access", "GET", &resp, nil)
+	return resp, err
+}
+
+// ReadAcl Get Access Control List (ACLs).
+func (c *Client) ReadAcl(ctx context.Context) ([]ReadAclResponse, error) {
+	var resp []ReadAclResponse
+
+	err := c.httpClient.Do(ctx, "/access/acl", "GET", &resp, nil)
+	return resp, err
+}
+
+// UpdateAcl Update Access Control List (add or remove permissions).
+func (c *Client) UpdateAcl(ctx context.Context, req UpdateAclRequest) error {
+
+	err := c.httpClient.Do(ctx, "/access/acl", "PUT", nil, req)
+	return err
+}
+
+// GetTicket Dummy. Useful for formatters which want to provide a login page.
+func (c *Client) GetTicket(ctx context.Context) error {
+
+	err := c.httpClient.Do(ctx, "/access/ticket", "GET", nil, nil)
+	return err
+}
+
+// CreateTicket Create or verify authentication ticket.
+func (c *Client) CreateTicket(ctx context.Context, req CreateTicketRequest) (CreateTicketResponse, error) {
+	var resp CreateTicketResponse
+
+	err := c.httpClient.Do(ctx, "/access/ticket", "POST", &resp, req)
+	return resp, err
+}
+
+// ChangePassword Change user password.
+func (c *Client) ChangePassword(ctx context.Context, req ChangePasswordRequest) error {
+
+	err := c.httpClient.Do(ctx, "/access/password", "PUT", nil, req)
+	return err
+}
 
 // Permissions Retrieve effective permissions of given user/token.
-func (c *Client) Permissions(ctx context.Context, req *PermissionsRequest) (*PermissionsResponse, error) {
-	var resp *PermissionsResponse
+func (c *Client) Permissions(ctx context.Context, req PermissionsRequest) (map[string]interface{}, error) {
+	var resp map[string]interface{}
 
 	err := c.httpClient.Do(ctx, "/access/permissions", "GET", &resp, req)
 	return resp, err

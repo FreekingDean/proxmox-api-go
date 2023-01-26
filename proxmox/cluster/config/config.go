@@ -4,7 +4,12 @@ package config
 
 import (
 	"context"
+	"fmt"
+	"net/url"
+	"strings"
+
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
+	"github.com/google/go-querystring/query"
 )
 
 type HTTPClient interface {
@@ -21,43 +26,56 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*map[string]interface{}
+// Array of Linkn
+type LinknArr []Linkn
 
-// Index Directory index.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
+func (t *LinknArr) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct {
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
+}
 
-	err := c.httpClient.Do(ctx, "/cluster/config", "GET", &resp, nil)
-	return resp, err
+// Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
+type Linkn struct {
+	Address string `url:"address" json:"address"` // Hostname (or IP) of this corosync link address.
+
+	// The following parameters are optional
+	Priority *int `url:"priority,omitempty" json:"priority,omitempty"` // The priority for the link when knet is used in 'passive' mode (default). Lower value means higher priority. Only valid for cluster create, ignored on node add.
+}
+
+func (t *Linkn) EncodeValues(key string, v *url.Values) error {
+	valueStrParts := []string{
+		fmt.Sprintf("%s=%v", "address", t.Address),
+	}
+	if t.Priority != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "priority", *t.Priority),
+		)
+	}
+
+	v.Set(key, strings.Join(valueStrParts, ", "))
+	return nil
 }
 
 type CreateRequest struct {
 	Clustername string `url:"clustername" json:"clustername"` // The name of the cluster.
 
 	// The following parameters are optional
-	Linkn  *string `url:"link[n],omitempty" json:"link[n],omitempty"` // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
-	Nodeid *int    `url:"nodeid,omitempty" json:"nodeid,omitempty"`   // Node id for this node.
-	Votes  *int    `url:"votes,omitempty" json:"votes,omitempty"`     // Number of votes for this node.
-}
-
-type CreateResponse string
-
-// Create Generate new cluster configuration. If no links given, default to local IP address as link0.
-func (c *Client) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	var resp *CreateResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/config", "POST", &resp, req)
-	return resp, err
-}
-
-type JoinApiVersionApiversionResponse int
-
-// JoinApiVersionApiversion Return the version of the cluster join API available on this node.
-func (c *Client) JoinApiVersionApiversion(ctx context.Context) (*JoinApiVersionApiversionResponse, error) {
-	var resp *JoinApiVersionApiversionResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/config/apiversion", "GET", &resp, nil)
-	return resp, err
+	Links  *LinknArr `url:"link[n],omitempty" json:"link[n],omitempty"` // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
+	Nodeid *int      `url:"nodeid,omitempty" json:"nodeid,omitempty"`   // Node id for this node.
+	Votes  *int      `url:"votes,omitempty" json:"votes,omitempty"`     // Number of votes for this node.
 }
 
 type JoinInfoJoinRequest struct {
@@ -66,28 +84,50 @@ type JoinInfoJoinRequest struct {
 	Node *string `url:"node,omitempty" json:"node,omitempty"` // The node for which the joinee gets the nodeinfo.
 }
 
-type JoinInfoJoinResponse struct {
-	ConfigDigest string `url:"config_digest" json:"config_digest"`
-	Nodelist     []*struct {
-		Name        string `url:"name" json:"name"` // The cluster node name.
-		PveAddr     string `url:"pve_addr" json:"pve_addr"`
-		PveFp       string `url:"pve_fp" json:"pve_fp"` // Certificate SHA 256 fingerprint.
-		QuorumVotes int    `url:"quorum_votes" json:"quorum_votes"`
+// Array of Ring0Addr
+type Ring0AddrArr []Ring0Addr
 
-		// The following parameters are optional
-		Nodeid    *int    `url:"nodeid,omitempty" json:"nodeid,omitempty"`         // Node id for this node.
-		Ring0Addr *string `url:"ring0_addr,omitempty" json:"ring0_addr,omitempty"` // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
-	} `url:"nodelist" json:"nodelist"`
-	PreferredNode string                 `url:"preferred_node" json:"preferred_node"` // The cluster node name.
-	Totem         map[string]interface{} `url:"totem" json:"totem"`
+func (t *Ring0AddrArr) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct {
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
 }
 
-// JoinInfoJoin Get information needed to join this cluster over the connected node.
-func (c *Client) JoinInfoJoin(ctx context.Context, req *JoinInfoJoinRequest) (*JoinInfoJoinResponse, error) {
-	var resp *JoinInfoJoinResponse
+// Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
+type Ring0Addr struct {
+	Address string `url:"address" json:"address"` // Hostname (or IP) of this corosync link address.
 
-	err := c.httpClient.Do(ctx, "/cluster/config/join", "GET", &resp, req)
-	return resp, err
+	// The following parameters are optional
+	Priority *int `url:"priority,omitempty" json:"priority,omitempty"` // The priority for the link when knet is used in 'passive' mode (default). Lower value means higher priority. Only valid for cluster create, ignored on node add.
+}
+
+type Nodelist struct {
+	Name        string `url:"name" json:"name"` // The cluster node name.
+	PveAddr     string `url:"pve_addr" json:"pve_addr"`
+	PveFp       string `url:"pve_fp" json:"pve_fp"` // Certificate SHA 256 fingerprint.
+	QuorumVotes int    `url:"quorum_votes" json:"quorum_votes"`
+
+	// The following parameters are optional
+	Nodeid    *int       `url:"nodeid,omitempty" json:"nodeid,omitempty"`         // Node id for this node.
+	Ring0Addr *Ring0Addr `url:"ring0_addr,omitempty" json:"ring0_addr,omitempty"` // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
+}
+
+type JoinInfoJoinResponse struct {
+	ConfigDigest  string                 `url:"config_digest" json:"config_digest"`
+	Nodelist      []Nodelist             `url:"nodelist" json:"nodelist"`
+	PreferredNode string                 `url:"preferred_node" json:"preferred_node"` // The cluster node name.
+	Totem         map[string]interface{} `url:"totem" json:"totem"`
 }
 
 type JoinRequest struct {
@@ -97,36 +137,62 @@ type JoinRequest struct {
 
 	// The following parameters are optional
 	Force  *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"`     // Do not throw error if node already exists.
-	Linkn  *string           `url:"link[n],omitempty" json:"link[n],omitempty"` // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
+	Links  *LinknArr         `url:"link[n],omitempty" json:"link[n],omitempty"` // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
 	Nodeid *int              `url:"nodeid,omitempty" json:"nodeid,omitempty"`   // Node id for this node.
 	Votes  *int              `url:"votes,omitempty" json:"votes,omitempty"`     // Number of votes for this node
 }
 
-type JoinResponse string
+// Index Directory index.
+func (c *Client) Index(ctx context.Context) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/cluster/config", "GET", &resp, nil)
+	return resp, err
+}
+
+// Create Generate new cluster configuration. If no links given, default to local IP address as link0.
+func (c *Client) Create(ctx context.Context, req CreateRequest) (string, error) {
+	var resp string
+
+	err := c.httpClient.Do(ctx, "/cluster/config", "POST", &resp, req)
+	return resp, err
+}
+
+// JoinApiVersionApiversion Return the version of the cluster join API available on this node.
+func (c *Client) JoinApiVersionApiversion(ctx context.Context) (int, error) {
+	var resp int
+
+	err := c.httpClient.Do(ctx, "/cluster/config/apiversion", "GET", &resp, nil)
+	return resp, err
+}
+
+// JoinInfoJoin Get information needed to join this cluster over the connected node.
+func (c *Client) JoinInfoJoin(ctx context.Context, req JoinInfoJoinRequest) (JoinInfoJoinResponse, error) {
+	var resp JoinInfoJoinResponse
+
+	err := c.httpClient.Do(ctx, "/cluster/config/join", "GET", &resp, req)
+	return resp, err
+}
 
 // Join Joins this node into an existing cluster. If no links are given, default to IP resolved by node's hostname on single link (fallback fails for clusters with multiple links).
-func (c *Client) Join(ctx context.Context, req *JoinRequest) (*JoinResponse, error) {
-	var resp *JoinResponse
+func (c *Client) Join(ctx context.Context, req JoinRequest) (string, error) {
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/cluster/config/join", "POST", &resp, req)
 	return resp, err
 }
 
-type TotemResponse map[string]interface{}
-
 // Totem Get corosync totem protocol settings.
-func (c *Client) Totem(ctx context.Context) (*TotemResponse, error) {
-	var resp *TotemResponse
+func (c *Client) Totem(ctx context.Context) (map[string]interface{}, error) {
+	var resp map[string]interface{}
 
 	err := c.httpClient.Do(ctx, "/cluster/config/totem", "GET", &resp, nil)
 	return resp, err
 }
 
-type StatusQdeviceResponse map[string]interface{}
-
 // StatusQdevice Get QDevice status
-func (c *Client) StatusQdevice(ctx context.Context) (*StatusQdeviceResponse, error) {
-	var resp *StatusQdeviceResponse
+func (c *Client) StatusQdevice(ctx context.Context) (map[string]interface{}, error) {
+	var resp map[string]interface{}
 
 	err := c.httpClient.Do(ctx, "/cluster/config/qdevice", "GET", &resp, nil)
 	return resp, err

@@ -4,7 +4,12 @@ package nodes
 
 import (
 	"context"
+	"fmt"
+	"net/url"
+	"strings"
+
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
+	"github.com/google/go-querystring/query"
 )
 
 type HTTPClient interface {
@@ -21,16 +26,51 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Node string `url:"node" json:"node"`
 }
 
-// Index Corosync node list.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
+// Array of Linkn
+type LinknArr []Linkn
 
-	err := c.httpClient.Do(ctx, "/cluster/config/nodes", "GET", &resp, nil)
-	return resp, err
+func (t *LinknArr) EncodeValues(key string, v *url.Values) error {
+	newKey := strings.TrimSuffix(key, "[n]")
+	for i, item := range *t {
+		s := struct {
+			V interface{} `url:"item"`
+		}{
+			V: item,
+		}
+		newValues, err := query.Values(s)
+		if err != nil {
+			return err
+		}
+		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
+	}
+	return nil
+}
+
+// Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
+type Linkn struct {
+	Address string `url:"address" json:"address"` // Hostname (or IP) of this corosync link address.
+
+	// The following parameters are optional
+	Priority *int `url:"priority,omitempty" json:"priority,omitempty"` // The priority for the link when knet is used in 'passive' mode (default). Lower value means higher priority. Only valid for cluster create, ignored on node add.
+}
+
+func (t *Linkn) EncodeValues(key string, v *url.Values) error {
+	valueStrParts := []string{
+		fmt.Sprintf("%s=%v", "address", t.Address),
+	}
+	if t.Priority != nil {
+		valueStrParts = append(
+			valueStrParts,
+			fmt.Sprintf("%s=%v", "priority", *t.Priority),
+		)
+	}
+
+	v.Set(key, strings.Join(valueStrParts, ", "))
+	return nil
 }
 
 type ChildCreateRequest struct {
@@ -39,7 +79,7 @@ type ChildCreateRequest struct {
 	// The following parameters are optional
 	Apiversion *int              `url:"apiversion,omitempty" json:"apiversion,omitempty"`   // The JOIN_API_VERSION of the new node.
 	Force      *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"`             // Do not throw error if node already exists.
-	Linkn      *string           `url:"link[n],omitempty" json:"link[n],omitempty"`         // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
+	Links      *LinknArr         `url:"link[n],omitempty" json:"link[n],omitempty"`         // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
 	NewNodeIp  *string           `url:"new_node_ip,omitempty" json:"new_node_ip,omitempty"` // IP Address of node to add. Used as fallback if no links are given.
 	Nodeid     *int              `url:"nodeid,omitempty" json:"nodeid,omitempty"`           // Node id for this node.
 	Votes      *int              `url:"votes,omitempty" json:"votes,omitempty"`             // Number of votes for this node
@@ -51,25 +91,30 @@ type ChildCreateResponse struct {
 	Warnings        []string `url:"warnings" json:"warnings"`
 }
 
-// ChildCreate Adds a node to the cluster configuration. This call is for internal use.
-func (c *Client) ChildCreate(ctx context.Context, req *ChildCreateRequest) (*ChildCreateResponse, error) {
-	var resp *ChildCreateResponse
-
-	err := c.httpClient.Do(ctx, "/cluster/config/nodes/{node}", "POST", &resp, req)
-	return resp, err
-}
-
 type DeleteRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
-type DeleteResponse map[string]interface{}
+// Index Corosync node list.
+func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {
+	var resp []IndexResponse
+
+	err := c.httpClient.Do(ctx, "/cluster/config/nodes", "GET", &resp, nil)
+	return resp, err
+}
+
+// ChildCreate Adds a node to the cluster configuration. This call is for internal use.
+func (c *Client) ChildCreate(ctx context.Context, req ChildCreateRequest) (ChildCreateResponse, error) {
+	var resp ChildCreateResponse
+
+	err := c.httpClient.Do(ctx, "/cluster/config/nodes/{node}", "POST", &resp, req)
+	return resp, err
+}
 
 // Delete Removes a node from the cluster configuration.
-func (c *Client) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	var resp *DeleteResponse
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) error {
 
-	err := c.httpClient.Do(ctx, "/cluster/config/nodes/{node}", "DELETE", &resp, req)
-	return resp, err
+	err := c.httpClient.Do(ctx, "/cluster/config/nodes/{node}", "DELETE", nil, req)
+	return err
 }

@@ -20,13 +20,13 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-type IndexResponse []*struct {
+type IndexResponse struct {
 	Id string `url:"id" json:"id"`
 }
 
 // Index Directory index.
-func (c *Client) Index(ctx context.Context) (*IndexResponse, error) {
-	var resp *IndexResponse
+func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {
+	var resp []IndexResponse
 
 	err := c.httpClient.Do(ctx, "/cluster/ha", "GET", &resp, nil)
 	return resp, err
