@@ -4,12 +4,8 @@ package lxc
 
 import (
 	"context"
-	"fmt"
-	"net/url"
-	"strings"
-
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
-	"github.com/google/go-querystring/query"
+	"net/url"
 )
 
 type HTTPClient interface {
@@ -46,24 +42,59 @@ type IndexResponse struct {
 	Uptime  *int     `url:"uptime,omitempty" json:"uptime,omitempty"`   // Uptime.
 }
 
+// Array of Features
+type FeaturesArr []Features
+
+func (t FeaturesArr) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// Allow containers access to advanced features.
+type Features struct {
+
+	// The following parameters are optional
+	ForceRwSys *util.SpecialBool `url:"force_rw_sys,omitempty" json:"force_rw_sys,omitempty"` // Mount /sys in unprivileged containers as `rw` instead of `mixed`. This can break networking under newer (>= v245) systemd-network use.
+	Fuse       *util.SpecialBool `url:"fuse,omitempty" json:"fuse,omitempty"`                 // Allow using 'fuse' file systems in a container. Note that interactions between fuse and the freezer cgroup can potentially cause I/O deadlocks.
+	Keyctl     *util.SpecialBool `url:"keyctl,omitempty" json:"keyctl,omitempty"`             // For unprivileged containers only: Allow the use of the keyctl() system call. This is required to use docker inside a container. By default unprivileged containers will see this system call as non-existent. This is mostly a workaround for systemd-networkd, as it will treat it as a fatal error when some keyctl() operations are denied by the kernel due to lacking permissions. Essentially, you can choose between running systemd-networkd or docker.
+	Mknod      *util.SpecialBool `url:"mknod,omitempty" json:"mknod,omitempty"`               // Allow unprivileged containers to use mknod() to add certain device nodes. This requires a kernel with seccomp trap to user space support (5.3 or newer). This is experimental.
+	Mount      *string           `url:"mount,omitempty" json:"mount,omitempty"`               // Allow mounting file systems of specific types. This should be a list of file system types as used with the mount command. Note that this can have negative effects on the container's security. With access to a loop device, mounting a file can circumvent the mknod permission of the devices cgroup, mounting an NFS file system can block the host's I/O completely and prevent it from rebooting, etc.
+	Nesting    *util.SpecialBool `url:"nesting,omitempty" json:"nesting,omitempty"`           // Allow nesting. Best used with unprivileged containers with additional id mapping. Note that this will expose procfs and sysfs contents of the host to the guest.
+}
+
+func (t Features) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[force_rw_sys=<1|0>] [,fuse=<1|0>] [,keyctl=<1|0>] [,mknod=<1|0>] [,mount=<fstype;fstype;...>] [,nesting=<1|0>]`)
+}
+
+// Array of Rootfs
+type RootfsArr []Rootfs
+
+func (t RootfsArr) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// Use volume as container root.
+type Rootfs struct {
+	Volume string `url:"volume" json:"volume"` // Volume, device or directory to mount into the container.
+
+	// The following parameters are optional
+	Acl          *util.SpecialBool `url:"acl,omitempty" json:"acl,omitempty"`                   // Explicitly enable or disable ACL support.
+	Mountoptions *string           `url:"mountoptions,omitempty" json:"mountoptions,omitempty"` // Extra mount options for rootfs/mps.
+	Quota        *util.SpecialBool `url:"quota,omitempty" json:"quota,omitempty"`               // Enable user quotas inside the container (not supported with zfs subvolumes)
+	Replicate    *util.SpecialBool `url:"replicate,omitempty" json:"replicate,omitempty"`       // Will include this volume to a storage replica job.
+	Ro           *util.SpecialBool `url:"ro,omitempty" json:"ro,omitempty"`                     // Read-only mount point
+	Shared       *util.SpecialBool `url:"shared,omitempty" json:"shared,omitempty"`             // Mark this non-volume mount point as available on multiple nodes (see 'nodes')
+	Size         *string           `url:"size,omitempty" json:"size,omitempty"`                 // Volume size (read only value).
+}
+
+func (t Rootfs) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[volume=]<volume> [,acl=<1|0>] [,mountoptions=<opt[;opt...]>] [,quota=<1|0>] [,replicate=<1|0>] [,ro=<1|0>] [,shared=<1|0>] [,size=<DiskSize>]`)
+}
+
 // Array of Mpn
 type MpnArr []Mpn
 
-func (t *MpnArr) EncodeValues(key string, v *url.Values) error {
-	newKey := strings.TrimSuffix(key, "[n]")
-	for i, item := range *t {
-		s := struct {
-			V interface{} `url:"item"`
-		}{
-			V: item,
-		}
-		newValues, err := query.Values(s)
-		if err != nil {
-			return err
-		}
-		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
-	}
-	return nil
+func (t MpnArr) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
 }
 
 // Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
@@ -82,204 +113,15 @@ type Mpn struct {
 	Size         *string           `url:"size,omitempty" json:"size,omitempty"`                 // Volume size (read only value).
 }
 
-func (t *Mpn) EncodeValues(key string, v *url.Values) error {
-	valueStrParts := []string{
-		fmt.Sprintf("%s=%v", "mp", t.Mp),
-
-		fmt.Sprintf("%s=%v", "volume", t.Volume),
-	}
-	if t.Acl != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "acl", *t.Acl),
-		)
-	}
-
-	if t.Backup != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "backup", *t.Backup),
-		)
-	}
-
-	if t.Mountoptions != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "mountoptions", *t.Mountoptions),
-		)
-	}
-
-	if t.Quota != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "quota", *t.Quota),
-		)
-	}
-
-	if t.Replicate != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "replicate", *t.Replicate),
-		)
-	}
-
-	if t.Ro != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "ro", *t.Ro),
-		)
-	}
-
-	if t.Shared != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "shared", *t.Shared),
-		)
-	}
-
-	if t.Size != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "size", *t.Size),
-		)
-	}
-
-	v.Set(key, strings.Join(valueStrParts, ", "))
-	return nil
-}
-
-// Array of Features
-type FeaturesArr []Features
-
-func (t *FeaturesArr) EncodeValues(key string, v *url.Values) error {
-	newKey := strings.TrimSuffix(key, "[n]")
-	for i, item := range *t {
-		s := struct {
-			V interface{} `url:"item"`
-		}{
-			V: item,
-		}
-		newValues, err := query.Values(s)
-		if err != nil {
-			return err
-		}
-		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
-	}
-	return nil
-}
-
-// Allow containers access to advanced features.
-type Features struct {
-
-	// The following parameters are optional
-	ForceRwSys *util.SpecialBool `url:"force_rw_sys,omitempty" json:"force_rw_sys,omitempty"` // Mount /sys in unprivileged containers as `rw` instead of `mixed`. This can break networking under newer (>= v245) systemd-network use.
-	Fuse       *util.SpecialBool `url:"fuse,omitempty" json:"fuse,omitempty"`                 // Allow using 'fuse' file systems in a container. Note that interactions between fuse and the freezer cgroup can potentially cause I/O deadlocks.
-	Keyctl     *util.SpecialBool `url:"keyctl,omitempty" json:"keyctl,omitempty"`             // For unprivileged containers only: Allow the use of the keyctl() system call. This is required to use docker inside a container. By default unprivileged containers will see this system call as non-existent. This is mostly a workaround for systemd-networkd, as it will treat it as a fatal error when some keyctl() operations are denied by the kernel due to lacking permissions. Essentially, you can choose between running systemd-networkd or docker.
-	Mknod      *util.SpecialBool `url:"mknod,omitempty" json:"mknod,omitempty"`               // Allow unprivileged containers to use mknod() to add certain device nodes. This requires a kernel with seccomp trap to user space support (5.3 or newer). This is experimental.
-	Mount      *string           `url:"mount,omitempty" json:"mount,omitempty"`               // Allow mounting file systems of specific types. This should be a list of file system types as used with the mount command. Note that this can have negative effects on the container's security. With access to a loop device, mounting a file can circumvent the mknod permission of the devices cgroup, mounting an NFS file system can block the host's I/O completely and prevent it from rebooting, etc.
-	Nesting    *util.SpecialBool `url:"nesting,omitempty" json:"nesting,omitempty"`           // Allow nesting. Best used with unprivileged containers with additional id mapping. Note that this will expose procfs and sysfs contents of the host to the guest.
-}
-
-func (t *Features) EncodeValues(key string, v *url.Values) error {
-	valueStrParts := []string{}
-	if t.ForceRwSys != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "force_rw_sys", *t.ForceRwSys),
-		)
-	}
-
-	if t.Fuse != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "fuse", *t.Fuse),
-		)
-	}
-
-	if t.Keyctl != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "keyctl", *t.Keyctl),
-		)
-	}
-
-	if t.Mknod != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "mknod", *t.Mknod),
-		)
-	}
-
-	if t.Mount != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "mount", *t.Mount),
-		)
-	}
-
-	if t.Nesting != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "nesting", *t.Nesting),
-		)
-	}
-
-	v.Set(key, strings.Join(valueStrParts, ", "))
-	return nil
-}
-
-// Array of Unusedn
-type UnusednArr []Unusedn
-
-func (t *UnusednArr) EncodeValues(key string, v *url.Values) error {
-	newKey := strings.TrimSuffix(key, "[n]")
-	for i, item := range *t {
-		s := struct {
-			V interface{} `url:"item"`
-		}{
-			V: item,
-		}
-		newValues, err := query.Values(s)
-		if err != nil {
-			return err
-		}
-		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
-	}
-	return nil
-}
-
-// Reference to unused volumes. This is used internally, and should not be modified manually.
-type Unusedn struct {
-	Volume string `url:"volume" json:"volume"` // The volume that is not used currently.
-
-}
-
-func (t *Unusedn) EncodeValues(key string, v *url.Values) error {
-	valueStrParts := []string{
-		fmt.Sprintf("%s=%v", "volume", t.Volume),
-	}
-	v.Set(key, strings.Join(valueStrParts, ", "))
-	return nil
+func (t Mpn) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[volume=]<volume> ,mp=<Path> [,acl=<1|0>] [,backup=<1|0>] [,mountoptions=<opt[;opt...]>] [,quota=<1|0>] [,replicate=<1|0>] [,ro=<1|0>] [,shared=<1|0>] [,size=<DiskSize>]`)
 }
 
 // Array of Netn
 type NetnArr []Netn
 
-func (t *NetnArr) EncodeValues(key string, v *url.Values) error {
-	newKey := strings.TrimSuffix(key, "[n]")
-	for i, item := range *t {
-		s := struct {
-			V interface{} `url:"item"`
-		}{
-			V: item,
-		}
-		newValues, err := query.Values(s)
-		if err != nil {
-			return err
-		}
-		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
-	}
-	return nil
+func (t NetnArr) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
 }
 
 // Specifies network interfaces for the container.
@@ -301,187 +143,25 @@ type Netn struct {
 	Type     *string           `url:"type,omitempty" json:"type,omitempty"`         // Network interface type.
 }
 
-func (t *Netn) EncodeValues(key string, v *url.Values) error {
-	valueStrParts := []string{
-		fmt.Sprintf("%s=%v", "name", t.Name),
-	}
-	if t.Bridge != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "bridge", *t.Bridge),
-		)
-	}
-
-	if t.Firewall != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "firewall", *t.Firewall),
-		)
-	}
-
-	if t.Gw != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "gw", *t.Gw),
-		)
-	}
-
-	if t.Gw6 != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "gw6", *t.Gw6),
-		)
-	}
-
-	if t.Hwaddr != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "hwaddr", *t.Hwaddr),
-		)
-	}
-
-	if t.Ip != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "ip", *t.Ip),
-		)
-	}
-
-	if t.Ip6 != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "ip6", *t.Ip6),
-		)
-	}
-
-	if t.Mtu != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "mtu", *t.Mtu),
-		)
-	}
-
-	if t.Rate != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "rate", *t.Rate),
-		)
-	}
-
-	if t.Tag != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "tag", *t.Tag),
-		)
-	}
-
-	if t.Trunks != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "trunks", *t.Trunks),
-		)
-	}
-
-	if t.Type != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "type", *t.Type),
-		)
-	}
-
-	v.Set(key, strings.Join(valueStrParts, ", "))
-	return nil
+func (t Netn) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `name=<string> [,bridge=<bridge>] [,firewall=<1|0>] [,gw=<GatewayIPv4>] [,gw6=<GatewayIPv6>] [,hwaddr=<XX:XX:XX:XX:XX:XX>] [,ip=<(IPv4/CIDR|dhcp|manual)>] [,ip6=<(IPv6/CIDR|auto|dhcp|manual)>] [,mtu=<integer>] [,rate=<mbps>] [,tag=<integer>] [,trunks=<vlanid[;vlanid...]>] [,type=<veth>]`)
 }
 
-// Array of Rootfs
-type RootfsArr []Rootfs
+// Array of Unusedn
+type UnusednArr []Unusedn
 
-func (t *RootfsArr) EncodeValues(key string, v *url.Values) error {
-	newKey := strings.TrimSuffix(key, "[n]")
-	for i, item := range *t {
-		s := struct {
-			V interface{} `url:"item"`
-		}{
-			V: item,
-		}
-		newValues, err := query.Values(s)
-		if err != nil {
-			return err
-		}
-		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
-	}
-	return nil
+func (t UnusednArr) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
 }
 
-// Use volume as container root.
-type Rootfs struct {
-	Volume string `url:"volume" json:"volume"` // Volume, device or directory to mount into the container.
+// Reference to unused volumes. This is used internally, and should not be modified manually.
+type Unusedn struct {
+	Volume string `url:"volume" json:"volume"` // The volume that is not used currently.
 
-	// The following parameters are optional
-	Acl          *util.SpecialBool `url:"acl,omitempty" json:"acl,omitempty"`                   // Explicitly enable or disable ACL support.
-	Mountoptions *string           `url:"mountoptions,omitempty" json:"mountoptions,omitempty"` // Extra mount options for rootfs/mps.
-	Quota        *util.SpecialBool `url:"quota,omitempty" json:"quota,omitempty"`               // Enable user quotas inside the container (not supported with zfs subvolumes)
-	Replicate    *util.SpecialBool `url:"replicate,omitempty" json:"replicate,omitempty"`       // Will include this volume to a storage replica job.
-	Ro           *util.SpecialBool `url:"ro,omitempty" json:"ro,omitempty"`                     // Read-only mount point
-	Shared       *util.SpecialBool `url:"shared,omitempty" json:"shared,omitempty"`             // Mark this non-volume mount point as available on multiple nodes (see 'nodes')
-	Size         *string           `url:"size,omitempty" json:"size,omitempty"`                 // Volume size (read only value).
 }
 
-func (t *Rootfs) EncodeValues(key string, v *url.Values) error {
-	valueStrParts := []string{
-		fmt.Sprintf("%s=%v", "volume", t.Volume),
-	}
-	if t.Acl != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "acl", *t.Acl),
-		)
-	}
-
-	if t.Mountoptions != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "mountoptions", *t.Mountoptions),
-		)
-	}
-
-	if t.Quota != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "quota", *t.Quota),
-		)
-	}
-
-	if t.Replicate != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "replicate", *t.Replicate),
-		)
-	}
-
-	if t.Ro != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "ro", *t.Ro),
-		)
-	}
-
-	if t.Shared != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "shared", *t.Shared),
-		)
-	}
-
-	if t.Size != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "size", *t.Size),
-		)
-	}
-
-	v.Set(key, strings.Join(valueStrParts, ", "))
-	return nil
+func (t Unusedn) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[volume=]<volume>`)
 }
 
 type CreateRequest struct {

@@ -56,6 +56,12 @@ type RepositoriesRequest struct {
 
 }
 
+type Errors struct {
+	Error string `url:"error" json:"error"` // The error message
+	Path  string `url:"path" json:"path"`   // Path to the problematic file.
+
+}
+
 type Options struct {
 	Key    string   `url:"Key" json:"Key"`
 	Values []string `url:"Values" json:"Values"`
@@ -98,12 +104,6 @@ type StandardRepos struct {
 
 	// The following parameters are optional
 	Status *util.SpecialBool `url:"status,omitempty" json:"status,omitempty"` // Indicating enabled/disabled status, if the repository is configured.
-}
-
-type Errors struct {
-	Error string `url:"error" json:"error"` // The error message
-	Path  string `url:"path" json:"path"`   // Path to the problematic file.
-
 }
 
 // Result from parsing the APT repository files in /etc/apt/.

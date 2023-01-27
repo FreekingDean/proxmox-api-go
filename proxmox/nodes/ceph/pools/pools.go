@@ -4,12 +4,8 @@ package pools
 
 import (
 	"context"
-	"fmt"
-	"net/url"
-	"strings"
-
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
-	"github.com/google/go-querystring/query"
+	"net/url"
 )
 
 type HTTPClient interface {
@@ -56,21 +52,8 @@ type IndexResponse struct {
 // Array of ErasureCoding
 type ErasureCodingArr []ErasureCoding
 
-func (t *ErasureCodingArr) EncodeValues(key string, v *url.Values) error {
-	newKey := strings.TrimSuffix(key, "[n]")
-	for i, item := range *t {
-		s := struct {
-			V interface{} `url:"item"`
-		}{
-			V: item,
-		}
-		newValues, err := query.Values(s)
-		if err != nil {
-			return err
-		}
-		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
-	}
-	return nil
+func (t ErasureCodingArr) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
 }
 
 // Create an erasure coded pool for RBD with an accompaning replicated pool for metadata storage. With EC, the common ceph options 'size', 'min_size' and 'crush_rule' parameters will be applied to the metadata pool.
@@ -84,35 +67,8 @@ type ErasureCoding struct {
 	Profile       *string `url:"profile,omitempty" json:"profile,omitempty"`               // Override the erasure code (EC) profile to use. Will create an erasure coded pool plus a replicated pool for metadata.
 }
 
-func (t *ErasureCoding) EncodeValues(key string, v *url.Values) error {
-	valueStrParts := []string{
-		fmt.Sprintf("%s=%v", "k", t.K),
-
-		fmt.Sprintf("%s=%v", "m", t.M),
-	}
-	if t.DeviceClass != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "device-class", *t.DeviceClass),
-		)
-	}
-
-	if t.FailureDomain != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "failure-domain", *t.FailureDomain),
-		)
-	}
-
-	if t.Profile != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "profile", *t.Profile),
-		)
-	}
-
-	v.Set(key, strings.Join(valueStrParts, ", "))
-	return nil
+func (t ErasureCoding) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `k=<integer> ,m=<integer> [,device-class=<class>] [,failure-domain=<domain>] [,profile=<profile>]`)
 }
 
 type CreateRequest struct {

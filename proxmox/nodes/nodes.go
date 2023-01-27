@@ -4,12 +4,8 @@ package nodes
 
 import (
 	"context"
-	"fmt"
-	"net/url"
-	"strings"
-
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
-	"github.com/google/go-querystring/query"
+	"net/url"
 )
 
 type HTTPClient interface {
@@ -75,72 +71,11 @@ type GetConfigRequest struct {
 	Property *string `url:"property,omitempty" json:"property,omitempty"` // Return only a specific property from the node configuration.
 }
 
-// Array of Acme
-type AcmeArr []Acme
-
-func (t *AcmeArr) EncodeValues(key string, v *url.Values) error {
-	newKey := strings.TrimSuffix(key, "[n]")
-	for i, item := range *t {
-		s := struct {
-			V interface{} `url:"item"`
-		}{
-			V: item,
-		}
-		newValues, err := query.Values(s)
-		if err != nil {
-			return err
-		}
-		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
-	}
-	return nil
-}
-
-// Node specific ACME settings.
-type Acme struct {
-
-	// The following parameters are optional
-	Account *string `url:"account,omitempty" json:"account,omitempty"` // ACME account config file name.
-	Domains *string `url:"domains,omitempty" json:"domains,omitempty"` // List of domains for this node's ACME certificate
-}
-
-func (t *Acme) EncodeValues(key string, v *url.Values) error {
-	valueStrParts := []string{}
-	if t.Account != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "account", *t.Account),
-		)
-	}
-
-	if t.Domains != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "domains", *t.Domains),
-		)
-	}
-
-	v.Set(key, strings.Join(valueStrParts, ", "))
-	return nil
-}
-
 // Array of Acmedomainn
 type AcmedomainnArr []Acmedomainn
 
-func (t *AcmedomainnArr) EncodeValues(key string, v *url.Values) error {
-	newKey := strings.TrimSuffix(key, "[n]")
-	for i, item := range *t {
-		s := struct {
-			V interface{} `url:"item"`
-		}{
-			V: item,
-		}
-		newValues, err := query.Values(s)
-		if err != nil {
-			return err
-		}
-		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
-	}
-	return nil
+func (t AcmedomainnArr) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
 }
 
 // ACME domain and validation plugin
@@ -152,26 +87,27 @@ type Acmedomainn struct {
 	Plugin *string `url:"plugin,omitempty" json:"plugin,omitempty"` // The ACME plugin ID
 }
 
-func (t *Acmedomainn) EncodeValues(key string, v *url.Values) error {
-	valueStrParts := []string{
-		fmt.Sprintf("%s=%v", "domain", t.Domain),
-	}
-	if t.Alias != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "alias", *t.Alias),
-		)
-	}
+func (t Acmedomainn) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[domain=]<domain> [,alias=<domain>] [,plugin=<name of the plugin configuration>]`)
+}
 
-	if t.Plugin != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "plugin", *t.Plugin),
-		)
-	}
+// Array of Acme
+type AcmeArr []Acme
 
-	v.Set(key, strings.Join(valueStrParts, ", "))
-	return nil
+func (t AcmeArr) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// Node specific ACME settings.
+type Acme struct {
+
+	// The following parameters are optional
+	Account *string `url:"account,omitempty" json:"account,omitempty"` // ACME account config file name.
+	Domains *string `url:"domains,omitempty" json:"domains,omitempty"` // List of domains for this node's ACME certificate
+}
+
+func (t Acme) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[account=<name>] [,domains=<domain[;domain;...]>]`)
 }
 
 type GetConfigResponse struct {

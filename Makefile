@@ -13,5 +13,10 @@ clean:
 	rm -r proxmox/storage/*
 	rm -r proxmox/version/*
 
+build:
+	@go build ./...
+
+.PHONY: test
 test:
-	@go test $(TEST)
+	go vet ./...
+	go test -v -race ./...

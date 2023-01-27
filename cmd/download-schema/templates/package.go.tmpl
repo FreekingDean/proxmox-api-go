@@ -5,11 +5,8 @@ package {{.Name}}
 import (
   "context"
 	{{- if .ImportURL }}
-	"strings"
-	"fmt"
 	"net/url"
 
-	"github.com/google/go-querystring/query"
 	{{- end -}}
   {{- if .Util }}
   "github.com/FreekingDean/proxmox-api-go/internal/util"
@@ -74,39 +71,12 @@ func (c *Client) {{.Operation}}(ctx context.Context
 type {{ $t.Name }} {{ template "type" $t }}
 {{ if ne $t.Format ""}}
 {{ if eq $t.Format "array" }}
-func (t *{{ $t.Name }}) EncodeValues(key string, v *url.Values) error {
-	newKey := strings.TrimSuffix(key, "[n]")
-	for i, item := range *t {
-		s := struct{
-			V interface{} `url:"item"`
-		}{
-			V: item,
-		}
-		newValues, err := query.Values(s)
-		if err != nil {
-			return err
-		}
-		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
-	}
-	return nil
+func (t {{ $t.Name }}) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
 }
 {{ else }}
-func (t *{{ $t.Name }}) EncodeValues(key string, v *url.Values) error {
-	valueStrParts := []string{
-	{{- range $_, $prop := $t.Properties }}
-		fmt.Sprintf("%s=%v", "{{ $prop.JSONName }}", t.{{ $prop.Name }}),
-	{{ end }}
-	}
-{{- range $_, $prop := $t.OptionalProperties }}
-	if t.{{ $prop.Name }} != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "{{ $prop.JSONName }}", *t.{{ $prop.Name }}),
-		)
-	}
-{{ end }}
-	v.Set(key, strings.Join(valueStrParts, ", "))
-	return nil
+func (t {{ $t.Name }}) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `{{ $t.Format }}`)
 }
 {{ end }}
 {{ end }}

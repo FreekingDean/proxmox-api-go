@@ -4,12 +4,8 @@ package storage
 
 import (
 	"context"
-	"fmt"
-	"net/url"
-	"strings"
-
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
-	"github.com/google/go-querystring/query"
+	"net/url"
 )
 
 type HTTPClient interface {
@@ -39,21 +35,8 @@ type IndexResponse struct {
 // Array of Bwlimit
 type BwlimitArr []Bwlimit
 
-func (t *BwlimitArr) EncodeValues(key string, v *url.Values) error {
-	newKey := strings.TrimSuffix(key, "[n]")
-	for i, item := range *t {
-		s := struct {
-			V interface{} `url:"item"`
-		}{
-			V: item,
-		}
-		newValues, err := query.Values(s)
-		if err != nil {
-			return err
-		}
-		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
-	}
-	return nil
+func (t BwlimitArr) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
 }
 
 // Set bandwidth/io limits various operations.
@@ -67,45 +50,8 @@ type Bwlimit struct {
 	Restore   *float64 `url:"restore,omitempty" json:"restore,omitempty"`     // bandwidth limit in KiB/s for restoring guests from backups
 }
 
-func (t *Bwlimit) EncodeValues(key string, v *url.Values) error {
-	valueStrParts := []string{}
-	if t.Clone != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "clone", *t.Clone),
-		)
-	}
-
-	if t.Default != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "default", *t.Default),
-		)
-	}
-
-	if t.Migration != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "migration", *t.Migration),
-		)
-	}
-
-	if t.Move != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "move", *t.Move),
-		)
-	}
-
-	if t.Restore != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "restore", *t.Restore),
-		)
-	}
-
-	v.Set(key, strings.Join(valueStrParts, ", "))
-	return nil
+func (t Bwlimit) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[clone=<LIMIT>] [,default=<LIMIT>] [,migration=<LIMIT>] [,move=<LIMIT>] [,restore=<LIMIT>]`)
 }
 
 type CreateRequest struct {

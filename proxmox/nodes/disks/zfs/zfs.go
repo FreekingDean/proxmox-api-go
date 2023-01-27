@@ -4,12 +4,8 @@ package zfs
 
 import (
 	"context"
-	"fmt"
-	"net/url"
-	"strings"
-
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
-	"github.com/google/go-querystring/query"
+	"net/url"
 )
 
 type HTTPClient interface {
@@ -44,21 +40,8 @@ type IndexResponse struct {
 // Array of DraidConfig
 type DraidConfigArr []DraidConfig
 
-func (t *DraidConfigArr) EncodeValues(key string, v *url.Values) error {
-	newKey := strings.TrimSuffix(key, "[n]")
-	for i, item := range *t {
-		s := struct {
-			V interface{} `url:"item"`
-		}{
-			V: item,
-		}
-		newValues, err := query.Values(s)
-		if err != nil {
-			return err
-		}
-		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
-	}
-	return nil
+func (t DraidConfigArr) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
 }
 
 type DraidConfig struct {
@@ -67,14 +50,8 @@ type DraidConfig struct {
 
 }
 
-func (t *DraidConfig) EncodeValues(key string, v *url.Values) error {
-	valueStrParts := []string{
-		fmt.Sprintf("%s=%v", "data", t.Data),
-
-		fmt.Sprintf("%s=%v", "spares", t.Spares),
-	}
-	v.Set(key, strings.Join(valueStrParts, ", "))
-	return nil
+func (t DraidConfig) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `data=<integer> ,spares=<integer>`)
 }
 
 type CreateRequest struct {

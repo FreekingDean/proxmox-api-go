@@ -287,6 +287,7 @@ func (p *Package) defineType(name string, jsonName string, schema *jsonschema.JS
 			log.Fatalf("Unkown type %s, expected (*)string", t.Type)
 		}
 		p.ImportURL = true
+		p.Util = true
 		nt := &Type{
 			Type:               "[]" + name,
 			Name:               name + "Arr",

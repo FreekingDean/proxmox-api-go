@@ -4,12 +4,8 @@ package firewall
 
 import (
 	"context"
-	"fmt"
-	"net/url"
-	"strings"
-
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
-	"github.com/google/go-querystring/query"
+	"net/url"
 )
 
 type HTTPClient interface {
@@ -29,21 +25,8 @@ func New(c HTTPClient) *Client {
 // Array of LogRatelimit
 type LogRatelimitArr []LogRatelimit
 
-func (t *LogRatelimitArr) EncodeValues(key string, v *url.Values) error {
-	newKey := strings.TrimSuffix(key, "[n]")
-	for i, item := range *t {
-		s := struct {
-			V interface{} `url:"item"`
-		}{
-			V: item,
-		}
-		newValues, err := query.Values(s)
-		if err != nil {
-			return err
-		}
-		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
-	}
-	return nil
+func (t LogRatelimitArr) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
 }
 
 // Log ratelimiting settings
@@ -55,26 +38,8 @@ type LogRatelimit struct {
 	Rate  *string `url:"rate,omitempty" json:"rate,omitempty"`   // Frequency with which the burst bucket gets refilled
 }
 
-func (t *LogRatelimit) EncodeValues(key string, v *url.Values) error {
-	valueStrParts := []string{
-		fmt.Sprintf("%s=%v", "enable", t.Enable),
-	}
-	if t.Burst != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "burst", *t.Burst),
-		)
-	}
-
-	if t.Rate != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "rate", *t.Rate),
-		)
-	}
-
-	v.Set(key, strings.Join(valueStrParts, ", "))
-	return nil
+func (t LogRatelimit) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[enable=]<1|0> [,burst=<integer>] [,rate=<rate>]`)
 }
 
 type GetOptionsResponse struct {

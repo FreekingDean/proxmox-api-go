@@ -4,12 +4,8 @@ package cluster
 
 import (
 	"context"
-	"fmt"
-	"net/url"
-	"strings"
-
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
-	"github.com/google/go-querystring/query"
+	"net/url"
 )
 
 type HTTPClient interface {
@@ -67,24 +63,30 @@ type TasksResponse struct {
 	Upid string `url:"upid" json:"upid"`
 }
 
+// Array of NextId
+type NextIdArr []NextId
+
+func (t NextIdArr) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// Control the range for the free VMID auto-selection pool.
+type NextId struct {
+
+	// The following parameters are optional
+	Lower *int `url:"lower,omitempty" json:"lower,omitempty"` // Lower, inclusive boundary for free next-id API range.
+	Upper *int `url:"upper,omitempty" json:"upper,omitempty"` // Upper, exclusive boundary for free next-id API range.
+}
+
+func (t NextId) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[lower=<integer>] [,upper=<integer>]`)
+}
+
 // Array of Bwlimit
 type BwlimitArr []Bwlimit
 
-func (t *BwlimitArr) EncodeValues(key string, v *url.Values) error {
-	newKey := strings.TrimSuffix(key, "[n]")
-	for i, item := range *t {
-		s := struct {
-			V interface{} `url:"item"`
-		}{
-			V: item,
-		}
-		newValues, err := query.Values(s)
-		if err != nil {
-			return err
-		}
-		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
-	}
-	return nil
+func (t BwlimitArr) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
 }
 
 // Set bandwidth/io limits various operations.
@@ -98,259 +100,15 @@ type Bwlimit struct {
 	Restore   *float64 `url:"restore,omitempty" json:"restore,omitempty"`     // bandwidth limit in KiB/s for restoring guests from backups
 }
 
-func (t *Bwlimit) EncodeValues(key string, v *url.Values) error {
-	valueStrParts := []string{}
-	if t.Clone != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "clone", *t.Clone),
-		)
-	}
-
-	if t.Default != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "default", *t.Default),
-		)
-	}
-
-	if t.Migration != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "migration", *t.Migration),
-		)
-	}
-
-	if t.Move != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "move", *t.Move),
-		)
-	}
-
-	if t.Restore != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "restore", *t.Restore),
-		)
-	}
-
-	v.Set(key, strings.Join(valueStrParts, ", "))
-	return nil
-}
-
-// Array of Ha
-type HaArr []Ha
-
-func (t *HaArr) EncodeValues(key string, v *url.Values) error {
-	newKey := strings.TrimSuffix(key, "[n]")
-	for i, item := range *t {
-		s := struct {
-			V interface{} `url:"item"`
-		}{
-			V: item,
-		}
-		newValues, err := query.Values(s)
-		if err != nil {
-			return err
-		}
-		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
-	}
-	return nil
-}
-
-// Cluster wide HA settings.
-type Ha struct {
-	ShutdownPolicy string `url:"shutdown_policy" json:"shutdown_policy"` // The policy for HA services on node shutdown. 'freeze' disables auto-recovery, 'failover' ensures recovery, 'conditional' recovers on poweroff and freezes on reboot. 'migrate' will migrate running services to other nodes, if possible. With 'freeze' or 'failover', HA Services will always get stopped first on shutdown.
-
-}
-
-func (t *Ha) EncodeValues(key string, v *url.Values) error {
-	valueStrParts := []string{
-		fmt.Sprintf("%s=%v", "shutdown_policy", t.ShutdownPolicy),
-	}
-	v.Set(key, strings.Join(valueStrParts, ", "))
-	return nil
-}
-
-// Array of U2f
-type U2fArr []U2f
-
-func (t *U2fArr) EncodeValues(key string, v *url.Values) error {
-	newKey := strings.TrimSuffix(key, "[n]")
-	for i, item := range *t {
-		s := struct {
-			V interface{} `url:"item"`
-		}{
-			V: item,
-		}
-		newValues, err := query.Values(s)
-		if err != nil {
-			return err
-		}
-		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
-	}
-	return nil
-}
-
-// u2f
-type U2f struct {
-
-	// The following parameters are optional
-	Appid  *string `url:"appid,omitempty" json:"appid,omitempty"`   // U2F AppId URL override. Defaults to the origin.
-	Origin *string `url:"origin,omitempty" json:"origin,omitempty"` // U2F Origin override. Mostly useful for single nodes with a single URL.
-}
-
-func (t *U2f) EncodeValues(key string, v *url.Values) error {
-	valueStrParts := []string{}
-	if t.Appid != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "appid", *t.Appid),
-		)
-	}
-
-	if t.Origin != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "origin", *t.Origin),
-		)
-	}
-
-	v.Set(key, strings.Join(valueStrParts, ", "))
-	return nil
-}
-
-// Array of UserTagAccess
-type UserTagAccessArr []UserTagAccess
-
-func (t *UserTagAccessArr) EncodeValues(key string, v *url.Values) error {
-	newKey := strings.TrimSuffix(key, "[n]")
-	for i, item := range *t {
-		s := struct {
-			V interface{} `url:"item"`
-		}{
-			V: item,
-		}
-		newValues, err := query.Values(s)
-		if err != nil {
-			return err
-		}
-		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
-	}
-	return nil
-}
-
-// Privilege options for user-settable tags
-type UserTagAccess struct {
-
-	// The following parameters are optional
-	UserAllow     *string `url:"user-allow,omitempty" json:"user-allow,omitempty"`           // Controls tag usage for users without `Sys.Modify` on `/` by either allowing `none`, a `list`, already `existing` or anything (`free`).
-	UserAllowList *string `url:"user-allow-list,omitempty" json:"user-allow-list,omitempty"` // List of tags users are allowed to set and delete (semicolon separated) for 'user-allow' values 'list' and 'existing'.
-}
-
-func (t *UserTagAccess) EncodeValues(key string, v *url.Values) error {
-	valueStrParts := []string{}
-	if t.UserAllow != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "user-allow", *t.UserAllow),
-		)
-	}
-
-	if t.UserAllowList != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "user-allow-list", *t.UserAllowList),
-		)
-	}
-
-	v.Set(key, strings.Join(valueStrParts, ", "))
-	return nil
-}
-
-// Array of Webauthn
-type WebauthnArr []Webauthn
-
-func (t *WebauthnArr) EncodeValues(key string, v *url.Values) error {
-	newKey := strings.TrimSuffix(key, "[n]")
-	for i, item := range *t {
-		s := struct {
-			V interface{} `url:"item"`
-		}{
-			V: item,
-		}
-		newValues, err := query.Values(s)
-		if err != nil {
-			return err
-		}
-		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
-	}
-	return nil
-}
-
-// webauthn configuration
-type Webauthn struct {
-
-	// The following parameters are optional
-	AllowSubdomains *util.SpecialBool `url:"allow-subdomains,omitempty" json:"allow-subdomains,omitempty"` // Whether to allow the origin to be a subdomain, rather than the exact URL.
-	Id              *string           `url:"id,omitempty" json:"id,omitempty"`                             // Relying party ID. Must be the domain name without protocol, port or location. Changing this *will* break existing credentials.
-	Origin          *string           `url:"origin,omitempty" json:"origin,omitempty"`                     // Site origin. Must be a `https://` URL (or `http://localhost`). Should contain the address users type in their browsers to access the web interface. Changing this *may* break existing credentials.
-	Rp              *string           `url:"rp,omitempty" json:"rp,omitempty"`                             // Relying party name. Any text identifier. Changing this *may* break existing credentials.
-}
-
-func (t *Webauthn) EncodeValues(key string, v *url.Values) error {
-	valueStrParts := []string{}
-	if t.AllowSubdomains != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "allow-subdomains", *t.AllowSubdomains),
-		)
-	}
-
-	if t.Id != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "id", *t.Id),
-		)
-	}
-
-	if t.Origin != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "origin", *t.Origin),
-		)
-	}
-
-	if t.Rp != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "rp", *t.Rp),
-		)
-	}
-
-	v.Set(key, strings.Join(valueStrParts, ", "))
-	return nil
+func (t Bwlimit) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[clone=<LIMIT>] [,default=<LIMIT>] [,migration=<LIMIT>] [,move=<LIMIT>] [,restore=<LIMIT>]`)
 }
 
 // Array of Crs
 type CrsArr []Crs
 
-func (t *CrsArr) EncodeValues(key string, v *url.Values) error {
-	newKey := strings.TrimSuffix(key, "[n]")
-	for i, item := range *t {
-		s := struct {
-			V interface{} `url:"item"`
-		}{
-			V: item,
-		}
-		newValues, err := query.Values(s)
-		if err != nil {
-			return err
-		}
-		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
-	}
-	return nil
+func (t CrsArr) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
 }
 
 // Cluster resource scheduling settings.
@@ -359,123 +117,15 @@ type Crs struct {
 
 }
 
-func (t *Crs) EncodeValues(key string, v *url.Values) error {
-	valueStrParts := []string{
-		fmt.Sprintf("%s=%v", "ha", t.Ha),
-	}
-	v.Set(key, strings.Join(valueStrParts, ", "))
-	return nil
-}
-
-// Array of Migration
-type MigrationArr []Migration
-
-func (t *MigrationArr) EncodeValues(key string, v *url.Values) error {
-	newKey := strings.TrimSuffix(key, "[n]")
-	for i, item := range *t {
-		s := struct {
-			V interface{} `url:"item"`
-		}{
-			V: item,
-		}
-		newValues, err := query.Values(s)
-		if err != nil {
-			return err
-		}
-		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
-	}
-	return nil
-}
-
-// For cluster wide migration settings.
-type Migration struct {
-	Type string `url:"type" json:"type"` // Migration traffic is encrypted using an SSH tunnel by default. On secure, completely private networks this can be disabled to increase performance.
-
-	// The following parameters are optional
-	Network *string `url:"network,omitempty" json:"network,omitempty"` // CIDR of the (sub) network that is used for migration.
-}
-
-func (t *Migration) EncodeValues(key string, v *url.Values) error {
-	valueStrParts := []string{
-		fmt.Sprintf("%s=%v", "type", t.Type),
-	}
-	if t.Network != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "network", *t.Network),
-		)
-	}
-
-	v.Set(key, strings.Join(valueStrParts, ", "))
-	return nil
-}
-
-// Array of NextId
-type NextIdArr []NextId
-
-func (t *NextIdArr) EncodeValues(key string, v *url.Values) error {
-	newKey := strings.TrimSuffix(key, "[n]")
-	for i, item := range *t {
-		s := struct {
-			V interface{} `url:"item"`
-		}{
-			V: item,
-		}
-		newValues, err := query.Values(s)
-		if err != nil {
-			return err
-		}
-		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
-	}
-	return nil
-}
-
-// Control the range for the free VMID auto-selection pool.
-type NextId struct {
-
-	// The following parameters are optional
-	Lower *int `url:"lower,omitempty" json:"lower,omitempty"` // Lower, inclusive boundary for free next-id API range.
-	Upper *int `url:"upper,omitempty" json:"upper,omitempty"` // Upper, exclusive boundary for free next-id API range.
-}
-
-func (t *NextId) EncodeValues(key string, v *url.Values) error {
-	valueStrParts := []string{}
-	if t.Lower != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "lower", *t.Lower),
-		)
-	}
-
-	if t.Upper != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "upper", *t.Upper),
-		)
-	}
-
-	v.Set(key, strings.Join(valueStrParts, ", "))
-	return nil
+func (t Crs) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `ha=<basic|static>`)
 }
 
 // Array of TagStyle
 type TagStyleArr []TagStyle
 
-func (t *TagStyleArr) EncodeValues(key string, v *url.Values) error {
-	newKey := strings.TrimSuffix(key, "[n]")
-	for i, item := range *t {
-		s := struct {
-			V interface{} `url:"item"`
-		}{
-			V: item,
-		}
-		newValues, err := query.Values(s)
-		if err != nil {
-			return err
-		}
-		v.Set(fmt.Sprintf("%s%d", newKey, i), newValues.Get("item"))
-	}
-	return nil
+func (t TagStyleArr) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
 }
 
 // Tag style options.
@@ -488,38 +138,103 @@ type TagStyle struct {
 	Shape         *string           `url:"shape,omitempty" json:"shape,omitempty"`                   // Tag shape for the web ui tree. 'full' draws the full tag. 'circle' draws only a circle with the background color. 'dense' only draws a small rectancle (useful when many tags are assigned to each guest).'none' disables showing the tags.
 }
 
-func (t *TagStyle) EncodeValues(key string, v *url.Values) error {
-	valueStrParts := []string{}
-	if t.CaseSensitive != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "case-sensitive", *t.CaseSensitive),
-		)
-	}
+func (t TagStyle) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[case-sensitive=<1|0>] [,color-map=<tag>:<hex-color>[:<hex-color-for-text>][;<tag>=...]] [,ordering=<config|alphabetical>] [,shape=<enum>]`)
+}
 
-	if t.ColorMap != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "color-map", *t.ColorMap),
-		)
-	}
+// Array of U2f
+type U2fArr []U2f
 
-	if t.Ordering != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "ordering", *t.Ordering),
-		)
-	}
+func (t U2fArr) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
 
-	if t.Shape != nil {
-		valueStrParts = append(
-			valueStrParts,
-			fmt.Sprintf("%s=%v", "shape", *t.Shape),
-		)
-	}
+// u2f
+type U2f struct {
 
-	v.Set(key, strings.Join(valueStrParts, ", "))
-	return nil
+	// The following parameters are optional
+	Appid  *string `url:"appid,omitempty" json:"appid,omitempty"`   // U2F AppId URL override. Defaults to the origin.
+	Origin *string `url:"origin,omitempty" json:"origin,omitempty"` // U2F Origin override. Mostly useful for single nodes with a single URL.
+}
+
+func (t U2f) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[appid=<APPID>] [,origin=<URL>]`)
+}
+
+// Array of Webauthn
+type WebauthnArr []Webauthn
+
+func (t WebauthnArr) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// webauthn configuration
+type Webauthn struct {
+
+	// The following parameters are optional
+	AllowSubdomains *util.SpecialBool `url:"allow-subdomains,omitempty" json:"allow-subdomains,omitempty"` // Whether to allow the origin to be a subdomain, rather than the exact URL.
+	Id              *string           `url:"id,omitempty" json:"id,omitempty"`                             // Relying party ID. Must be the domain name without protocol, port or location. Changing this *will* break existing credentials.
+	Origin          *string           `url:"origin,omitempty" json:"origin,omitempty"`                     // Site origin. Must be a `https://` URL (or `http://localhost`). Should contain the address users type in their browsers to access the web interface. Changing this *may* break existing credentials.
+	Rp              *string           `url:"rp,omitempty" json:"rp,omitempty"`                             // Relying party name. Any text identifier. Changing this *may* break existing credentials.
+}
+
+func (t Webauthn) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[allow-subdomains=<1|0>] [,id=<DOMAINNAME>] [,origin=<URL>] [,rp=<RELYING_PARTY>]`)
+}
+
+// Array of UserTagAccess
+type UserTagAccessArr []UserTagAccess
+
+func (t UserTagAccessArr) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// Privilege options for user-settable tags
+type UserTagAccess struct {
+
+	// The following parameters are optional
+	UserAllow     *string `url:"user-allow,omitempty" json:"user-allow,omitempty"`           // Controls tag usage for users without `Sys.Modify` on `/` by either allowing `none`, a `list`, already `existing` or anything (`free`).
+	UserAllowList *string `url:"user-allow-list,omitempty" json:"user-allow-list,omitempty"` // List of tags users are allowed to set and delete (semicolon separated) for 'user-allow' values 'list' and 'existing'.
+}
+
+func (t UserTagAccess) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[user-allow=<enum>] [,user-allow-list=<tag>[;<tag>...]]`)
+}
+
+// Array of Ha
+type HaArr []Ha
+
+func (t HaArr) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// Cluster wide HA settings.
+type Ha struct {
+	ShutdownPolicy string `url:"shutdown_policy" json:"shutdown_policy"` // The policy for HA services on node shutdown. 'freeze' disables auto-recovery, 'failover' ensures recovery, 'conditional' recovers on poweroff and freezes on reboot. 'migrate' will migrate running services to other nodes, if possible. With 'freeze' or 'failover', HA Services will always get stopped first on shutdown.
+
+}
+
+func (t Ha) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `shutdown_policy=<enum>`)
+}
+
+// Array of Migration
+type MigrationArr []Migration
+
+func (t MigrationArr) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// For cluster wide migration settings.
+type Migration struct {
+	Type string `url:"type" json:"type"` // Migration traffic is encrypted using an SSH tunnel by default. On secure, completely private networks this can be disabled to increase performance.
+
+	// The following parameters are optional
+	Network *string `url:"network,omitempty" json:"network,omitempty"` // CIDR of the (sub) network that is used for migration.
+}
+
+func (t Migration) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[type=]<secure|insecure> [,network=<CIDR>]`)
 }
 
 type SetOptionsRequest struct {
