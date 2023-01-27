@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"regexp"
 
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 	"github.com/google/go-querystring/query"
 )
 
@@ -97,4 +98,8 @@ func Bool(b bool) *bool {
 
 func Float64(f float64) *float64 {
 	return &f
+}
+
+func SpecialBool(b bool) *util.SpecialBool {
+	return (*util.SpecialBool)(&b)
 }
