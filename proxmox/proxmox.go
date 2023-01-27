@@ -6,7 +6,9 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"net/url"
 	"regexp"
 
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
@@ -59,13 +61,7 @@ func (c *Client) Do(ctx context.Context, route string, method string, response i
 		return "%s"
 	})
 	route = fmt.Sprintf(paramRoute, params...)
-	var buf *bytes.Buffer
-	query := ""
-	if method == http.MethodGet || method == http.MethodDelete {
-		query = fmt.Sprintf("?%s", v.Encode())
-	} else {
-		buf = bytes.NewBufferString(v.Encode())
-	}
+	query, buf := queryBuf(method, v)
 	req, err := http.NewRequestWithContext(ctx, method, fmt.Sprintf("%s%s%s", c.baseAddr, route, query), buf)
 	if err != nil {
 		return err
@@ -108,4 +104,12 @@ func Float64(f float64) *float64 {
 
 func SpecialBool(b bool) *util.SpecialBool {
 	return (*util.SpecialBool)(&b)
+}
+
+func queryBuf(method string, v url.Values) (string, io.Reader) {
+	if method == http.MethodGet || method == http.MethodDelete {
+		return fmt.Sprintf("?%s", v.Encode()), nil
+	} else {
+		return "", bytes.NewBufferString(v.Encode())
+	}
 }
