@@ -26,7 +26,7 @@ func TestCreateVirtualMachine(t *testing.T) {
 		assert.Equal(t, "PVEAuthCookie=fake-cookie", r.Header.Get("Authorization"))
 		assert.Equal(t, "fake-csrf", r.Header.Get("CSRFPreventionToken"))
 		assert.Equal(t, "/nodes/some-node/qemu", r.URL.Path)
-		assert.Equalf(t,
+		assert.ElementsMatchf(t,
 			strings.Split("file=test-file,bps=1,detect_zeroes=1,media=iso", ","),
 			strings.Split(r.Form.Get("ide0"), ","),
 			"Bad formvalue %+v", r.Form,

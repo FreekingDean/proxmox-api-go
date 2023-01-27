@@ -67,7 +67,7 @@ func TestEncodeString(t *testing.T) {
 	v := &url.Values{}
 	err := EncodeString("somekey", v, &Foo{"1", "2"}, "foo=<foo>")
 	if assert.NoError(t, err) {
-		assert.Equal(t,
+		assert.ElementsMatch(t,
 			strings.Split("bar=1,baz=2", ","),
 			strings.Split(v.Get("somekey"), ","),
 		)

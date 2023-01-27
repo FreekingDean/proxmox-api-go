@@ -59,15 +59,21 @@ func (c *Client) Do(ctx context.Context, route string, method string, response i
 		return "%s"
 	})
 	route = fmt.Sprintf(paramRoute, params...)
-	buf := bytes.NewBufferString(v.Encode())
-	req, err := http.NewRequestWithContext(ctx, method, fmt.Sprintf("%s%s", c.baseAddr, route), buf)
+	var buf *bytes.Buffer
+	query := ""
+	if method == http.MethodGet || method == http.MethodDelete {
+		query = fmt.Sprintf("?%s", v.Encode())
+	} else {
+		buf = bytes.NewBufferString(v.Encode())
+	}
+	req, err := http.NewRequestWithContext(ctx, method, fmt.Sprintf("%s%s%s", c.baseAddr, route, query), buf)
 	if err != nil {
 		return err
 	}
 	if c.cookie != "" {
 		req.Header.Add("Authorization", fmt.Sprintf("PVEAuthCookie=%s", c.cookie))
 	}
-	if c.csrf != "" && method != "GET" {
+	if c.csrf != "" && method != http.MethodGet {
 		req.Header.Add("CSRFPreventionToken", c.csrf)
 	}
 	resp, err := c.client.Do(req)
