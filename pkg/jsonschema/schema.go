@@ -35,6 +35,7 @@ type JSONSchema struct {
 	Optional             SpecialBool            `json:"optional"`
 	TypeText             string                 `json:"typeText"`
 	Format               *StringOrMap           `json:"format"`
+	Enum                 []string               `json:"enum"`
 }
 
 type Link struct {
