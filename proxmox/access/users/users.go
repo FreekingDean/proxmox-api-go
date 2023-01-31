@@ -24,48 +24,48 @@ func New(c HTTPClient) *Client {
 type IndexRequest struct {
 
 	// The following parameters are optional
-	Enabled *util.SpecialBool `url:"enabled,omitempty" json:"enabled,omitempty"` // Optional filter for enable property.
-	Full    *util.SpecialBool `url:"full,omitempty" json:"full,omitempty"`       // Include group and token information.
+	Enabled *util.PVEBool `url:"enabled,omitempty" json:"enabled,omitempty"` // Optional filter for enable property.
+	Full    *util.PVEBool `url:"full,omitempty" json:"full,omitempty"`       // Include group and token information.
 }
 
 type Tokens struct {
 	Tokenid string `url:"tokenid" json:"tokenid"` // User-specific token identifier.
 
 	// The following parameters are optional
-	Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
-	Expire  *int              `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
-	Privsep *util.SpecialBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
+	Comment *string       `url:"comment,omitempty" json:"comment,omitempty"`
+	Expire  *int          `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+	Privsep *util.PVEBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
 
 type IndexResponse struct {
 	Userid string `url:"userid" json:"userid"` // User ID
 
 	// The following parameters are optional
-	Comment   *string           `url:"comment,omitempty" json:"comment,omitempty"`
-	Email     *string           `url:"email,omitempty" json:"email,omitempty"`
-	Enable    *util.SpecialBool `url:"enable,omitempty" json:"enable,omitempty"` // Enable the account (default). You can set this to '0' to disable the account
-	Expire    *int              `url:"expire,omitempty" json:"expire,omitempty"` // Account expiration date (seconds since epoch). '0' means no expiration date.
-	Firstname *string           `url:"firstname,omitempty" json:"firstname,omitempty"`
-	Groups    *string           `url:"groups,omitempty" json:"groups,omitempty"`
-	Keys      *string           `url:"keys,omitempty" json:"keys,omitempty"` // Keys for two factor auth (yubico).
-	Lastname  *string           `url:"lastname,omitempty" json:"lastname,omitempty"`
-	RealmType *string           `url:"realm-type,omitempty" json:"realm-type,omitempty"` // The type of the users realm
-	Tokens    []Tokens          `url:"tokens,omitempty" json:"tokens,omitempty"`
+	Comment   *string       `url:"comment,omitempty" json:"comment,omitempty"`
+	Email     *string       `url:"email,omitempty" json:"email,omitempty"`
+	Enable    *util.PVEBool `url:"enable,omitempty" json:"enable,omitempty"` // Enable the account (default). You can set this to '0' to disable the account
+	Expire    *int          `url:"expire,omitempty" json:"expire,omitempty"` // Account expiration date (seconds since epoch). '0' means no expiration date.
+	Firstname *string       `url:"firstname,omitempty" json:"firstname,omitempty"`
+	Groups    *string       `url:"groups,omitempty" json:"groups,omitempty"`
+	Keys      *string       `url:"keys,omitempty" json:"keys,omitempty"` // Keys for two factor auth (yubico).
+	Lastname  *string       `url:"lastname,omitempty" json:"lastname,omitempty"`
+	RealmType *string       `url:"realm-type,omitempty" json:"realm-type,omitempty"` // The type of the users realm
+	Tokens    *[]Tokens     `url:"tokens,omitempty" json:"tokens,omitempty"`
 }
 
 type CreateRequest struct {
 	Userid string `url:"userid" json:"userid"` // User ID
 
 	// The following parameters are optional
-	Comment   *string           `url:"comment,omitempty" json:"comment,omitempty"`
-	Email     *string           `url:"email,omitempty" json:"email,omitempty"`
-	Enable    *util.SpecialBool `url:"enable,omitempty" json:"enable,omitempty"` // Enable the account (default). You can set this to '0' to disable the account
-	Expire    *int              `url:"expire,omitempty" json:"expire,omitempty"` // Account expiration date (seconds since epoch). '0' means no expiration date.
-	Firstname *string           `url:"firstname,omitempty" json:"firstname,omitempty"`
-	Groups    *string           `url:"groups,omitempty" json:"groups,omitempty"`
-	Keys      *string           `url:"keys,omitempty" json:"keys,omitempty"` // Keys for two factor auth (yubico).
-	Lastname  *string           `url:"lastname,omitempty" json:"lastname,omitempty"`
-	Password  *string           `url:"password,omitempty" json:"password,omitempty"` // Initial password.
+	Comment   *string       `url:"comment,omitempty" json:"comment,omitempty"`
+	Email     *string       `url:"email,omitempty" json:"email,omitempty"`
+	Enable    *util.PVEBool `url:"enable,omitempty" json:"enable,omitempty"` // Enable the account (default). You can set this to '0' to disable the account
+	Expire    *int          `url:"expire,omitempty" json:"expire,omitempty"` // Account expiration date (seconds since epoch). '0' means no expiration date.
+	Firstname *string       `url:"firstname,omitempty" json:"firstname,omitempty"`
+	Groups    *string       `url:"groups,omitempty" json:"groups,omitempty"`
+	Keys      *string       `url:"keys,omitempty" json:"keys,omitempty"` // Keys for two factor auth (yubico).
+	Lastname  *string       `url:"lastname,omitempty" json:"lastname,omitempty"`
+	Password  *string       `url:"password,omitempty" json:"password,omitempty"` // Initial password.
 }
 
 type FindRequest struct {
@@ -76,30 +76,30 @@ type FindRequest struct {
 type FindResponse struct {
 
 	// The following parameters are optional
-	Comment   *string                `url:"comment,omitempty" json:"comment,omitempty"`
-	Email     *string                `url:"email,omitempty" json:"email,omitempty"`
-	Enable    *util.SpecialBool      `url:"enable,omitempty" json:"enable,omitempty"` // Enable the account (default). You can set this to '0' to disable the account
-	Expire    *int                   `url:"expire,omitempty" json:"expire,omitempty"` // Account expiration date (seconds since epoch). '0' means no expiration date.
-	Firstname *string                `url:"firstname,omitempty" json:"firstname,omitempty"`
-	Groups    []string               `url:"groups,omitempty" json:"groups,omitempty"`
-	Keys      *string                `url:"keys,omitempty" json:"keys,omitempty"` // Keys for two factor auth (yubico).
-	Lastname  *string                `url:"lastname,omitempty" json:"lastname,omitempty"`
-	Tokens    map[string]interface{} `url:"tokens,omitempty" json:"tokens,omitempty"`
+	Comment   *string                 `url:"comment,omitempty" json:"comment,omitempty"`
+	Email     *string                 `url:"email,omitempty" json:"email,omitempty"`
+	Enable    *util.PVEBool           `url:"enable,omitempty" json:"enable,omitempty"` // Enable the account (default). You can set this to '0' to disable the account
+	Expire    *int                    `url:"expire,omitempty" json:"expire,omitempty"` // Account expiration date (seconds since epoch). '0' means no expiration date.
+	Firstname *string                 `url:"firstname,omitempty" json:"firstname,omitempty"`
+	Groups    *[]string               `url:"groups,omitempty" json:"groups,omitempty"`
+	Keys      *string                 `url:"keys,omitempty" json:"keys,omitempty"` // Keys for two factor auth (yubico).
+	Lastname  *string                 `url:"lastname,omitempty" json:"lastname,omitempty"`
+	Tokens    *map[string]interface{} `url:"tokens,omitempty" json:"tokens,omitempty"`
 }
 
 type UpdateRequest struct {
 	Userid string `url:"userid" json:"userid"` // User ID
 
 	// The following parameters are optional
-	Append    *util.SpecialBool `url:"append,omitempty" json:"append,omitempty"`
-	Comment   *string           `url:"comment,omitempty" json:"comment,omitempty"`
-	Email     *string           `url:"email,omitempty" json:"email,omitempty"`
-	Enable    *util.SpecialBool `url:"enable,omitempty" json:"enable,omitempty"` // Enable the account (default). You can set this to '0' to disable the account
-	Expire    *int              `url:"expire,omitempty" json:"expire,omitempty"` // Account expiration date (seconds since epoch). '0' means no expiration date.
-	Firstname *string           `url:"firstname,omitempty" json:"firstname,omitempty"`
-	Groups    *string           `url:"groups,omitempty" json:"groups,omitempty"`
-	Keys      *string           `url:"keys,omitempty" json:"keys,omitempty"` // Keys for two factor auth (yubico).
-	Lastname  *string           `url:"lastname,omitempty" json:"lastname,omitempty"`
+	Append    *util.PVEBool `url:"append,omitempty" json:"append,omitempty"`
+	Comment   *string       `url:"comment,omitempty" json:"comment,omitempty"`
+	Email     *string       `url:"email,omitempty" json:"email,omitempty"`
+	Enable    *util.PVEBool `url:"enable,omitempty" json:"enable,omitempty"` // Enable the account (default). You can set this to '0' to disable the account
+	Expire    *int          `url:"expire,omitempty" json:"expire,omitempty"` // Account expiration date (seconds since epoch). '0' means no expiration date.
+	Firstname *string       `url:"firstname,omitempty" json:"firstname,omitempty"`
+	Groups    *string       `url:"groups,omitempty" json:"groups,omitempty"`
+	Keys      *string       `url:"keys,omitempty" json:"keys,omitempty"` // Keys for two factor auth (yubico).
+	Lastname  *string       `url:"lastname,omitempty" json:"lastname,omitempty"`
 }
 
 type DeleteRequest struct {
@@ -111,15 +111,15 @@ type ReadUserTfaTypeTfaRequest struct {
 	Userid string `url:"userid" json:"userid"` // User ID
 
 	// The following parameters are optional
-	Multiple *util.SpecialBool `url:"multiple,omitempty" json:"multiple,omitempty"` // Request all entries as an array.
+	Multiple *util.PVEBool `url:"multiple,omitempty" json:"multiple,omitempty"` // Request all entries as an array.
 }
 
 type ReadUserTfaTypeTfaResponse struct {
 
 	// The following parameters are optional
-	Realm *string  `url:"realm,omitempty" json:"realm,omitempty"` // The type of TFA the users realm has set, if any.
-	Types []string `url:"types,omitempty" json:"types,omitempty"` // Array of the user configured TFA types, if any. Only available if 'multiple' was not passed.
-	User  *string  `url:"user,omitempty" json:"user,omitempty"`   // The type of TFA the user has set, if any. Only set if 'multiple' was not passed.
+	Realm *string   `url:"realm,omitempty" json:"realm,omitempty"` // The type of TFA the users realm has set, if any.
+	Types *[]string `url:"types,omitempty" json:"types,omitempty"` // Array of the user configured TFA types, if any. Only available if 'multiple' was not passed.
+	User  *string   `url:"user,omitempty" json:"user,omitempty"`   // The type of TFA the user has set, if any. Only set if 'multiple' was not passed.
 }
 
 // Index User index.

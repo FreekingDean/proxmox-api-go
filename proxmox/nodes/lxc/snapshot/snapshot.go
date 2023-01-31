@@ -58,7 +58,7 @@ type DeleteRequest struct {
 	Vmid     int    `url:"vmid" json:"vmid"`         // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Force *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"` // For removal from config file, even if removing disk snapshots fails.
+	Force *util.PVEBool `url:"force,omitempty" json:"force,omitempty"` // For removal from config file, even if removing disk snapshots fails.
 }
 
 type RollbackRequest struct {
@@ -67,7 +67,7 @@ type RollbackRequest struct {
 	Vmid     int    `url:"vmid" json:"vmid"`         // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Start *util.SpecialBool `url:"start,omitempty" json:"start,omitempty"` // Whether the container should get started after rolling back successfully
+	Start *util.PVEBool `url:"start,omitempty" json:"start,omitempty"` // Whether the container should get started after rolling back successfully
 }
 
 type GetSnapshotConfigRequest struct {

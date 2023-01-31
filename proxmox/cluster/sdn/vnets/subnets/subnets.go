@@ -25,8 +25,8 @@ type IndexRequest struct {
 	Vnet string `url:"vnet" json:"vnet"` // The SDN vnet object identifier.
 
 	// The following parameters are optional
-	Pending *util.SpecialBool `url:"pending,omitempty" json:"pending,omitempty"` // Display pending config.
-	Running *util.SpecialBool `url:"running,omitempty" json:"running,omitempty"` // Display running config.
+	Pending *util.PVEBool `url:"pending,omitempty" json:"pending,omitempty"` // Display pending config.
+	Running *util.PVEBool `url:"running,omitempty" json:"running,omitempty"` // Display running config.
 }
 
 type CreateRequest struct {
@@ -35,9 +35,9 @@ type CreateRequest struct {
 	Vnet   string `url:"vnet" json:"vnet"` // associated vnet
 
 	// The following parameters are optional
-	Dnszoneprefix *string           `url:"dnszoneprefix,omitempty" json:"dnszoneprefix,omitempty"` // dns domain zone prefix ex: 'adm' -> <hostname>.adm.mydomain.com
-	Gateway       *string           `url:"gateway,omitempty" json:"gateway,omitempty"`             // Subnet Gateway: Will be assign on vnet for layer3 zones
-	Snat          *util.SpecialBool `url:"snat,omitempty" json:"snat,omitempty"`                   // enable masquerade for this subnet if pve-firewall
+	Dnszoneprefix *string       `url:"dnszoneprefix,omitempty" json:"dnszoneprefix,omitempty"` // dns domain zone prefix ex: 'adm' -> <hostname>.adm.mydomain.com
+	Gateway       *string       `url:"gateway,omitempty" json:"gateway,omitempty"`             // Subnet Gateway: Will be assign on vnet for layer3 zones
+	Snat          *util.PVEBool `url:"snat,omitempty" json:"snat,omitempty"`                   // enable masquerade for this subnet if pve-firewall
 }
 
 type FindRequest struct {
@@ -45,20 +45,20 @@ type FindRequest struct {
 	Vnet   string `url:"vnet" json:"vnet"`     // The SDN vnet object identifier.
 
 	// The following parameters are optional
-	Pending *util.SpecialBool `url:"pending,omitempty" json:"pending,omitempty"` // Display pending config.
-	Running *util.SpecialBool `url:"running,omitempty" json:"running,omitempty"` // Display running config.
+	Pending *util.PVEBool `url:"pending,omitempty" json:"pending,omitempty"` // Display pending config.
+	Running *util.PVEBool `url:"running,omitempty" json:"running,omitempty"` // Display running config.
 }
 
 type UpdateRequest struct {
 	Subnet string `url:"subnet" json:"subnet"` // The SDN subnet object identifier.
 
 	// The following parameters are optional
-	Delete        *string           `url:"delete,omitempty" json:"delete,omitempty"`               // A list of settings you want to delete.
-	Digest        *string           `url:"digest,omitempty" json:"digest,omitempty"`               // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-	Dnszoneprefix *string           `url:"dnszoneprefix,omitempty" json:"dnszoneprefix,omitempty"` // dns domain zone prefix ex: 'adm' -> <hostname>.adm.mydomain.com
-	Gateway       *string           `url:"gateway,omitempty" json:"gateway,omitempty"`             // Subnet Gateway: Will be assign on vnet for layer3 zones
-	Snat          *util.SpecialBool `url:"snat,omitempty" json:"snat,omitempty"`                   // enable masquerade for this subnet if pve-firewall
-	Vnet          *string           `url:"vnet,omitempty" json:"vnet,omitempty"`                   // associated vnet
+	Delete        *string       `url:"delete,omitempty" json:"delete,omitempty"`               // A list of settings you want to delete.
+	Digest        *string       `url:"digest,omitempty" json:"digest,omitempty"`               // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Dnszoneprefix *string       `url:"dnszoneprefix,omitempty" json:"dnszoneprefix,omitempty"` // dns domain zone prefix ex: 'adm' -> <hostname>.adm.mydomain.com
+	Gateway       *string       `url:"gateway,omitempty" json:"gateway,omitempty"`             // Subnet Gateway: Will be assign on vnet for layer3 zones
+	Snat          *util.PVEBool `url:"snat,omitempty" json:"snat,omitempty"`                   // enable masquerade for this subnet if pve-firewall
+	Vnet          *string       `url:"vnet,omitempty" json:"vnet,omitempty"`                   // associated vnet
 }
 
 type DeleteRequest struct {

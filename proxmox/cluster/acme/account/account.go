@@ -38,10 +38,10 @@ type FindRequest struct {
 type FindResponse struct {
 
 	// The following parameters are optional
-	Account   map[string]interface{} `url:"account,omitempty" json:"account,omitempty"`
-	Directory *string                `url:"directory,omitempty" json:"directory,omitempty"` // URL of ACME CA directory endpoint.
-	Location  *string                `url:"location,omitempty" json:"location,omitempty"`
-	Tos       *string                `url:"tos,omitempty" json:"tos,omitempty"`
+	Account   *map[string]interface{} `url:"account,omitempty" json:"account,omitempty"`
+	Directory *string                 `url:"directory,omitempty" json:"directory,omitempty"` // URL of ACME CA directory endpoint.
+	Location  *string                 `url:"location,omitempty" json:"location,omitempty"`
+	Tos       *string                 `url:"tos,omitempty" json:"tos,omitempty"`
 }
 
 type UpdateRequest struct {

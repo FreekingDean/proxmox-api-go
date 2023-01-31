@@ -9,19 +9,19 @@ import (
 	"github.com/google/go-querystring/query"
 )
 
-type SpecialBool bool
+type PVEBool bool
 
-func (b *SpecialBool) EncodeValues(key string, v *url.Values) error {
+func (b *PVEBool) EncodeValues(key string, v *url.Values) error {
 	v.Set(key, b.String())
 	return nil
 }
 
-func (b *SpecialBool) UnmarshalJSON(i []byte) error {
+func (b *PVEBool) UnmarshalJSON(i []byte) error {
 	*b = string(i) == "1"
 	return nil
 }
 
-func (b *SpecialBool) String() string {
+func (b *PVEBool) String() string {
 	if *b {
 		return "1"
 	}

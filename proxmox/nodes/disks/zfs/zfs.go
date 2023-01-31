@@ -37,13 +37,6 @@ type IndexResponse struct {
 	Size   int     `url:"size" json:"size"`
 }
 
-// Array of DraidConfig
-type DraidConfigArr []DraidConfig
-
-func (t DraidConfigArr) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
 type DraidConfig struct {
 	Data   int `url:"data" json:"data"`     // The number of data devices per redundancy group. (dRAID)
 	Spares int `url:"spares" json:"spares"` // Number of dRAID spares.
@@ -61,10 +54,10 @@ type CreateRequest struct {
 	Raidlevel string `url:"raidlevel" json:"raidlevel"` // The RAID level to use.
 
 	// The following parameters are optional
-	AddStorage  *util.SpecialBool `url:"add_storage,omitempty" json:"add_storage,omitempty"` // Configure storage using the zpool.
-	Ashift      *int              `url:"ashift,omitempty" json:"ashift,omitempty"`           // Pool sector size exponent.
-	Compression *string           `url:"compression,omitempty" json:"compression,omitempty"` // The compression algorithm to use.
-	DraidConfig *DraidConfig      `url:"draid-config,omitempty" json:"draid-config,omitempty"`
+	AddStorage  *util.PVEBool `url:"add_storage,omitempty" json:"add_storage,omitempty"` // Configure storage using the zpool.
+	Ashift      *int          `url:"ashift,omitempty" json:"ashift,omitempty"`           // Pool sector size exponent.
+	Compression *string       `url:"compression,omitempty" json:"compression,omitempty"` // The compression algorithm to use.
+	DraidConfig *DraidConfig  `url:"draid-config,omitempty" json:"draid-config,omitempty"`
 }
 
 type FindRequest struct {
@@ -101,8 +94,8 @@ type DeleteRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	CleanupConfig *util.SpecialBool `url:"cleanup-config,omitempty" json:"cleanup-config,omitempty"` // Marks associated storage(s) as not available on this node anymore or removes them from the configuration (if configured for this node only).
-	CleanupDisks  *util.SpecialBool `url:"cleanup-disks,omitempty" json:"cleanup-disks,omitempty"`   // Also wipe disks so they can be repurposed afterwards.
+	CleanupConfig *util.PVEBool `url:"cleanup-config,omitempty" json:"cleanup-config,omitempty"` // Marks associated storage(s) as not available on this node anymore or removes them from the configuration (if configured for this node only).
+	CleanupDisks  *util.PVEBool `url:"cleanup-disks,omitempty" json:"cleanup-disks,omitempty"`   // Also wipe disks so they can be repurposed afterwards.
 }
 
 // Index List Zpools.

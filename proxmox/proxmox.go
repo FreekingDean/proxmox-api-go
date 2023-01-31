@@ -102,8 +102,8 @@ func Float64(f float64) *float64 {
 	return &f
 }
 
-func SpecialBool(b bool) *util.SpecialBool {
-	return (*util.SpecialBool)(&b)
+func PVEBool(b bool) *util.PVEBool {
+	return (*util.PVEBool)(&b)
 }
 
 func queryBuf(method string, v url.Values) (string, io.Reader) {

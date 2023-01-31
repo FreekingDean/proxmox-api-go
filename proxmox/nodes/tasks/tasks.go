@@ -25,16 +25,16 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Errors       *util.SpecialBool `url:"errors,omitempty" json:"errors,omitempty"`             // Only list tasks with a status of ERROR.
-	Limit        *int              `url:"limit,omitempty" json:"limit,omitempty"`               // Only list this amount of tasks.
-	Since        *int              `url:"since,omitempty" json:"since,omitempty"`               // Only list tasks since this UNIX epoch.
-	Source       *string           `url:"source,omitempty" json:"source,omitempty"`             // List archived, active or all tasks.
-	Start        *int              `url:"start,omitempty" json:"start,omitempty"`               // List tasks beginning from this offset.
-	Statusfilter *string           `url:"statusfilter,omitempty" json:"statusfilter,omitempty"` // List of Task States that should be returned.
-	Typefilter   *string           `url:"typefilter,omitempty" json:"typefilter,omitempty"`     // Only list tasks of this type (e.g., vzstart, vzdump).
-	Until        *int              `url:"until,omitempty" json:"until,omitempty"`               // Only list tasks until this UNIX epoch.
-	Userfilter   *string           `url:"userfilter,omitempty" json:"userfilter,omitempty"`     // Only list tasks from this user.
-	Vmid         *int              `url:"vmid,omitempty" json:"vmid,omitempty"`                 // Only list tasks for this VM.
+	Errors       *util.PVEBool `url:"errors,omitempty" json:"errors,omitempty"`             // Only list tasks with a status of ERROR.
+	Limit        *int          `url:"limit,omitempty" json:"limit,omitempty"`               // Only list this amount of tasks.
+	Since        *int          `url:"since,omitempty" json:"since,omitempty"`               // Only list tasks since this UNIX epoch.
+	Source       *string       `url:"source,omitempty" json:"source,omitempty"`             // List archived, active or all tasks.
+	Start        *int          `url:"start,omitempty" json:"start,omitempty"`               // List tasks beginning from this offset.
+	Statusfilter *string       `url:"statusfilter,omitempty" json:"statusfilter,omitempty"` // List of Task States that should be returned.
+	Typefilter   *string       `url:"typefilter,omitempty" json:"typefilter,omitempty"`     // Only list tasks of this type (e.g., vzstart, vzdump).
+	Until        *int          `url:"until,omitempty" json:"until,omitempty"`               // Only list tasks until this UNIX epoch.
+	Userfilter   *string       `url:"userfilter,omitempty" json:"userfilter,omitempty"`     // Only list tasks from this user.
+	Vmid         *int          `url:"vmid,omitempty" json:"vmid,omitempty"`                 // Only list tasks for this VM.
 }
 
 type IndexResponse struct {

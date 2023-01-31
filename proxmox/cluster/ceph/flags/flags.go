@@ -29,17 +29,17 @@ type IndexResponse struct {
 type MassUpdateRequest struct {
 
 	// The following parameters are optional
-	Nobackfill  *util.SpecialBool `url:"nobackfill,omitempty" json:"nobackfill,omitempty"`     // Backfilling of PGs is suspended.
-	NodeepScrub *util.SpecialBool `url:"nodeep-scrub,omitempty" json:"nodeep-scrub,omitempty"` // Deep Scrubbing is disabled.
-	Nodown      *util.SpecialBool `url:"nodown,omitempty" json:"nodown,omitempty"`             // OSD failure reports are being ignored, such that the monitors will not mark OSDs down.
-	Noin        *util.SpecialBool `url:"noin,omitempty" json:"noin,omitempty"`                 // OSDs that were previously marked out will not be marked back in when they start.
-	Noout       *util.SpecialBool `url:"noout,omitempty" json:"noout,omitempty"`               // OSDs will not automatically be marked out after the configured interval.
-	Norebalance *util.SpecialBool `url:"norebalance,omitempty" json:"norebalance,omitempty"`   // Rebalancing of PGs is suspended.
-	Norecover   *util.SpecialBool `url:"norecover,omitempty" json:"norecover,omitempty"`       // Recovery of PGs is suspended.
-	Noscrub     *util.SpecialBool `url:"noscrub,omitempty" json:"noscrub,omitempty"`           // Scrubbing is disabled.
-	Notieragent *util.SpecialBool `url:"notieragent,omitempty" json:"notieragent,omitempty"`   // Cache tiering activity is suspended.
-	Noup        *util.SpecialBool `url:"noup,omitempty" json:"noup,omitempty"`                 // OSDs are not allowed to start.
-	Pause       *util.SpecialBool `url:"pause,omitempty" json:"pause,omitempty"`               // Pauses read and writes.
+	Nobackfill  *util.PVEBool `url:"nobackfill,omitempty" json:"nobackfill,omitempty"`     // Backfilling of PGs is suspended.
+	NodeepScrub *util.PVEBool `url:"nodeep-scrub,omitempty" json:"nodeep-scrub,omitempty"` // Deep Scrubbing is disabled.
+	Nodown      *util.PVEBool `url:"nodown,omitempty" json:"nodown,omitempty"`             // OSD failure reports are being ignored, such that the monitors will not mark OSDs down.
+	Noin        *util.PVEBool `url:"noin,omitempty" json:"noin,omitempty"`                 // OSDs that were previously marked out will not be marked back in when they start.
+	Noout       *util.PVEBool `url:"noout,omitempty" json:"noout,omitempty"`               // OSDs will not automatically be marked out after the configured interval.
+	Norebalance *util.PVEBool `url:"norebalance,omitempty" json:"norebalance,omitempty"`   // Rebalancing of PGs is suspended.
+	Norecover   *util.PVEBool `url:"norecover,omitempty" json:"norecover,omitempty"`       // Recovery of PGs is suspended.
+	Noscrub     *util.PVEBool `url:"noscrub,omitempty" json:"noscrub,omitempty"`           // Scrubbing is disabled.
+	Notieragent *util.PVEBool `url:"notieragent,omitempty" json:"notieragent,omitempty"`   // Cache tiering activity is suspended.
+	Noup        *util.PVEBool `url:"noup,omitempty" json:"noup,omitempty"`                 // OSDs are not allowed to start.
+	Pause       *util.PVEBool `url:"pause,omitempty" json:"pause,omitempty"`               // Pauses read and writes.
 }
 
 type FindRequest struct {
@@ -48,8 +48,8 @@ type FindRequest struct {
 }
 
 type UpdateRequest struct {
-	Flag  string           `url:"flag" json:"flag"`   // The ceph flag to update
-	Value util.SpecialBool `url:"value" json:"value"` // The new value of the flag
+	Flag  string       `url:"flag" json:"flag"`   // The ceph flag to update
+	Value util.PVEBool `url:"value" json:"value"` // The new value of the flag
 
 }
 
@@ -70,8 +70,8 @@ func (c *Client) MassUpdate(ctx context.Context, req MassUpdateRequest) (string,
 }
 
 // Find Get the status of a specific ceph flag.
-func (c *Client) Find(ctx context.Context, req FindRequest) (util.SpecialBool, error) {
-	var resp util.SpecialBool
+func (c *Client) Find(ctx context.Context, req FindRequest) (util.PVEBool, error) {
+	var resp util.PVEBool
 
 	err := c.httpClient.Do(ctx, "/cluster/ceph/flags/{flag}", "GET", &resp, req)
 	return resp, err

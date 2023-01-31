@@ -30,17 +30,17 @@ type ListRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	IncludePartitions *util.SpecialBool `url:"include-partitions,omitempty" json:"include-partitions,omitempty"` // Also include partitions.
-	Skipsmart         *util.SpecialBool `url:"skipsmart,omitempty" json:"skipsmart,omitempty"`                   // Skip smart checks.
-	Type              *string           `url:"type,omitempty" json:"type,omitempty"`                             // Only list specific types of disks.
+	IncludePartitions *util.PVEBool `url:"include-partitions,omitempty" json:"include-partitions,omitempty"` // Also include partitions.
+	Skipsmart         *util.PVEBool `url:"skipsmart,omitempty" json:"skipsmart,omitempty"`                   // Skip smart checks.
+	Type              *string       `url:"type,omitempty" json:"type,omitempty"`                             // Only list specific types of disks.
 }
 
 type ListResponse struct {
-	Devpath string           `url:"devpath" json:"devpath"` // The device path
-	Gpt     util.SpecialBool `url:"gpt" json:"gpt"`
-	Mounted util.SpecialBool `url:"mounted" json:"mounted"`
-	Osdid   int              `url:"osdid" json:"osdid"`
-	Size    int              `url:"size" json:"size"`
+	Devpath string       `url:"devpath" json:"devpath"` // The device path
+	Gpt     util.PVEBool `url:"gpt" json:"gpt"`
+	Mounted util.PVEBool `url:"mounted" json:"mounted"`
+	Osdid   int          `url:"osdid" json:"osdid"`
+	Size    int          `url:"size" json:"size"`
 
 	// The following parameters are optional
 	Health *string `url:"health,omitempty" json:"health,omitempty"`
@@ -57,16 +57,16 @@ type SmartRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Healthonly *util.SpecialBool `url:"healthonly,omitempty" json:"healthonly,omitempty"` // If true returns only the health status
+	Healthonly *util.PVEBool `url:"healthonly,omitempty" json:"healthonly,omitempty"` // If true returns only the health status
 }
 
 type SmartResponse struct {
 	Health string `url:"health" json:"health"`
 
 	// The following parameters are optional
-	Attributes []map[string]interface{} `url:"attributes,omitempty" json:"attributes,omitempty"`
-	Text       *string                  `url:"text,omitempty" json:"text,omitempty"`
-	Type       *string                  `url:"type,omitempty" json:"type,omitempty"`
+	Attributes *[]map[string]interface{} `url:"attributes,omitempty" json:"attributes,omitempty"`
+	Text       *string                   `url:"text,omitempty" json:"text,omitempty"`
+	Type       *string                   `url:"type,omitempty" json:"type,omitempty"`
 }
 
 type InitgptRequest struct {

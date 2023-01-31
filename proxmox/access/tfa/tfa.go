@@ -29,7 +29,7 @@ type Entries struct {
 	Type        string `url:"type" json:"type"`               // TFA Entry Type.
 
 	// The following parameters are optional
-	Enable *util.SpecialBool `url:"enable,omitempty" json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
+	Enable *util.PVEBool `url:"enable,omitempty" json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
 }
 
 type IndexResponse struct {
@@ -60,7 +60,7 @@ type FindResponse struct {
 	Type        string `url:"type" json:"type"`               // TFA Entry Type.
 
 	// The following parameters are optional
-	Enable *util.SpecialBool `url:"enable,omitempty" json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
+	Enable *util.PVEBool `url:"enable,omitempty" json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
 }
 
 type ChildCreateRequest struct {
@@ -79,8 +79,8 @@ type ChildCreateResponse struct {
 	Id string `url:"id" json:"id"` // The id of a newly added TFA entry.
 
 	// The following parameters are optional
-	Challenge *string  `url:"challenge,omitempty" json:"challenge,omitempty"` // When adding u2f entries, this contains a challenge the user must respond to in order to finish the registration.
-	Recovery  []string `url:"recovery,omitempty" json:"recovery,omitempty"`   // When adding recovery codes, this contains the list of codes to be displayed to the user
+	Challenge *string   `url:"challenge,omitempty" json:"challenge,omitempty"` // When adding u2f entries, this contains a challenge the user must respond to in order to finish the registration.
+	Recovery  *[]string `url:"recovery,omitempty" json:"recovery,omitempty"`   // When adding recovery codes, this contains the list of codes to be displayed to the user
 }
 
 type GetTfaEntryIdRequest struct {
@@ -97,7 +97,7 @@ type GetTfaEntryIdResponse struct {
 	Type        string `url:"type" json:"type"`               // TFA Entry Type.
 
 	// The following parameters are optional
-	Enable *util.SpecialBool `url:"enable,omitempty" json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
+	Enable *util.PVEBool `url:"enable,omitempty" json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
 }
 
 type UpdateTfaEntryIdRequest struct {
@@ -105,9 +105,9 @@ type UpdateTfaEntryIdRequest struct {
 	Userid string `url:"userid" json:"userid"` // User ID
 
 	// The following parameters are optional
-	Description *string           `url:"description,omitempty" json:"description,omitempty"` // A description to distinguish multiple entries from one another
-	Enable      *util.SpecialBool `url:"enable,omitempty" json:"enable,omitempty"`           // Whether the entry should be enabled for login.
-	Password    *string           `url:"password,omitempty" json:"password,omitempty"`       // The current password.
+	Description *string       `url:"description,omitempty" json:"description,omitempty"` // A description to distinguish multiple entries from one another
+	Enable      *util.PVEBool `url:"enable,omitempty" json:"enable,omitempty"`           // Whether the entry should be enabled for login.
+	Password    *string       `url:"password,omitempty" json:"password,omitempty"`       // The current password.
 }
 
 type DeleteTfaIdRequest struct {

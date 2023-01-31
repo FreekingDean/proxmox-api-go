@@ -29,19 +29,19 @@ type IndexResponse struct {
 	Method string `url:"method" json:"method"`
 }
 
-type NfsscanNfsRequest struct {
+type NfsscanRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
 	Server string `url:"server" json:"server"` // The server address (name or IP).
 
 }
 
-type NfsscanNfsResponse struct {
+type NfsscanResponse struct {
 	Options string `url:"options" json:"options"` // NFS export options.
 	Path    string `url:"path" json:"path"`       // The exported path.
 
 }
 
-type CifsscanCifsRequest struct {
+type CifsscanRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
 	Server string `url:"server" json:"server"` // The server address (name or IP).
 
@@ -51,13 +51,13 @@ type CifsscanCifsRequest struct {
 	Username *string `url:"username,omitempty" json:"username,omitempty"` // User name.
 }
 
-type CifsscanCifsResponse struct {
+type CifsscanResponse struct {
 	Description string `url:"description" json:"description"` // Descriptive text from server.
 	Share       string `url:"share" json:"share"`             // The cifs share name.
 
 }
 
-type PbsscanPbsRequest struct {
+type PbsscanRequest struct {
 	Node     string `url:"node" json:"node"`         // The cluster node name.
 	Password string `url:"password" json:"password"` // User password or API token secret.
 	Server   string `url:"server" json:"server"`     // The server address (name or IP).
@@ -68,62 +68,62 @@ type PbsscanPbsRequest struct {
 	Port        *int    `url:"port,omitempty" json:"port,omitempty"`               // Optional port.
 }
 
-type PbsscanPbsResponse struct {
+type PbsscanResponse struct {
 	Store string `url:"store" json:"store"` // The datastore name.
 
 	// The following parameters are optional
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"` // Comment from server.
 }
 
-type GlusterfsscanGlusterfsRequest struct {
+type GlusterfsscanRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
 	Server string `url:"server" json:"server"` // The server address (name or IP).
 
 }
 
-type GlusterfsscanGlusterfsResponse struct {
+type GlusterfsscanResponse struct {
 	Volname string `url:"volname" json:"volname"` // The volume name.
 
 }
 
-type IscsiscanIscsiRequest struct {
+type IscsiscanRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
 	Portal string `url:"portal" json:"portal"` // The iSCSI portal (IP or DNS name with optional port).
 
 }
 
-type IscsiscanIscsiResponse struct {
+type IscsiscanResponse struct {
 	Portal string `url:"portal" json:"portal"` // The iSCSI portal name.
 	Target string `url:"target" json:"target"` // The iSCSI target name.
 
 }
 
-type LvmscanLvmRequest struct {
+type LvmscanRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
-type LvmscanLvmResponse struct {
+type LvmscanResponse struct {
 	Vg string `url:"vg" json:"vg"` // The LVM logical volume group name.
 
 }
 
-type LvmthinscanLvmthinRequest struct {
+type LvmthinscanRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vg   string `url:"vg" json:"vg"`
 }
 
-type LvmthinscanLvmthinResponse struct {
+type LvmthinscanResponse struct {
 	Lv string `url:"lv" json:"lv"` // The LVM Thin Pool name (LVM logical volume).
 
 }
 
-type ZfsscanZfsRequest struct {
+type ZfsscanRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
-type ZfsscanZfsResponse struct {
+type ZfsscanResponse struct {
 	Pool string `url:"pool" json:"pool"` // ZFS pool name.
 
 }
@@ -136,65 +136,65 @@ func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, 
 	return resp, err
 }
 
-// NfsscanNfs Scan remote NFS server.
-func (c *Client) NfsscanNfs(ctx context.Context, req NfsscanNfsRequest) ([]NfsscanNfsResponse, error) {
-	var resp []NfsscanNfsResponse
+// Nfsscan Scan remote NFS server.
+func (c *Client) Nfsscan(ctx context.Context, req NfsscanRequest) ([]NfsscanResponse, error) {
+	var resp []NfsscanResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/scan/nfs", "GET", &resp, req)
 	return resp, err
 }
 
-// CifsscanCifs Scan remote CIFS server.
-func (c *Client) CifsscanCifs(ctx context.Context, req CifsscanCifsRequest) ([]CifsscanCifsResponse, error) {
-	var resp []CifsscanCifsResponse
+// Cifsscan Scan remote CIFS server.
+func (c *Client) Cifsscan(ctx context.Context, req CifsscanRequest) ([]CifsscanResponse, error) {
+	var resp []CifsscanResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/scan/cifs", "GET", &resp, req)
 	return resp, err
 }
 
-// PbsscanPbs Scan remote Proxmox Backup Server.
-func (c *Client) PbsscanPbs(ctx context.Context, req PbsscanPbsRequest) ([]PbsscanPbsResponse, error) {
-	var resp []PbsscanPbsResponse
+// Pbsscan Scan remote Proxmox Backup Server.
+func (c *Client) Pbsscan(ctx context.Context, req PbsscanRequest) ([]PbsscanResponse, error) {
+	var resp []PbsscanResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/scan/pbs", "GET", &resp, req)
 	return resp, err
 }
 
-// GlusterfsscanGlusterfs Scan remote GlusterFS server.
-func (c *Client) GlusterfsscanGlusterfs(ctx context.Context, req GlusterfsscanGlusterfsRequest) ([]GlusterfsscanGlusterfsResponse, error) {
-	var resp []GlusterfsscanGlusterfsResponse
+// Glusterfsscan Scan remote GlusterFS server.
+func (c *Client) Glusterfsscan(ctx context.Context, req GlusterfsscanRequest) ([]GlusterfsscanResponse, error) {
+	var resp []GlusterfsscanResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/scan/glusterfs", "GET", &resp, req)
 	return resp, err
 }
 
-// IscsiscanIscsi Scan remote iSCSI server.
-func (c *Client) IscsiscanIscsi(ctx context.Context, req IscsiscanIscsiRequest) ([]IscsiscanIscsiResponse, error) {
-	var resp []IscsiscanIscsiResponse
+// Iscsiscan Scan remote iSCSI server.
+func (c *Client) Iscsiscan(ctx context.Context, req IscsiscanRequest) ([]IscsiscanResponse, error) {
+	var resp []IscsiscanResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/scan/iscsi", "GET", &resp, req)
 	return resp, err
 }
 
-// LvmscanLvm List local LVM volume groups.
-func (c *Client) LvmscanLvm(ctx context.Context, req LvmscanLvmRequest) ([]LvmscanLvmResponse, error) {
-	var resp []LvmscanLvmResponse
+// Lvmscan List local LVM volume groups.
+func (c *Client) Lvmscan(ctx context.Context, req LvmscanRequest) ([]LvmscanResponse, error) {
+	var resp []LvmscanResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/scan/lvm", "GET", &resp, req)
 	return resp, err
 }
 
-// LvmthinscanLvmthin List local LVM Thin Pools.
-func (c *Client) LvmthinscanLvmthin(ctx context.Context, req LvmthinscanLvmthinRequest) ([]LvmthinscanLvmthinResponse, error) {
-	var resp []LvmthinscanLvmthinResponse
+// Lvmthinscan List local LVM Thin Pools.
+func (c *Client) Lvmthinscan(ctx context.Context, req LvmthinscanRequest) ([]LvmthinscanResponse, error) {
+	var resp []LvmthinscanResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/scan/lvmthin", "GET", &resp, req)
 	return resp, err
 }
 
-// ZfsscanZfs Scan zfs pool list on local node.
-func (c *Client) ZfsscanZfs(ctx context.Context, req ZfsscanZfsRequest) ([]ZfsscanZfsResponse, error) {
-	var resp []ZfsscanZfsResponse
+// Zfsscan Scan zfs pool list on local node.
+func (c *Client) Zfsscan(ctx context.Context, req ZfsscanRequest) ([]ZfsscanResponse, error) {
+	var resp []ZfsscanResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/scan/zfs", "GET", &resp, req)
 	return resp, err

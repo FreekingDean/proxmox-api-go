@@ -63,11 +63,14 @@ type TasksResponse struct {
 	Upid string `url:"upid" json:"upid"`
 }
 
-// Array of NextId
-type NextIdArr []NextId
+// Cluster wide HA settings.
+type Ha struct {
+	ShutdownPolicy string `url:"shutdown_policy" json:"shutdown_policy"` // The policy for HA services on node shutdown. 'freeze' disables auto-recovery, 'failover' ensures recovery, 'conditional' recovers on poweroff and freezes on reboot. 'migrate' will migrate running services to other nodes, if possible. With 'freeze' or 'failover', HA Services will always get stopped first on shutdown.
 
-func (t NextIdArr) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
+}
+
+func (t Ha) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `shutdown_policy=<enum>`)
 }
 
 // Control the range for the free VMID auto-selection pool.
@@ -82,11 +85,16 @@ func (t NextId) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `[lower=<integer>] [,upper=<integer>]`)
 }
 
-// Array of Bwlimit
-type BwlimitArr []Bwlimit
+// u2f
+type U2f struct {
 
-func (t BwlimitArr) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
+	// The following parameters are optional
+	Appid  *string `url:"appid,omitempty" json:"appid,omitempty"`   // U2F AppId URL override. Defaults to the origin.
+	Origin *string `url:"origin,omitempty" json:"origin,omitempty"` // U2F Origin override. Mostly useful for single nodes with a single URL.
+}
+
+func (t U2f) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[appid=<APPID>] [,origin=<URL>]`)
 }
 
 // Set bandwidth/io limits various operations.
@@ -104,11 +112,18 @@ func (t Bwlimit) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `[clone=<LIMIT>] [,default=<LIMIT>] [,migration=<LIMIT>] [,move=<LIMIT>] [,restore=<LIMIT>]`)
 }
 
-// Array of Crs
-type CrsArr []Crs
+// Tag style options.
+type TagStyle struct {
 
-func (t CrsArr) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
+	// The following parameters are optional
+	CaseSensitive *util.PVEBool `url:"case-sensitive,omitempty" json:"case-sensitive,omitempty"` // Controls if filtering for unique tags on update should check case-sensitive.
+	ColorMap      *string       `url:"color-map,omitempty" json:"color-map,omitempty"`           // Manual color mapping for tags (semicolon separated).
+	Ordering      *string       `url:"ordering,omitempty" json:"ordering,omitempty"`             // Controls the sorting of the tags in the web-interface and the API update.
+	Shape         *string       `url:"shape,omitempty" json:"shape,omitempty"`                   // Tag shape for the web ui tree. 'full' draws the full tag. 'circle' draws only a circle with the background color. 'dense' only draws a small rectancle (useful when many tags are assigned to each guest).'none' disables showing the tags.
+}
+
+func (t TagStyle) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[case-sensitive=<1|0>] [,color-map=<tag>:<hex-color>[:<hex-color-for-text>][;<tag>=...]] [,ordering=<config|alphabetical>] [,shape=<enum>]`)
 }
 
 // Cluster resource scheduling settings.
@@ -119,110 +134,6 @@ type Crs struct {
 
 func (t Crs) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `ha=<basic|static>`)
-}
-
-// Array of TagStyle
-type TagStyleArr []TagStyle
-
-func (t TagStyleArr) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Tag style options.
-type TagStyle struct {
-
-	// The following parameters are optional
-	CaseSensitive *util.SpecialBool `url:"case-sensitive,omitempty" json:"case-sensitive,omitempty"` // Controls if filtering for unique tags on update should check case-sensitive.
-	ColorMap      *string           `url:"color-map,omitempty" json:"color-map,omitempty"`           // Manual color mapping for tags (semicolon separated).
-	Ordering      *string           `url:"ordering,omitempty" json:"ordering,omitempty"`             // Controls the sorting of the tags in the web-interface and the API update.
-	Shape         *string           `url:"shape,omitempty" json:"shape,omitempty"`                   // Tag shape for the web ui tree. 'full' draws the full tag. 'circle' draws only a circle with the background color. 'dense' only draws a small rectancle (useful when many tags are assigned to each guest).'none' disables showing the tags.
-}
-
-func (t TagStyle) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[case-sensitive=<1|0>] [,color-map=<tag>:<hex-color>[:<hex-color-for-text>][;<tag>=...]] [,ordering=<config|alphabetical>] [,shape=<enum>]`)
-}
-
-// Array of U2f
-type U2fArr []U2f
-
-func (t U2fArr) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// u2f
-type U2f struct {
-
-	// The following parameters are optional
-	Appid  *string `url:"appid,omitempty" json:"appid,omitempty"`   // U2F AppId URL override. Defaults to the origin.
-	Origin *string `url:"origin,omitempty" json:"origin,omitempty"` // U2F Origin override. Mostly useful for single nodes with a single URL.
-}
-
-func (t U2f) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[appid=<APPID>] [,origin=<URL>]`)
-}
-
-// Array of Webauthn
-type WebauthnArr []Webauthn
-
-func (t WebauthnArr) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// webauthn configuration
-type Webauthn struct {
-
-	// The following parameters are optional
-	AllowSubdomains *util.SpecialBool `url:"allow-subdomains,omitempty" json:"allow-subdomains,omitempty"` // Whether to allow the origin to be a subdomain, rather than the exact URL.
-	Id              *string           `url:"id,omitempty" json:"id,omitempty"`                             // Relying party ID. Must be the domain name without protocol, port or location. Changing this *will* break existing credentials.
-	Origin          *string           `url:"origin,omitempty" json:"origin,omitempty"`                     // Site origin. Must be a `https://` URL (or `http://localhost`). Should contain the address users type in their browsers to access the web interface. Changing this *may* break existing credentials.
-	Rp              *string           `url:"rp,omitempty" json:"rp,omitempty"`                             // Relying party name. Any text identifier. Changing this *may* break existing credentials.
-}
-
-func (t Webauthn) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[allow-subdomains=<1|0>] [,id=<DOMAINNAME>] [,origin=<URL>] [,rp=<RELYING_PARTY>]`)
-}
-
-// Array of UserTagAccess
-type UserTagAccessArr []UserTagAccess
-
-func (t UserTagAccessArr) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Privilege options for user-settable tags
-type UserTagAccess struct {
-
-	// The following parameters are optional
-	UserAllow     *string `url:"user-allow,omitempty" json:"user-allow,omitempty"`           // Controls tag usage for users without `Sys.Modify` on `/` by either allowing `none`, a `list`, already `existing` or anything (`free`).
-	UserAllowList *string `url:"user-allow-list,omitempty" json:"user-allow-list,omitempty"` // List of tags users are allowed to set and delete (semicolon separated) for 'user-allow' values 'list' and 'existing'.
-}
-
-func (t UserTagAccess) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[user-allow=<enum>] [,user-allow-list=<tag>[;<tag>...]]`)
-}
-
-// Array of Ha
-type HaArr []Ha
-
-func (t HaArr) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Cluster wide HA settings.
-type Ha struct {
-	ShutdownPolicy string `url:"shutdown_policy" json:"shutdown_policy"` // The policy for HA services on node shutdown. 'freeze' disables auto-recovery, 'failover' ensures recovery, 'conditional' recovers on poweroff and freezes on reboot. 'migrate' will migrate running services to other nodes, if possible. With 'freeze' or 'failover', HA Services will always get stopped first on shutdown.
-
-}
-
-func (t Ha) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `shutdown_policy=<enum>`)
-}
-
-// Array of Migration
-type MigrationArr []Migration
-
-func (t MigrationArr) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
 }
 
 // For cluster wide migration settings.
@@ -237,30 +148,56 @@ func (t Migration) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `[type=]<secure|insecure> [,network=<CIDR>]`)
 }
 
+// webauthn configuration
+type Webauthn struct {
+
+	// The following parameters are optional
+	AllowSubdomains *util.PVEBool `url:"allow-subdomains,omitempty" json:"allow-subdomains,omitempty"` // Whether to allow the origin to be a subdomain, rather than the exact URL.
+	Id              *string       `url:"id,omitempty" json:"id,omitempty"`                             // Relying party ID. Must be the domain name without protocol, port or location. Changing this *will* break existing credentials.
+	Origin          *string       `url:"origin,omitempty" json:"origin,omitempty"`                     // Site origin. Must be a `https://` URL (or `http://localhost`). Should contain the address users type in their browsers to access the web interface. Changing this *may* break existing credentials.
+	Rp              *string       `url:"rp,omitempty" json:"rp,omitempty"`                             // Relying party name. Any text identifier. Changing this *may* break existing credentials.
+}
+
+func (t Webauthn) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[allow-subdomains=<1|0>] [,id=<DOMAINNAME>] [,origin=<URL>] [,rp=<RELYING_PARTY>]`)
+}
+
+// Privilege options for user-settable tags
+type UserTagAccess struct {
+
+	// The following parameters are optional
+	UserAllow     *string `url:"user-allow,omitempty" json:"user-allow,omitempty"`           // Controls tag usage for users without `Sys.Modify` on `/` by either allowing `none`, a `list`, already `existing` or anything (`free`).
+	UserAllowList *string `url:"user-allow-list,omitempty" json:"user-allow-list,omitempty"` // List of tags users are allowed to set and delete (semicolon separated) for 'user-allow' values 'list' and 'existing'.
+}
+
+func (t UserTagAccess) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[user-allow=<enum>] [,user-allow-list=<tag>[;<tag>...]]`)
+}
+
 type SetOptionsRequest struct {
 
 	// The following parameters are optional
-	Bwlimit           *Bwlimit          `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`                       // Set bandwidth/io limits various operations.
-	Console           *string           `url:"console,omitempty" json:"console,omitempty"`                       // Select the default Console viewer. You can either use the builtin java applet (VNC; deprecated and maps to html5), an external virt-viewer comtatible application (SPICE), an HTML5 based vnc viewer (noVNC), or an HTML5 based console client (xtermjs). If the selected viewer is not available (e.g. SPICE not activated for the VM), the fallback is noVNC.
-	Crs               *Crs              `url:"crs,omitempty" json:"crs,omitempty"`                               // Cluster resource scheduling settings.
-	Delete            *string           `url:"delete,omitempty" json:"delete,omitempty"`                         // A list of settings you want to delete.
-	Description       *string           `url:"description,omitempty" json:"description,omitempty"`               // Datacenter description. Shown in the web-interface datacenter notes panel. This is saved as comment inside the configuration file.
-	EmailFrom         *string           `url:"email_from,omitempty" json:"email_from,omitempty"`                 // Specify email address to send notification from (default is root@$hostname)
-	Fencing           *string           `url:"fencing,omitempty" json:"fencing,omitempty"`                       // Set the fencing mode of the HA cluster. Hardware mode needs a valid configuration of fence devices in /etc/pve/ha/fence.cfg. With both all two modes are used. WARNING: 'hardware' and 'both' are EXPERIMENTAL & WIP
-	Ha                *Ha               `url:"ha,omitempty" json:"ha,omitempty"`                                 // Cluster wide HA settings.
-	HttpProxy         *string           `url:"http_proxy,omitempty" json:"http_proxy,omitempty"`                 // Specify external http proxy which is used for downloads (example: 'http://username:password@host:port/')
-	Keyboard          *string           `url:"keyboard,omitempty" json:"keyboard,omitempty"`                     // Default keybord layout for vnc server.
-	Language          *string           `url:"language,omitempty" json:"language,omitempty"`                     // Default GUI language.
-	MacPrefix         *string           `url:"mac_prefix,omitempty" json:"mac_prefix,omitempty"`                 // Prefix for autogenerated MAC addresses.
-	MaxWorkers        *int              `url:"max_workers,omitempty" json:"max_workers,omitempty"`               // Defines how many workers (per node) are maximal started on actions like 'stopall VMs' or task from the ha-manager.
-	Migration         *Migration        `url:"migration,omitempty" json:"migration,omitempty"`                   // For cluster wide migration settings.
-	MigrationUnsecure *util.SpecialBool `url:"migration_unsecure,omitempty" json:"migration_unsecure,omitempty"` // Migration is secure using SSH tunnel by default. For secure private networks you can disable it to speed up migration. Deprecated, use the 'migration' property instead!
-	NextId            *NextId           `url:"next-id,omitempty" json:"next-id,omitempty"`                       // Control the range for the free VMID auto-selection pool.
-	RegisteredTags    *string           `url:"registered-tags,omitempty" json:"registered-tags,omitempty"`       // A list of tags that require a `Sys.Modify` on '/' to set and delete. Tags set here that are also in 'user-tag-access' also require `Sys.Modify`.
-	TagStyle          *TagStyle         `url:"tag-style,omitempty" json:"tag-style,omitempty"`                   // Tag style options.
-	U2f               *U2f              `url:"u2f,omitempty" json:"u2f,omitempty"`                               // u2f
-	UserTagAccess     *UserTagAccess    `url:"user-tag-access,omitempty" json:"user-tag-access,omitempty"`       // Privilege options for user-settable tags
-	Webauthn          *Webauthn         `url:"webauthn,omitempty" json:"webauthn,omitempty"`                     // webauthn configuration
+	Bwlimit           *Bwlimit       `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`                       // Set bandwidth/io limits various operations.
+	Console           *string        `url:"console,omitempty" json:"console,omitempty"`                       // Select the default Console viewer. You can either use the builtin java applet (VNC; deprecated and maps to html5), an external virt-viewer comtatible application (SPICE), an HTML5 based vnc viewer (noVNC), or an HTML5 based console client (xtermjs). If the selected viewer is not available (e.g. SPICE not activated for the VM), the fallback is noVNC.
+	Crs               *Crs           `url:"crs,omitempty" json:"crs,omitempty"`                               // Cluster resource scheduling settings.
+	Delete            *string        `url:"delete,omitempty" json:"delete,omitempty"`                         // A list of settings you want to delete.
+	Description       *string        `url:"description,omitempty" json:"description,omitempty"`               // Datacenter description. Shown in the web-interface datacenter notes panel. This is saved as comment inside the configuration file.
+	EmailFrom         *string        `url:"email_from,omitempty" json:"email_from,omitempty"`                 // Specify email address to send notification from (default is root@$hostname)
+	Fencing           *string        `url:"fencing,omitempty" json:"fencing,omitempty"`                       // Set the fencing mode of the HA cluster. Hardware mode needs a valid configuration of fence devices in /etc/pve/ha/fence.cfg. With both all two modes are used. WARNING: 'hardware' and 'both' are EXPERIMENTAL & WIP
+	Ha                *Ha            `url:"ha,omitempty" json:"ha,omitempty"`                                 // Cluster wide HA settings.
+	HttpProxy         *string        `url:"http_proxy,omitempty" json:"http_proxy,omitempty"`                 // Specify external http proxy which is used for downloads (example: 'http://username:password@host:port/')
+	Keyboard          *string        `url:"keyboard,omitempty" json:"keyboard,omitempty"`                     // Default keybord layout for vnc server.
+	Language          *string        `url:"language,omitempty" json:"language,omitempty"`                     // Default GUI language.
+	MacPrefix         *string        `url:"mac_prefix,omitempty" json:"mac_prefix,omitempty"`                 // Prefix for autogenerated MAC addresses.
+	MaxWorkers        *int           `url:"max_workers,omitempty" json:"max_workers,omitempty"`               // Defines how many workers (per node) are maximal started on actions like 'stopall VMs' or task from the ha-manager.
+	Migration         *Migration     `url:"migration,omitempty" json:"migration,omitempty"`                   // For cluster wide migration settings.
+	MigrationUnsecure *util.PVEBool  `url:"migration_unsecure,omitempty" json:"migration_unsecure,omitempty"` // Migration is secure using SSH tunnel by default. For secure private networks you can disable it to speed up migration. Deprecated, use the 'migration' property instead!
+	NextId            *NextId        `url:"next-id,omitempty" json:"next-id,omitempty"`                       // Control the range for the free VMID auto-selection pool.
+	RegisteredTags    *string        `url:"registered-tags,omitempty" json:"registered-tags,omitempty"`       // A list of tags that require a `Sys.Modify` on '/' to set and delete. Tags set here that are also in 'user-tag-access' also require `Sys.Modify`.
+	TagStyle          *TagStyle      `url:"tag-style,omitempty" json:"tag-style,omitempty"`                   // Tag style options.
+	U2f               *U2f           `url:"u2f,omitempty" json:"u2f,omitempty"`                               // u2f
+	UserTagAccess     *UserTagAccess `url:"user-tag-access,omitempty" json:"user-tag-access,omitempty"`       // Privilege options for user-settable tags
+	Webauthn          *Webauthn      `url:"webauthn,omitempty" json:"webauthn,omitempty"`                     // webauthn configuration
 }
 
 type GetStatusResponse struct {
@@ -269,14 +206,14 @@ type GetStatusResponse struct {
 	Type string `url:"type" json:"type"` // Indicates the type, either cluster or node. The type defines the object properties e.g. quorate available for type cluster.
 
 	// The following parameters are optional
-	Ip      *string           `url:"ip,omitempty" json:"ip,omitempty"`           // [node] IP of the resolved nodename.
-	Level   *string           `url:"level,omitempty" json:"level,omitempty"`     // [node] Proxmox VE Subscription level, indicates if eligible for enterprise support as well as access to the stable Proxmox VE Enterprise Repository.
-	Local   *util.SpecialBool `url:"local,omitempty" json:"local,omitempty"`     // [node] Indicates if this is the responding node.
-	Nodeid  *int              `url:"nodeid,omitempty" json:"nodeid,omitempty"`   // [node] ID of the node from the corosync configuration.
-	Nodes   *int              `url:"nodes,omitempty" json:"nodes,omitempty"`     // [cluster] Nodes count, including offline nodes.
-	Online  *util.SpecialBool `url:"online,omitempty" json:"online,omitempty"`   // [node] Indicates if the node is online or offline.
-	Quorate *util.SpecialBool `url:"quorate,omitempty" json:"quorate,omitempty"` // [cluster] Indicates if there is a majority of nodes online to make decisions
-	Version *int              `url:"version,omitempty" json:"version,omitempty"` // [cluster] Current version of the corosync configuration file.
+	Ip      *string       `url:"ip,omitempty" json:"ip,omitempty"`           // [node] IP of the resolved nodename.
+	Level   *string       `url:"level,omitempty" json:"level,omitempty"`     // [node] Proxmox VE Subscription level, indicates if eligible for enterprise support as well as access to the stable Proxmox VE Enterprise Repository.
+	Local   *util.PVEBool `url:"local,omitempty" json:"local,omitempty"`     // [node] Indicates if this is the responding node.
+	Nodeid  *int          `url:"nodeid,omitempty" json:"nodeid,omitempty"`   // [node] ID of the node from the corosync configuration.
+	Nodes   *int          `url:"nodes,omitempty" json:"nodes,omitempty"`     // [cluster] Nodes count, including offline nodes.
+	Online  *util.PVEBool `url:"online,omitempty" json:"online,omitempty"`   // [node] Indicates if the node is online or offline.
+	Quorate *util.PVEBool `url:"quorate,omitempty" json:"quorate,omitempty"` // [cluster] Indicates if there is a majority of nodes online to make decisions
+	Version *int          `url:"version,omitempty" json:"version,omitempty"` // [cluster] Current version of the corosync configuration file.
 }
 
 type NextidRequest struct {

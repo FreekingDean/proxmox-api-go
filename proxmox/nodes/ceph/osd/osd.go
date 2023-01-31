@@ -31,12 +31,12 @@ type CreateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	CrushDeviceClass *string           `url:"crush-device-class,omitempty" json:"crush-device-class,omitempty"` // Set the device class of the OSD in crush.
-	DbDev            *string           `url:"db_dev,omitempty" json:"db_dev,omitempty"`                         // Block device name for block.db.
-	DbDevSize        *float64          `url:"db_dev_size,omitempty" json:"db_dev_size,omitempty"`               // Size in GiB for block.db.
-	Encrypted        *util.SpecialBool `url:"encrypted,omitempty" json:"encrypted,omitempty"`                   // Enables encryption of the OSD.
-	WalDev           *string           `url:"wal_dev,omitempty" json:"wal_dev,omitempty"`                       // Block device name for block.wal.
-	WalDevSize       *float64          `url:"wal_dev_size,omitempty" json:"wal_dev_size,omitempty"`             // Size in GiB for block.wal.
+	CrushDeviceClass *string       `url:"crush-device-class,omitempty" json:"crush-device-class,omitempty"` // Set the device class of the OSD in crush.
+	DbDev            *string       `url:"db_dev,omitempty" json:"db_dev,omitempty"`                         // Block device name for block.db.
+	DbDevSize        *float64      `url:"db_dev_size,omitempty" json:"db_dev_size,omitempty"`               // Size in GiB for block.db.
+	Encrypted        *util.PVEBool `url:"encrypted,omitempty" json:"encrypted,omitempty"`                   // Enables encryption of the OSD.
+	WalDev           *string       `url:"wal_dev,omitempty" json:"wal_dev,omitempty"`                       // Block device name for block.wal.
+	WalDevSize       *float64      `url:"wal_dev_size,omitempty" json:"wal_dev_size,omitempty"`             // Size in GiB for block.wal.
 }
 
 type DeleteRequest struct {
@@ -44,7 +44,7 @@ type DeleteRequest struct {
 	Osdid int    `url:"osdid" json:"osdid"` // OSD ID
 
 	// The following parameters are optional
-	Cleanup *util.SpecialBool `url:"cleanup,omitempty" json:"cleanup,omitempty"` // If set, we remove partition table entries.
+	Cleanup *util.PVEBool `url:"cleanup,omitempty" json:"cleanup,omitempty"` // If set, we remove partition table entries.
 }
 
 type InRequest struct {
@@ -64,7 +64,7 @@ type ScrubRequest struct {
 	Osdid int    `url:"osdid" json:"osdid"` // OSD ID
 
 	// The following parameters are optional
-	Deep *util.SpecialBool `url:"deep,omitempty" json:"deep,omitempty"` // If set, instructs a deep scrub instead of a normal one.
+	Deep *util.PVEBool `url:"deep,omitempty" json:"deep,omitempty"` // If set, instructs a deep scrub instead of a normal one.
 }
 
 // Index Get Ceph osd list/tree.

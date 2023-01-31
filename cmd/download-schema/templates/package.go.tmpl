@@ -29,7 +29,6 @@ func New(c HTTPClient) *Client {
 
 {{- define "type" -}}
 {{- if eq .Type "struct" -}}
-{{- if or .Properties .OptionalProperties -}}
 struct {
 {{- range $_, $prop := .Properties }}
   {{$prop.Name}} {{template "type" $prop}} `url:"{{$prop.JSONName}}" json:"{{$prop.JSONName}}"` {{ if $prop.Description }}// {{ $prop.Description }}{{ end }}
@@ -42,10 +41,7 @@ struct {
 {{- end }}
 }
 {{- else -}}
-map[string]interface{}
-{{- end}}
-{{- else -}}
-{{.Type}}
+{{ if .Optional }}*{{ end }}{{.Type}}
 {{- end}}
 {{- end}}
 

@@ -9,7 +9,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"sort"
 	"strconv"
 	"strings"
 	"text/template"
@@ -115,7 +114,7 @@ func LoadPackage(curdir string, s *jsonschema.Schema) error {
 						if info, ok := cc.Info[key]; ok {
 							methodName := Nameify(info.Name)
 							textName := Nameify(cc.Text)
-							if !strings.HasSuffix(methodName, textName) {
+							if !strings.HasSuffix(methodName, textName) && !strings.HasPrefix(methodName, textName) {
 								methodName += textName
 							}
 							p.Methods = append(
@@ -137,7 +136,7 @@ func LoadPackage(curdir string, s *jsonschema.Schema) error {
 					if info, ok := c.Info[key]; ok {
 						methodName := Nameify(info.Name)
 						textName := Nameify(c.Text)
-						if !strings.HasSuffix(methodName, textName) {
+						if !strings.HasSuffix(methodName, textName) && !strings.HasPrefix(methodName, textName) {
 							methodName += textName
 						}
 						p.Methods = append(
@@ -218,122 +217,12 @@ type OperationTempl struct {
 type Type struct {
 	Properties         []*Type
 	OptionalProperties []*Type
+	Optional           bool
 	Name               string
 	JSONName           string
 	Type               string
 	Description        string
 	Format             string
-}
-
-func (p *Package) defineType(name string, jsonName string, schema *jsonschema.JSONSchema) *Type {
-	if schema.Type == nil {
-		if schema.Properties != nil {
-			schema.Type = &jsonschema.SchemaOrString{String: "object"}
-		} else {
-			return nil
-		}
-	}
-	t := &Type{
-		Type:               p.StrType(schema.Type, bool(schema.Optional)),
-		Name:               name,
-		JSONName:           jsonName,
-		Properties:         make([]*Type, 0),
-		OptionalProperties: make([]*Type, 0),
-		Description: strings.Replace(strings.Replace(schema.Description,
-			"\n", " ", -1),
-			"  ", " ", -1),
-	}
-	if t.Type == "struct" {
-		if schema.Properties == nil || len(schema.Properties) == 0 {
-			t.Type = "map[string]interface{}"
-			return t
-		}
-	}
-	if t.Type == "null" && schema.Properties == nil {
-		return nil
-	}
-	if schema.Properties != nil && len(schema.Properties) > 0 {
-		t.Type = name
-		nt := &Type{
-			Name:               name,
-			Type:               "struct",
-			Properties:         make([]*Type, 0),
-			OptionalProperties: make([]*Type, 0),
-			Description: strings.Replace(strings.Replace(schema.Description,
-				"\n", " ", -1),
-				"  ", " ", -1),
-		}
-		for name, param := range schema.Properties {
-			pt := p.defineType(Nameify(name), name, param)
-			if pt == nil {
-				continue
-			}
-			if param.Optional {
-				nt.OptionalProperties = append(nt.OptionalProperties, pt)
-			} else {
-				nt.Properties = append(nt.Properties, pt)
-			}
-		}
-		sort.Sort(&TypeSorter{nt.Properties})
-		sort.Sort(&TypeSorter{nt.OptionalProperties})
-		p.AddType(nt)
-	}
-	if schema.Format != nil && len(schema.Format.Map) > 0 {
-		if t.Type == "string" {
-			t.Type = name
-		} else if t.Type == "*string" {
-			t.Type = "*" + name
-		} else {
-			log.Fatalf("Unkown type %s, expected (*)string", t.Type)
-		}
-		p.ImportURL = true
-		p.Util = true
-		nt := &Type{
-			Type:               "[]" + name,
-			Name:               name + "Arr",
-			Properties:         make([]*Type, 0),
-			OptionalProperties: make([]*Type, 0),
-			Description:        "Array of " + name,
-			Format:             "array",
-		}
-		p.AddType(nt)
-		nt = &Type{
-			Type:               "struct",
-			Name:               name,
-			Properties:         make([]*Type, 0),
-			OptionalProperties: make([]*Type, 0),
-			Description: strings.Replace(strings.Replace(schema.Description,
-				"\n", " ", -1),
-				"  ", " ", -1),
-		}
-		nt.Format = schema.TypeText
-		if strings.HasSuffix(jsonName, "[n]") {
-			t.Name = t.Name[0:len(t.Name)-1] + "s"
-			t.Type = t.Type + "Arr"
-		}
-		for name, param := range schema.Format.Map {
-			pt := p.defineType(Nameify(name), name, param)
-			if pt == nil {
-				continue
-			}
-			if param.Optional {
-				nt.OptionalProperties = append(nt.OptionalProperties, pt)
-			} else {
-				nt.Properties = append(nt.Properties, pt)
-			}
-		}
-		sort.Sort(&TypeSorter{nt.Properties})
-		sort.Sort(&TypeSorter{nt.OptionalProperties})
-		p.AddType(nt)
-	}
-	if schema.Items == nil && schema.Type.String == "array" {
-		t.Type = "[]map[string]interface{}"
-	}
-	if schema.Items != nil {
-		nt := p.defineType(name, jsonName, schema.Items)
-		t.Type = "[]" + nt.Type
-	}
-	return t
 }
 
 func (p *Package) AddType(t *Type) {
@@ -420,51 +309,29 @@ func PackageNameify(name string) string {
 func Nameify(name string) string {
 	name = strings.Replace(name, "{", "", -1)
 	name = strings.Replace(name, "}", "", -1)
-	name = strings.Replace(name, "[", "", -1)
-	name = strings.Replace(name, "]", "", -1)
 	name = strings.Replace(name, ".", "-", -1)
 	name = strings.Replace(name, "_", "-", -1)
 	name = caser.String(name)
 	return strings.Replace(name, "-", "", -1)
 }
 
-func (p *Package) StrType(schemaType *jsonschema.SchemaOrString, optional bool) string {
+func (p *Package) StrType(schemaType *jsonschema.SchemaOrString) string {
 	switch schemaType.String {
 	case "integer":
-		if optional {
-			return "*int"
-		} else {
-			return "int"
-		}
+		return "int"
 	case "object":
 		return "struct"
 	case "boolean":
 		p.Util = true
-		if optional {
-			return "*util.SpecialBool"
-		} else {
-			return "util.SpecialBool"
-		}
+		return "util.PVEBool"
 	case "array":
-		if optional {
-			return "*[]"
-		} else {
-			return "[]"
-		}
+		return "[]"
 	case "string":
-		if optional {
-			return "*string"
-		} else {
-			return "string"
-		}
+		return "string"
 	case "null":
 		return "null"
 	case "number":
-		if optional {
-			return "*float64"
-		} else {
-			return "float64"
-		}
+		return "float64"
 	case "any":
 		return "interface{}"
 	default:

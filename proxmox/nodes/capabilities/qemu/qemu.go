@@ -32,9 +32,9 @@ type IndexCpuRequest struct {
 }
 
 type IndexCpuResponse struct {
-	Custom util.SpecialBool `url:"custom" json:"custom"` // True if this is a custom CPU model.
-	Name   string           `url:"name" json:"name"`     // Name of the CPU model. Identifies it for subsequent API calls. Prefixed with 'custom-' for custom models.
-	Vendor string           `url:"vendor" json:"vendor"` // CPU vendor visible to the guest when this model is selected. Vendor of 'reported-model' in case of custom models.
+	Custom util.PVEBool `url:"custom" json:"custom"` // True if this is a custom CPU model.
+	Name   string       `url:"name" json:"name"`     // Name of the CPU model. Identifies it for subsequent API calls. Prefixed with 'custom-' for custom models.
+	Vendor string       `url:"vendor" json:"vendor"` // CPU vendor visible to the guest when this model is selected. Vendor of 'reported-model' in case of custom models.
 
 }
 

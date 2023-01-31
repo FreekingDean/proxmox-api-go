@@ -41,8 +41,8 @@ type CreateRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
 
 	// The following parameters are optional
-	AddStorage *util.SpecialBool `url:"add_storage,omitempty" json:"add_storage,omitempty"` // Configure storage using the directory.
-	Filesystem *string           `url:"filesystem,omitempty" json:"filesystem,omitempty"`   // The desired filesystem.
+	AddStorage *util.PVEBool `url:"add_storage,omitempty" json:"add_storage,omitempty"` // Configure storage using the directory.
+	Filesystem *string       `url:"filesystem,omitempty" json:"filesystem,omitempty"`   // The desired filesystem.
 }
 
 type DeleteRequest struct {
@@ -50,8 +50,8 @@ type DeleteRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	CleanupConfig *util.SpecialBool `url:"cleanup-config,omitempty" json:"cleanup-config,omitempty"` // Marks associated storage(s) as not available on this node anymore or removes them from the configuration (if configured for this node only).
-	CleanupDisks  *util.SpecialBool `url:"cleanup-disks,omitempty" json:"cleanup-disks,omitempty"`   // Also wipe disk so it can be repurposed afterwards.
+	CleanupConfig *util.PVEBool `url:"cleanup-config,omitempty" json:"cleanup-config,omitempty"` // Marks associated storage(s) as not available on this node anymore or removes them from the configuration (if configured for this node only).
+	CleanupDisks  *util.PVEBool `url:"cleanup-disks,omitempty" json:"cleanup-disks,omitempty"`   // Also wipe disk so it can be repurposed afterwards.
 }
 
 // Index PVE Managed Directory storages.

@@ -60,10 +60,10 @@ type UpdateRequest struct {
 	Poolid string `url:"poolid" json:"poolid"`
 
 	// The following parameters are optional
-	Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
-	Delete  *util.SpecialBool `url:"delete,omitempty" json:"delete,omitempty"`   // Remove vms/storage (instead of adding it).
-	Storage *string           `url:"storage,omitempty" json:"storage,omitempty"` // List of storage IDs.
-	Vms     *string           `url:"vms,omitempty" json:"vms,omitempty"`         // List of virtual machines.
+	Comment *string       `url:"comment,omitempty" json:"comment,omitempty"`
+	Delete  *util.PVEBool `url:"delete,omitempty" json:"delete,omitempty"`   // Remove vms/storage (instead of adding it).
+	Storage *string       `url:"storage,omitempty" json:"storage,omitempty"` // List of storage IDs.
+	Vms     *string       `url:"vms,omitempty" json:"vms,omitempty"`         // List of virtual machines.
 }
 
 type DeleteRequest struct {

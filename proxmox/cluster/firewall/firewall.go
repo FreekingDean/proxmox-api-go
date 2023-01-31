@@ -22,16 +22,9 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-// Array of LogRatelimit
-type LogRatelimitArr []LogRatelimit
-
-func (t LogRatelimitArr) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
 // Log ratelimiting settings
 type LogRatelimit struct {
-	Enable util.SpecialBool `url:"enable" json:"enable"` // Enable or disable log rate limiting
+	Enable util.PVEBool `url:"enable" json:"enable"` // Enable or disable log rate limiting
 
 	// The following parameters are optional
 	Burst *int    `url:"burst,omitempty" json:"burst,omitempty"` // Initial burst of packages which will always get logged before the rate is applied
@@ -45,23 +38,23 @@ func (t LogRatelimit) EncodeValues(key string, v *url.Values) error {
 type GetOptionsResponse struct {
 
 	// The following parameters are optional
-	Ebtables     *util.SpecialBool `url:"ebtables,omitempty" json:"ebtables,omitempty"`           // Enable ebtables rules cluster wide.
-	Enable       *int              `url:"enable,omitempty" json:"enable,omitempty"`               // Enable or disable the firewall cluster wide.
-	LogRatelimit *LogRatelimit     `url:"log_ratelimit,omitempty" json:"log_ratelimit,omitempty"` // Log ratelimiting settings
-	PolicyIn     *string           `url:"policy_in,omitempty" json:"policy_in,omitempty"`         // Input policy.
-	PolicyOut    *string           `url:"policy_out,omitempty" json:"policy_out,omitempty"`       // Output policy.
+	Ebtables     *util.PVEBool `url:"ebtables,omitempty" json:"ebtables,omitempty"`           // Enable ebtables rules cluster wide.
+	Enable       *int          `url:"enable,omitempty" json:"enable,omitempty"`               // Enable or disable the firewall cluster wide.
+	LogRatelimit *LogRatelimit `url:"log_ratelimit,omitempty" json:"log_ratelimit,omitempty"` // Log ratelimiting settings
+	PolicyIn     *string       `url:"policy_in,omitempty" json:"policy_in,omitempty"`         // Input policy.
+	PolicyOut    *string       `url:"policy_out,omitempty" json:"policy_out,omitempty"`       // Output policy.
 }
 
 type SetOptionsRequest struct {
 
 	// The following parameters are optional
-	Delete       *string           `url:"delete,omitempty" json:"delete,omitempty"`               // A list of settings you want to delete.
-	Digest       *string           `url:"digest,omitempty" json:"digest,omitempty"`               // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-	Ebtables     *util.SpecialBool `url:"ebtables,omitempty" json:"ebtables,omitempty"`           // Enable ebtables rules cluster wide.
-	Enable       *int              `url:"enable,omitempty" json:"enable,omitempty"`               // Enable or disable the firewall cluster wide.
-	LogRatelimit *LogRatelimit     `url:"log_ratelimit,omitempty" json:"log_ratelimit,omitempty"` // Log ratelimiting settings
-	PolicyIn     *string           `url:"policy_in,omitempty" json:"policy_in,omitempty"`         // Input policy.
-	PolicyOut    *string           `url:"policy_out,omitempty" json:"policy_out,omitempty"`       // Output policy.
+	Delete       *string       `url:"delete,omitempty" json:"delete,omitempty"`               // A list of settings you want to delete.
+	Digest       *string       `url:"digest,omitempty" json:"digest,omitempty"`               // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Ebtables     *util.PVEBool `url:"ebtables,omitempty" json:"ebtables,omitempty"`           // Enable ebtables rules cluster wide.
+	Enable       *int          `url:"enable,omitempty" json:"enable,omitempty"`               // Enable or disable the firewall cluster wide.
+	LogRatelimit *LogRatelimit `url:"log_ratelimit,omitempty" json:"log_ratelimit,omitempty"` // Log ratelimiting settings
+	PolicyIn     *string       `url:"policy_in,omitempty" json:"policy_in,omitempty"`         // Input policy.
+	PolicyOut    *string       `url:"policy_out,omitempty" json:"policy_out,omitempty"`       // Output policy.
 }
 
 type GetMacrosResponse struct {

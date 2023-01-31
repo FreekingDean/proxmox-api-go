@@ -48,8 +48,8 @@ type FindResponse struct {
 	Digest string `url:"digest" json:"digest"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 
 	// The following parameters are optional
-	Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
-	Nomatch *util.SpecialBool `url:"nomatch,omitempty" json:"nomatch,omitempty"`
+	Comment *string       `url:"comment,omitempty" json:"comment,omitempty"`
+	Nomatch *util.PVEBool `url:"nomatch,omitempty" json:"nomatch,omitempty"`
 }
 
 type ChildCreateRequest struct {
@@ -57,15 +57,15 @@ type ChildCreateRequest struct {
 	Name string `url:"name" json:"name"` // IP set name.
 
 	// The following parameters are optional
-	Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
-	Nomatch *util.SpecialBool `url:"nomatch,omitempty" json:"nomatch,omitempty"`
+	Comment *string       `url:"comment,omitempty" json:"comment,omitempty"`
+	Nomatch *util.PVEBool `url:"nomatch,omitempty" json:"nomatch,omitempty"`
 }
 
 type DeleteRequest struct {
 	Name string `url:"name" json:"name"` // IP set name.
 
 	// The following parameters are optional
-	Force *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"` // Delete all members of the IPSet, if there are any.
+	Force *util.PVEBool `url:"force,omitempty" json:"force,omitempty"` // Delete all members of the IPSet, if there are any.
 }
 
 type ReadIpCidrRequest struct {
@@ -79,9 +79,9 @@ type UpdateIpCidrRequest struct {
 	Name string `url:"name" json:"name"` // IP set name.
 
 	// The following parameters are optional
-	Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
-	Digest  *string           `url:"digest,omitempty" json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-	Nomatch *util.SpecialBool `url:"nomatch,omitempty" json:"nomatch,omitempty"`
+	Comment *string       `url:"comment,omitempty" json:"comment,omitempty"`
+	Digest  *string       `url:"digest,omitempty" json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Nomatch *util.PVEBool `url:"nomatch,omitempty" json:"nomatch,omitempty"`
 }
 
 type RemoveIpCidrRequest struct {

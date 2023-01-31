@@ -30,14 +30,14 @@ type NewCertificateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Force *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"` // Overwrite existing custom certificate.
+	Force *util.PVEBool `url:"force,omitempty" json:"force,omitempty"` // Overwrite existing custom certificate.
 }
 
 type RenewCertificateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Force *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"` // Force renewal even if expiry is more than 30 days away.
+	Force *util.PVEBool `url:"force,omitempty" json:"force,omitempty"` // Force renewal even if expiry is more than 30 days away.
 }
 
 type RevokeCertificateRequest struct {

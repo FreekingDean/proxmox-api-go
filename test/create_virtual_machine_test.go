@@ -40,12 +40,12 @@ func TestCreateVirtualMachine(t *testing.T) {
 	q := qemu.New(c)
 	req := qemu.CreateRequest{
 		Node: "some-node",
-		Ides: &qemu.IdenArr{
-			qemu.Iden{
+		Ides: &qemu.Ides{
+			qemu.Ide{
 				File:         "test-file",
 				Bps:          proxmox.Int(1),
 				Media:        proxmox.String("iso"),
-				DetectZeroes: proxmox.SpecialBool(true),
+				DetectZeroes: proxmox.PVEBool(true),
 			},
 		},
 	}

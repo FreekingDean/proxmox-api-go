@@ -30,18 +30,18 @@ type IndexResponse struct {
 	State string `url:"state" json:"state"` // State of the MDS
 
 	// The following parameters are optional
-	Addr          *string           `url:"addr,omitempty" json:"addr,omitempty"`
-	Host          *string           `url:"host,omitempty" json:"host,omitempty"`
-	Rank          *int              `url:"rank,omitempty" json:"rank,omitempty"`
-	StandbyReplay *util.SpecialBool `url:"standby_replay,omitempty" json:"standby_replay,omitempty"` // If true, the standby MDS is polling the active MDS for faster recovery (hot standby).
+	Addr          *string       `url:"addr,omitempty" json:"addr,omitempty"`
+	Host          *string       `url:"host,omitempty" json:"host,omitempty"`
+	Rank          *int          `url:"rank,omitempty" json:"rank,omitempty"`
+	StandbyReplay *util.PVEBool `url:"standby_replay,omitempty" json:"standby_replay,omitempty"` // If true, the standby MDS is polling the active MDS for faster recovery (hot standby).
 }
 
 type ChildCreateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Hotstandby *util.SpecialBool `url:"hotstandby,omitempty" json:"hotstandby,omitempty"` // Determines whether a ceph-mds daemon should poll and replay the log of an active MDS. Faster switch on MDS failure, but needs more idle resources.
-	Name       *string           `url:"name,omitempty" json:"name,omitempty"`             // The ID for the mds, when omitted the same as the nodename
+	Hotstandby *util.PVEBool `url:"hotstandby,omitempty" json:"hotstandby,omitempty"` // Determines whether a ceph-mds daemon should poll and replay the log of an active MDS. Faster switch on MDS failure, but needs more idle resources.
+	Name       *string       `url:"name,omitempty" json:"name,omitempty"`             // The ID for the mds, when omitted the same as the nodename
 }
 
 type DeleteRequest struct {

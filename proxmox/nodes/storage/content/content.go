@@ -43,14 +43,14 @@ type IndexResponse struct {
 	Volid  string `url:"volid" json:"volid"`   // Volume identifier.
 
 	// The following parameters are optional
-	Ctime        *int              `url:"ctime,omitempty" json:"ctime,omitempty"`               // Creation time (seconds since the UNIX Epoch).
-	Encrypted    *string           `url:"encrypted,omitempty" json:"encrypted,omitempty"`       // If whole backup is encrypted, value is the fingerprint or '1' if encrypted. Only useful for the Proxmox Backup Server storage type.
-	Notes        *string           `url:"notes,omitempty" json:"notes,omitempty"`               // Optional notes. If they contain multiple lines, only the first one is returned here.
-	Parent       *string           `url:"parent,omitempty" json:"parent,omitempty"`             // Volume identifier of parent (for linked cloned).
-	Protected    *util.SpecialBool `url:"protected,omitempty" json:"protected,omitempty"`       // Protection status. Currently only supported for backups.
-	Used         *int              `url:"used,omitempty" json:"used,omitempty"`                 // Used space. Please note that most storage plugins do not report anything useful here.
-	Verification Verification      `url:"verification,omitempty" json:"verification,omitempty"` // Last backup verification result, only useful for PBS storages.
-	Vmid         *int              `url:"vmid,omitempty" json:"vmid,omitempty"`                 // Associated Owner VMID.
+	Ctime        *int          `url:"ctime,omitempty" json:"ctime,omitempty"`               // Creation time (seconds since the UNIX Epoch).
+	Encrypted    *string       `url:"encrypted,omitempty" json:"encrypted,omitempty"`       // If whole backup is encrypted, value is the fingerprint or '1' if encrypted. Only useful for the Proxmox Backup Server storage type.
+	Notes        *string       `url:"notes,omitempty" json:"notes,omitempty"`               // Optional notes. If they contain multiple lines, only the first one is returned here.
+	Parent       *string       `url:"parent,omitempty" json:"parent,omitempty"`             // Volume identifier of parent (for linked cloned).
+	Protected    *util.PVEBool `url:"protected,omitempty" json:"protected,omitempty"`       // Protection status. Currently only supported for backups.
+	Used         *int          `url:"used,omitempty" json:"used,omitempty"`                 // Used space. Please note that most storage plugins do not report anything useful here.
+	Verification *Verification `url:"verification,omitempty" json:"verification,omitempty"` // Last backup verification result, only useful for PBS storages.
+	Vmid         *int          `url:"vmid,omitempty" json:"vmid,omitempty"`                 // Associated Owner VMID.
 }
 
 type CreateRequest struct {
@@ -79,8 +79,8 @@ type FindResponse struct {
 	Used   int    `url:"used" json:"used"`     // Used space. Please note that most storage plugins do not report anything useful here.
 
 	// The following parameters are optional
-	Notes     *string           `url:"notes,omitempty" json:"notes,omitempty"`         // Optional notes.
-	Protected *util.SpecialBool `url:"protected,omitempty" json:"protected,omitempty"` // Protection status. Currently only supported for backups.
+	Notes     *string       `url:"notes,omitempty" json:"notes,omitempty"`         // Optional notes.
+	Protected *util.PVEBool `url:"protected,omitempty" json:"protected,omitempty"` // Protection status. Currently only supported for backups.
 }
 
 type ChildCreateRequest struct {
@@ -98,9 +98,9 @@ type UpdateRequest struct {
 	Volume string `url:"volume" json:"volume"` // Volume identifier
 
 	// The following parameters are optional
-	Notes     *string           `url:"notes,omitempty" json:"notes,omitempty"`         // The new notes.
-	Protected *util.SpecialBool `url:"protected,omitempty" json:"protected,omitempty"` // Protection status. Currently only supported for backups.
-	Storage   *string           `url:"storage,omitempty" json:"storage,omitempty"`     // The storage identifier.
+	Notes     *string       `url:"notes,omitempty" json:"notes,omitempty"`         // The new notes.
+	Protected *util.PVEBool `url:"protected,omitempty" json:"protected,omitempty"` // Protection status. Currently only supported for backups.
+	Storage   *string       `url:"storage,omitempty" json:"storage,omitempty"`     // The storage identifier.
 }
 
 type DeleteRequest struct {
@@ -152,8 +152,8 @@ func (c *Client) Update(ctx context.Context, req UpdateRequest) error {
 }
 
 // Delete Delete volume
-func (c *Client) Delete(ctx context.Context, req DeleteRequest) (*string, error) {
-	var resp *string
+func (c *Client) Delete(ctx context.Context, req DeleteRequest) (string, error) {
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/storage/{storage}/content/{volume}", "DELETE", &resp, req)
 	return resp, err

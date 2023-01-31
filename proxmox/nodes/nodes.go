@@ -50,7 +50,7 @@ type UpdateSubscriptionRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Force *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"` // Always connect to server, even if we have up to date info inside local cache.
+	Force *util.PVEBool `url:"force,omitempty" json:"force,omitempty"` // Always connect to server, even if we have up to date info inside local cache.
 }
 
 type SetSubscriptionRequest struct {
@@ -71,33 +71,6 @@ type GetConfigRequest struct {
 	Property *string `url:"property,omitempty" json:"property,omitempty"` // Return only a specific property from the node configuration.
 }
 
-// Array of Acmedomainn
-type AcmedomainnArr []Acmedomainn
-
-func (t AcmedomainnArr) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// ACME domain and validation plugin
-type Acmedomainn struct {
-	Domain string `url:"domain" json:"domain"` // domain for this node's ACME certificate
-
-	// The following parameters are optional
-	Alias  *string `url:"alias,omitempty" json:"alias,omitempty"`   // Alias for the Domain to verify ACME Challenge over DNS
-	Plugin *string `url:"plugin,omitempty" json:"plugin,omitempty"` // The ACME plugin ID
-}
-
-func (t Acmedomainn) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[domain=]<domain> [,alias=<domain>] [,plugin=<name of the plugin configuration>]`)
-}
-
-// Array of Acme
-type AcmeArr []Acme
-
-func (t AcmeArr) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
 // Node specific ACME settings.
 type Acme struct {
 
@@ -110,28 +83,48 @@ func (t Acme) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `[account=<name>] [,domains=<domain[;domain;...]>]`)
 }
 
+// ACME domain and validation plugin
+type Acmedomain struct {
+	Domain string `url:"domain" json:"domain"` // domain for this node's ACME certificate
+
+	// The following parameters are optional
+	Alias  *string `url:"alias,omitempty" json:"alias,omitempty"`   // Alias for the Domain to verify ACME Challenge over DNS
+	Plugin *string `url:"plugin,omitempty" json:"plugin,omitempty"` // The ACME plugin ID
+}
+
+func (t Acmedomain) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[domain=]<domain> [,alias=<domain>] [,plugin=<name of the plugin configuration>]`)
+}
+
+// Array of Acmedomain
+type Acmedomains []Acmedomain
+
+func (t Acmedomains) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
 type GetConfigResponse struct {
 
 	// The following parameters are optional
-	Acme                *Acme           `url:"acme,omitempty" json:"acme,omitempty"`                                   // Node specific ACME settings.
-	Acmedomains         *AcmedomainnArr `url:"acmedomain[n],omitempty" json:"acmedomain[n],omitempty"`                 // ACME domain and validation plugin
-	Description         *string         `url:"description,omitempty" json:"description,omitempty"`                     // Description for the Node. Shown in the web-interface node notes panel. This is saved as comment inside the configuration file.
-	Digest              *string         `url:"digest,omitempty" json:"digest,omitempty"`                               // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-	StartallOnbootDelay *int            `url:"startall-onboot-delay,omitempty" json:"startall-onboot-delay,omitempty"` // Initial delay in seconds, before starting all the Virtual Guests with on-boot enabled.
-	Wakeonlan           *string         `url:"wakeonlan,omitempty" json:"wakeonlan,omitempty"`                         // MAC address for wake on LAN
+	Acme                *Acme        `url:"acme,omitempty" json:"acme,omitempty"`                                   // Node specific ACME settings.
+	Acmedomains         *Acmedomains `url:"acmedomain[n],omitempty" json:"acmedomain[n],omitempty"`                 // ACME domain and validation plugin
+	Description         *string      `url:"description,omitempty" json:"description,omitempty"`                     // Description for the Node. Shown in the web-interface node notes panel. This is saved as comment inside the configuration file.
+	Digest              *string      `url:"digest,omitempty" json:"digest,omitempty"`                               // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	StartallOnbootDelay *int         `url:"startall-onboot-delay,omitempty" json:"startall-onboot-delay,omitempty"` // Initial delay in seconds, before starting all the Virtual Guests with on-boot enabled.
+	Wakeonlan           *string      `url:"wakeonlan,omitempty" json:"wakeonlan,omitempty"`                         // MAC address for wake on LAN
 }
 
 type SetOptionsConfigRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Acme                *Acme           `url:"acme,omitempty" json:"acme,omitempty"`                                   // Node specific ACME settings.
-	Acmedomains         *AcmedomainnArr `url:"acmedomain[n],omitempty" json:"acmedomain[n],omitempty"`                 // ACME domain and validation plugin
-	Delete              *string         `url:"delete,omitempty" json:"delete,omitempty"`                               // A list of settings you want to delete.
-	Description         *string         `url:"description,omitempty" json:"description,omitempty"`                     // Description for the Node. Shown in the web-interface node notes panel. This is saved as comment inside the configuration file.
-	Digest              *string         `url:"digest,omitempty" json:"digest,omitempty"`                               // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-	StartallOnbootDelay *int            `url:"startall-onboot-delay,omitempty" json:"startall-onboot-delay,omitempty"` // Initial delay in seconds, before starting all the Virtual Guests with on-boot enabled.
-	Wakeonlan           *string         `url:"wakeonlan,omitempty" json:"wakeonlan,omitempty"`                         // MAC address for wake on LAN
+	Acme                *Acme        `url:"acme,omitempty" json:"acme,omitempty"`                                   // Node specific ACME settings.
+	Acmedomains         *Acmedomains `url:"acmedomain[n],omitempty" json:"acmedomain[n],omitempty"`                 // ACME domain and validation plugin
+	Delete              *string      `url:"delete,omitempty" json:"delete,omitempty"`                               // A list of settings you want to delete.
+	Description         *string      `url:"description,omitempty" json:"description,omitempty"`                     // Description for the Node. Shown in the web-interface node notes panel. This is saved as comment inside the configuration file.
+	Digest              *string      `url:"digest,omitempty" json:"digest,omitempty"`                               // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	StartallOnbootDelay *int         `url:"startall-onboot-delay,omitempty" json:"startall-onboot-delay,omitempty"` // Initial delay in seconds, before starting all the Virtual Guests with on-boot enabled.
+	Wakeonlan           *string      `url:"wakeonlan,omitempty" json:"wakeonlan,omitempty"`                         // MAC address for wake on LAN
 }
 
 type VersionRequest struct {
@@ -226,11 +219,11 @@ type VncshellRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Cmd       *string           `url:"cmd,omitempty" json:"cmd,omitempty"`             // Run specific command or default to login.
-	CmdOpts   *string           `url:"cmd-opts,omitempty" json:"cmd-opts,omitempty"`   // Add parameters to a command. Encoded as null terminated strings.
-	Height    *int              `url:"height,omitempty" json:"height,omitempty"`       // sets the height of the console in pixels.
-	Websocket *util.SpecialBool `url:"websocket,omitempty" json:"websocket,omitempty"` // use websocket instead of standard vnc.
-	Width     *int              `url:"width,omitempty" json:"width,omitempty"`         // sets the width of the console in pixels.
+	Cmd       *string       `url:"cmd,omitempty" json:"cmd,omitempty"`             // Run specific command or default to login.
+	CmdOpts   *string       `url:"cmd-opts,omitempty" json:"cmd-opts,omitempty"`   // Add parameters to a command. Encoded as null terminated strings.
+	Height    *int          `url:"height,omitempty" json:"height,omitempty"`       // sets the height of the console in pixels.
+	Websocket *util.PVEBool `url:"websocket,omitempty" json:"websocket,omitempty"` // use websocket instead of standard vnc.
+	Width     *int          `url:"width,omitempty" json:"width,omitempty"`         // sets the width of the console in pixels.
 }
 
 type VncshellResponse struct {
@@ -344,7 +337,7 @@ type QueryUrlMetadataRequest struct {
 	Url  string `url:"url" json:"url"`   // The URL to query the metadata from.
 
 	// The following parameters are optional
-	VerifyCertificates *util.SpecialBool `url:"verify-certificates,omitempty" json:"verify-certificates,omitempty"` // If false, no SSL/TLS certificates will be verified.
+	VerifyCertificates *util.PVEBool `url:"verify-certificates,omitempty" json:"verify-certificates,omitempty"` // If false, no SSL/TLS certificates will be verified.
 }
 
 type QueryUrlMetadataResponse struct {
@@ -364,8 +357,8 @@ type StartallRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Force *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"` // Issue start command even if virtual guest have 'onboot' not set or set to off.
-	Vms   *string           `url:"vms,omitempty" json:"vms,omitempty"`     // Only consider guests from this comma separated list of VMIDs.
+	Force *util.PVEBool `url:"force,omitempty" json:"force,omitempty"` // Issue start command even if virtual guest have 'onboot' not set or set to off.
+	Vms   *string       `url:"vms,omitempty" json:"vms,omitempty"`     // Only consider guests from this comma separated list of VMIDs.
 }
 
 type StopallRequest struct {
@@ -380,9 +373,9 @@ type MigrateallRequest struct {
 	Target string `url:"target" json:"target"` // Target node.
 
 	// The following parameters are optional
-	Maxworkers     *int              `url:"maxworkers,omitempty" json:"maxworkers,omitempty"`             // Maximal number of parallel migration job. If not set use 'max_workers' from datacenter.cfg, one of both must be set!
-	Vms            *string           `url:"vms,omitempty" json:"vms,omitempty"`                           // Only consider Guests with these IDs.
-	WithLocalDisks *util.SpecialBool `url:"with-local-disks,omitempty" json:"with-local-disks,omitempty"` // Enable live storage migration for local disk
+	Maxworkers     *int          `url:"maxworkers,omitempty" json:"maxworkers,omitempty"`             // Maximal number of parallel migration job. If not set use 'max_workers' from datacenter.cfg, one of both must be set!
+	Vms            *string       `url:"vms,omitempty" json:"vms,omitempty"`                           // Only consider Guests with these IDs.
+	WithLocalDisks *util.PVEBool `url:"with-local-disks,omitempty" json:"with-local-disks,omitempty"` // Enable live storage migration for local disk
 }
 
 type GetEtcHostsRequest struct {

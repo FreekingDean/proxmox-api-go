@@ -58,8 +58,8 @@ type VmStartRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Debug    *util.SpecialBool `url:"debug,omitempty" json:"debug,omitempty"`       // If set, enables very verbose debug log-level on start.
-	Skiplock *util.SpecialBool `url:"skiplock,omitempty" json:"skiplock,omitempty"` // Ignore locks - only root is allowed to use this option.
+	Debug    *util.PVEBool `url:"debug,omitempty" json:"debug,omitempty"`       // If set, enables very verbose debug log-level on start.
+	Skiplock *util.PVEBool `url:"skiplock,omitempty" json:"skiplock,omitempty"` // Ignore locks - only root is allowed to use this option.
 }
 
 type VmStopRequest struct {
@@ -67,7 +67,7 @@ type VmStopRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Skiplock *util.SpecialBool `url:"skiplock,omitempty" json:"skiplock,omitempty"` // Ignore locks - only root is allowed to use this option.
+	Skiplock *util.PVEBool `url:"skiplock,omitempty" json:"skiplock,omitempty"` // Ignore locks - only root is allowed to use this option.
 }
 
 type VmShutdownRequest struct {
@@ -75,8 +75,8 @@ type VmShutdownRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Forcestop *util.SpecialBool `url:"forceStop,omitempty" json:"forceStop,omitempty"` // Make sure the Container stops.
-	Timeout   *int              `url:"timeout,omitempty" json:"timeout,omitempty"`     // Wait maximal timeout seconds.
+	Forcestop *util.PVEBool `url:"forceStop,omitempty" json:"forceStop,omitempty"` // Make sure the Container stops.
+	Timeout   *int          `url:"timeout,omitempty" json:"timeout,omitempty"`     // Wait maximal timeout seconds.
 }
 
 type VmSuspendRequest struct {

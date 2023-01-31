@@ -30,10 +30,10 @@ type ListRequest struct {
 }
 
 type ListResponse struct {
-	Filepath string           `url:"filepath" json:"filepath"` // base64 path of the current entry
-	Leaf     util.SpecialBool `url:"leaf" json:"leaf"`         // If this entry is a leaf in the directory graph.
-	Text     string           `url:"text" json:"text"`         // Entry display text.
-	Type     string           `url:"type" json:"type"`         // Entry type.
+	Filepath string       `url:"filepath" json:"filepath"` // base64 path of the current entry
+	Leaf     util.PVEBool `url:"leaf" json:"leaf"`         // If this entry is a leaf in the directory graph.
+	Text     string       `url:"text" json:"text"`         // Entry display text.
+	Type     string       `url:"type" json:"type"`         // Entry type.
 
 	// The following parameters are optional
 	Mtime *int `url:"mtime,omitempty" json:"mtime,omitempty"` // Entry last-modified time (unix timestamp).

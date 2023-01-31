@@ -34,46 +34,46 @@ type GetOptionsRequest struct {
 type GetOptionsResponse struct {
 
 	// The following parameters are optional
-	Enable                           *util.SpecialBool `url:"enable,omitempty" json:"enable,omitempty"`                                                             // Enable host firewall rules.
-	LogLevelIn                       *string           `url:"log_level_in,omitempty" json:"log_level_in,omitempty"`                                                 // Log level for incoming traffic.
-	LogLevelOut                      *string           `url:"log_level_out,omitempty" json:"log_level_out,omitempty"`                                               // Log level for outgoing traffic.
-	LogNfConntrack                   *util.SpecialBool `url:"log_nf_conntrack,omitempty" json:"log_nf_conntrack,omitempty"`                                         // Enable logging of conntrack information.
-	Ndp                              *util.SpecialBool `url:"ndp,omitempty" json:"ndp,omitempty"`                                                                   // Enable NDP (Neighbor Discovery Protocol).
-	NfConntrackAllowInvalid          *util.SpecialBool `url:"nf_conntrack_allow_invalid,omitempty" json:"nf_conntrack_allow_invalid,omitempty"`                     // Allow invalid packets on connection tracking.
-	NfConntrackMax                   *int              `url:"nf_conntrack_max,omitempty" json:"nf_conntrack_max,omitempty"`                                         // Maximum number of tracked connections.
-	NfConntrackTcpTimeoutEstablished *int              `url:"nf_conntrack_tcp_timeout_established,omitempty" json:"nf_conntrack_tcp_timeout_established,omitempty"` // Conntrack established timeout.
-	NfConntrackTcpTimeoutSynRecv     *int              `url:"nf_conntrack_tcp_timeout_syn_recv,omitempty" json:"nf_conntrack_tcp_timeout_syn_recv,omitempty"`       // Conntrack syn recv timeout.
-	Nosmurfs                         *util.SpecialBool `url:"nosmurfs,omitempty" json:"nosmurfs,omitempty"`                                                         // Enable SMURFS filter.
-	ProtectionSynflood               *util.SpecialBool `url:"protection_synflood,omitempty" json:"protection_synflood,omitempty"`                                   // Enable synflood protection
-	ProtectionSynfloodBurst          *int              `url:"protection_synflood_burst,omitempty" json:"protection_synflood_burst,omitempty"`                       // Synflood protection rate burst by ip src.
-	ProtectionSynfloodRate           *int              `url:"protection_synflood_rate,omitempty" json:"protection_synflood_rate,omitempty"`                         // Synflood protection rate syn/sec by ip src.
-	SmurfLogLevel                    *string           `url:"smurf_log_level,omitempty" json:"smurf_log_level,omitempty"`                                           // Log level for SMURFS filter.
-	TcpFlagsLogLevel                 *string           `url:"tcp_flags_log_level,omitempty" json:"tcp_flags_log_level,omitempty"`                                   // Log level for illegal tcp flags filter.
-	Tcpflags                         *util.SpecialBool `url:"tcpflags,omitempty" json:"tcpflags,omitempty"`                                                         // Filter illegal combinations of TCP flags.
+	Enable                           *util.PVEBool `url:"enable,omitempty" json:"enable,omitempty"`                                                             // Enable host firewall rules.
+	LogLevelIn                       *string       `url:"log_level_in,omitempty" json:"log_level_in,omitempty"`                                                 // Log level for incoming traffic.
+	LogLevelOut                      *string       `url:"log_level_out,omitempty" json:"log_level_out,omitempty"`                                               // Log level for outgoing traffic.
+	LogNfConntrack                   *util.PVEBool `url:"log_nf_conntrack,omitempty" json:"log_nf_conntrack,omitempty"`                                         // Enable logging of conntrack information.
+	Ndp                              *util.PVEBool `url:"ndp,omitempty" json:"ndp,omitempty"`                                                                   // Enable NDP (Neighbor Discovery Protocol).
+	NfConntrackAllowInvalid          *util.PVEBool `url:"nf_conntrack_allow_invalid,omitempty" json:"nf_conntrack_allow_invalid,omitempty"`                     // Allow invalid packets on connection tracking.
+	NfConntrackMax                   *int          `url:"nf_conntrack_max,omitempty" json:"nf_conntrack_max,omitempty"`                                         // Maximum number of tracked connections.
+	NfConntrackTcpTimeoutEstablished *int          `url:"nf_conntrack_tcp_timeout_established,omitempty" json:"nf_conntrack_tcp_timeout_established,omitempty"` // Conntrack established timeout.
+	NfConntrackTcpTimeoutSynRecv     *int          `url:"nf_conntrack_tcp_timeout_syn_recv,omitempty" json:"nf_conntrack_tcp_timeout_syn_recv,omitempty"`       // Conntrack syn recv timeout.
+	Nosmurfs                         *util.PVEBool `url:"nosmurfs,omitempty" json:"nosmurfs,omitempty"`                                                         // Enable SMURFS filter.
+	ProtectionSynflood               *util.PVEBool `url:"protection_synflood,omitempty" json:"protection_synflood,omitempty"`                                   // Enable synflood protection
+	ProtectionSynfloodBurst          *int          `url:"protection_synflood_burst,omitempty" json:"protection_synflood_burst,omitempty"`                       // Synflood protection rate burst by ip src.
+	ProtectionSynfloodRate           *int          `url:"protection_synflood_rate,omitempty" json:"protection_synflood_rate,omitempty"`                         // Synflood protection rate syn/sec by ip src.
+	SmurfLogLevel                    *string       `url:"smurf_log_level,omitempty" json:"smurf_log_level,omitempty"`                                           // Log level for SMURFS filter.
+	TcpFlagsLogLevel                 *string       `url:"tcp_flags_log_level,omitempty" json:"tcp_flags_log_level,omitempty"`                                   // Log level for illegal tcp flags filter.
+	Tcpflags                         *util.PVEBool `url:"tcpflags,omitempty" json:"tcpflags,omitempty"`                                                         // Filter illegal combinations of TCP flags.
 }
 
 type SetOptionsRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Delete                           *string           `url:"delete,omitempty" json:"delete,omitempty"`                                                             // A list of settings you want to delete.
-	Digest                           *string           `url:"digest,omitempty" json:"digest,omitempty"`                                                             // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-	Enable                           *util.SpecialBool `url:"enable,omitempty" json:"enable,omitempty"`                                                             // Enable host firewall rules.
-	LogLevelIn                       *string           `url:"log_level_in,omitempty" json:"log_level_in,omitempty"`                                                 // Log level for incoming traffic.
-	LogLevelOut                      *string           `url:"log_level_out,omitempty" json:"log_level_out,omitempty"`                                               // Log level for outgoing traffic.
-	LogNfConntrack                   *util.SpecialBool `url:"log_nf_conntrack,omitempty" json:"log_nf_conntrack,omitempty"`                                         // Enable logging of conntrack information.
-	Ndp                              *util.SpecialBool `url:"ndp,omitempty" json:"ndp,omitempty"`                                                                   // Enable NDP (Neighbor Discovery Protocol).
-	NfConntrackAllowInvalid          *util.SpecialBool `url:"nf_conntrack_allow_invalid,omitempty" json:"nf_conntrack_allow_invalid,omitempty"`                     // Allow invalid packets on connection tracking.
-	NfConntrackMax                   *int              `url:"nf_conntrack_max,omitempty" json:"nf_conntrack_max,omitempty"`                                         // Maximum number of tracked connections.
-	NfConntrackTcpTimeoutEstablished *int              `url:"nf_conntrack_tcp_timeout_established,omitempty" json:"nf_conntrack_tcp_timeout_established,omitempty"` // Conntrack established timeout.
-	NfConntrackTcpTimeoutSynRecv     *int              `url:"nf_conntrack_tcp_timeout_syn_recv,omitempty" json:"nf_conntrack_tcp_timeout_syn_recv,omitempty"`       // Conntrack syn recv timeout.
-	Nosmurfs                         *util.SpecialBool `url:"nosmurfs,omitempty" json:"nosmurfs,omitempty"`                                                         // Enable SMURFS filter.
-	ProtectionSynflood               *util.SpecialBool `url:"protection_synflood,omitempty" json:"protection_synflood,omitempty"`                                   // Enable synflood protection
-	ProtectionSynfloodBurst          *int              `url:"protection_synflood_burst,omitempty" json:"protection_synflood_burst,omitempty"`                       // Synflood protection rate burst by ip src.
-	ProtectionSynfloodRate           *int              `url:"protection_synflood_rate,omitempty" json:"protection_synflood_rate,omitempty"`                         // Synflood protection rate syn/sec by ip src.
-	SmurfLogLevel                    *string           `url:"smurf_log_level,omitempty" json:"smurf_log_level,omitempty"`                                           // Log level for SMURFS filter.
-	TcpFlagsLogLevel                 *string           `url:"tcp_flags_log_level,omitempty" json:"tcp_flags_log_level,omitempty"`                                   // Log level for illegal tcp flags filter.
-	Tcpflags                         *util.SpecialBool `url:"tcpflags,omitempty" json:"tcpflags,omitempty"`                                                         // Filter illegal combinations of TCP flags.
+	Delete                           *string       `url:"delete,omitempty" json:"delete,omitempty"`                                                             // A list of settings you want to delete.
+	Digest                           *string       `url:"digest,omitempty" json:"digest,omitempty"`                                                             // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Enable                           *util.PVEBool `url:"enable,omitempty" json:"enable,omitempty"`                                                             // Enable host firewall rules.
+	LogLevelIn                       *string       `url:"log_level_in,omitempty" json:"log_level_in,omitempty"`                                                 // Log level for incoming traffic.
+	LogLevelOut                      *string       `url:"log_level_out,omitempty" json:"log_level_out,omitempty"`                                               // Log level for outgoing traffic.
+	LogNfConntrack                   *util.PVEBool `url:"log_nf_conntrack,omitempty" json:"log_nf_conntrack,omitempty"`                                         // Enable logging of conntrack information.
+	Ndp                              *util.PVEBool `url:"ndp,omitempty" json:"ndp,omitempty"`                                                                   // Enable NDP (Neighbor Discovery Protocol).
+	NfConntrackAllowInvalid          *util.PVEBool `url:"nf_conntrack_allow_invalid,omitempty" json:"nf_conntrack_allow_invalid,omitempty"`                     // Allow invalid packets on connection tracking.
+	NfConntrackMax                   *int          `url:"nf_conntrack_max,omitempty" json:"nf_conntrack_max,omitempty"`                                         // Maximum number of tracked connections.
+	NfConntrackTcpTimeoutEstablished *int          `url:"nf_conntrack_tcp_timeout_established,omitempty" json:"nf_conntrack_tcp_timeout_established,omitempty"` // Conntrack established timeout.
+	NfConntrackTcpTimeoutSynRecv     *int          `url:"nf_conntrack_tcp_timeout_syn_recv,omitempty" json:"nf_conntrack_tcp_timeout_syn_recv,omitempty"`       // Conntrack syn recv timeout.
+	Nosmurfs                         *util.PVEBool `url:"nosmurfs,omitempty" json:"nosmurfs,omitempty"`                                                         // Enable SMURFS filter.
+	ProtectionSynflood               *util.PVEBool `url:"protection_synflood,omitempty" json:"protection_synflood,omitempty"`                                   // Enable synflood protection
+	ProtectionSynfloodBurst          *int          `url:"protection_synflood_burst,omitempty" json:"protection_synflood_burst,omitempty"`                       // Synflood protection rate burst by ip src.
+	ProtectionSynfloodRate           *int          `url:"protection_synflood_rate,omitempty" json:"protection_synflood_rate,omitempty"`                         // Synflood protection rate syn/sec by ip src.
+	SmurfLogLevel                    *string       `url:"smurf_log_level,omitempty" json:"smurf_log_level,omitempty"`                                           // Log level for SMURFS filter.
+	TcpFlagsLogLevel                 *string       `url:"tcp_flags_log_level,omitempty" json:"tcp_flags_log_level,omitempty"`                                   // Log level for illegal tcp flags filter.
+	Tcpflags                         *util.PVEBool `url:"tcpflags,omitempty" json:"tcpflags,omitempty"`                                                         // Filter illegal combinations of TCP flags.
 }
 
 type LogRequest struct {

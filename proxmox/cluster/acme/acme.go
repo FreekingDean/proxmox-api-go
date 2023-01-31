@@ -48,8 +48,8 @@ func (c *Client) Index(ctx context.Context) ([]map[string]interface{}, error) {
 }
 
 // GetTos Retrieve ACME TermsOfService URL from CA.
-func (c *Client) GetTos(ctx context.Context, req GetTosRequest) (*string, error) {
-	var resp *string
+func (c *Client) GetTos(ctx context.Context, req GetTosRequest) (string, error) {
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/cluster/acme/tos", "GET", &resp, req)
 	return resp, err

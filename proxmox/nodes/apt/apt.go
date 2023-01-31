@@ -35,12 +35,12 @@ type ListUpdatesUpdateRequest struct {
 
 }
 
-type UpdateDatabaseUpdateRequest struct {
+type UpdateDatabaseRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Notify *util.SpecialBool `url:"notify,omitempty" json:"notify,omitempty"` // Send notification mail about new packages (to email address specified for user 'root@pam').
-	Quiet  *util.SpecialBool `url:"quiet,omitempty" json:"quiet,omitempty"`   // Only produces output suitable for logging, omitting progress indicators.
+	Notify *util.PVEBool `url:"notify,omitempty" json:"notify,omitempty"` // Send notification mail about new packages (to email address specified for user 'root@pam').
+	Quiet  *util.PVEBool `url:"quiet,omitempty" json:"quiet,omitempty"`   // Only produces output suitable for logging, omitting progress indicators.
 }
 
 type ChangelogRequest struct {
@@ -68,16 +68,16 @@ type Options struct {
 }
 
 type Repositories struct {
-	Enabled  util.SpecialBool `url:"Enabled" json:"Enabled"`   // Whether the repository is enabled or not
-	Filetype string           `url:"FileType" json:"FileType"` // Format of the defining file.
-	Suites   []string         `url:"Suites" json:"Suites"`     // List of package distribuitions
-	Types    []string         `url:"Types" json:"Types"`       // List of package types.
-	Uris     []string         `url:"URIs" json:"URIs"`         // List of repository URIs.
+	Enabled  util.PVEBool `url:"Enabled" json:"Enabled"`   // Whether the repository is enabled or not
+	Filetype string       `url:"FileType" json:"FileType"` // Format of the defining file.
+	Suites   []string     `url:"Suites" json:"Suites"`     // List of package distribuitions
+	Types    []string     `url:"Types" json:"Types"`       // List of package types.
+	Uris     []string     `url:"URIs" json:"URIs"`         // List of repository URIs.
 
 	// The following parameters are optional
-	Comment    *string   `url:"Comment,omitempty" json:"Comment,omitempty"`       // Associated comment
-	Components []string  `url:"Components,omitempty" json:"Components,omitempty"` // List of repository components
-	Options    []Options `url:"Options,omitempty" json:"Options,omitempty"`       // Additional options
+	Comment    *string    `url:"Comment,omitempty" json:"Comment,omitempty"`       // Associated comment
+	Components *[]string  `url:"Components,omitempty" json:"Components,omitempty"` // List of repository components
+	Options    *[]Options `url:"Options,omitempty" json:"Options,omitempty"`       // Additional options
 }
 
 type Files struct {
@@ -103,7 +103,7 @@ type StandardRepos struct {
 	Name   string `url:"name" json:"name"`     // Full name of the repository.
 
 	// The following parameters are optional
-	Status *util.SpecialBool `url:"status,omitempty" json:"status,omitempty"` // Indicating enabled/disabled status, if the repository is configured.
+	Status *util.PVEBool `url:"status,omitempty" json:"status,omitempty"` // Indicating enabled/disabled status, if the repository is configured.
 }
 
 // Result from parsing the APT repository files in /etc/apt/.
@@ -122,8 +122,8 @@ type ChangeRepositoryRepositoriesRequest struct {
 	Path  string `url:"path" json:"path"`   // Path to the containing file.
 
 	// The following parameters are optional
-	Digest  *string           `url:"digest,omitempty" json:"digest,omitempty"`   // Digest to detect modifications.
-	Enabled *util.SpecialBool `url:"enabled,omitempty" json:"enabled,omitempty"` // Whether the repository should be enabled or not.
+	Digest  *string       `url:"digest,omitempty" json:"digest,omitempty"`   // Digest to detect modifications.
+	Enabled *util.PVEBool `url:"enabled,omitempty" json:"enabled,omitempty"` // Whether the repository should be enabled or not.
 }
 
 type AddRepositoryRepositoriesRequest struct {
@@ -155,8 +155,8 @@ func (c *Client) ListUpdatesUpdate(ctx context.Context, req ListUpdatesUpdateReq
 	return resp, err
 }
 
-// UpdateDatabaseUpdate This is used to resynchronize the package index files from their sources (apt-get update).
-func (c *Client) UpdateDatabaseUpdate(ctx context.Context, req UpdateDatabaseUpdateRequest) (string, error) {
+// UpdateDatabase This is used to resynchronize the package index files from their sources (apt-get update).
+func (c *Client) UpdateDatabase(ctx context.Context, req UpdateDatabaseRequest) (string, error) {
 	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/apt/update", "POST", &resp, req)

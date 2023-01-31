@@ -30,9 +30,9 @@ type IndexResponse struct {
 	Tokenid string `url:"tokenid" json:"tokenid"` // User-specific token identifier.
 
 	// The following parameters are optional
-	Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
-	Expire  *int              `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
-	Privsep *util.SpecialBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
+	Comment *string       `url:"comment,omitempty" json:"comment,omitempty"`
+	Expire  *int          `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+	Privsep *util.PVEBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
 
 type FindRequest struct {
@@ -44,9 +44,9 @@ type FindRequest struct {
 type FindResponse struct {
 
 	// The following parameters are optional
-	Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
-	Expire  *int              `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
-	Privsep *util.SpecialBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
+	Comment *string       `url:"comment,omitempty" json:"comment,omitempty"`
+	Expire  *int          `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+	Privsep *util.PVEBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
 
 type ChildCreateRequest struct {
@@ -54,17 +54,17 @@ type ChildCreateRequest struct {
 	Userid  string `url:"userid" json:"userid"`   // User ID
 
 	// The following parameters are optional
-	Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
-	Expire  *int              `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
-	Privsep *util.SpecialBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
+	Comment *string       `url:"comment,omitempty" json:"comment,omitempty"`
+	Expire  *int          `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+	Privsep *util.PVEBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
 
 type Info struct {
 
 	// The following parameters are optional
-	Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
-	Expire  *int              `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
-	Privsep *util.SpecialBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
+	Comment *string       `url:"comment,omitempty" json:"comment,omitempty"`
+	Expire  *int          `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+	Privsep *util.PVEBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
 
 type ChildCreateResponse struct {
@@ -79,18 +79,18 @@ type UpdateRequest struct {
 	Userid  string `url:"userid" json:"userid"`   // User ID
 
 	// The following parameters are optional
-	Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
-	Expire  *int              `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
-	Privsep *util.SpecialBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
+	Comment *string       `url:"comment,omitempty" json:"comment,omitempty"`
+	Expire  *int          `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+	Privsep *util.PVEBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
 
 // Updated token information.
 type UpdateResponse struct {
 
 	// The following parameters are optional
-	Comment *string           `url:"comment,omitempty" json:"comment,omitempty"`
-	Expire  *int              `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
-	Privsep *util.SpecialBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
+	Comment *string       `url:"comment,omitempty" json:"comment,omitempty"`
+	Expire  *int          `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
+	Privsep *util.PVEBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
 
 type DeleteRequest struct {

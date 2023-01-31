@@ -37,9 +37,9 @@ type ChildCreateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	AddStorage *util.SpecialBool `url:"add-storage,omitempty" json:"add-storage,omitempty"` // Configure the created CephFS as storage for this cluster.
-	Name       *string           `url:"name,omitempty" json:"name,omitempty"`               // The ceph filesystem name.
-	PgNum      *int              `url:"pg_num,omitempty" json:"pg_num,omitempty"`           // Number of placement groups for the backing data pool. The metadata pool will use a quarter of this.
+	AddStorage *util.PVEBool `url:"add-storage,omitempty" json:"add-storage,omitempty"` // Configure the created CephFS as storage for this cluster.
+	Name       *string       `url:"name,omitempty" json:"name,omitempty"`               // The ceph filesystem name.
+	PgNum      *int          `url:"pg_num,omitempty" json:"pg_num,omitempty"`           // Number of placement groups for the backing data pool. The metadata pool will use a quarter of this.
 }
 
 // Index Directory index.

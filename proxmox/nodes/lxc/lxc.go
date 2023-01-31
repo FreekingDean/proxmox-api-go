@@ -42,33 +42,30 @@ type IndexResponse struct {
 	Uptime  *int     `url:"uptime,omitempty" json:"uptime,omitempty"`   // Uptime.
 }
 
-// Array of Features
-type FeaturesArr []Features
-
-func (t FeaturesArr) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Allow containers access to advanced features.
-type Features struct {
+// Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
+type Mp struct {
+	Mp     string `url:"mp" json:"mp"`         // Path to the mount point as seen from inside the container (must not contain symlinks).
+	Volume string `url:"volume" json:"volume"` // Volume, device or directory to mount into the container.
 
 	// The following parameters are optional
-	ForceRwSys *util.SpecialBool `url:"force_rw_sys,omitempty" json:"force_rw_sys,omitempty"` // Mount /sys in unprivileged containers as `rw` instead of `mixed`. This can break networking under newer (>= v245) systemd-network use.
-	Fuse       *util.SpecialBool `url:"fuse,omitempty" json:"fuse,omitempty"`                 // Allow using 'fuse' file systems in a container. Note that interactions between fuse and the freezer cgroup can potentially cause I/O deadlocks.
-	Keyctl     *util.SpecialBool `url:"keyctl,omitempty" json:"keyctl,omitempty"`             // For unprivileged containers only: Allow the use of the keyctl() system call. This is required to use docker inside a container. By default unprivileged containers will see this system call as non-existent. This is mostly a workaround for systemd-networkd, as it will treat it as a fatal error when some keyctl() operations are denied by the kernel due to lacking permissions. Essentially, you can choose between running systemd-networkd or docker.
-	Mknod      *util.SpecialBool `url:"mknod,omitempty" json:"mknod,omitempty"`               // Allow unprivileged containers to use mknod() to add certain device nodes. This requires a kernel with seccomp trap to user space support (5.3 or newer). This is experimental.
-	Mount      *string           `url:"mount,omitempty" json:"mount,omitempty"`               // Allow mounting file systems of specific types. This should be a list of file system types as used with the mount command. Note that this can have negative effects on the container's security. With access to a loop device, mounting a file can circumvent the mknod permission of the devices cgroup, mounting an NFS file system can block the host's I/O completely and prevent it from rebooting, etc.
-	Nesting    *util.SpecialBool `url:"nesting,omitempty" json:"nesting,omitempty"`           // Allow nesting. Best used with unprivileged containers with additional id mapping. Note that this will expose procfs and sysfs contents of the host to the guest.
+	Acl          *util.PVEBool `url:"acl,omitempty" json:"acl,omitempty"`                   // Explicitly enable or disable ACL support.
+	Backup       *util.PVEBool `url:"backup,omitempty" json:"backup,omitempty"`             // Whether to include the mount point in backups.
+	Mountoptions *string       `url:"mountoptions,omitempty" json:"mountoptions,omitempty"` // Extra mount options for rootfs/mps.
+	Quota        *util.PVEBool `url:"quota,omitempty" json:"quota,omitempty"`               // Enable user quotas inside the container (not supported with zfs subvolumes)
+	Replicate    *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`       // Will include this volume to a storage replica job.
+	Ro           *util.PVEBool `url:"ro,omitempty" json:"ro,omitempty"`                     // Read-only mount point
+	Shared       *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`             // Mark this non-volume mount point as available on multiple nodes (see 'nodes')
+	Size         *string       `url:"size,omitempty" json:"size,omitempty"`                 // Volume size (read only value).
 }
 
-func (t Features) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[force_rw_sys=<1|0>] [,fuse=<1|0>] [,keyctl=<1|0>] [,mknod=<1|0>] [,mount=<fstype;fstype;...>] [,nesting=<1|0>]`)
+func (t Mp) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[volume=]<volume> ,mp=<Path> [,acl=<1|0>] [,backup=<1|0>] [,mountoptions=<opt[;opt...]>] [,quota=<1|0>] [,replicate=<1|0>] [,ro=<1|0>] [,shared=<1|0>] [,size=<DiskSize>]`)
 }
 
-// Array of Rootfs
-type RootfsArr []Rootfs
+// Array of Mp
+type Mps []Mp
 
-func (t RootfsArr) EncodeValues(key string, v *url.Values) error {
+func (t Mps) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeArray(key, v, t)
 }
 
@@ -77,91 +74,80 @@ type Rootfs struct {
 	Volume string `url:"volume" json:"volume"` // Volume, device or directory to mount into the container.
 
 	// The following parameters are optional
-	Acl          *util.SpecialBool `url:"acl,omitempty" json:"acl,omitempty"`                   // Explicitly enable or disable ACL support.
-	Mountoptions *string           `url:"mountoptions,omitempty" json:"mountoptions,omitempty"` // Extra mount options for rootfs/mps.
-	Quota        *util.SpecialBool `url:"quota,omitempty" json:"quota,omitempty"`               // Enable user quotas inside the container (not supported with zfs subvolumes)
-	Replicate    *util.SpecialBool `url:"replicate,omitempty" json:"replicate,omitempty"`       // Will include this volume to a storage replica job.
-	Ro           *util.SpecialBool `url:"ro,omitempty" json:"ro,omitempty"`                     // Read-only mount point
-	Shared       *util.SpecialBool `url:"shared,omitempty" json:"shared,omitempty"`             // Mark this non-volume mount point as available on multiple nodes (see 'nodes')
-	Size         *string           `url:"size,omitempty" json:"size,omitempty"`                 // Volume size (read only value).
+	Acl          *util.PVEBool `url:"acl,omitempty" json:"acl,omitempty"`                   // Explicitly enable or disable ACL support.
+	Mountoptions *string       `url:"mountoptions,omitempty" json:"mountoptions,omitempty"` // Extra mount options for rootfs/mps.
+	Quota        *util.PVEBool `url:"quota,omitempty" json:"quota,omitempty"`               // Enable user quotas inside the container (not supported with zfs subvolumes)
+	Replicate    *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`       // Will include this volume to a storage replica job.
+	Ro           *util.PVEBool `url:"ro,omitempty" json:"ro,omitempty"`                     // Read-only mount point
+	Shared       *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`             // Mark this non-volume mount point as available on multiple nodes (see 'nodes')
+	Size         *string       `url:"size,omitempty" json:"size,omitempty"`                 // Volume size (read only value).
 }
 
 func (t Rootfs) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `[volume=]<volume> [,acl=<1|0>] [,mountoptions=<opt[;opt...]>] [,quota=<1|0>] [,replicate=<1|0>] [,ro=<1|0>] [,shared=<1|0>] [,size=<DiskSize>]`)
 }
 
-// Array of Mpn
-type MpnArr []Mpn
-
-func (t MpnArr) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
-type Mpn struct {
-	Mp     string `url:"mp" json:"mp"`         // Path to the mount point as seen from inside the container (must not contain symlinks).
-	Volume string `url:"volume" json:"volume"` // Volume, device or directory to mount into the container.
-
-	// The following parameters are optional
-	Acl          *util.SpecialBool `url:"acl,omitempty" json:"acl,omitempty"`                   // Explicitly enable or disable ACL support.
-	Backup       *util.SpecialBool `url:"backup,omitempty" json:"backup,omitempty"`             // Whether to include the mount point in backups.
-	Mountoptions *string           `url:"mountoptions,omitempty" json:"mountoptions,omitempty"` // Extra mount options for rootfs/mps.
-	Quota        *util.SpecialBool `url:"quota,omitempty" json:"quota,omitempty"`               // Enable user quotas inside the container (not supported with zfs subvolumes)
-	Replicate    *util.SpecialBool `url:"replicate,omitempty" json:"replicate,omitempty"`       // Will include this volume to a storage replica job.
-	Ro           *util.SpecialBool `url:"ro,omitempty" json:"ro,omitempty"`                     // Read-only mount point
-	Shared       *util.SpecialBool `url:"shared,omitempty" json:"shared,omitempty"`             // Mark this non-volume mount point as available on multiple nodes (see 'nodes')
-	Size         *string           `url:"size,omitempty" json:"size,omitempty"`                 // Volume size (read only value).
-}
-
-func (t Mpn) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[volume=]<volume> ,mp=<Path> [,acl=<1|0>] [,backup=<1|0>] [,mountoptions=<opt[;opt...]>] [,quota=<1|0>] [,replicate=<1|0>] [,ro=<1|0>] [,shared=<1|0>] [,size=<DiskSize>]`)
-}
-
-// Array of Netn
-type NetnArr []Netn
-
-func (t NetnArr) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Specifies network interfaces for the container.
-type Netn struct {
-	Name string `url:"name" json:"name"` // Name of the network device as seen from inside the container. (lxc.network.name)
-
-	// The following parameters are optional
-	Bridge   *string           `url:"bridge,omitempty" json:"bridge,omitempty"`     // Bridge to attach the network device to.
-	Firewall *util.SpecialBool `url:"firewall,omitempty" json:"firewall,omitempty"` // Controls whether this interface's firewall rules should be used.
-	Gw       *string           `url:"gw,omitempty" json:"gw,omitempty"`             // Default gateway for IPv4 traffic.
-	Gw6      *string           `url:"gw6,omitempty" json:"gw6,omitempty"`           // Default gateway for IPv6 traffic.
-	Hwaddr   *string           `url:"hwaddr,omitempty" json:"hwaddr,omitempty"`     // The interface MAC address. This is dynamically allocated by default, but you can set that statically if needed, for example to always have the same link-local IPv6 address. (lxc.network.hwaddr)
-	Ip       *string           `url:"ip,omitempty" json:"ip,omitempty"`             // IPv4 address in CIDR format.
-	Ip6      *string           `url:"ip6,omitempty" json:"ip6,omitempty"`           // IPv6 address in CIDR format.
-	Mtu      *int              `url:"mtu,omitempty" json:"mtu,omitempty"`           // Maximum transfer unit of the interface. (lxc.network.mtu)
-	Rate     *float64          `url:"rate,omitempty" json:"rate,omitempty"`         // Apply rate limiting to the interface
-	Tag      *int              `url:"tag,omitempty" json:"tag,omitempty"`           // VLAN tag for this interface.
-	Trunks   *string           `url:"trunks,omitempty" json:"trunks,omitempty"`     // VLAN ids to pass through the interface
-	Type     *string           `url:"type,omitempty" json:"type,omitempty"`         // Network interface type.
-}
-
-func (t Netn) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `name=<string> [,bridge=<bridge>] [,firewall=<1|0>] [,gw=<GatewayIPv4>] [,gw6=<GatewayIPv6>] [,hwaddr=<XX:XX:XX:XX:XX:XX>] [,ip=<(IPv4/CIDR|dhcp|manual)>] [,ip6=<(IPv6/CIDR|auto|dhcp|manual)>] [,mtu=<integer>] [,rate=<mbps>] [,tag=<integer>] [,trunks=<vlanid[;vlanid...]>] [,type=<veth>]`)
-}
-
-// Array of Unusedn
-type UnusednArr []Unusedn
-
-func (t UnusednArr) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
 // Reference to unused volumes. This is used internally, and should not be modified manually.
-type Unusedn struct {
+type Unused struct {
 	Volume string `url:"volume" json:"volume"` // The volume that is not used currently.
 
 }
 
-func (t Unusedn) EncodeValues(key string, v *url.Values) error {
+func (t Unused) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `[volume=]<volume>`)
+}
+
+// Array of Unused
+type Unuseds []Unused
+
+func (t Unuseds) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// Specifies network interfaces for the container.
+type Net struct {
+	Name string `url:"name" json:"name"` // Name of the network device as seen from inside the container. (lxc.network.name)
+
+	// The following parameters are optional
+	Bridge   *string       `url:"bridge,omitempty" json:"bridge,omitempty"`     // Bridge to attach the network device to.
+	Firewall *util.PVEBool `url:"firewall,omitempty" json:"firewall,omitempty"` // Controls whether this interface's firewall rules should be used.
+	Gw       *string       `url:"gw,omitempty" json:"gw,omitempty"`             // Default gateway for IPv4 traffic.
+	Gw6      *string       `url:"gw6,omitempty" json:"gw6,omitempty"`           // Default gateway for IPv6 traffic.
+	Hwaddr   *string       `url:"hwaddr,omitempty" json:"hwaddr,omitempty"`     // The interface MAC address. This is dynamically allocated by default, but you can set that statically if needed, for example to always have the same link-local IPv6 address. (lxc.network.hwaddr)
+	Ip       *string       `url:"ip,omitempty" json:"ip,omitempty"`             // IPv4 address in CIDR format.
+	Ip6      *string       `url:"ip6,omitempty" json:"ip6,omitempty"`           // IPv6 address in CIDR format.
+	Mtu      *int          `url:"mtu,omitempty" json:"mtu,omitempty"`           // Maximum transfer unit of the interface. (lxc.network.mtu)
+	Rate     *float64      `url:"rate,omitempty" json:"rate,omitempty"`         // Apply rate limiting to the interface
+	Tag      *int          `url:"tag,omitempty" json:"tag,omitempty"`           // VLAN tag for this interface.
+	Trunks   *string       `url:"trunks,omitempty" json:"trunks,omitempty"`     // VLAN ids to pass through the interface
+	Type     *string       `url:"type,omitempty" json:"type,omitempty"`         // Network interface type.
+}
+
+func (t Net) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `name=<string> [,bridge=<bridge>] [,firewall=<1|0>] [,gw=<GatewayIPv4>] [,gw6=<GatewayIPv6>] [,hwaddr=<XX:XX:XX:XX:XX:XX>] [,ip=<(IPv4/CIDR|dhcp|manual)>] [,ip6=<(IPv6/CIDR|auto|dhcp|manual)>] [,mtu=<integer>] [,rate=<mbps>] [,tag=<integer>] [,trunks=<vlanid[;vlanid...]>] [,type=<veth>]`)
+}
+
+// Array of Net
+type Nets []Net
+
+func (t Nets) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// Allow containers access to advanced features.
+type Features struct {
+
+	// The following parameters are optional
+	ForceRwSys *util.PVEBool `url:"force_rw_sys,omitempty" json:"force_rw_sys,omitempty"` // Mount /sys in unprivileged containers as `rw` instead of `mixed`. This can break networking under newer (>= v245) systemd-network use.
+	Fuse       *util.PVEBool `url:"fuse,omitempty" json:"fuse,omitempty"`                 // Allow using 'fuse' file systems in a container. Note that interactions between fuse and the freezer cgroup can potentially cause I/O deadlocks.
+	Keyctl     *util.PVEBool `url:"keyctl,omitempty" json:"keyctl,omitempty"`             // For unprivileged containers only: Allow the use of the keyctl() system call. This is required to use docker inside a container. By default unprivileged containers will see this system call as non-existent. This is mostly a workaround for systemd-networkd, as it will treat it as a fatal error when some keyctl() operations are denied by the kernel due to lacking permissions. Essentially, you can choose between running systemd-networkd or docker.
+	Mknod      *util.PVEBool `url:"mknod,omitempty" json:"mknod,omitempty"`               // Allow unprivileged containers to use mknod() to add certain device nodes. This requires a kernel with seccomp trap to user space support (5.3 or newer). This is experimental.
+	Mount      *string       `url:"mount,omitempty" json:"mount,omitempty"`               // Allow mounting file systems of specific types. This should be a list of file system types as used with the mount command. Note that this can have negative effects on the container's security. With access to a loop device, mounting a file can circumvent the mknod permission of the devices cgroup, mounting an NFS file system can block the host's I/O completely and prevent it from rebooting, etc.
+	Nesting    *util.PVEBool `url:"nesting,omitempty" json:"nesting,omitempty"`           // Allow nesting. Best used with unprivileged containers with additional id mapping. Note that this will expose procfs and sysfs contents of the host to the guest.
+}
+
+func (t Features) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[force_rw_sys=<1|0>] [,fuse=<1|0>] [,keyctl=<1|0>] [,mknod=<1|0>] [,mount=<fstype;fstype;...>] [,nesting=<1|0>]`)
 }
 
 type CreateRequest struct {
@@ -170,45 +156,45 @@ type CreateRequest struct {
 	Vmid       int    `url:"vmid" json:"vmid"`             // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Arch               *string           `url:"arch,omitempty" json:"arch,omitempty"`                                 // OS architecture type.
-	Bwlimit            *float64          `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`                           // Override I/O bandwidth limit (in KiB/s).
-	Cmode              *string           `url:"cmode,omitempty" json:"cmode,omitempty"`                               // Console mode. By default, the console command tries to open a connection to one of the available tty devices. By setting cmode to 'console' it tries to attach to /dev/console instead. If you set cmode to 'shell', it simply invokes a shell inside the container (no login).
-	Console            *util.SpecialBool `url:"console,omitempty" json:"console,omitempty"`                           // Attach a console device (/dev/console) to the container.
-	Cores              *int              `url:"cores,omitempty" json:"cores,omitempty"`                               // The number of cores assigned to the container. A container can use all available cores by default.
-	Cpulimit           *float64          `url:"cpulimit,omitempty" json:"cpulimit,omitempty"`                         // Limit of CPU usage. NOTE: If the computer has 2 CPUs, it has a total of '2' CPU time. Value '0' indicates no CPU limit.
-	Cpuunits           *int              `url:"cpuunits,omitempty" json:"cpuunits,omitempty"`                         // CPU weight for a container, will be clamped to [1, 10000] in cgroup v2.
-	Debug              *util.SpecialBool `url:"debug,omitempty" json:"debug,omitempty"`                               // Try to be more verbose. For now this only enables debug log-level on start.
-	Description        *string           `url:"description,omitempty" json:"description,omitempty"`                   // Description for the Container. Shown in the web-interface CT's summary. This is saved as comment inside the configuration file.
-	Features           *Features         `url:"features,omitempty" json:"features,omitempty"`                         // Allow containers access to advanced features.
-	Force              *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"`                               // Allow to overwrite existing container.
-	Hookscript         *string           `url:"hookscript,omitempty" json:"hookscript,omitempty"`                     // Script that will be exectued during various steps in the containers lifetime.
-	Hostname           *string           `url:"hostname,omitempty" json:"hostname,omitempty"`                         // Set a host name for the container.
-	IgnoreUnpackErrors *util.SpecialBool `url:"ignore-unpack-errors,omitempty" json:"ignore-unpack-errors,omitempty"` // Ignore errors when extracting the template.
-	Lock               *string           `url:"lock,omitempty" json:"lock,omitempty"`                                 // Lock/unlock the container.
-	Memory             *int              `url:"memory,omitempty" json:"memory,omitempty"`                             // Amount of RAM for the container in MB.
-	Mps                *MpnArr           `url:"mp[n],omitempty" json:"mp[n],omitempty"`                               // Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
-	Nameserver         *string           `url:"nameserver,omitempty" json:"nameserver,omitempty"`                     // Sets DNS server IP address for a container. Create will automatically use the setting from the host if you neither set searchdomain nor nameserver.
-	Nets               *NetnArr          `url:"net[n],omitempty" json:"net[n],omitempty"`                             // Specifies network interfaces for the container.
-	Onboot             *util.SpecialBool `url:"onboot,omitempty" json:"onboot,omitempty"`                             // Specifies whether a container will be started during system bootup.
-	Ostype             *string           `url:"ostype,omitempty" json:"ostype,omitempty"`                             // OS type. This is used to setup configuration inside the container, and corresponds to lxc setup scripts in /usr/share/lxc/config/<ostype>.common.conf. Value 'unmanaged' can be used to skip and OS specific setup.
-	Password           *string           `url:"password,omitempty" json:"password,omitempty"`                         // Sets root password inside container.
-	Pool               *string           `url:"pool,omitempty" json:"pool,omitempty"`                                 // Add the VM to the specified pool.
-	Protection         *util.SpecialBool `url:"protection,omitempty" json:"protection,omitempty"`                     // Sets the protection flag of the container. This will prevent the CT or CT's disk remove/update operation.
-	Restore            *util.SpecialBool `url:"restore,omitempty" json:"restore,omitempty"`                           // Mark this as restore task.
-	Rootfs             *Rootfs           `url:"rootfs,omitempty" json:"rootfs,omitempty"`                             // Use volume as container root.
-	Searchdomain       *string           `url:"searchdomain,omitempty" json:"searchdomain,omitempty"`                 // Sets DNS search domains for a container. Create will automatically use the setting from the host if you neither set searchdomain nor nameserver.
-	SshPublicKeys      *string           `url:"ssh-public-keys,omitempty" json:"ssh-public-keys,omitempty"`           // Setup public SSH keys (one key per line, OpenSSH format).
-	Start              *util.SpecialBool `url:"start,omitempty" json:"start,omitempty"`                               // Start the CT after its creation finished successfully.
-	Startup            *string           `url:"startup,omitempty" json:"startup,omitempty"`                           // Startup and shutdown behavior. Order is a non-negative number defining the general startup order. Shutdown in done with reverse ordering. Additionally you can set the 'up' or 'down' delay in seconds, which specifies a delay to wait before the next VM is started or stopped.
-	Storage            *string           `url:"storage,omitempty" json:"storage,omitempty"`                           // Default Storage.
-	Swap               *int              `url:"swap,omitempty" json:"swap,omitempty"`                                 // Amount of SWAP for the container in MB.
-	Tags               *string           `url:"tags,omitempty" json:"tags,omitempty"`                                 // Tags of the Container. This is only meta information.
-	Template           *util.SpecialBool `url:"template,omitempty" json:"template,omitempty"`                         // Enable/disable Template.
-	Timezone           *string           `url:"timezone,omitempty" json:"timezone,omitempty"`                         // Time zone to use in the container. If option isn't set, then nothing will be done. Can be set to 'host' to match the host time zone, or an arbitrary time zone option from /usr/share/zoneinfo/zone.tab
-	Tty                *int              `url:"tty,omitempty" json:"tty,omitempty"`                                   // Specify the number of tty available to the container
-	Unique             *util.SpecialBool `url:"unique,omitempty" json:"unique,omitempty"`                             // Assign a unique random ethernet address.
-	Unprivileged       *util.SpecialBool `url:"unprivileged,omitempty" json:"unprivileged,omitempty"`                 // Makes the container run as unprivileged user. (Should not be modified manually.)
-	Unuseds            *UnusednArr       `url:"unused[n],omitempty" json:"unused[n],omitempty"`                       // Reference to unused volumes. This is used internally, and should not be modified manually.
+	Arch               *string       `url:"arch,omitempty" json:"arch,omitempty"`                                 // OS architecture type.
+	Bwlimit            *float64      `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`                           // Override I/O bandwidth limit (in KiB/s).
+	Cmode              *string       `url:"cmode,omitempty" json:"cmode,omitempty"`                               // Console mode. By default, the console command tries to open a connection to one of the available tty devices. By setting cmode to 'console' it tries to attach to /dev/console instead. If you set cmode to 'shell', it simply invokes a shell inside the container (no login).
+	Console            *util.PVEBool `url:"console,omitempty" json:"console,omitempty"`                           // Attach a console device (/dev/console) to the container.
+	Cores              *int          `url:"cores,omitempty" json:"cores,omitempty"`                               // The number of cores assigned to the container. A container can use all available cores by default.
+	Cpulimit           *float64      `url:"cpulimit,omitempty" json:"cpulimit,omitempty"`                         // Limit of CPU usage. NOTE: If the computer has 2 CPUs, it has a total of '2' CPU time. Value '0' indicates no CPU limit.
+	Cpuunits           *int          `url:"cpuunits,omitempty" json:"cpuunits,omitempty"`                         // CPU weight for a container, will be clamped to [1, 10000] in cgroup v2.
+	Debug              *util.PVEBool `url:"debug,omitempty" json:"debug,omitempty"`                               // Try to be more verbose. For now this only enables debug log-level on start.
+	Description        *string       `url:"description,omitempty" json:"description,omitempty"`                   // Description for the Container. Shown in the web-interface CT's summary. This is saved as comment inside the configuration file.
+	Features           *Features     `url:"features,omitempty" json:"features,omitempty"`                         // Allow containers access to advanced features.
+	Force              *util.PVEBool `url:"force,omitempty" json:"force,omitempty"`                               // Allow to overwrite existing container.
+	Hookscript         *string       `url:"hookscript,omitempty" json:"hookscript,omitempty"`                     // Script that will be exectued during various steps in the containers lifetime.
+	Hostname           *string       `url:"hostname,omitempty" json:"hostname,omitempty"`                         // Set a host name for the container.
+	IgnoreUnpackErrors *util.PVEBool `url:"ignore-unpack-errors,omitempty" json:"ignore-unpack-errors,omitempty"` // Ignore errors when extracting the template.
+	Lock               *string       `url:"lock,omitempty" json:"lock,omitempty"`                                 // Lock/unlock the container.
+	Memory             *int          `url:"memory,omitempty" json:"memory,omitempty"`                             // Amount of RAM for the container in MB.
+	Mps                *Mps          `url:"mp[n],omitempty" json:"mp[n],omitempty"`                               // Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
+	Nameserver         *string       `url:"nameserver,omitempty" json:"nameserver,omitempty"`                     // Sets DNS server IP address for a container. Create will automatically use the setting from the host if you neither set searchdomain nor nameserver.
+	Nets               *Nets         `url:"net[n],omitempty" json:"net[n],omitempty"`                             // Specifies network interfaces for the container.
+	Onboot             *util.PVEBool `url:"onboot,omitempty" json:"onboot,omitempty"`                             // Specifies whether a container will be started during system bootup.
+	Ostype             *string       `url:"ostype,omitempty" json:"ostype,omitempty"`                             // OS type. This is used to setup configuration inside the container, and corresponds to lxc setup scripts in /usr/share/lxc/config/<ostype>.common.conf. Value 'unmanaged' can be used to skip and OS specific setup.
+	Password           *string       `url:"password,omitempty" json:"password,omitempty"`                         // Sets root password inside container.
+	Pool               *string       `url:"pool,omitempty" json:"pool,omitempty"`                                 // Add the VM to the specified pool.
+	Protection         *util.PVEBool `url:"protection,omitempty" json:"protection,omitempty"`                     // Sets the protection flag of the container. This will prevent the CT or CT's disk remove/update operation.
+	Restore            *util.PVEBool `url:"restore,omitempty" json:"restore,omitempty"`                           // Mark this as restore task.
+	Rootfs             *Rootfs       `url:"rootfs,omitempty" json:"rootfs,omitempty"`                             // Use volume as container root.
+	Searchdomain       *string       `url:"searchdomain,omitempty" json:"searchdomain,omitempty"`                 // Sets DNS search domains for a container. Create will automatically use the setting from the host if you neither set searchdomain nor nameserver.
+	SshPublicKeys      *string       `url:"ssh-public-keys,omitempty" json:"ssh-public-keys,omitempty"`           // Setup public SSH keys (one key per line, OpenSSH format).
+	Start              *util.PVEBool `url:"start,omitempty" json:"start,omitempty"`                               // Start the CT after its creation finished successfully.
+	Startup            *string       `url:"startup,omitempty" json:"startup,omitempty"`                           // Startup and shutdown behavior. Order is a non-negative number defining the general startup order. Shutdown in done with reverse ordering. Additionally you can set the 'up' or 'down' delay in seconds, which specifies a delay to wait before the next VM is started or stopped.
+	Storage            *string       `url:"storage,omitempty" json:"storage,omitempty"`                           // Default Storage.
+	Swap               *int          `url:"swap,omitempty" json:"swap,omitempty"`                                 // Amount of SWAP for the container in MB.
+	Tags               *string       `url:"tags,omitempty" json:"tags,omitempty"`                                 // Tags of the Container. This is only meta information.
+	Template           *util.PVEBool `url:"template,omitempty" json:"template,omitempty"`                         // Enable/disable Template.
+	Timezone           *string       `url:"timezone,omitempty" json:"timezone,omitempty"`                         // Time zone to use in the container. If option isn't set, then nothing will be done. Can be set to 'host' to match the host time zone, or an arbitrary time zone option from /usr/share/zoneinfo/zone.tab
+	Tty                *int          `url:"tty,omitempty" json:"tty,omitempty"`                                   // Specify the number of tty available to the container
+	Unique             *util.PVEBool `url:"unique,omitempty" json:"unique,omitempty"`                             // Assign a unique random ethernet address.
+	Unprivileged       *util.PVEBool `url:"unprivileged,omitempty" json:"unprivileged,omitempty"`                 // Makes the container run as unprivileged user. (Should not be modified manually.)
+	Unuseds            *Unuseds      `url:"unused[n],omitempty" json:"unused[n],omitempty"`                       // Reference to unused volumes. This is used internally, and should not be modified manually.
 }
 
 type FindRequest struct {
@@ -226,9 +212,9 @@ type DeleteRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	DestroyUnreferencedDisks *util.SpecialBool `url:"destroy-unreferenced-disks,omitempty" json:"destroy-unreferenced-disks,omitempty"` // If set, destroy additionally all disks with the VMID from all enabled storages which are not referenced in the config.
-	Force                    *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"`                                           // Force destroy, even if running.
-	Purge                    *util.SpecialBool `url:"purge,omitempty" json:"purge,omitempty"`                                           // Remove container from all related configurations. For example, backup jobs, replication jobs or HA. Related ACLs and Firewall entries will *always* be removed.
+	DestroyUnreferencedDisks *util.PVEBool `url:"destroy-unreferenced-disks,omitempty" json:"destroy-unreferenced-disks,omitempty"` // If set, destroy additionally all disks with the VMID from all enabled storages which are not referenced in the config.
+	Force                    *util.PVEBool `url:"force,omitempty" json:"force,omitempty"`                                           // Force destroy, even if running.
+	Purge                    *util.PVEBool `url:"purge,omitempty" json:"purge,omitempty"`                                           // Remove container from all related configurations. For example, backup jobs, replication jobs or HA. Related ACLs and Firewall entries will *always* be removed.
 }
 
 type VmConfigRequest struct {
@@ -236,44 +222,44 @@ type VmConfigRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Current  *util.SpecialBool `url:"current,omitempty" json:"current,omitempty"`   // Get current values (instead of pending values).
-	Snapshot *string           `url:"snapshot,omitempty" json:"snapshot,omitempty"` // Fetch config values from given snapshot.
+	Current  *util.PVEBool `url:"current,omitempty" json:"current,omitempty"`   // Get current values (instead of pending values).
+	Snapshot *string       `url:"snapshot,omitempty" json:"snapshot,omitempty"` // Fetch config values from given snapshot.
 }
 
 type VmConfigResponse struct {
 	Digest string `url:"digest" json:"digest"` // SHA1 digest of configuration file. This can be used to prevent concurrent modifications.
 
 	// The following parameters are optional
-	Arch         *string           `url:"arch,omitempty" json:"arch,omitempty"`                 // OS architecture type.
-	Cmode        *string           `url:"cmode,omitempty" json:"cmode,omitempty"`               // Console mode. By default, the console command tries to open a connection to one of the available tty devices. By setting cmode to 'console' it tries to attach to /dev/console instead. If you set cmode to 'shell', it simply invokes a shell inside the container (no login).
-	Console      *util.SpecialBool `url:"console,omitempty" json:"console,omitempty"`           // Attach a console device (/dev/console) to the container.
-	Cores        *int              `url:"cores,omitempty" json:"cores,omitempty"`               // The number of cores assigned to the container. A container can use all available cores by default.
-	Cpulimit     *float64          `url:"cpulimit,omitempty" json:"cpulimit,omitempty"`         // Limit of CPU usage. NOTE: If the computer has 2 CPUs, it has a total of '2' CPU time. Value '0' indicates no CPU limit.
-	Cpuunits     *int              `url:"cpuunits,omitempty" json:"cpuunits,omitempty"`         // CPU weight for a container, will be clamped to [1, 10000] in cgroup v2.
-	Debug        *util.SpecialBool `url:"debug,omitempty" json:"debug,omitempty"`               // Try to be more verbose. For now this only enables debug log-level on start.
-	Description  *string           `url:"description,omitempty" json:"description,omitempty"`   // Description for the Container. Shown in the web-interface CT's summary. This is saved as comment inside the configuration file.
-	Features     *Features         `url:"features,omitempty" json:"features,omitempty"`         // Allow containers access to advanced features.
-	Hookscript   *string           `url:"hookscript,omitempty" json:"hookscript,omitempty"`     // Script that will be exectued during various steps in the containers lifetime.
-	Hostname     *string           `url:"hostname,omitempty" json:"hostname,omitempty"`         // Set a host name for the container.
-	Lock         *string           `url:"lock,omitempty" json:"lock,omitempty"`                 // Lock/unlock the container.
-	Lxc          [][]string        `url:"lxc,omitempty" json:"lxc,omitempty"`                   // Array of lxc low-level configurations ([[key1, value1], [key2, value2] ...]).
-	Memory       *int              `url:"memory,omitempty" json:"memory,omitempty"`             // Amount of RAM for the container in MB.
-	Mps          *MpnArr           `url:"mp[n],omitempty" json:"mp[n],omitempty"`               // Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
-	Nameserver   *string           `url:"nameserver,omitempty" json:"nameserver,omitempty"`     // Sets DNS server IP address for a container. Create will automatically use the setting from the host if you neither set searchdomain nor nameserver.
-	Nets         *NetnArr          `url:"net[n],omitempty" json:"net[n],omitempty"`             // Specifies network interfaces for the container.
-	Onboot       *util.SpecialBool `url:"onboot,omitempty" json:"onboot,omitempty"`             // Specifies whether a container will be started during system bootup.
-	Ostype       *string           `url:"ostype,omitempty" json:"ostype,omitempty"`             // OS type. This is used to setup configuration inside the container, and corresponds to lxc setup scripts in /usr/share/lxc/config/<ostype>.common.conf. Value 'unmanaged' can be used to skip and OS specific setup.
-	Protection   *util.SpecialBool `url:"protection,omitempty" json:"protection,omitempty"`     // Sets the protection flag of the container. This will prevent the CT or CT's disk remove/update operation.
-	Rootfs       *Rootfs           `url:"rootfs,omitempty" json:"rootfs,omitempty"`             // Use volume as container root.
-	Searchdomain *string           `url:"searchdomain,omitempty" json:"searchdomain,omitempty"` // Sets DNS search domains for a container. Create will automatically use the setting from the host if you neither set searchdomain nor nameserver.
-	Startup      *string           `url:"startup,omitempty" json:"startup,omitempty"`           // Startup and shutdown behavior. Order is a non-negative number defining the general startup order. Shutdown in done with reverse ordering. Additionally you can set the 'up' or 'down' delay in seconds, which specifies a delay to wait before the next VM is started or stopped.
-	Swap         *int              `url:"swap,omitempty" json:"swap,omitempty"`                 // Amount of SWAP for the container in MB.
-	Tags         *string           `url:"tags,omitempty" json:"tags,omitempty"`                 // Tags of the Container. This is only meta information.
-	Template     *util.SpecialBool `url:"template,omitempty" json:"template,omitempty"`         // Enable/disable Template.
-	Timezone     *string           `url:"timezone,omitempty" json:"timezone,omitempty"`         // Time zone to use in the container. If option isn't set, then nothing will be done. Can be set to 'host' to match the host time zone, or an arbitrary time zone option from /usr/share/zoneinfo/zone.tab
-	Tty          *int              `url:"tty,omitempty" json:"tty,omitempty"`                   // Specify the number of tty available to the container
-	Unprivileged *util.SpecialBool `url:"unprivileged,omitempty" json:"unprivileged,omitempty"` // Makes the container run as unprivileged user. (Should not be modified manually.)
-	Unuseds      *UnusednArr       `url:"unused[n],omitempty" json:"unused[n],omitempty"`       // Reference to unused volumes. This is used internally, and should not be modified manually.
+	Arch         *string       `url:"arch,omitempty" json:"arch,omitempty"`                 // OS architecture type.
+	Cmode        *string       `url:"cmode,omitempty" json:"cmode,omitempty"`               // Console mode. By default, the console command tries to open a connection to one of the available tty devices. By setting cmode to 'console' it tries to attach to /dev/console instead. If you set cmode to 'shell', it simply invokes a shell inside the container (no login).
+	Console      *util.PVEBool `url:"console,omitempty" json:"console,omitempty"`           // Attach a console device (/dev/console) to the container.
+	Cores        *int          `url:"cores,omitempty" json:"cores,omitempty"`               // The number of cores assigned to the container. A container can use all available cores by default.
+	Cpulimit     *float64      `url:"cpulimit,omitempty" json:"cpulimit,omitempty"`         // Limit of CPU usage. NOTE: If the computer has 2 CPUs, it has a total of '2' CPU time. Value '0' indicates no CPU limit.
+	Cpuunits     *int          `url:"cpuunits,omitempty" json:"cpuunits,omitempty"`         // CPU weight for a container, will be clamped to [1, 10000] in cgroup v2.
+	Debug        *util.PVEBool `url:"debug,omitempty" json:"debug,omitempty"`               // Try to be more verbose. For now this only enables debug log-level on start.
+	Description  *string       `url:"description,omitempty" json:"description,omitempty"`   // Description for the Container. Shown in the web-interface CT's summary. This is saved as comment inside the configuration file.
+	Features     *Features     `url:"features,omitempty" json:"features,omitempty"`         // Allow containers access to advanced features.
+	Hookscript   *string       `url:"hookscript,omitempty" json:"hookscript,omitempty"`     // Script that will be exectued during various steps in the containers lifetime.
+	Hostname     *string       `url:"hostname,omitempty" json:"hostname,omitempty"`         // Set a host name for the container.
+	Lock         *string       `url:"lock,omitempty" json:"lock,omitempty"`                 // Lock/unlock the container.
+	Lxc          *[][]string   `url:"lxc,omitempty" json:"lxc,omitempty"`                   // Array of lxc low-level configurations ([[key1, value1], [key2, value2] ...]).
+	Memory       *int          `url:"memory,omitempty" json:"memory,omitempty"`             // Amount of RAM for the container in MB.
+	Mps          *Mps          `url:"mp[n],omitempty" json:"mp[n],omitempty"`               // Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
+	Nameserver   *string       `url:"nameserver,omitempty" json:"nameserver,omitempty"`     // Sets DNS server IP address for a container. Create will automatically use the setting from the host if you neither set searchdomain nor nameserver.
+	Nets         *Nets         `url:"net[n],omitempty" json:"net[n],omitempty"`             // Specifies network interfaces for the container.
+	Onboot       *util.PVEBool `url:"onboot,omitempty" json:"onboot,omitempty"`             // Specifies whether a container will be started during system bootup.
+	Ostype       *string       `url:"ostype,omitempty" json:"ostype,omitempty"`             // OS type. This is used to setup configuration inside the container, and corresponds to lxc setup scripts in /usr/share/lxc/config/<ostype>.common.conf. Value 'unmanaged' can be used to skip and OS specific setup.
+	Protection   *util.PVEBool `url:"protection,omitempty" json:"protection,omitempty"`     // Sets the protection flag of the container. This will prevent the CT or CT's disk remove/update operation.
+	Rootfs       *Rootfs       `url:"rootfs,omitempty" json:"rootfs,omitempty"`             // Use volume as container root.
+	Searchdomain *string       `url:"searchdomain,omitempty" json:"searchdomain,omitempty"` // Sets DNS search domains for a container. Create will automatically use the setting from the host if you neither set searchdomain nor nameserver.
+	Startup      *string       `url:"startup,omitempty" json:"startup,omitempty"`           // Startup and shutdown behavior. Order is a non-negative number defining the general startup order. Shutdown in done with reverse ordering. Additionally you can set the 'up' or 'down' delay in seconds, which specifies a delay to wait before the next VM is started or stopped.
+	Swap         *int          `url:"swap,omitempty" json:"swap,omitempty"`                 // Amount of SWAP for the container in MB.
+	Tags         *string       `url:"tags,omitempty" json:"tags,omitempty"`                 // Tags of the Container. This is only meta information.
+	Template     *util.PVEBool `url:"template,omitempty" json:"template,omitempty"`         // Enable/disable Template.
+	Timezone     *string       `url:"timezone,omitempty" json:"timezone,omitempty"`         // Time zone to use in the container. If option isn't set, then nothing will be done. Can be set to 'host' to match the host time zone, or an arbitrary time zone option from /usr/share/zoneinfo/zone.tab
+	Tty          *int          `url:"tty,omitempty" json:"tty,omitempty"`                   // Specify the number of tty available to the container
+	Unprivileged *util.PVEBool `url:"unprivileged,omitempty" json:"unprivileged,omitempty"` // Makes the container run as unprivileged user. (Should not be modified manually.)
+	Unuseds      *Unuseds      `url:"unused[n],omitempty" json:"unused[n],omitempty"`       // Reference to unused volumes. This is used internally, and should not be modified manually.
 }
 
 type UpdateVmConfigRequest struct {
@@ -281,38 +267,38 @@ type UpdateVmConfigRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Arch         *string           `url:"arch,omitempty" json:"arch,omitempty"`                 // OS architecture type.
-	Cmode        *string           `url:"cmode,omitempty" json:"cmode,omitempty"`               // Console mode. By default, the console command tries to open a connection to one of the available tty devices. By setting cmode to 'console' it tries to attach to /dev/console instead. If you set cmode to 'shell', it simply invokes a shell inside the container (no login).
-	Console      *util.SpecialBool `url:"console,omitempty" json:"console,omitempty"`           // Attach a console device (/dev/console) to the container.
-	Cores        *int              `url:"cores,omitempty" json:"cores,omitempty"`               // The number of cores assigned to the container. A container can use all available cores by default.
-	Cpulimit     *float64          `url:"cpulimit,omitempty" json:"cpulimit,omitempty"`         // Limit of CPU usage. NOTE: If the computer has 2 CPUs, it has a total of '2' CPU time. Value '0' indicates no CPU limit.
-	Cpuunits     *int              `url:"cpuunits,omitempty" json:"cpuunits,omitempty"`         // CPU weight for a container, will be clamped to [1, 10000] in cgroup v2.
-	Debug        *util.SpecialBool `url:"debug,omitempty" json:"debug,omitempty"`               // Try to be more verbose. For now this only enables debug log-level on start.
-	Delete       *string           `url:"delete,omitempty" json:"delete,omitempty"`             // A list of settings you want to delete.
-	Description  *string           `url:"description,omitempty" json:"description,omitempty"`   // Description for the Container. Shown in the web-interface CT's summary. This is saved as comment inside the configuration file.
-	Digest       *string           `url:"digest,omitempty" json:"digest,omitempty"`             // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-	Features     *Features         `url:"features,omitempty" json:"features,omitempty"`         // Allow containers access to advanced features.
-	Hookscript   *string           `url:"hookscript,omitempty" json:"hookscript,omitempty"`     // Script that will be exectued during various steps in the containers lifetime.
-	Hostname     *string           `url:"hostname,omitempty" json:"hostname,omitempty"`         // Set a host name for the container.
-	Lock         *string           `url:"lock,omitempty" json:"lock,omitempty"`                 // Lock/unlock the container.
-	Memory       *int              `url:"memory,omitempty" json:"memory,omitempty"`             // Amount of RAM for the container in MB.
-	Mps          *MpnArr           `url:"mp[n],omitempty" json:"mp[n],omitempty"`               // Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
-	Nameserver   *string           `url:"nameserver,omitempty" json:"nameserver,omitempty"`     // Sets DNS server IP address for a container. Create will automatically use the setting from the host if you neither set searchdomain nor nameserver.
-	Nets         *NetnArr          `url:"net[n],omitempty" json:"net[n],omitempty"`             // Specifies network interfaces for the container.
-	Onboot       *util.SpecialBool `url:"onboot,omitempty" json:"onboot,omitempty"`             // Specifies whether a container will be started during system bootup.
-	Ostype       *string           `url:"ostype,omitempty" json:"ostype,omitempty"`             // OS type. This is used to setup configuration inside the container, and corresponds to lxc setup scripts in /usr/share/lxc/config/<ostype>.common.conf. Value 'unmanaged' can be used to skip and OS specific setup.
-	Protection   *util.SpecialBool `url:"protection,omitempty" json:"protection,omitempty"`     // Sets the protection flag of the container. This will prevent the CT or CT's disk remove/update operation.
-	Revert       *string           `url:"revert,omitempty" json:"revert,omitempty"`             // Revert a pending change.
-	Rootfs       *Rootfs           `url:"rootfs,omitempty" json:"rootfs,omitempty"`             // Use volume as container root.
-	Searchdomain *string           `url:"searchdomain,omitempty" json:"searchdomain,omitempty"` // Sets DNS search domains for a container. Create will automatically use the setting from the host if you neither set searchdomain nor nameserver.
-	Startup      *string           `url:"startup,omitempty" json:"startup,omitempty"`           // Startup and shutdown behavior. Order is a non-negative number defining the general startup order. Shutdown in done with reverse ordering. Additionally you can set the 'up' or 'down' delay in seconds, which specifies a delay to wait before the next VM is started or stopped.
-	Swap         *int              `url:"swap,omitempty" json:"swap,omitempty"`                 // Amount of SWAP for the container in MB.
-	Tags         *string           `url:"tags,omitempty" json:"tags,omitempty"`                 // Tags of the Container. This is only meta information.
-	Template     *util.SpecialBool `url:"template,omitempty" json:"template,omitempty"`         // Enable/disable Template.
-	Timezone     *string           `url:"timezone,omitempty" json:"timezone,omitempty"`         // Time zone to use in the container. If option isn't set, then nothing will be done. Can be set to 'host' to match the host time zone, or an arbitrary time zone option from /usr/share/zoneinfo/zone.tab
-	Tty          *int              `url:"tty,omitempty" json:"tty,omitempty"`                   // Specify the number of tty available to the container
-	Unprivileged *util.SpecialBool `url:"unprivileged,omitempty" json:"unprivileged,omitempty"` // Makes the container run as unprivileged user. (Should not be modified manually.)
-	Unuseds      *UnusednArr       `url:"unused[n],omitempty" json:"unused[n],omitempty"`       // Reference to unused volumes. This is used internally, and should not be modified manually.
+	Arch         *string       `url:"arch,omitempty" json:"arch,omitempty"`                 // OS architecture type.
+	Cmode        *string       `url:"cmode,omitempty" json:"cmode,omitempty"`               // Console mode. By default, the console command tries to open a connection to one of the available tty devices. By setting cmode to 'console' it tries to attach to /dev/console instead. If you set cmode to 'shell', it simply invokes a shell inside the container (no login).
+	Console      *util.PVEBool `url:"console,omitempty" json:"console,omitempty"`           // Attach a console device (/dev/console) to the container.
+	Cores        *int          `url:"cores,omitempty" json:"cores,omitempty"`               // The number of cores assigned to the container. A container can use all available cores by default.
+	Cpulimit     *float64      `url:"cpulimit,omitempty" json:"cpulimit,omitempty"`         // Limit of CPU usage. NOTE: If the computer has 2 CPUs, it has a total of '2' CPU time. Value '0' indicates no CPU limit.
+	Cpuunits     *int          `url:"cpuunits,omitempty" json:"cpuunits,omitempty"`         // CPU weight for a container, will be clamped to [1, 10000] in cgroup v2.
+	Debug        *util.PVEBool `url:"debug,omitempty" json:"debug,omitempty"`               // Try to be more verbose. For now this only enables debug log-level on start.
+	Delete       *string       `url:"delete,omitempty" json:"delete,omitempty"`             // A list of settings you want to delete.
+	Description  *string       `url:"description,omitempty" json:"description,omitempty"`   // Description for the Container. Shown in the web-interface CT's summary. This is saved as comment inside the configuration file.
+	Digest       *string       `url:"digest,omitempty" json:"digest,omitempty"`             // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Features     *Features     `url:"features,omitempty" json:"features,omitempty"`         // Allow containers access to advanced features.
+	Hookscript   *string       `url:"hookscript,omitempty" json:"hookscript,omitempty"`     // Script that will be exectued during various steps in the containers lifetime.
+	Hostname     *string       `url:"hostname,omitempty" json:"hostname,omitempty"`         // Set a host name for the container.
+	Lock         *string       `url:"lock,omitempty" json:"lock,omitempty"`                 // Lock/unlock the container.
+	Memory       *int          `url:"memory,omitempty" json:"memory,omitempty"`             // Amount of RAM for the container in MB.
+	Mps          *Mps          `url:"mp[n],omitempty" json:"mp[n],omitempty"`               // Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
+	Nameserver   *string       `url:"nameserver,omitempty" json:"nameserver,omitempty"`     // Sets DNS server IP address for a container. Create will automatically use the setting from the host if you neither set searchdomain nor nameserver.
+	Nets         *Nets         `url:"net[n],omitempty" json:"net[n],omitempty"`             // Specifies network interfaces for the container.
+	Onboot       *util.PVEBool `url:"onboot,omitempty" json:"onboot,omitempty"`             // Specifies whether a container will be started during system bootup.
+	Ostype       *string       `url:"ostype,omitempty" json:"ostype,omitempty"`             // OS type. This is used to setup configuration inside the container, and corresponds to lxc setup scripts in /usr/share/lxc/config/<ostype>.common.conf. Value 'unmanaged' can be used to skip and OS specific setup.
+	Protection   *util.PVEBool `url:"protection,omitempty" json:"protection,omitempty"`     // Sets the protection flag of the container. This will prevent the CT or CT's disk remove/update operation.
+	Revert       *string       `url:"revert,omitempty" json:"revert,omitempty"`             // Revert a pending change.
+	Rootfs       *Rootfs       `url:"rootfs,omitempty" json:"rootfs,omitempty"`             // Use volume as container root.
+	Searchdomain *string       `url:"searchdomain,omitempty" json:"searchdomain,omitempty"` // Sets DNS search domains for a container. Create will automatically use the setting from the host if you neither set searchdomain nor nameserver.
+	Startup      *string       `url:"startup,omitempty" json:"startup,omitempty"`           // Startup and shutdown behavior. Order is a non-negative number defining the general startup order. Shutdown in done with reverse ordering. Additionally you can set the 'up' or 'down' delay in seconds, which specifies a delay to wait before the next VM is started or stopped.
+	Swap         *int          `url:"swap,omitempty" json:"swap,omitempty"`                 // Amount of SWAP for the container in MB.
+	Tags         *string       `url:"tags,omitempty" json:"tags,omitempty"`                 // Tags of the Container. This is only meta information.
+	Template     *util.PVEBool `url:"template,omitempty" json:"template,omitempty"`         // Enable/disable Template.
+	Timezone     *string       `url:"timezone,omitempty" json:"timezone,omitempty"`         // Time zone to use in the container. If option isn't set, then nothing will be done. Can be set to 'host' to match the host time zone, or an arbitrary time zone option from /usr/share/zoneinfo/zone.tab
+	Tty          *int          `url:"tty,omitempty" json:"tty,omitempty"`                   // Specify the number of tty available to the container
+	Unprivileged *util.PVEBool `url:"unprivileged,omitempty" json:"unprivileged,omitempty"` // Makes the container run as unprivileged user. (Should not be modified manually.)
+	Unuseds      *Unuseds      `url:"unused[n],omitempty" json:"unused[n],omitempty"`       // Reference to unused volumes. This is used internally, and should not be modified manually.
 }
 
 type RrdRequest struct {
@@ -343,9 +329,9 @@ type VncproxyRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Height    *int              `url:"height,omitempty" json:"height,omitempty"`       // sets the height of the console in pixels.
-	Websocket *util.SpecialBool `url:"websocket,omitempty" json:"websocket,omitempty"` // use websocket instead of standard VNC.
-	Width     *int              `url:"width,omitempty" json:"width,omitempty"`         // sets the width of the console in pixels.
+	Height    *int          `url:"height,omitempty" json:"height,omitempty"`       // sets the height of the console in pixels.
+	Websocket *util.PVEBool `url:"websocket,omitempty" json:"websocket,omitempty"` // use websocket instead of standard VNC.
+	Width     *int          `url:"width,omitempty" json:"width,omitempty"`         // sets the width of the console in pixels.
 }
 
 type VncproxyResponse struct {
@@ -398,7 +384,7 @@ type SpiceproxyResponse struct {
 	Type     string `url:"type" json:"type"`
 }
 
-type RemoteMigrateVmRemoteMigrateRequest struct {
+type RemoteMigrateVmRequest struct {
 	Node           string `url:"node" json:"node"`                       // The cluster node name.
 	TargetBridge   string `url:"target-bridge" json:"target-bridge"`     // Mapping from source to target bridges. Providing only a single bridge ID maps all source bridges to that bridge. Providing the special value '1' will map each source bridge to itself.
 	TargetEndpoint string `url:"target-endpoint" json:"target-endpoint"` // Remote target endpoint
@@ -406,25 +392,25 @@ type RemoteMigrateVmRemoteMigrateRequest struct {
 	Vmid           int    `url:"vmid" json:"vmid"`                       // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Bwlimit    *float64          `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`         // Override I/O bandwidth limit (in KiB/s).
-	Delete     *util.SpecialBool `url:"delete,omitempty" json:"delete,omitempty"`           // Delete the original CT and related data after successful migration. By default the original CT is kept on the source cluster in a stopped state.
-	Online     *util.SpecialBool `url:"online,omitempty" json:"online,omitempty"`           // Use online/live migration.
-	Restart    *util.SpecialBool `url:"restart,omitempty" json:"restart,omitempty"`         // Use restart migration
-	TargetVmid *int              `url:"target-vmid,omitempty" json:"target-vmid,omitempty"` // The (unique) ID of the VM.
-	Timeout    *int              `url:"timeout,omitempty" json:"timeout,omitempty"`         // Timeout in seconds for shutdown for restart migration
+	Bwlimit    *float64      `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`         // Override I/O bandwidth limit (in KiB/s).
+	Delete     *util.PVEBool `url:"delete,omitempty" json:"delete,omitempty"`           // Delete the original CT and related data after successful migration. By default the original CT is kept on the source cluster in a stopped state.
+	Online     *util.PVEBool `url:"online,omitempty" json:"online,omitempty"`           // Use online/live migration.
+	Restart    *util.PVEBool `url:"restart,omitempty" json:"restart,omitempty"`         // Use restart migration
+	TargetVmid *int          `url:"target-vmid,omitempty" json:"target-vmid,omitempty"` // The (unique) ID of the VM.
+	Timeout    *int          `url:"timeout,omitempty" json:"timeout,omitempty"`         // Timeout in seconds for shutdown for restart migration
 }
 
-type MigrateVmMigrateRequest struct {
+type MigrateVmRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
 	Target string `url:"target" json:"target"` // Target node.
 	Vmid   int    `url:"vmid" json:"vmid"`     // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Bwlimit       *float64          `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`               // Override I/O bandwidth limit (in KiB/s).
-	Online        *util.SpecialBool `url:"online,omitempty" json:"online,omitempty"`                 // Use online/live migration.
-	Restart       *util.SpecialBool `url:"restart,omitempty" json:"restart,omitempty"`               // Use restart migration
-	TargetStorage *string           `url:"target-storage,omitempty" json:"target-storage,omitempty"` // Mapping from source to target storages. Providing only a single storage ID maps all source storages to that storage. Providing the special value '1' will map each source storage to itself.
-	Timeout       *int              `url:"timeout,omitempty" json:"timeout,omitempty"`               // Timeout in seconds for shutdown for restart migration
+	Bwlimit       *float64      `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`               // Override I/O bandwidth limit (in KiB/s).
+	Online        *util.PVEBool `url:"online,omitempty" json:"online,omitempty"`                 // Use online/live migration.
+	Restart       *util.PVEBool `url:"restart,omitempty" json:"restart,omitempty"`               // Use restart migration
+	TargetStorage *string       `url:"target-storage,omitempty" json:"target-storage,omitempty"` // Mapping from source to target storages. Providing only a single storage ID maps all source storages to that storage. Providing the special value '1' will map each source storage to itself.
+	Timeout       *int          `url:"timeout,omitempty" json:"timeout,omitempty"`               // Timeout in seconds for shutdown for restart migration
 }
 
 type VmFeatureRequest struct {
@@ -437,7 +423,7 @@ type VmFeatureRequest struct {
 }
 
 type VmFeatureResponse struct {
-	Hasfeature util.SpecialBool `url:"hasFeature" json:"hasFeature"`
+	Hasfeature util.PVEBool `url:"hasFeature" json:"hasFeature"`
 }
 
 type TemplateRequest struct {
@@ -446,23 +432,23 @@ type TemplateRequest struct {
 
 }
 
-type CloneVmCloneRequest struct {
+type CloneVmRequest struct {
 	Newid int    `url:"newid" json:"newid"` // VMID for the clone.
 	Node  string `url:"node" json:"node"`   // The cluster node name.
 	Vmid  int    `url:"vmid" json:"vmid"`   // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Bwlimit     *float64          `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`         // Override I/O bandwidth limit (in KiB/s).
-	Description *string           `url:"description,omitempty" json:"description,omitempty"` // Description for the new CT.
-	Full        *util.SpecialBool `url:"full,omitempty" json:"full,omitempty"`               // Create a full copy of all disks. This is always done when you clone a normal CT. For CT templates, we try to create a linked clone by default.
-	Hostname    *string           `url:"hostname,omitempty" json:"hostname,omitempty"`       // Set a hostname for the new CT.
-	Pool        *string           `url:"pool,omitempty" json:"pool,omitempty"`               // Add the new CT to the specified pool.
-	Snapname    *string           `url:"snapname,omitempty" json:"snapname,omitempty"`       // The name of the snapshot.
-	Storage     *string           `url:"storage,omitempty" json:"storage,omitempty"`         // Target storage for full clone.
-	Target      *string           `url:"target,omitempty" json:"target,omitempty"`           // Target node. Only allowed if the original VM is on shared storage.
+	Bwlimit     *float64      `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`         // Override I/O bandwidth limit (in KiB/s).
+	Description *string       `url:"description,omitempty" json:"description,omitempty"` // Description for the new CT.
+	Full        *util.PVEBool `url:"full,omitempty" json:"full,omitempty"`               // Create a full copy of all disks. This is always done when you clone a normal CT. For CT templates, we try to create a linked clone by default.
+	Hostname    *string       `url:"hostname,omitempty" json:"hostname,omitempty"`       // Set a hostname for the new CT.
+	Pool        *string       `url:"pool,omitempty" json:"pool,omitempty"`               // Add the new CT to the specified pool.
+	Snapname    *string       `url:"snapname,omitempty" json:"snapname,omitempty"`       // The name of the snapshot.
+	Storage     *string       `url:"storage,omitempty" json:"storage,omitempty"`         // Target storage for full clone.
+	Target      *string       `url:"target,omitempty" json:"target,omitempty"`           // Target node. Only allowed if the original VM is on shared storage.
 }
 
-type ResizeVmResizeRequest struct {
+type ResizeVmRequest struct {
 	Disk string `url:"disk" json:"disk"` // The disk you want to resize.
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Size string `url:"size" json:"size"` // The new size. With the '+' sign the value is added to the actual size of the volume and without it, the value is taken as an absolute one. Shrinking disk size is not supported.
@@ -478,13 +464,13 @@ type MoveVolumeRequest struct {
 	Volume string `url:"volume" json:"volume"` // Volume which will be moved.
 
 	// The following parameters are optional
-	Bwlimit      *float64          `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`             // Override I/O bandwidth limit (in KiB/s).
-	Delete       *util.SpecialBool `url:"delete,omitempty" json:"delete,omitempty"`               // Delete the original volume after successful copy. By default the original is kept as an unused volume entry.
-	Digest       *string           `url:"digest,omitempty" json:"digest,omitempty"`               // Prevent changes if current configuration file has different SHA1 " . 		  "digest. This can be used to prevent concurrent modifications.
-	Storage      *string           `url:"storage,omitempty" json:"storage,omitempty"`             // Target Storage.
-	TargetDigest *string           `url:"target-digest,omitempty" json:"target-digest,omitempty"` // Prevent changes if current configuration file of the target " . 		  "container has a different SHA1 digest. This can be used to prevent " . 		  "concurrent modifications.
-	TargetVmid   *int              `url:"target-vmid,omitempty" json:"target-vmid,omitempty"`     // The (unique) ID of the VM.
-	TargetVolume *string           `url:"target-volume,omitempty" json:"target-volume,omitempty"` // The config key the volume will be moved to. Default is the source volume key.
+	Bwlimit      *float64      `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`             // Override I/O bandwidth limit (in KiB/s).
+	Delete       *util.PVEBool `url:"delete,omitempty" json:"delete,omitempty"`               // Delete the original volume after successful copy. By default the original is kept as an unused volume entry.
+	Digest       *string       `url:"digest,omitempty" json:"digest,omitempty"`               // Prevent changes if current configuration file has different SHA1 " . 		  "digest. This can be used to prevent concurrent modifications.
+	Storage      *string       `url:"storage,omitempty" json:"storage,omitempty"`             // Target Storage.
+	TargetDigest *string       `url:"target-digest,omitempty" json:"target-digest,omitempty"` // Prevent changes if current configuration file of the target " . 		  "container has a different SHA1 digest. This can be used to prevent " . 		  "concurrent modifications.
+	TargetVmid   *int          `url:"target-vmid,omitempty" json:"target-vmid,omitempty"`     // The (unique) ID of the VM.
+	TargetVolume *string       `url:"target-volume,omitempty" json:"target-volume,omitempty"` // The config key the volume will be moved to. Default is the source volume key.
 }
 
 type VmPendingRequest struct {
@@ -627,16 +613,16 @@ func (c *Client) Spiceproxy(ctx context.Context, req SpiceproxyRequest) (Spicepr
 	return resp, err
 }
 
-// RemoteMigrateVmRemoteMigrate Migrate the container to another cluster. Creates a new migration task. EXPERIMENTAL feature!
-func (c *Client) RemoteMigrateVmRemoteMigrate(ctx context.Context, req RemoteMigrateVmRemoteMigrateRequest) (string, error) {
+// RemoteMigrateVm Migrate the container to another cluster. Creates a new migration task. EXPERIMENTAL feature!
+func (c *Client) RemoteMigrateVm(ctx context.Context, req RemoteMigrateVmRequest) (string, error) {
 	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/remote_migrate", "POST", &resp, req)
 	return resp, err
 }
 
-// MigrateVmMigrate Migrate the container to another node. Creates a new migration task.
-func (c *Client) MigrateVmMigrate(ctx context.Context, req MigrateVmMigrateRequest) (string, error) {
+// MigrateVm Migrate the container to another node. Creates a new migration task.
+func (c *Client) MigrateVm(ctx context.Context, req MigrateVmRequest) (string, error) {
 	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/migrate", "POST", &resp, req)
@@ -658,16 +644,16 @@ func (c *Client) Template(ctx context.Context, req TemplateRequest) error {
 	return err
 }
 
-// CloneVmClone Create a container clone/copy
-func (c *Client) CloneVmClone(ctx context.Context, req CloneVmCloneRequest) (string, error) {
+// CloneVm Create a container clone/copy
+func (c *Client) CloneVm(ctx context.Context, req CloneVmRequest) (string, error) {
 	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/clone", "POST", &resp, req)
 	return resp, err
 }
 
-// ResizeVmResize Resize a container mount point.
-func (c *Client) ResizeVmResize(ctx context.Context, req ResizeVmResizeRequest) (string, error) {
+// ResizeVm Resize a container mount point.
+func (c *Client) ResizeVm(ctx context.Context, req ResizeVmRequest) (string, error) {
 	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/lxc/{vmid}/resize", "PUT", &resp, req)

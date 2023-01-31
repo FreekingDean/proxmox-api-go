@@ -29,12 +29,12 @@ type IndexResponse struct {
 	Type string `url:"type" json:"type"`
 }
 
-type UsbscanUsbRequest struct {
+type UsbscanRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
 
-type UsbscanUsbResponse struct {
+type UsbscanResponse struct {
 	Busnum int    `url:"busnum" json:"busnum"`
 	Class  int    `url:"class" json:"class"`
 	Devnum int    `url:"devnum" json:"devnum"`
@@ -59,9 +59,9 @@ func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, 
 	return resp, err
 }
 
-// UsbscanUsb List local USB devices.
-func (c *Client) UsbscanUsb(ctx context.Context, req UsbscanUsbRequest) ([]UsbscanUsbResponse, error) {
-	var resp []UsbscanUsbResponse
+// Usbscan List local USB devices.
+func (c *Client) Usbscan(ctx context.Context, req UsbscanRequest) ([]UsbscanResponse, error) {
+	var resp []UsbscanResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/hardware/usb", "GET", &resp, req)
 	return resp, err

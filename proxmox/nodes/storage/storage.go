@@ -25,11 +25,11 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Content *string           `url:"content,omitempty" json:"content,omitempty"` // Only list stores which support this content type.
-	Enabled *util.SpecialBool `url:"enabled,omitempty" json:"enabled,omitempty"` // Only list stores which are enabled (not disabled in config).
-	Format  *util.SpecialBool `url:"format,omitempty" json:"format,omitempty"`   // Include information about formats
-	Storage *string           `url:"storage,omitempty" json:"storage,omitempty"` // Only list status for specified storage
-	Target  *string           `url:"target,omitempty" json:"target,omitempty"`   // If target is different to 'node', we only lists shared storages which content is accessible on this 'node' and the specified 'target' node.
+	Content *string       `url:"content,omitempty" json:"content,omitempty"` // Only list stores which support this content type.
+	Enabled *util.PVEBool `url:"enabled,omitempty" json:"enabled,omitempty"` // Only list stores which are enabled (not disabled in config).
+	Format  *util.PVEBool `url:"format,omitempty" json:"format,omitempty"`   // Include information about formats
+	Storage *string       `url:"storage,omitempty" json:"storage,omitempty"` // Only list status for specified storage
+	Target  *string       `url:"target,omitempty" json:"target,omitempty"`   // If target is different to 'node', we only lists shared storages which content is accessible on this 'node' and the specified 'target' node.
 }
 
 type IndexResponse struct {
@@ -38,13 +38,13 @@ type IndexResponse struct {
 	Type    string `url:"type" json:"type"`       // Storage type.
 
 	// The following parameters are optional
-	Active       *util.SpecialBool `url:"active,omitempty" json:"active,omitempty"`               // Set when storage is accessible.
-	Avail        *int              `url:"avail,omitempty" json:"avail,omitempty"`                 // Available storage space in bytes.
-	Enabled      *util.SpecialBool `url:"enabled,omitempty" json:"enabled,omitempty"`             // Set when storage is enabled (not disabled).
-	Shared       *util.SpecialBool `url:"shared,omitempty" json:"shared,omitempty"`               // Shared flag from storage configuration.
-	Total        *int              `url:"total,omitempty" json:"total,omitempty"`                 // Total storage space in bytes.
-	Used         *int              `url:"used,omitempty" json:"used,omitempty"`                   // Used storage space in bytes.
-	UsedFraction *float64          `url:"used_fraction,omitempty" json:"used_fraction,omitempty"` // Used fraction (used/total).
+	Active       *util.PVEBool `url:"active,omitempty" json:"active,omitempty"`               // Set when storage is accessible.
+	Avail        *int          `url:"avail,omitempty" json:"avail,omitempty"`                 // Available storage space in bytes.
+	Enabled      *util.PVEBool `url:"enabled,omitempty" json:"enabled,omitempty"`             // Set when storage is enabled (not disabled).
+	Shared       *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`               // Shared flag from storage configuration.
+	Total        *int          `url:"total,omitempty" json:"total,omitempty"`                 // Total storage space in bytes.
+	Used         *int          `url:"used,omitempty" json:"used,omitempty"`                   // Used storage space in bytes.
+	UsedFraction *float64      `url:"used_fraction,omitempty" json:"used_fraction,omitempty"` // Used fraction (used/total).
 }
 
 type FindRequest struct {
@@ -136,9 +136,9 @@ type DownloadUrlRequest struct {
 	Url      string `url:"url" json:"url"`           // The URL to download the file from.
 
 	// The following parameters are optional
-	Checksum           *string           `url:"checksum,omitempty" json:"checksum,omitempty"`                       // The expected checksum of the file.
-	ChecksumAlgorithm  *string           `url:"checksum-algorithm,omitempty" json:"checksum-algorithm,omitempty"`   // The algorithm to calculate the checksum of the file.
-	VerifyCertificates *util.SpecialBool `url:"verify-certificates,omitempty" json:"verify-certificates,omitempty"` // If false, no SSL/TLS certificates will be verified.
+	Checksum           *string       `url:"checksum,omitempty" json:"checksum,omitempty"`                       // The expected checksum of the file.
+	ChecksumAlgorithm  *string       `url:"checksum-algorithm,omitempty" json:"checksum-algorithm,omitempty"`   // The algorithm to calculate the checksum of the file.
+	VerifyCertificates *util.PVEBool `url:"verify-certificates,omitempty" json:"verify-certificates,omitempty"` // If false, no SSL/TLS certificates will be verified.
 }
 
 // Index Get status for all datastores.

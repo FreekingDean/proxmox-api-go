@@ -32,9 +32,9 @@ type IndexResponse struct {
 	Name        string `url:"name" json:"name"`               // Snapshot identifier. Value 'current' identifies the current VM.
 
 	// The following parameters are optional
-	Parent   *string           `url:"parent,omitempty" json:"parent,omitempty"`     // Parent snapshot identifier.
-	Snaptime *int              `url:"snaptime,omitempty" json:"snaptime,omitempty"` // Snapshot creation time
-	Vmstate  *util.SpecialBool `url:"vmstate,omitempty" json:"vmstate,omitempty"`   // Snapshot includes RAM.
+	Parent   *string       `url:"parent,omitempty" json:"parent,omitempty"`     // Parent snapshot identifier.
+	Snaptime *int          `url:"snaptime,omitempty" json:"snaptime,omitempty"` // Snapshot creation time
+	Vmstate  *util.PVEBool `url:"vmstate,omitempty" json:"vmstate,omitempty"`   // Snapshot includes RAM.
 }
 
 type CreateRequest struct {
@@ -43,8 +43,8 @@ type CreateRequest struct {
 	Vmid     int    `url:"vmid" json:"vmid"`         // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Description *string           `url:"description,omitempty" json:"description,omitempty"` // A textual description or comment.
-	Vmstate     *util.SpecialBool `url:"vmstate,omitempty" json:"vmstate,omitempty"`         // Save the vmstate
+	Description *string       `url:"description,omitempty" json:"description,omitempty"` // A textual description or comment.
+	Vmstate     *util.PVEBool `url:"vmstate,omitempty" json:"vmstate,omitempty"`         // Save the vmstate
 }
 
 type FindRequest struct {
@@ -60,7 +60,7 @@ type DeleteRequest struct {
 	Vmid     int    `url:"vmid" json:"vmid"`         // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Force *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"` // For removal from config file, even if removing disk snapshots fails.
+	Force *util.PVEBool `url:"force,omitempty" json:"force,omitempty"` // For removal from config file, even if removing disk snapshots fails.
 }
 
 type GetSnapshotConfigRequest struct {
@@ -85,7 +85,7 @@ type RollbackRequest struct {
 	Vmid     int    `url:"vmid" json:"vmid"`         // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Start *util.SpecialBool `url:"start,omitempty" json:"start,omitempty"` // Whether the VM should get started after rolling back successfully
+	Start *util.PVEBool `url:"start,omitempty" json:"start,omitempty"` // Whether the VM should get started after rolling back successfully
 }
 
 // Index List all snapshots.

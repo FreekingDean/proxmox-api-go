@@ -36,16 +36,16 @@ type GetOptionsRequest struct {
 type GetOptionsResponse struct {
 
 	// The following parameters are optional
-	Dhcp        *util.SpecialBool `url:"dhcp,omitempty" json:"dhcp,omitempty"`                   // Enable DHCP.
-	Enable      *util.SpecialBool `url:"enable,omitempty" json:"enable,omitempty"`               // Enable/disable firewall rules.
-	Ipfilter    *util.SpecialBool `url:"ipfilter,omitempty" json:"ipfilter,omitempty"`           // Enable default IP filters. This is equivalent to adding an empty ipfilter-net<id> ipset for every interface. Such ipsets implicitly contain sane default restrictions such as restricting IPv6 link local addresses to the one derived from the interface's MAC address. For containers the configured IP addresses will be implicitly added.
-	LogLevelIn  *string           `url:"log_level_in,omitempty" json:"log_level_in,omitempty"`   // Log level for incoming traffic.
-	LogLevelOut *string           `url:"log_level_out,omitempty" json:"log_level_out,omitempty"` // Log level for outgoing traffic.
-	Macfilter   *util.SpecialBool `url:"macfilter,omitempty" json:"macfilter,omitempty"`         // Enable/disable MAC address filter.
-	Ndp         *util.SpecialBool `url:"ndp,omitempty" json:"ndp,omitempty"`                     // Enable NDP (Neighbor Discovery Protocol).
-	PolicyIn    *string           `url:"policy_in,omitempty" json:"policy_in,omitempty"`         // Input policy.
-	PolicyOut   *string           `url:"policy_out,omitempty" json:"policy_out,omitempty"`       // Output policy.
-	Radv        *util.SpecialBool `url:"radv,omitempty" json:"radv,omitempty"`                   // Allow sending Router Advertisement.
+	Dhcp        *util.PVEBool `url:"dhcp,omitempty" json:"dhcp,omitempty"`                   // Enable DHCP.
+	Enable      *util.PVEBool `url:"enable,omitempty" json:"enable,omitempty"`               // Enable/disable firewall rules.
+	Ipfilter    *util.PVEBool `url:"ipfilter,omitempty" json:"ipfilter,omitempty"`           // Enable default IP filters. This is equivalent to adding an empty ipfilter-net<id> ipset for every interface. Such ipsets implicitly contain sane default restrictions such as restricting IPv6 link local addresses to the one derived from the interface's MAC address. For containers the configured IP addresses will be implicitly added.
+	LogLevelIn  *string       `url:"log_level_in,omitempty" json:"log_level_in,omitempty"`   // Log level for incoming traffic.
+	LogLevelOut *string       `url:"log_level_out,omitempty" json:"log_level_out,omitempty"` // Log level for outgoing traffic.
+	Macfilter   *util.PVEBool `url:"macfilter,omitempty" json:"macfilter,omitempty"`         // Enable/disable MAC address filter.
+	Ndp         *util.PVEBool `url:"ndp,omitempty" json:"ndp,omitempty"`                     // Enable NDP (Neighbor Discovery Protocol).
+	PolicyIn    *string       `url:"policy_in,omitempty" json:"policy_in,omitempty"`         // Input policy.
+	PolicyOut   *string       `url:"policy_out,omitempty" json:"policy_out,omitempty"`       // Output policy.
+	Radv        *util.PVEBool `url:"radv,omitempty" json:"radv,omitempty"`                   // Allow sending Router Advertisement.
 }
 
 type SetOptionsRequest struct {
@@ -53,18 +53,18 @@ type SetOptionsRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Delete      *string           `url:"delete,omitempty" json:"delete,omitempty"`               // A list of settings you want to delete.
-	Dhcp        *util.SpecialBool `url:"dhcp,omitempty" json:"dhcp,omitempty"`                   // Enable DHCP.
-	Digest      *string           `url:"digest,omitempty" json:"digest,omitempty"`               // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-	Enable      *util.SpecialBool `url:"enable,omitempty" json:"enable,omitempty"`               // Enable/disable firewall rules.
-	Ipfilter    *util.SpecialBool `url:"ipfilter,omitempty" json:"ipfilter,omitempty"`           // Enable default IP filters. This is equivalent to adding an empty ipfilter-net<id> ipset for every interface. Such ipsets implicitly contain sane default restrictions such as restricting IPv6 link local addresses to the one derived from the interface's MAC address. For containers the configured IP addresses will be implicitly added.
-	LogLevelIn  *string           `url:"log_level_in,omitempty" json:"log_level_in,omitempty"`   // Log level for incoming traffic.
-	LogLevelOut *string           `url:"log_level_out,omitempty" json:"log_level_out,omitempty"` // Log level for outgoing traffic.
-	Macfilter   *util.SpecialBool `url:"macfilter,omitempty" json:"macfilter,omitempty"`         // Enable/disable MAC address filter.
-	Ndp         *util.SpecialBool `url:"ndp,omitempty" json:"ndp,omitempty"`                     // Enable NDP (Neighbor Discovery Protocol).
-	PolicyIn    *string           `url:"policy_in,omitempty" json:"policy_in,omitempty"`         // Input policy.
-	PolicyOut   *string           `url:"policy_out,omitempty" json:"policy_out,omitempty"`       // Output policy.
-	Radv        *util.SpecialBool `url:"radv,omitempty" json:"radv,omitempty"`                   // Allow sending Router Advertisement.
+	Delete      *string       `url:"delete,omitempty" json:"delete,omitempty"`               // A list of settings you want to delete.
+	Dhcp        *util.PVEBool `url:"dhcp,omitempty" json:"dhcp,omitempty"`                   // Enable DHCP.
+	Digest      *string       `url:"digest,omitempty" json:"digest,omitempty"`               // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Enable      *util.PVEBool `url:"enable,omitempty" json:"enable,omitempty"`               // Enable/disable firewall rules.
+	Ipfilter    *util.PVEBool `url:"ipfilter,omitempty" json:"ipfilter,omitempty"`           // Enable default IP filters. This is equivalent to adding an empty ipfilter-net<id> ipset for every interface. Such ipsets implicitly contain sane default restrictions such as restricting IPv6 link local addresses to the one derived from the interface's MAC address. For containers the configured IP addresses will be implicitly added.
+	LogLevelIn  *string       `url:"log_level_in,omitempty" json:"log_level_in,omitempty"`   // Log level for incoming traffic.
+	LogLevelOut *string       `url:"log_level_out,omitempty" json:"log_level_out,omitempty"` // Log level for outgoing traffic.
+	Macfilter   *util.PVEBool `url:"macfilter,omitempty" json:"macfilter,omitempty"`         // Enable/disable MAC address filter.
+	Ndp         *util.PVEBool `url:"ndp,omitempty" json:"ndp,omitempty"`                     // Enable NDP (Neighbor Discovery Protocol).
+	PolicyIn    *string       `url:"policy_in,omitempty" json:"policy_in,omitempty"`         // Input policy.
+	PolicyOut   *string       `url:"policy_out,omitempty" json:"policy_out,omitempty"`       // Output policy.
+	Radv        *util.PVEBool `url:"radv,omitempty" json:"radv,omitempty"`                   // Allow sending Router Advertisement.
 }
 
 type LogRequest struct {

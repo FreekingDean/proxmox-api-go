@@ -26,35 +26,35 @@ type IndexResponse struct {
 	Node string `url:"node" json:"node"`
 }
 
-// Array of Linkn
-type LinknArr []Linkn
-
-func (t LinknArr) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
 // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
-type Linkn struct {
+type Link struct {
 	Address string `url:"address" json:"address"` // Hostname (or IP) of this corosync link address.
 
 	// The following parameters are optional
 	Priority *int `url:"priority,omitempty" json:"priority,omitempty"` // The priority for the link when knet is used in 'passive' mode (default). Lower value means higher priority. Only valid for cluster create, ignored on node add.
 }
 
-func (t Linkn) EncodeValues(key string, v *url.Values) error {
+func (t Link) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `[address=]<IP> [,priority=<integer>]`)
+}
+
+// Array of Link
+type Links []Link
+
+func (t Links) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
 }
 
 type ChildCreateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Apiversion *int              `url:"apiversion,omitempty" json:"apiversion,omitempty"`   // The JOIN_API_VERSION of the new node.
-	Force      *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"`             // Do not throw error if node already exists.
-	Links      *LinknArr         `url:"link[n],omitempty" json:"link[n],omitempty"`         // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
-	NewNodeIp  *string           `url:"new_node_ip,omitempty" json:"new_node_ip,omitempty"` // IP Address of node to add. Used as fallback if no links are given.
-	Nodeid     *int              `url:"nodeid,omitempty" json:"nodeid,omitempty"`           // Node id for this node.
-	Votes      *int              `url:"votes,omitempty" json:"votes,omitempty"`             // Number of votes for this node
+	Apiversion *int          `url:"apiversion,omitempty" json:"apiversion,omitempty"`   // The JOIN_API_VERSION of the new node.
+	Force      *util.PVEBool `url:"force,omitempty" json:"force,omitempty"`             // Do not throw error if node already exists.
+	Links      *Links        `url:"link[n],omitempty" json:"link[n],omitempty"`         // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
+	NewNodeIp  *string       `url:"new_node_ip,omitempty" json:"new_node_ip,omitempty"` // IP Address of node to add. Used as fallback if no links are given.
+	Nodeid     *int          `url:"nodeid,omitempty" json:"nodeid,omitempty"`           // Node id for this node.
+	Votes      *int          `url:"votes,omitempty" json:"votes,omitempty"`             // Number of votes for this node
 }
 
 type ChildCreateResponse struct {

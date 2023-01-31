@@ -22,45 +22,38 @@ func New(c HTTPClient) *Client {
 	}
 }
 
-// Array of Linkn
-type LinknArr []Linkn
-
-func (t LinknArr) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
 // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
-type Linkn struct {
+type Link struct {
 	Address string `url:"address" json:"address"` // Hostname (or IP) of this corosync link address.
 
 	// The following parameters are optional
 	Priority *int `url:"priority,omitempty" json:"priority,omitempty"` // The priority for the link when knet is used in 'passive' mode (default). Lower value means higher priority. Only valid for cluster create, ignored on node add.
 }
 
-func (t Linkn) EncodeValues(key string, v *url.Values) error {
+func (t Link) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `[address=]<IP> [,priority=<integer>]`)
+}
+
+// Array of Link
+type Links []Link
+
+func (t Links) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
 }
 
 type CreateRequest struct {
 	Clustername string `url:"clustername" json:"clustername"` // The name of the cluster.
 
 	// The following parameters are optional
-	Links  *LinknArr `url:"link[n],omitempty" json:"link[n],omitempty"` // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
-	Nodeid *int      `url:"nodeid,omitempty" json:"nodeid,omitempty"`   // Node id for this node.
-	Votes  *int      `url:"votes,omitempty" json:"votes,omitempty"`     // Number of votes for this node.
+	Links  *Links `url:"link[n],omitempty" json:"link[n],omitempty"` // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
+	Nodeid *int   `url:"nodeid,omitempty" json:"nodeid,omitempty"`   // Node id for this node.
+	Votes  *int   `url:"votes,omitempty" json:"votes,omitempty"`     // Number of votes for this node.
 }
 
-type JoinInfoJoinRequest struct {
+type JoinInfoRequest struct {
 
 	// The following parameters are optional
 	Node *string `url:"node,omitempty" json:"node,omitempty"` // The node for which the joinee gets the nodeinfo.
-}
-
-// Array of Ring0Addr
-type Ring0AddrArr []Ring0Addr
-
-func (t Ring0AddrArr) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
 }
 
 // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
@@ -82,7 +75,7 @@ type Nodelist struct {
 	Ring0Addr *Ring0Addr `url:"ring0_addr,omitempty" json:"ring0_addr,omitempty"` // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
 }
 
-type JoinInfoJoinResponse struct {
+type JoinInfoResponse struct {
 	ConfigDigest  string                 `url:"config_digest" json:"config_digest"`
 	Nodelist      []Nodelist             `url:"nodelist" json:"nodelist"`
 	PreferredNode string                 `url:"preferred_node" json:"preferred_node"` // The cluster node name.
@@ -95,10 +88,10 @@ type JoinRequest struct {
 	Password    string `url:"password" json:"password"`       // Superuser (root) password of peer node.
 
 	// The following parameters are optional
-	Force  *util.SpecialBool `url:"force,omitempty" json:"force,omitempty"`     // Do not throw error if node already exists.
-	Links  *LinknArr         `url:"link[n],omitempty" json:"link[n],omitempty"` // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
-	Nodeid *int              `url:"nodeid,omitempty" json:"nodeid,omitempty"`   // Node id for this node.
-	Votes  *int              `url:"votes,omitempty" json:"votes,omitempty"`     // Number of votes for this node
+	Force  *util.PVEBool `url:"force,omitempty" json:"force,omitempty"`     // Do not throw error if node already exists.
+	Links  *Links        `url:"link[n],omitempty" json:"link[n],omitempty"` // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
+	Nodeid *int          `url:"nodeid,omitempty" json:"nodeid,omitempty"`   // Node id for this node.
+	Votes  *int          `url:"votes,omitempty" json:"votes,omitempty"`     // Number of votes for this node
 }
 
 // Index Directory index.
@@ -125,9 +118,9 @@ func (c *Client) JoinApiVersionApiversion(ctx context.Context) (int, error) {
 	return resp, err
 }
 
-// JoinInfoJoin Get information needed to join this cluster over the connected node.
-func (c *Client) JoinInfoJoin(ctx context.Context, req JoinInfoJoinRequest) (JoinInfoJoinResponse, error) {
-	var resp JoinInfoJoinResponse
+// JoinInfo Get information needed to join this cluster over the connected node.
+func (c *Client) JoinInfo(ctx context.Context, req JoinInfoRequest) (JoinInfoResponse, error) {
+	var resp JoinInfoResponse
 
 	err := c.httpClient.Do(ctx, "/cluster/config/join", "GET", &resp, req)
 	return resp, err
