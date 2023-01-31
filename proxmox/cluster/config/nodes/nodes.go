@@ -6,10 +6,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/FreekingDean/proxmox-api-go/internal/util"
 	"net/url"
 	"strconv"
 	"strings"
+
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {

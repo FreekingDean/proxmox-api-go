@@ -6,10 +6,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/FreekingDean/proxmox-api-go/internal/util"
 	"net/url"
 	"strconv"
 	"strings"
+
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 const (
@@ -1614,6 +1615,172 @@ func (t Nets) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeArray(key, v, t)
 }
 
+// Use volume as container root.
+type Rootfs struct {
+	Volume string `url:"volume" json:"volume"` // Volume, device or directory to mount into the container.
+
+	// The following parameters are optional
+	Acl          *util.PVEBool `url:"acl,omitempty" json:"acl,omitempty"`                   // Explicitly enable or disable ACL support.
+	Mountoptions *string       `url:"mountoptions,omitempty" json:"mountoptions,omitempty"` // Extra mount options for rootfs/mps.
+	Quota        *util.PVEBool `url:"quota,omitempty" json:"quota,omitempty"`               // Enable user quotas inside the container (not supported with zfs subvolumes)
+	Replicate    *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`       // Will include this volume to a storage replica job.
+	Ro           *util.PVEBool `url:"ro,omitempty" json:"ro,omitempty"`                     // Read-only mount point
+	Shared       *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`             // Mark this non-volume mount point as available on multiple nodes (see 'nodes')
+	Size         *string       `url:"size,omitempty" json:"size,omitempty"`                 // Volume size (read only value).
+}
+type _Rootfs Rootfs
+
+func (t Rootfs) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[volume=]<volume> [,acl=<1|0>] [,mountoptions=<opt[;opt...]>] [,quota=<1|0>] [,replicate=<1|0>] [,ro=<1|0>] [,shared=<1|0>] [,size=<DiskSize>]`)
+}
+
+func (t *Rootfs) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["volume"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["volume"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Volume)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["acl"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Acl)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mountoptions"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Mountoptions)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["quota"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Quota)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["replicate"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Replicate)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["ro"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Ro)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["shared"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Shared)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["size"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Size)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Reference to unused volumes. This is used internally, and should not be modified manually.
+type Unused struct {
+	Volume string `url:"volume" json:"volume"` // The volume that is not used currently.
+
+}
+type _Unused Unused
+
+func (t Unused) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[volume=]<volume>`)
+}
+
+func (t *Unused) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["volume"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["volume"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Volume)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Array of Unused
+type Unuseds []*Unused
+type _Unuseds Unuseds
+
+func (t Unuseds) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
 // Allow containers access to advanced features.
 type Features struct {
 
@@ -1703,59 +1870,6 @@ func (t *Features) UnmarshalJSON(d []byte) error {
 	}
 
 	return nil
-}
-
-// Reference to unused volumes. This is used internally, and should not be modified manually.
-type Unused struct {
-	Volume string `url:"volume" json:"volume"` // The volume that is not used currently.
-
-}
-type _Unused Unused
-
-func (t Unused) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[volume=]<volume>`)
-}
-
-func (t *Unused) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["volume"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["volume"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Volume)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Array of Unused
-type Unuseds []*Unused
-type _Unuseds Unuseds
-
-func (t Unuseds) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
 }
 
 // Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
@@ -1897,119 +2011,6 @@ type _Mps Mps
 
 func (t Mps) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeArray(key, v, t)
-}
-
-// Use volume as container root.
-type Rootfs struct {
-	Volume string `url:"volume" json:"volume"` // Volume, device or directory to mount into the container.
-
-	// The following parameters are optional
-	Acl          *util.PVEBool `url:"acl,omitempty" json:"acl,omitempty"`                   // Explicitly enable or disable ACL support.
-	Mountoptions *string       `url:"mountoptions,omitempty" json:"mountoptions,omitempty"` // Extra mount options for rootfs/mps.
-	Quota        *util.PVEBool `url:"quota,omitempty" json:"quota,omitempty"`               // Enable user quotas inside the container (not supported with zfs subvolumes)
-	Replicate    *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`       // Will include this volume to a storage replica job.
-	Ro           *util.PVEBool `url:"ro,omitempty" json:"ro,omitempty"`                     // Read-only mount point
-	Shared       *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`             // Mark this non-volume mount point as available on multiple nodes (see 'nodes')
-	Size         *string       `url:"size,omitempty" json:"size,omitempty"`                 // Volume size (read only value).
-}
-type _Rootfs Rootfs
-
-func (t Rootfs) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[volume=]<volume> [,acl=<1|0>] [,mountoptions=<opt[;opt...]>] [,quota=<1|0>] [,replicate=<1|0>] [,ro=<1|0>] [,shared=<1|0>] [,size=<DiskSize>]`)
-}
-
-func (t *Rootfs) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["volume"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["volume"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Volume)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["acl"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Acl)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["mountoptions"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Mountoptions)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["quota"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Quota)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["replicate"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Replicate)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["ro"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Ro)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["shared"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Shared)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["size"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Size)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 type CreateRequest struct {

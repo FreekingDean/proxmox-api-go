@@ -209,6 +209,7 @@ type Package struct {
 	Types     []*Type
 	Enums     map[string][]string
 	ImportURL bool
+	Strconv   bool
 }
 
 type OperationTempl struct {

@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 	"net/url"
-	"strconv"
 	"strings"
 )
 

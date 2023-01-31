@@ -125,6 +125,7 @@ func (p *Package) defineStruct(name, description string, properties map[string]*
 			continue
 		}
 		if strings.HasSuffix(name, "[n]") {
+			p.Strconv = true
 			t.FormatArrayTypes = append(
 				t.FormatArrayTypes,
 				pt,

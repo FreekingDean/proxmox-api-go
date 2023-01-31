@@ -8,8 +8,10 @@ import (
 	"fmt"
 	"encoding/json"
 	"net/url"
-	"strconv"
 	"strings"
+  {{- if .Strconv }}
+	"strconv"
+  {{ end }}
 
 	{{- end -}}
   {{- if .Util }}
