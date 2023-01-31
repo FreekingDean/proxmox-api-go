@@ -7,6 +7,35 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	Command_FSFREEZE_FREEZE        Command = "fsfreeze-freeze"
+	Command_FSFREEZE_STATUS        Command = "fsfreeze-status"
+	Command_FSFREEZE_THAW          Command = "fsfreeze-thaw"
+	Command_FSTRIM                 Command = "fstrim"
+	Command_GET_FSINFO             Command = "get-fsinfo"
+	Command_GET_HOST_NAME          Command = "get-host-name"
+	Command_GET_MEMORY_BLOCK_INFO  Command = "get-memory-block-info"
+	Command_GET_MEMORY_BLOCKS      Command = "get-memory-blocks"
+	Command_GET_OSINFO             Command = "get-osinfo"
+	Command_GET_TIME               Command = "get-time"
+	Command_GET_TIMEZONE           Command = "get-timezone"
+	Command_GET_USERS              Command = "get-users"
+	Command_GET_VCPUS              Command = "get-vcpus"
+	Command_INFO                   Command = "info"
+	Command_NETWORK_GET_INTERFACES Command = "network-get-interfaces"
+	Command_PING                   Command = "ping"
+	Command_SHUTDOWN               Command = "shutdown"
+	Command_SUSPEND_DISK           Command = "suspend-disk"
+	Command_SUSPEND_HYBRID         Command = "suspend-hybrid"
+	Command_SUSPEND_RAM            Command = "suspend-ram"
+)
+
+type Command string
+
+func PtrCommand(i Command) *Command {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -28,9 +57,9 @@ type IndexRequest struct {
 }
 
 type CreateRequest struct {
-	Command string `url:"command" json:"command"` // The QGA command.
-	Node    string `url:"node" json:"node"`       // The cluster node name.
-	Vmid    int    `url:"vmid" json:"vmid"`       // The (unique) ID of the VM.
+	Command Command `url:"command" json:"command"` // The QGA command.
+	Node    string  `url:"node" json:"node"`       // The cluster node name.
+	Vmid    int     `url:"vmid" json:"vmid"`       // The (unique) ID of the VM.
 
 }
 

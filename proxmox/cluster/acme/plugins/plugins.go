@@ -7,6 +7,147 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	Api_1984HOSTING   Api = "1984hosting"
+	Api_ACMEDNS       Api = "acmedns"
+	Api_ACMEPROXY     Api = "acmeproxy"
+	Api_ACTIVE24      Api = "active24"
+	Api_AD            Api = "ad"
+	Api_ALI           Api = "ali"
+	Api_ANX           Api = "anx"
+	Api_ARVAN         Api = "arvan"
+	Api_AURORA        Api = "aurora"
+	Api_AUTODNS       Api = "autodns"
+	Api_AWS           Api = "aws"
+	Api_AZION         Api = "azion"
+	Api_AZURE         Api = "azure"
+	Api_CF            Api = "cf"
+	Api_CLOUDDNS      Api = "clouddns"
+	Api_CLOUDNS       Api = "cloudns"
+	Api_CN            Api = "cn"
+	Api_CONOHA        Api = "conoha"
+	Api_CONSTELLIX    Api = "constellix"
+	Api_CX            Api = "cx"
+	Api_CYON          Api = "cyon"
+	Api_DA            Api = "da"
+	Api_DDNSS         Api = "ddnss"
+	Api_DESEC         Api = "desec"
+	Api_DF            Api = "df"
+	Api_DGON          Api = "dgon"
+	Api_DNSIMPLE      Api = "dnsimple"
+	Api_DO            Api = "do"
+	Api_DOAPI         Api = "doapi"
+	Api_DOMENESHOP    Api = "domeneshop"
+	Api_DP            Api = "dp"
+	Api_DPI           Api = "dpi"
+	Api_DREAMHOST     Api = "dreamhost"
+	Api_DUCKDNS       Api = "duckdns"
+	Api_DURABLEDNS    Api = "durabledns"
+	Api_DYN           Api = "dyn"
+	Api_DYNU          Api = "dynu"
+	Api_DYNV6         Api = "dynv6"
+	Api_EASYDNS       Api = "easydns"
+	Api_EDGEDNS       Api = "edgedns"
+	Api_EUSERV        Api = "euserv"
+	Api_EXOSCALE      Api = "exoscale"
+	Api_FREEDNS       Api = "freedns"
+	Api_GANDI_LIVEDNS Api = "gandi_livedns"
+	Api_GCLOUD        Api = "gcloud"
+	Api_GD            Api = "gd"
+	Api_GDNSDK        Api = "gdnsdk"
+	Api_HE            Api = "he"
+	Api_HETZNER       Api = "hetzner"
+	Api_HEXONET       Api = "hexonet"
+	Api_HOSTINGDE     Api = "hostingde"
+	Api_HUAWEICLOUD   Api = "huaweicloud"
+	Api_INFOBLOX      Api = "infoblox"
+	Api_INFOMANIAK    Api = "infomaniak"
+	Api_INTERNETBS    Api = "internetbs"
+	Api_INWX          Api = "inwx"
+	Api_IONOS         Api = "ionos"
+	Api_ISPCONFIG     Api = "ispconfig"
+	Api_JD            Api = "jd"
+	Api_JOKER         Api = "joker"
+	Api_KAPPERNET     Api = "kappernet"
+	Api_KAS           Api = "kas"
+	Api_KINGHOST      Api = "kinghost"
+	Api_KNOT          Api = "knot"
+	Api_LEASEWEB      Api = "leaseweb"
+	Api_LEXICON       Api = "lexicon"
+	Api_LINODE        Api = "linode"
+	Api_LINODE_V4     Api = "linode_v4"
+	Api_LOOPIA        Api = "loopia"
+	Api_LUA           Api = "lua"
+	Api_MARADNS       Api = "maradns"
+	Api_ME            Api = "me"
+	Api_MIAB          Api = "miab"
+	Api_MISAKA        Api = "misaka"
+	Api_MYAPI         Api = "myapi"
+	Api_MYDEVIL       Api = "mydevil"
+	Api_MYDNSJP       Api = "mydnsjp"
+	Api_NAMECHEAP     Api = "namecheap"
+	Api_NAMECOM       Api = "namecom"
+	Api_NAMESILO      Api = "namesilo"
+	Api_NEDERHOST     Api = "nederhost"
+	Api_NEODIGIT      Api = "neodigit"
+	Api_NETCUP        Api = "netcup"
+	Api_NETLIFY       Api = "netlify"
+	Api_NIC           Api = "nic"
+	Api_NJALLA        Api = "njalla"
+	Api_NM            Api = "nm"
+	Api_NSD           Api = "nsd"
+	Api_NSONE         Api = "nsone"
+	Api_NSUPDATE      Api = "nsupdate"
+	Api_NW            Api = "nw"
+	Api_OCI           Api = "oci"
+	Api_ONE           Api = "one"
+	Api_ONLINE        Api = "online"
+	Api_OPENPROVIDER  Api = "openprovider"
+	Api_OPENSTACK     Api = "openstack"
+	Api_OPNSENSE      Api = "opnsense"
+	Api_OVH           Api = "ovh"
+	Api_PDNS          Api = "pdns"
+	Api_PLESKXML      Api = "pleskxml"
+	Api_POINTHQ       Api = "pointhq"
+	Api_PORKBUN       Api = "porkbun"
+	Api_RACKCORP      Api = "rackcorp"
+	Api_RACKSPACE     Api = "rackspace"
+	Api_RCODE0        Api = "rcode0"
+	Api_REGRU         Api = "regru"
+	Api_SCALEWAY      Api = "scaleway"
+	Api_SCHLUNDTECH   Api = "schlundtech"
+	Api_SELECTEL      Api = "selectel"
+	Api_SERVERCOW     Api = "servercow"
+	Api_SIMPLY        Api = "simply"
+	Api_TELE3         Api = "tele3"
+	Api_TRANSIP       Api = "transip"
+	Api_ULTRA         Api = "ultra"
+	Api_UNOEURO       Api = "unoeuro"
+	Api_VARIOMEDIA    Api = "variomedia"
+	Api_VEESP         Api = "veesp"
+	Api_VSCALE        Api = "vscale"
+	Api_VULTR         Api = "vultr"
+	Api_WEBSUPPORT    Api = "websupport"
+	Api_WORLD4YOU     Api = "world4you"
+	Api_YANDEX        Api = "yandex"
+	Api_ZILORE        Api = "zilore"
+	Api_ZONE          Api = "zone"
+	Api_ZONOMI        Api = "zonomi"
+
+	Type_DNS        Type = "dns"
+	Type_STANDALONE Type = "standalone"
+)
+
+type Api string
+type Type string
+
+func PtrApi(i Api) *Api {
+	return &i
+}
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -24,7 +165,7 @@ func New(c HTTPClient) *Client {
 type IndexRequest struct {
 
 	// The following parameters are optional
-	Type *string `url:"type,omitempty" json:"type,omitempty"` // Only list ACME plugins of a specific type
+	Type *Type `url:"type,omitempty" json:"type,omitempty"` // Only list ACME plugins of a specific type
 }
 
 type IndexResponse struct {
@@ -34,10 +175,10 @@ type IndexResponse struct {
 
 type CreateRequest struct {
 	Id   string `url:"id" json:"id"`     // ACME Plugin ID name
-	Type string `url:"type" json:"type"` // ACME challenge type.
+	Type Type   `url:"type" json:"type"` // ACME challenge type.
 
 	// The following parameters are optional
-	Api             *string       `url:"api,omitempty" json:"api,omitempty"`                           // API plugin name
+	Api             *Api          `url:"api,omitempty" json:"api,omitempty"`                           // API plugin name
 	Data            *string       `url:"data,omitempty" json:"data,omitempty"`                         // DNS plugin data. (base64 encoded)
 	Disable         *util.PVEBool `url:"disable,omitempty" json:"disable,omitempty"`                   // Flag to disable the config.
 	Nodes           *string       `url:"nodes,omitempty" json:"nodes,omitempty"`                       // List of cluster node names.
@@ -53,7 +194,7 @@ type UpdateRequest struct {
 	Id string `url:"id" json:"id"` // ACME Plugin ID name
 
 	// The following parameters are optional
-	Api             *string       `url:"api,omitempty" json:"api,omitempty"`                           // API plugin name
+	Api             *Api          `url:"api,omitempty" json:"api,omitempty"`                           // API plugin name
 	Data            *string       `url:"data,omitempty" json:"data,omitempty"`                         // DNS plugin data. (base64 encoded)
 	Delete          *string       `url:"delete,omitempty" json:"delete,omitempty"`                     // A list of settings you want to delete.
 	Digest          *string       `url:"digest,omitempty" json:"digest,omitempty"`                     // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.

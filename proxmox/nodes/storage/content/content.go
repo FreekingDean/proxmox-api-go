@@ -7,6 +7,18 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	Format_RAW    Format = "raw"
+	Format_QCOW2  Format = "qcow2"
+	Format_SUBVOL Format = "subvol"
+)
+
+type Format string
+
+func PtrFormat(i Format) *Format {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -61,7 +73,7 @@ type CreateRequest struct {
 	Vmid     int    `url:"vmid" json:"vmid"`         // Specify owner VM
 
 	// The following parameters are optional
-	Format *string `url:"format,omitempty" json:"format,omitempty"`
+	Format *Format `url:"format,omitempty" json:"format,omitempty"`
 }
 
 type FindRequest struct {

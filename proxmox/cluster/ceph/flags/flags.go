@@ -7,6 +7,42 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	Flag_NOBACKFILL   Flag = "nobackfill"
+	Flag_NODEEP_SCRUB Flag = "nodeep-scrub"
+	Flag_NODOWN       Flag = "nodown"
+	Flag_NOIN         Flag = "noin"
+	Flag_NOOUT        Flag = "noout"
+	Flag_NOREBALANCE  Flag = "norebalance"
+	Flag_NORECOVER    Flag = "norecover"
+	Flag_NOSCRUB      Flag = "noscrub"
+	Flag_NOTIERAGENT  Flag = "notieragent"
+	Flag_NOUP         Flag = "noup"
+	Flag_PAUSE        Flag = "pause"
+
+	Name_NOBACKFILL   Name = "nobackfill"
+	Name_NODEEP_SCRUB Name = "nodeep-scrub"
+	Name_NODOWN       Name = "nodown"
+	Name_NOIN         Name = "noin"
+	Name_NOOUT        Name = "noout"
+	Name_NOREBALANCE  Name = "norebalance"
+	Name_NORECOVER    Name = "norecover"
+	Name_NOSCRUB      Name = "noscrub"
+	Name_NOTIERAGENT  Name = "notieragent"
+	Name_NOUP         Name = "noup"
+	Name_PAUSE        Name = "pause"
+)
+
+type Flag string
+type Name string
+
+func PtrFlag(i Flag) *Flag {
+	return &i
+}
+func PtrName(i Name) *Name {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -22,7 +58,7 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexResponse struct {
-	Name string `url:"name" json:"name"` // Flag name.
+	Name Name `url:"name" json:"name"` // Flag name.
 
 }
 
@@ -43,12 +79,12 @@ type MassUpdateRequest struct {
 }
 
 type FindRequest struct {
-	Flag string `url:"flag" json:"flag"` // The name of the flag name to get.
+	Flag Flag `url:"flag" json:"flag"` // The name of the flag name to get.
 
 }
 
 type UpdateRequest struct {
-	Flag  string       `url:"flag" json:"flag"`   // The ceph flag to update
+	Flag  Flag         `url:"flag" json:"flag"`   // The ceph flag to update
 	Value util.PVEBool `url:"value" json:"value"` // The new value of the flag
 
 }

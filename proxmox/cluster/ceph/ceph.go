@@ -6,6 +6,17 @@ import (
 	"context"
 )
 
+const (
+	Scope_ALL      Scope = "all"
+	Scope_VERSIONS Scope = "versions"
+)
+
+type Scope string
+
+func PtrScope(i Scope) *Scope {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -23,7 +34,7 @@ func New(c HTTPClient) *Client {
 type MetadataRequest struct {
 
 	// The following parameters are optional
-	Scope *string `url:"scope,omitempty" json:"scope,omitempty"`
+	Scope *Scope `url:"scope,omitempty" json:"scope,omitempty"`
 }
 
 // Index Cluster ceph index.

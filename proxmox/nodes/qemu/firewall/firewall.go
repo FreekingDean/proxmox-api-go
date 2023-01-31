@@ -7,6 +7,61 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	LogLevelIn_EMERG   LogLevelIn = "emerg"
+	LogLevelIn_ALERT   LogLevelIn = "alert"
+	LogLevelIn_CRIT    LogLevelIn = "crit"
+	LogLevelIn_ERR     LogLevelIn = "err"
+	LogLevelIn_WARNING LogLevelIn = "warning"
+	LogLevelIn_NOTICE  LogLevelIn = "notice"
+	LogLevelIn_INFO    LogLevelIn = "info"
+	LogLevelIn_DEBUG   LogLevelIn = "debug"
+	LogLevelIn_NOLOG   LogLevelIn = "nolog"
+
+	LogLevelOut_EMERG   LogLevelOut = "emerg"
+	LogLevelOut_ALERT   LogLevelOut = "alert"
+	LogLevelOut_CRIT    LogLevelOut = "crit"
+	LogLevelOut_ERR     LogLevelOut = "err"
+	LogLevelOut_WARNING LogLevelOut = "warning"
+	LogLevelOut_NOTICE  LogLevelOut = "notice"
+	LogLevelOut_INFO    LogLevelOut = "info"
+	LogLevelOut_DEBUG   LogLevelOut = "debug"
+	LogLevelOut_NOLOG   LogLevelOut = "nolog"
+
+	PolicyIn_ACCEPT PolicyIn = "ACCEPT"
+	PolicyIn_REJECT PolicyIn = "REJECT"
+	PolicyIn_DROP   PolicyIn = "DROP"
+
+	PolicyOut_ACCEPT PolicyOut = "ACCEPT"
+	PolicyOut_REJECT PolicyOut = "REJECT"
+	PolicyOut_DROP   PolicyOut = "DROP"
+
+	Type_ALIAS Type = "alias"
+	Type_IPSET Type = "ipset"
+)
+
+type LogLevelIn string
+type LogLevelOut string
+type PolicyIn string
+type PolicyOut string
+type Type string
+
+func PtrLogLevelIn(i LogLevelIn) *LogLevelIn {
+	return &i
+}
+func PtrLogLevelOut(i LogLevelOut) *LogLevelOut {
+	return &i
+}
+func PtrPolicyIn(i PolicyIn) *PolicyIn {
+	return &i
+}
+func PtrPolicyOut(i PolicyOut) *PolicyOut {
+	return &i
+}
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -39,12 +94,12 @@ type GetOptionsResponse struct {
 	Dhcp        *util.PVEBool `url:"dhcp,omitempty" json:"dhcp,omitempty"`                   // Enable DHCP.
 	Enable      *util.PVEBool `url:"enable,omitempty" json:"enable,omitempty"`               // Enable/disable firewall rules.
 	Ipfilter    *util.PVEBool `url:"ipfilter,omitempty" json:"ipfilter,omitempty"`           // Enable default IP filters. This is equivalent to adding an empty ipfilter-net<id> ipset for every interface. Such ipsets implicitly contain sane default restrictions such as restricting IPv6 link local addresses to the one derived from the interface's MAC address. For containers the configured IP addresses will be implicitly added.
-	LogLevelIn  *string       `url:"log_level_in,omitempty" json:"log_level_in,omitempty"`   // Log level for incoming traffic.
-	LogLevelOut *string       `url:"log_level_out,omitempty" json:"log_level_out,omitempty"` // Log level for outgoing traffic.
+	LogLevelIn  *LogLevelIn   `url:"log_level_in,omitempty" json:"log_level_in,omitempty"`   // Log level for incoming traffic.
+	LogLevelOut *LogLevelOut  `url:"log_level_out,omitempty" json:"log_level_out,omitempty"` // Log level for outgoing traffic.
 	Macfilter   *util.PVEBool `url:"macfilter,omitempty" json:"macfilter,omitempty"`         // Enable/disable MAC address filter.
 	Ndp         *util.PVEBool `url:"ndp,omitempty" json:"ndp,omitempty"`                     // Enable NDP (Neighbor Discovery Protocol).
-	PolicyIn    *string       `url:"policy_in,omitempty" json:"policy_in,omitempty"`         // Input policy.
-	PolicyOut   *string       `url:"policy_out,omitempty" json:"policy_out,omitempty"`       // Output policy.
+	PolicyIn    *PolicyIn     `url:"policy_in,omitempty" json:"policy_in,omitempty"`         // Input policy.
+	PolicyOut   *PolicyOut    `url:"policy_out,omitempty" json:"policy_out,omitempty"`       // Output policy.
 	Radv        *util.PVEBool `url:"radv,omitempty" json:"radv,omitempty"`                   // Allow sending Router Advertisement.
 }
 
@@ -58,12 +113,12 @@ type SetOptionsRequest struct {
 	Digest      *string       `url:"digest,omitempty" json:"digest,omitempty"`               // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 	Enable      *util.PVEBool `url:"enable,omitempty" json:"enable,omitempty"`               // Enable/disable firewall rules.
 	Ipfilter    *util.PVEBool `url:"ipfilter,omitempty" json:"ipfilter,omitempty"`           // Enable default IP filters. This is equivalent to adding an empty ipfilter-net<id> ipset for every interface. Such ipsets implicitly contain sane default restrictions such as restricting IPv6 link local addresses to the one derived from the interface's MAC address. For containers the configured IP addresses will be implicitly added.
-	LogLevelIn  *string       `url:"log_level_in,omitempty" json:"log_level_in,omitempty"`   // Log level for incoming traffic.
-	LogLevelOut *string       `url:"log_level_out,omitempty" json:"log_level_out,omitempty"` // Log level for outgoing traffic.
+	LogLevelIn  *LogLevelIn   `url:"log_level_in,omitempty" json:"log_level_in,omitempty"`   // Log level for incoming traffic.
+	LogLevelOut *LogLevelOut  `url:"log_level_out,omitempty" json:"log_level_out,omitempty"` // Log level for outgoing traffic.
 	Macfilter   *util.PVEBool `url:"macfilter,omitempty" json:"macfilter,omitempty"`         // Enable/disable MAC address filter.
 	Ndp         *util.PVEBool `url:"ndp,omitempty" json:"ndp,omitempty"`                     // Enable NDP (Neighbor Discovery Protocol).
-	PolicyIn    *string       `url:"policy_in,omitempty" json:"policy_in,omitempty"`         // Input policy.
-	PolicyOut   *string       `url:"policy_out,omitempty" json:"policy_out,omitempty"`       // Output policy.
+	PolicyIn    *PolicyIn     `url:"policy_in,omitempty" json:"policy_in,omitempty"`         // Input policy.
+	PolicyOut   *PolicyOut    `url:"policy_out,omitempty" json:"policy_out,omitempty"`       // Output policy.
 	Radv        *util.PVEBool `url:"radv,omitempty" json:"radv,omitempty"`                   // Allow sending Router Advertisement.
 }
 
@@ -87,12 +142,12 @@ type RefsRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Type *string `url:"type,omitempty" json:"type,omitempty"` // Only list references of specified type.
+	Type *Type `url:"type,omitempty" json:"type,omitempty"` // Only list references of specified type.
 }
 
 type RefsResponse struct {
 	Name string `url:"name" json:"name"`
-	Type string `url:"type" json:"type"`
+	Type Type   `url:"type" json:"type"`
 
 	// The following parameters are optional
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`

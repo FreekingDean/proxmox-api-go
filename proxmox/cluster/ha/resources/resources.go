@@ -6,6 +6,27 @@ import (
 	"context"
 )
 
+const (
+	State_STARTED  State = "started"
+	State_STOPPED  State = "stopped"
+	State_ENABLED  State = "enabled"
+	State_DISABLED State = "disabled"
+	State_IGNORED  State = "ignored"
+
+	Type_CT Type = "ct"
+	Type_VM Type = "vm"
+)
+
+type State string
+type Type string
+
+func PtrState(i State) *State {
+	return &i
+}
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -23,7 +44,7 @@ func New(c HTTPClient) *Client {
 type IndexRequest struct {
 
 	// The following parameters are optional
-	Type *string `url:"type,omitempty" json:"type,omitempty"` // Only list resources of specific type
+	Type *Type `url:"type,omitempty" json:"type,omitempty"` // Only list resources of specific type
 }
 
 type IndexResponse struct {
@@ -38,8 +59,8 @@ type CreateRequest struct {
 	Group       *string `url:"group,omitempty" json:"group,omitempty"`               // The HA group identifier.
 	MaxRelocate *int    `url:"max_relocate,omitempty" json:"max_relocate,omitempty"` // Maximal number of service relocate tries when a service failes to start.
 	MaxRestart  *int    `url:"max_restart,omitempty" json:"max_restart,omitempty"`   // Maximal number of tries to restart the service on a node after its start failed.
-	State       *string `url:"state,omitempty" json:"state,omitempty"`               // Requested resource state.
-	Type        *string `url:"type,omitempty" json:"type,omitempty"`                 // Resource type.
+	State       *State  `url:"state,omitempty" json:"state,omitempty"`               // Requested resource state.
+	Type        *Type   `url:"type,omitempty" json:"type,omitempty"`                 // Resource type.
 }
 
 type FindRequest struct {
@@ -57,7 +78,7 @@ type FindResponse struct {
 	Group       *string `url:"group,omitempty" json:"group,omitempty"`               // The HA group identifier.
 	MaxRelocate *int    `url:"max_relocate,omitempty" json:"max_relocate,omitempty"` // Maximal number of service relocate tries when a service failes to start.
 	MaxRestart  *int    `url:"max_restart,omitempty" json:"max_restart,omitempty"`   // Maximal number of tries to restart the service on a node after its start failed.
-	State       *string `url:"state,omitempty" json:"state,omitempty"`               // Requested resource state.
+	State       *State  `url:"state,omitempty" json:"state,omitempty"`               // Requested resource state.
 }
 
 type UpdateRequest struct {
@@ -70,7 +91,7 @@ type UpdateRequest struct {
 	Group       *string `url:"group,omitempty" json:"group,omitempty"`               // The HA group identifier.
 	MaxRelocate *int    `url:"max_relocate,omitempty" json:"max_relocate,omitempty"` // Maximal number of service relocate tries when a service failes to start.
 	MaxRestart  *int    `url:"max_restart,omitempty" json:"max_restart,omitempty"`   // Maximal number of tries to restart the service on a node after its start failed.
-	State       *string `url:"state,omitempty" json:"state,omitempty"`               // Requested resource state.
+	State       *State  `url:"state,omitempty" json:"state,omitempty"`               // Requested resource state.
 }
 
 type DeleteRequest struct {

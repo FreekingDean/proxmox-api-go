@@ -8,6 +8,65 @@ import (
 	"net/url"
 )
 
+const (
+	Cf_AVERAGE Cf = "AVERAGE"
+	Cf_MAX     Cf = "MAX"
+
+	Cmd_CEPH_INSTALL Cmd = "ceph_install"
+	Cmd_LOGIN        Cmd = "login"
+	Cmd_UPGRADE      Cmd = "upgrade"
+
+	Command_REBOOT   Command = "reboot"
+	Command_SHUTDOWN Command = "shutdown"
+
+	Property_ACME                  Property = "acme"
+	Property_ACMEDOMAIN0           Property = "acmedomain0"
+	Property_ACMEDOMAIN1           Property = "acmedomain1"
+	Property_ACMEDOMAIN2           Property = "acmedomain2"
+	Property_ACMEDOMAIN3           Property = "acmedomain3"
+	Property_ACMEDOMAIN4           Property = "acmedomain4"
+	Property_ACMEDOMAIN5           Property = "acmedomain5"
+	Property_DESCRIPTION           Property = "description"
+	Property_STARTALL_ONBOOT_DELAY Property = "startall-onboot-delay"
+	Property_WAKEONLAN             Property = "wakeonlan"
+
+	Status_UNKNOWN Status = "unknown"
+	Status_ONLINE  Status = "online"
+	Status_OFFLINE Status = "offline"
+
+	Timeframe_HOUR  Timeframe = "hour"
+	Timeframe_DAY   Timeframe = "day"
+	Timeframe_WEEK  Timeframe = "week"
+	Timeframe_MONTH Timeframe = "month"
+	Timeframe_YEAR  Timeframe = "year"
+)
+
+type Cf string
+type Cmd string
+type Command string
+type Property string
+type Status string
+type Timeframe string
+
+func PtrCf(i Cf) *Cf {
+	return &i
+}
+func PtrCmd(i Cmd) *Cmd {
+	return &i
+}
+func PtrCommand(i Command) *Command {
+	return &i
+}
+func PtrProperty(i Property) *Property {
+	return &i
+}
+func PtrStatus(i Status) *Status {
+	return &i
+}
+func PtrTimeframe(i Timeframe) *Timeframe {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -24,7 +83,7 @@ func New(c HTTPClient) *Client {
 
 type IndexResponse struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
-	Status string `url:"status" json:"status"` // Node status.
+	Status Status `url:"status" json:"status"` // Node status.
 
 	// The following parameters are optional
 	Cpu            *float64 `url:"cpu,omitempty" json:"cpu,omitempty"`                         // CPU utilization.
@@ -68,7 +127,7 @@ type GetConfigRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Property *string `url:"property,omitempty" json:"property,omitempty"` // Return only a specific property from the node configuration.
+	Property *Property `url:"property,omitempty" json:"property,omitempty"` // Return only a specific property from the node configuration.
 }
 
 // Node specific ACME settings.
@@ -145,8 +204,8 @@ type StatusRequest struct {
 }
 
 type NodeCmdStatusRequest struct {
-	Command string `url:"command" json:"command"` // Specify the command.
-	Node    string `url:"node" json:"node"`       // The cluster node name.
+	Command Command `url:"command" json:"command"` // Specify the command.
+	Node    string  `url:"node" json:"node"`       // The cluster node name.
 
 }
 
@@ -167,12 +226,12 @@ type WakeonlanRequest struct {
 }
 
 type RrdRequest struct {
-	Ds        string `url:"ds" json:"ds"`               // The list of datasources you want to display.
-	Node      string `url:"node" json:"node"`           // The cluster node name.
-	Timeframe string `url:"timeframe" json:"timeframe"` // Specify the time frame you are interested in.
+	Ds        string    `url:"ds" json:"ds"`               // The list of datasources you want to display.
+	Node      string    `url:"node" json:"node"`           // The cluster node name.
+	Timeframe Timeframe `url:"timeframe" json:"timeframe"` // Specify the time frame you are interested in.
 
 	// The following parameters are optional
-	Cf *string `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
+	Cf *Cf `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
 }
 
 type RrdResponse struct {
@@ -180,11 +239,11 @@ type RrdResponse struct {
 }
 
 type RrddataRequest struct {
-	Node      string `url:"node" json:"node"`           // The cluster node name.
-	Timeframe string `url:"timeframe" json:"timeframe"` // Specify the time frame you are interested in.
+	Node      string    `url:"node" json:"node"`           // The cluster node name.
+	Timeframe Timeframe `url:"timeframe" json:"timeframe"` // Specify the time frame you are interested in.
 
 	// The following parameters are optional
-	Cf *string `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
+	Cf *Cf `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
 }
 
 type SyslogRequest struct {
@@ -219,7 +278,7 @@ type VncshellRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Cmd       *string       `url:"cmd,omitempty" json:"cmd,omitempty"`             // Run specific command or default to login.
+	Cmd       *Cmd          `url:"cmd,omitempty" json:"cmd,omitempty"`             // Run specific command or default to login.
 	CmdOpts   *string       `url:"cmd-opts,omitempty" json:"cmd-opts,omitempty"`   // Add parameters to a command. Encoded as null terminated strings.
 	Height    *int          `url:"height,omitempty" json:"height,omitempty"`       // sets the height of the console in pixels.
 	Websocket *util.PVEBool `url:"websocket,omitempty" json:"websocket,omitempty"` // use websocket instead of standard vnc.
@@ -238,7 +297,7 @@ type TermproxyRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Cmd     *string `url:"cmd,omitempty" json:"cmd,omitempty"`           // Run specific command or default to login.
+	Cmd     *Cmd    `url:"cmd,omitempty" json:"cmd,omitempty"`           // Run specific command or default to login.
 	CmdOpts *string `url:"cmd-opts,omitempty" json:"cmd-opts,omitempty"` // Add parameters to a command. Encoded as null terminated strings.
 }
 
@@ -264,7 +323,7 @@ type SpiceshellRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Cmd     *string `url:"cmd,omitempty" json:"cmd,omitempty"`           // Run specific command or default to login.
+	Cmd     *Cmd    `url:"cmd,omitempty" json:"cmd,omitempty"`           // Run specific command or default to login.
 	CmdOpts *string `url:"cmd-opts,omitempty" json:"cmd-opts,omitempty"` // Add parameters to a command. Encoded as null terminated strings.
 	Proxy   *string `url:"proxy,omitempty" json:"proxy,omitempty"`       // SPICE proxy server. This can be used by the client to specify the proxy server. All nodes in a cluster runs 'spiceproxy', so it is up to the client to choose one. By default, we return the node where the VM is currently running. As reasonable setting is to use same node you use to connect to the API (This is window.location.hostname for the JS GUI).
 }

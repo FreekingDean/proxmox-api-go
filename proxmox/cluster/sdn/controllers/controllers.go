@@ -7,6 +7,18 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	Type_BGP    Type = "bgp"
+	Type_EVPN   Type = "evpn"
+	Type_FAUCET Type = "faucet"
+)
+
+type Type string
+
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -26,7 +38,7 @@ type IndexRequest struct {
 	// The following parameters are optional
 	Pending *util.PVEBool `url:"pending,omitempty" json:"pending,omitempty"` // Display pending config.
 	Running *util.PVEBool `url:"running,omitempty" json:"running,omitempty"` // Display running config.
-	Type    *string       `url:"type,omitempty" json:"type,omitempty"`       // Only list sdn controllers of specific type
+	Type    *Type         `url:"type,omitempty" json:"type,omitempty"`       // Only list sdn controllers of specific type
 }
 
 type IndexResponse struct {
@@ -39,7 +51,7 @@ type IndexResponse struct {
 
 type CreateRequest struct {
 	Controller string `url:"controller" json:"controller"` // The SDN controller object identifier.
-	Type       string `url:"type" json:"type"`             // Plugin type.
+	Type       Type   `url:"type" json:"type"`             // Plugin type.
 
 	// The following parameters are optional
 	Asn                     *int          `url:"asn,omitempty" json:"asn,omitempty"` // autonomous system number

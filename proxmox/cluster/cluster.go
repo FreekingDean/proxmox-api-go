@@ -8,6 +8,145 @@ import (
 	"net/url"
 )
 
+const (
+	Console_APPLET  Console = "applet"
+	Console_VV      Console = "vv"
+	Console_HTML5   Console = "html5"
+	Console_XTERMJS Console = "xtermjs"
+
+	CrsHa_BASIC  CrsHa = "basic"
+	CrsHa_STATIC CrsHa = "static"
+
+	Fencing_WATCHDOG Fencing = "watchdog"
+	Fencing_HARDWARE Fencing = "hardware"
+	Fencing_BOTH     Fencing = "both"
+
+	HaShutdownPolicy_FREEZE      HaShutdownPolicy = "freeze"
+	HaShutdownPolicy_FAILOVER    HaShutdownPolicy = "failover"
+	HaShutdownPolicy_CONDITIONAL HaShutdownPolicy = "conditional"
+	HaShutdownPolicy_MIGRATE     HaShutdownPolicy = "migrate"
+
+	Keyboard_DE    Keyboard = "de"
+	Keyboard_DE_CH Keyboard = "de-ch"
+	Keyboard_DA    Keyboard = "da"
+	Keyboard_EN_GB Keyboard = "en-gb"
+	Keyboard_EN_US Keyboard = "en-us"
+	Keyboard_ES    Keyboard = "es"
+	Keyboard_FI    Keyboard = "fi"
+	Keyboard_FR    Keyboard = "fr"
+	Keyboard_FR_BE Keyboard = "fr-be"
+	Keyboard_FR_CA Keyboard = "fr-ca"
+	Keyboard_FR_CH Keyboard = "fr-ch"
+	Keyboard_HU    Keyboard = "hu"
+	Keyboard_IS    Keyboard = "is"
+	Keyboard_IT    Keyboard = "it"
+	Keyboard_JA    Keyboard = "ja"
+	Keyboard_LT    Keyboard = "lt"
+	Keyboard_MK    Keyboard = "mk"
+	Keyboard_NL    Keyboard = "nl"
+	Keyboard_NO    Keyboard = "no"
+	Keyboard_PL    Keyboard = "pl"
+	Keyboard_PT    Keyboard = "pt"
+	Keyboard_PT_BR Keyboard = "pt-br"
+	Keyboard_SV    Keyboard = "sv"
+	Keyboard_SL    Keyboard = "sl"
+	Keyboard_TR    Keyboard = "tr"
+
+	Language_CA    Language = "ca"
+	Language_DA    Language = "da"
+	Language_DE    Language = "de"
+	Language_EN    Language = "en"
+	Language_ES    Language = "es"
+	Language_EU    Language = "eu"
+	Language_FA    Language = "fa"
+	Language_FR    Language = "fr"
+	Language_HE    Language = "he"
+	Language_IT    Language = "it"
+	Language_JA    Language = "ja"
+	Language_NB    Language = "nb"
+	Language_NN    Language = "nn"
+	Language_PL    Language = "pl"
+	Language_PT_BR Language = "pt_BR"
+	Language_RU    Language = "ru"
+	Language_SL    Language = "sl"
+	Language_SV    Language = "sv"
+	Language_TR    Language = "tr"
+	Language_ZH_CN Language = "zh_CN"
+	Language_ZH_TW Language = "zh_TW"
+
+	MigrationType_SECURE   MigrationType = "secure"
+	MigrationType_INSECURE MigrationType = "insecure"
+
+	TagStyleOrdering_CONFIG       TagStyleOrdering = "config"
+	TagStyleOrdering_ALPHABETICAL TagStyleOrdering = "alphabetical"
+
+	TagStyleShape_FULL   TagStyleShape = "full"
+	TagStyleShape_CIRCLE TagStyleShape = "circle"
+	TagStyleShape_DENSE  TagStyleShape = "dense"
+	TagStyleShape_NONE   TagStyleShape = "none"
+
+	Type_VM      Type = "vm"
+	Type_STORAGE Type = "storage"
+	Type_NODE    Type = "node"
+	Type_SDN     Type = "sdn"
+	Type_POOL    Type = "pool"
+	Type_QEMU    Type = "qemu"
+	Type_LXC     Type = "lxc"
+	Type_OPENVZ  Type = "openvz"
+	Type_CLUSTER Type = "cluster"
+
+	UserTagAccessUserAllow_NONE     UserTagAccessUserAllow = "none"
+	UserTagAccessUserAllow_LIST     UserTagAccessUserAllow = "list"
+	UserTagAccessUserAllow_EXISTING UserTagAccessUserAllow = "existing"
+	UserTagAccessUserAllow_FREE     UserTagAccessUserAllow = "free"
+)
+
+type Console string
+type CrsHa string
+type Fencing string
+type HaShutdownPolicy string
+type Keyboard string
+type Language string
+type MigrationType string
+type TagStyleOrdering string
+type TagStyleShape string
+type Type string
+type UserTagAccessUserAllow string
+
+func PtrConsole(i Console) *Console {
+	return &i
+}
+func PtrCrsHa(i CrsHa) *CrsHa {
+	return &i
+}
+func PtrFencing(i Fencing) *Fencing {
+	return &i
+}
+func PtrHaShutdownPolicy(i HaShutdownPolicy) *HaShutdownPolicy {
+	return &i
+}
+func PtrKeyboard(i Keyboard) *Keyboard {
+	return &i
+}
+func PtrLanguage(i Language) *Language {
+	return &i
+}
+func PtrMigrationType(i MigrationType) *MigrationType {
+	return &i
+}
+func PtrTagStyleOrdering(i TagStyleOrdering) *TagStyleOrdering {
+	return &i
+}
+func PtrTagStyleShape(i TagStyleShape) *TagStyleShape {
+	return &i
+}
+func PtrType(i Type) *Type {
+	return &i
+}
+func PtrUserTagAccessUserAllow(i UserTagAccessUserAllow) *UserTagAccessUserAllow {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -31,12 +170,12 @@ type LogRequest struct {
 type ResourcesRequest struct {
 
 	// The following parameters are optional
-	Type *string `url:"type,omitempty" json:"type,omitempty"`
+	Type *Type `url:"type,omitempty" json:"type,omitempty"`
 }
 
 type ResourcesResponse struct {
 	Id   string `url:"id" json:"id"`
-	Type string `url:"type" json:"type"` // Resource type.
+	Type Type   `url:"type" json:"type"` // Resource type.
 
 	// The following parameters are optional
 	CgroupMode *int     `url:"cgroup-mode,omitempty" json:"cgroup-mode,omitempty"` // The cgroup mode the node operates under (when type == node).
@@ -63,14 +202,16 @@ type TasksResponse struct {
 	Upid string `url:"upid" json:"upid"`
 }
 
-// Cluster wide HA settings.
-type Ha struct {
-	ShutdownPolicy string `url:"shutdown_policy" json:"shutdown_policy"` // The policy for HA services on node shutdown. 'freeze' disables auto-recovery, 'failover' ensures recovery, 'conditional' recovers on poweroff and freezes on reboot. 'migrate' will migrate running services to other nodes, if possible. With 'freeze' or 'failover', HA Services will always get stopped first on shutdown.
+// u2f
+type U2f struct {
 
+	// The following parameters are optional
+	Appid  *string `url:"appid,omitempty" json:"appid,omitempty"`   // U2F AppId URL override. Defaults to the origin.
+	Origin *string `url:"origin,omitempty" json:"origin,omitempty"` // U2F Origin override. Mostly useful for single nodes with a single URL.
 }
 
-func (t Ha) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `shutdown_policy=<enum>`)
+func (t U2f) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[appid=<APPID>] [,origin=<URL>]`)
 }
 
 // Control the range for the free VMID auto-selection pool.
@@ -85,60 +226,19 @@ func (t NextId) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `[lower=<integer>] [,upper=<integer>]`)
 }
 
-// u2f
-type U2f struct {
-
-	// The following parameters are optional
-	Appid  *string `url:"appid,omitempty" json:"appid,omitempty"`   // U2F AppId URL override. Defaults to the origin.
-	Origin *string `url:"origin,omitempty" json:"origin,omitempty"` // U2F Origin override. Mostly useful for single nodes with a single URL.
-}
-
-func (t U2f) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[appid=<APPID>] [,origin=<URL>]`)
-}
-
-// Set bandwidth/io limits various operations.
-type Bwlimit struct {
-
-	// The following parameters are optional
-	Clone     *float64 `url:"clone,omitempty" json:"clone,omitempty"`         // bandwidth limit in KiB/s for cloning disks
-	Default   *float64 `url:"default,omitempty" json:"default,omitempty"`     // default bandwidth limit in KiB/s
-	Migration *float64 `url:"migration,omitempty" json:"migration,omitempty"` // bandwidth limit in KiB/s for migrating guests (including moving local disks)
-	Move      *float64 `url:"move,omitempty" json:"move,omitempty"`           // bandwidth limit in KiB/s for moving disks
-	Restore   *float64 `url:"restore,omitempty" json:"restore,omitempty"`     // bandwidth limit in KiB/s for restoring guests from backups
-}
-
-func (t Bwlimit) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[clone=<LIMIT>] [,default=<LIMIT>] [,migration=<LIMIT>] [,move=<LIMIT>] [,restore=<LIMIT>]`)
-}
-
-// Tag style options.
-type TagStyle struct {
-
-	// The following parameters are optional
-	CaseSensitive *util.PVEBool `url:"case-sensitive,omitempty" json:"case-sensitive,omitempty"` // Controls if filtering for unique tags on update should check case-sensitive.
-	ColorMap      *string       `url:"color-map,omitempty" json:"color-map,omitempty"`           // Manual color mapping for tags (semicolon separated).
-	Ordering      *string       `url:"ordering,omitempty" json:"ordering,omitempty"`             // Controls the sorting of the tags in the web-interface and the API update.
-	Shape         *string       `url:"shape,omitempty" json:"shape,omitempty"`                   // Tag shape for the web ui tree. 'full' draws the full tag. 'circle' draws only a circle with the background color. 'dense' only draws a small rectancle (useful when many tags are assigned to each guest).'none' disables showing the tags.
-}
-
-func (t TagStyle) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[case-sensitive=<1|0>] [,color-map=<tag>:<hex-color>[:<hex-color-for-text>][;<tag>=...]] [,ordering=<config|alphabetical>] [,shape=<enum>]`)
-}
-
-// Cluster resource scheduling settings.
-type Crs struct {
-	Ha string `url:"ha" json:"ha"` // Use this resource scheduler mode for HA.
+// Cluster wide HA settings.
+type Ha struct {
+	ShutdownPolicy HaShutdownPolicy `url:"shutdown_policy" json:"shutdown_policy"` // The policy for HA services on node shutdown. 'freeze' disables auto-recovery, 'failover' ensures recovery, 'conditional' recovers on poweroff and freezes on reboot. 'migrate' will migrate running services to other nodes, if possible. With 'freeze' or 'failover', HA Services will always get stopped first on shutdown.
 
 }
 
-func (t Crs) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `ha=<basic|static>`)
+func (t Ha) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `shutdown_policy=<enum>`)
 }
 
 // For cluster wide migration settings.
 type Migration struct {
-	Type string `url:"type" json:"type"` // Migration traffic is encrypted using an SSH tunnel by default. On secure, completely private networks this can be disabled to increase performance.
+	Type MigrationType `url:"type" json:"type"` // Migration traffic is encrypted using an SSH tunnel by default. On secure, completely private networks this can be disabled to increase performance.
 
 	// The following parameters are optional
 	Network *string `url:"network,omitempty" json:"network,omitempty"` // CIDR of the (sub) network that is used for migration.
@@ -162,12 +262,51 @@ func (t Webauthn) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `[allow-subdomains=<1|0>] [,id=<DOMAINNAME>] [,origin=<URL>] [,rp=<RELYING_PARTY>]`)
 }
 
+// Set bandwidth/io limits various operations.
+type Bwlimit struct {
+
+	// The following parameters are optional
+	Clone     *float64 `url:"clone,omitempty" json:"clone,omitempty"`         // bandwidth limit in KiB/s for cloning disks
+	Default   *float64 `url:"default,omitempty" json:"default,omitempty"`     // default bandwidth limit in KiB/s
+	Migration *float64 `url:"migration,omitempty" json:"migration,omitempty"` // bandwidth limit in KiB/s for migrating guests (including moving local disks)
+	Move      *float64 `url:"move,omitempty" json:"move,omitempty"`           // bandwidth limit in KiB/s for moving disks
+	Restore   *float64 `url:"restore,omitempty" json:"restore,omitempty"`     // bandwidth limit in KiB/s for restoring guests from backups
+}
+
+func (t Bwlimit) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[clone=<LIMIT>] [,default=<LIMIT>] [,migration=<LIMIT>] [,move=<LIMIT>] [,restore=<LIMIT>]`)
+}
+
+// Cluster resource scheduling settings.
+type Crs struct {
+	Ha CrsHa `url:"ha" json:"ha"` // Use this resource scheduler mode for HA.
+
+}
+
+func (t Crs) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `ha=<basic|static>`)
+}
+
+// Tag style options.
+type TagStyle struct {
+
+	// The following parameters are optional
+	CaseSensitive *util.PVEBool     `url:"case-sensitive,omitempty" json:"case-sensitive,omitempty"` // Controls if filtering for unique tags on update should check case-sensitive.
+	ColorMap      *string           `url:"color-map,omitempty" json:"color-map,omitempty"`           // Manual color mapping for tags (semicolon separated).
+	Ordering      *TagStyleOrdering `url:"ordering,omitempty" json:"ordering,omitempty"`             // Controls the sorting of the tags in the web-interface and the API update.
+	Shape         *TagStyleShape    `url:"shape,omitempty" json:"shape,omitempty"`                   // Tag shape for the web ui tree. 'full' draws the full tag. 'circle' draws only a circle with the background color. 'dense' only draws a small rectancle (useful when many tags are assigned to each guest).'none' disables showing the tags.
+}
+
+func (t TagStyle) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[case-sensitive=<1|0>] [,color-map=<tag>:<hex-color>[:<hex-color-for-text>][;<tag>=...]] [,ordering=<config|alphabetical>] [,shape=<enum>]`)
+}
+
 // Privilege options for user-settable tags
 type UserTagAccess struct {
 
 	// The following parameters are optional
-	UserAllow     *string `url:"user-allow,omitempty" json:"user-allow,omitempty"`           // Controls tag usage for users without `Sys.Modify` on `/` by either allowing `none`, a `list`, already `existing` or anything (`free`).
-	UserAllowList *string `url:"user-allow-list,omitempty" json:"user-allow-list,omitempty"` // List of tags users are allowed to set and delete (semicolon separated) for 'user-allow' values 'list' and 'existing'.
+	UserAllow     *UserTagAccessUserAllow `url:"user-allow,omitempty" json:"user-allow,omitempty"`           // Controls tag usage for users without `Sys.Modify` on `/` by either allowing `none`, a `list`, already `existing` or anything (`free`).
+	UserAllowList *string                 `url:"user-allow-list,omitempty" json:"user-allow-list,omitempty"` // List of tags users are allowed to set and delete (semicolon separated) for 'user-allow' values 'list' and 'existing'.
 }
 
 func (t UserTagAccess) EncodeValues(key string, v *url.Values) error {
@@ -178,16 +317,16 @@ type SetOptionsRequest struct {
 
 	// The following parameters are optional
 	Bwlimit           *Bwlimit       `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`                       // Set bandwidth/io limits various operations.
-	Console           *string        `url:"console,omitempty" json:"console,omitempty"`                       // Select the default Console viewer. You can either use the builtin java applet (VNC; deprecated and maps to html5), an external virt-viewer comtatible application (SPICE), an HTML5 based vnc viewer (noVNC), or an HTML5 based console client (xtermjs). If the selected viewer is not available (e.g. SPICE not activated for the VM), the fallback is noVNC.
+	Console           *Console       `url:"console,omitempty" json:"console,omitempty"`                       // Select the default Console viewer. You can either use the builtin java applet (VNC; deprecated and maps to html5), an external virt-viewer comtatible application (SPICE), an HTML5 based vnc viewer (noVNC), or an HTML5 based console client (xtermjs). If the selected viewer is not available (e.g. SPICE not activated for the VM), the fallback is noVNC.
 	Crs               *Crs           `url:"crs,omitempty" json:"crs,omitempty"`                               // Cluster resource scheduling settings.
 	Delete            *string        `url:"delete,omitempty" json:"delete,omitempty"`                         // A list of settings you want to delete.
 	Description       *string        `url:"description,omitempty" json:"description,omitempty"`               // Datacenter description. Shown in the web-interface datacenter notes panel. This is saved as comment inside the configuration file.
 	EmailFrom         *string        `url:"email_from,omitempty" json:"email_from,omitempty"`                 // Specify email address to send notification from (default is root@$hostname)
-	Fencing           *string        `url:"fencing,omitempty" json:"fencing,omitempty"`                       // Set the fencing mode of the HA cluster. Hardware mode needs a valid configuration of fence devices in /etc/pve/ha/fence.cfg. With both all two modes are used. WARNING: 'hardware' and 'both' are EXPERIMENTAL & WIP
+	Fencing           *Fencing       `url:"fencing,omitempty" json:"fencing,omitempty"`                       // Set the fencing mode of the HA cluster. Hardware mode needs a valid configuration of fence devices in /etc/pve/ha/fence.cfg. With both all two modes are used. WARNING: 'hardware' and 'both' are EXPERIMENTAL & WIP
 	Ha                *Ha            `url:"ha,omitempty" json:"ha,omitempty"`                                 // Cluster wide HA settings.
 	HttpProxy         *string        `url:"http_proxy,omitempty" json:"http_proxy,omitempty"`                 // Specify external http proxy which is used for downloads (example: 'http://username:password@host:port/')
-	Keyboard          *string        `url:"keyboard,omitempty" json:"keyboard,omitempty"`                     // Default keybord layout for vnc server.
-	Language          *string        `url:"language,omitempty" json:"language,omitempty"`                     // Default GUI language.
+	Keyboard          *Keyboard      `url:"keyboard,omitempty" json:"keyboard,omitempty"`                     // Default keybord layout for vnc server.
+	Language          *Language      `url:"language,omitempty" json:"language,omitempty"`                     // Default GUI language.
 	MacPrefix         *string        `url:"mac_prefix,omitempty" json:"mac_prefix,omitempty"`                 // Prefix for autogenerated MAC addresses.
 	MaxWorkers        *int           `url:"max_workers,omitempty" json:"max_workers,omitempty"`               // Defines how many workers (per node) are maximal started on actions like 'stopall VMs' or task from the ha-manager.
 	Migration         *Migration     `url:"migration,omitempty" json:"migration,omitempty"`                   // For cluster wide migration settings.
@@ -203,7 +342,7 @@ type SetOptionsRequest struct {
 type GetStatusResponse struct {
 	Id   string `url:"id" json:"id"`
 	Name string `url:"name" json:"name"`
-	Type string `url:"type" json:"type"` // Indicates the type, either cluster or node. The type defines the object properties e.g. quorate available for type cluster.
+	Type Type   `url:"type" json:"type"` // Indicates the type, either cluster or node. The type defines the object properties e.g. quorate available for type cluster.
 
 	// The following parameters are optional
 	Ip      *string       `url:"ip,omitempty" json:"ip,omitempty"`           // [node] IP of the resolved nodename.

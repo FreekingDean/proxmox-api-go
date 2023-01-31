@@ -8,6 +8,33 @@ import (
 	"net/url"
 )
 
+const (
+	PolicyIn_ACCEPT PolicyIn = "ACCEPT"
+	PolicyIn_REJECT PolicyIn = "REJECT"
+	PolicyIn_DROP   PolicyIn = "DROP"
+
+	PolicyOut_ACCEPT PolicyOut = "ACCEPT"
+	PolicyOut_REJECT PolicyOut = "REJECT"
+	PolicyOut_DROP   PolicyOut = "DROP"
+
+	Type_ALIAS Type = "alias"
+	Type_IPSET Type = "ipset"
+)
+
+type PolicyIn string
+type PolicyOut string
+type Type string
+
+func PtrPolicyIn(i PolicyIn) *PolicyIn {
+	return &i
+}
+func PtrPolicyOut(i PolicyOut) *PolicyOut {
+	return &i
+}
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -41,8 +68,8 @@ type GetOptionsResponse struct {
 	Ebtables     *util.PVEBool `url:"ebtables,omitempty" json:"ebtables,omitempty"`           // Enable ebtables rules cluster wide.
 	Enable       *int          `url:"enable,omitempty" json:"enable,omitempty"`               // Enable or disable the firewall cluster wide.
 	LogRatelimit *LogRatelimit `url:"log_ratelimit,omitempty" json:"log_ratelimit,omitempty"` // Log ratelimiting settings
-	PolicyIn     *string       `url:"policy_in,omitempty" json:"policy_in,omitempty"`         // Input policy.
-	PolicyOut    *string       `url:"policy_out,omitempty" json:"policy_out,omitempty"`       // Output policy.
+	PolicyIn     *PolicyIn     `url:"policy_in,omitempty" json:"policy_in,omitempty"`         // Input policy.
+	PolicyOut    *PolicyOut    `url:"policy_out,omitempty" json:"policy_out,omitempty"`       // Output policy.
 }
 
 type SetOptionsRequest struct {
@@ -53,8 +80,8 @@ type SetOptionsRequest struct {
 	Ebtables     *util.PVEBool `url:"ebtables,omitempty" json:"ebtables,omitempty"`           // Enable ebtables rules cluster wide.
 	Enable       *int          `url:"enable,omitempty" json:"enable,omitempty"`               // Enable or disable the firewall cluster wide.
 	LogRatelimit *LogRatelimit `url:"log_ratelimit,omitempty" json:"log_ratelimit,omitempty"` // Log ratelimiting settings
-	PolicyIn     *string       `url:"policy_in,omitempty" json:"policy_in,omitempty"`         // Input policy.
-	PolicyOut    *string       `url:"policy_out,omitempty" json:"policy_out,omitempty"`       // Output policy.
+	PolicyIn     *PolicyIn     `url:"policy_in,omitempty" json:"policy_in,omitempty"`         // Input policy.
+	PolicyOut    *PolicyOut    `url:"policy_out,omitempty" json:"policy_out,omitempty"`       // Output policy.
 }
 
 type GetMacrosResponse struct {
@@ -66,13 +93,13 @@ type GetMacrosResponse struct {
 type RefsRequest struct {
 
 	// The following parameters are optional
-	Type *string `url:"type,omitempty" json:"type,omitempty"` // Only list references of specified type.
+	Type *Type `url:"type,omitempty" json:"type,omitempty"` // Only list references of specified type.
 }
 
 type RefsResponse struct {
 	Name string `url:"name" json:"name"`
 	Ref  string `url:"ref" json:"ref"`
-	Type string `url:"type" json:"type"`
+	Type Type   `url:"type" json:"type"`
 
 	// The following parameters are optional
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`

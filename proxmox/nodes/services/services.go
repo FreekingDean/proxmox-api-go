@@ -6,6 +6,34 @@ import (
 	"context"
 )
 
+const (
+	Service_CHRONY            Service = "chrony"
+	Service_COROSYNC          Service = "corosync"
+	Service_CRON              Service = "cron"
+	Service_KSMTUNED          Service = "ksmtuned"
+	Service_POSTFIX           Service = "postfix"
+	Service_PVE_CLUSTER       Service = "pve-cluster"
+	Service_PVE_FIREWALL      Service = "pve-firewall"
+	Service_PVE_HA_CRM        Service = "pve-ha-crm"
+	Service_PVE_HA_LRM        Service = "pve-ha-lrm"
+	Service_PVEDAEMON         Service = "pvedaemon"
+	Service_PVEFW_LOGGER      Service = "pvefw-logger"
+	Service_PVEPROXY          Service = "pveproxy"
+	Service_PVESCHEDULER      Service = "pvescheduler"
+	Service_PVESTATD          Service = "pvestatd"
+	Service_SPICEPROXY        Service = "spiceproxy"
+	Service_SSHD              Service = "sshd"
+	Service_SYSLOG            Service = "syslog"
+	Service_SYSTEMD_JOURNALD  Service = "systemd-journald"
+	Service_SYSTEMD_TIMESYNCD Service = "systemd-timesyncd"
+)
+
+type Service string
+
+func PtrService(i Service) *Service {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -26,8 +54,8 @@ type IndexRequest struct {
 }
 
 type FindRequest struct {
-	Node    string `url:"node" json:"node"`       // The cluster node name.
-	Service string `url:"service" json:"service"` // Service ID
+	Node    string  `url:"node" json:"node"`       // The cluster node name.
+	Service Service `url:"service" json:"service"` // Service ID
 
 }
 
@@ -36,32 +64,32 @@ type FindResponse struct {
 }
 
 type ServiceStateRequest struct {
-	Node    string `url:"node" json:"node"`       // The cluster node name.
-	Service string `url:"service" json:"service"` // Service ID
+	Node    string  `url:"node" json:"node"`       // The cluster node name.
+	Service Service `url:"service" json:"service"` // Service ID
 
 }
 
 type ServiceStartRequest struct {
-	Node    string `url:"node" json:"node"`       // The cluster node name.
-	Service string `url:"service" json:"service"` // Service ID
+	Node    string  `url:"node" json:"node"`       // The cluster node name.
+	Service Service `url:"service" json:"service"` // Service ID
 
 }
 
 type ServiceStopRequest struct {
-	Node    string `url:"node" json:"node"`       // The cluster node name.
-	Service string `url:"service" json:"service"` // Service ID
+	Node    string  `url:"node" json:"node"`       // The cluster node name.
+	Service Service `url:"service" json:"service"` // Service ID
 
 }
 
 type ServiceRestartRequest struct {
-	Node    string `url:"node" json:"node"`       // The cluster node name.
-	Service string `url:"service" json:"service"` // Service ID
+	Node    string  `url:"node" json:"node"`       // The cluster node name.
+	Service Service `url:"service" json:"service"` // Service ID
 
 }
 
 type ServiceReloadRequest struct {
-	Node    string `url:"node" json:"node"`       // The cluster node name.
-	Service string `url:"service" json:"service"` // Service ID
+	Node    string  `url:"node" json:"node"`       // The cluster node name.
+	Service Service `url:"service" json:"service"` // Service ID
 
 }
 

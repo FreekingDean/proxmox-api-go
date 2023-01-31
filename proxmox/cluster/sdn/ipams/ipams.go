@@ -6,6 +6,18 @@ import (
 	"context"
 )
 
+const (
+	Type_NETBOX  Type = "netbox"
+	Type_PHPIPAM Type = "phpipam"
+	Type_PVE     Type = "pve"
+)
+
+type Type string
+
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -23,7 +35,7 @@ func New(c HTTPClient) *Client {
 type IndexRequest struct {
 
 	// The following parameters are optional
-	Type *string `url:"type,omitempty" json:"type,omitempty"` // Only list sdn ipams of specific type
+	Type *Type `url:"type,omitempty" json:"type,omitempty"` // Only list sdn ipams of specific type
 }
 
 type IndexResponse struct {
@@ -33,7 +45,7 @@ type IndexResponse struct {
 
 type CreateRequest struct {
 	Ipam string `url:"ipam" json:"ipam"` // The SDN ipam object identifier.
-	Type string `url:"type" json:"type"` // Plugin type.
+	Type Type   `url:"type" json:"type"` // Plugin type.
 
 	// The following parameters are optional
 	Section *int    `url:"section,omitempty" json:"section,omitempty"`

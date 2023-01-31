@@ -6,6 +6,16 @@ import (
 	"context"
 )
 
+const (
+	Type_POWERDNS Type = "powerdns"
+)
+
+type Type string
+
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -23,7 +33,7 @@ func New(c HTTPClient) *Client {
 type IndexRequest struct {
 
 	// The following parameters are optional
-	Type *string `url:"type,omitempty" json:"type,omitempty"` // Only list sdn dns of specific type
+	Type *Type `url:"type,omitempty" json:"type,omitempty"` // Only list sdn dns of specific type
 }
 
 type IndexResponse struct {
@@ -34,7 +44,7 @@ type IndexResponse struct {
 type CreateRequest struct {
 	Dns  string `url:"dns" json:"dns"` // The SDN dns object identifier.
 	Key  string `url:"key" json:"key"`
-	Type string `url:"type" json:"type"` // Plugin type.
+	Type Type   `url:"type" json:"type"` // Plugin type.
 	Url  string `url:"url" json:"url"`
 
 	// The following parameters are optional

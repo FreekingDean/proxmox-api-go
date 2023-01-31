@@ -7,6 +7,24 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	Realm_OATH   Realm = "oath"
+	Realm_YUBICO Realm = "yubico"
+
+	User_OATH User = "oath"
+	User_U2F  User = "u2f"
+)
+
+type Realm string
+type User string
+
+func PtrRealm(i Realm) *Realm {
+	return &i
+}
+func PtrUser(i User) *User {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -117,9 +135,9 @@ type ReadUserTfaTypeTfaRequest struct {
 type ReadUserTfaTypeTfaResponse struct {
 
 	// The following parameters are optional
-	Realm *string   `url:"realm,omitempty" json:"realm,omitempty"` // The type of TFA the users realm has set, if any.
+	Realm *Realm    `url:"realm,omitempty" json:"realm,omitempty"` // The type of TFA the users realm has set, if any.
 	Types *[]string `url:"types,omitempty" json:"types,omitempty"` // Array of the user configured TFA types, if any. Only available if 'multiple' was not passed.
-	User  *string   `url:"user,omitempty" json:"user,omitempty"`   // The type of TFA the user has set, if any. Only set if 'multiple' was not passed.
+	User  *User     `url:"user,omitempty" json:"user,omitempty"`   // The type of TFA the user has set, if any. Only set if 'multiple' was not passed.
 }
 
 // Index User index.

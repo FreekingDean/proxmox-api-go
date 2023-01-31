@@ -7,6 +7,17 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	Filesystem_EXT4 Filesystem = "ext4"
+	Filesystem_XFS  Filesystem = "xfs"
+)
+
+type Filesystem string
+
+func PtrFilesystem(i Filesystem) *Filesystem {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -42,7 +53,7 @@ type CreateRequest struct {
 
 	// The following parameters are optional
 	AddStorage *util.PVEBool `url:"add_storage,omitempty" json:"add_storage,omitempty"` // Configure storage using the directory.
-	Filesystem *string       `url:"filesystem,omitempty" json:"filesystem,omitempty"`   // The desired filesystem.
+	Filesystem *Filesystem   `url:"filesystem,omitempty" json:"filesystem,omitempty"`   // The desired filesystem.
 }
 
 type DeleteRequest struct {

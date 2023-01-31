@@ -13,6 +13,26 @@ import (
   {{ end }}
 )
 
+{{ if .Enums }}
+const (
+	{{ range $name, $enums := .Enums }}
+		{{- range $_, $val := $enums }}
+	{{ $name }}_{{ $val | Enumify }} {{ $name }} = "{{ $val }}"
+		{{- end }}
+	{{ end }}
+)
+
+{{- range $name, $_ := .Enums }}
+type {{ $name }} string
+{{- end }}
+
+{{- range $name, $_ := .Enums }}
+func Ptr{{ $name }}(i {{ $name }}) *{{ $name }} {
+	return &i
+}
+{{- end }}
+{{ end }}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }

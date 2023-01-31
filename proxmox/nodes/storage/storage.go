@@ -7,6 +7,61 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	Cf_AVERAGE Cf = "AVERAGE"
+	Cf_MAX     Cf = "MAX"
+
+	ChecksumAlgorithm_MD5    ChecksumAlgorithm = "md5"
+	ChecksumAlgorithm_SHA1   ChecksumAlgorithm = "sha1"
+	ChecksumAlgorithm_SHA224 ChecksumAlgorithm = "sha224"
+	ChecksumAlgorithm_SHA256 ChecksumAlgorithm = "sha256"
+	ChecksumAlgorithm_SHA384 ChecksumAlgorithm = "sha384"
+	ChecksumAlgorithm_SHA512 ChecksumAlgorithm = "sha512"
+
+	Content_ISO    Content = "iso"
+	Content_VZTMPL Content = "vztmpl"
+
+	Mark_KEEP      Mark = "keep"
+	Mark_REMOVE    Mark = "remove"
+	Mark_PROTECTED Mark = "protected"
+	Mark_RENAMED   Mark = "renamed"
+
+	Timeframe_HOUR  Timeframe = "hour"
+	Timeframe_DAY   Timeframe = "day"
+	Timeframe_WEEK  Timeframe = "week"
+	Timeframe_MONTH Timeframe = "month"
+	Timeframe_YEAR  Timeframe = "year"
+
+	Type_QEMU Type = "qemu"
+	Type_LXC  Type = "lxc"
+)
+
+type Cf string
+type ChecksumAlgorithm string
+type Content string
+type Mark string
+type Timeframe string
+type Type string
+
+func PtrCf(i Cf) *Cf {
+	return &i
+}
+func PtrChecksumAlgorithm(i ChecksumAlgorithm) *ChecksumAlgorithm {
+	return &i
+}
+func PtrContent(i Content) *Content {
+	return &i
+}
+func PtrMark(i Mark) *Mark {
+	return &i
+}
+func PtrTimeframe(i Timeframe) *Timeframe {
+	return &i
+}
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -63,13 +118,13 @@ type DryrunPrunebackupsRequest struct {
 
 	// The following parameters are optional
 	PruneBackups *string `url:"prune-backups,omitempty" json:"prune-backups,omitempty"` // Use these retention options instead of those from the storage configuration.
-	Type         *string `url:"type,omitempty" json:"type,omitempty"`                   // Either 'qemu' or 'lxc'. Only consider backups for guests of this type.
+	Type         *Type   `url:"type,omitempty" json:"type,omitempty"`                   // Either 'qemu' or 'lxc'. Only consider backups for guests of this type.
 	Vmid         *int    `url:"vmid,omitempty" json:"vmid,omitempty"`                   // Only consider backups for this guest.
 }
 
 type DryrunPrunebackupsResponse struct {
 	Ctime int    `url:"ctime" json:"ctime"` // Creation time of the backup (seconds since the UNIX epoch).
-	Mark  string `url:"mark" json:"mark"`   // Whether the backup would be kept or removed. Backups that are protected or don't use the standard naming scheme are not removed.
+	Mark  Mark   `url:"mark" json:"mark"`   // Whether the backup would be kept or removed. Backups that are protected or don't use the standard naming scheme are not removed.
 	Type  string `url:"type" json:"type"`   // One of 'qemu', 'lxc', 'openvz' or 'unknown'.
 	Volid string `url:"volid" json:"volid"` // Backup volume ID.
 
@@ -83,7 +138,7 @@ type DeletePrunebackupsRequest struct {
 
 	// The following parameters are optional
 	PruneBackups *string `url:"prune-backups,omitempty" json:"prune-backups,omitempty"` // Use these retention options instead of those from the storage configuration.
-	Type         *string `url:"type,omitempty" json:"type,omitempty"`                   // Either 'qemu' or 'lxc'. Only consider backups for guests of this type.
+	Type         *Type   `url:"type,omitempty" json:"type,omitempty"`                   // Either 'qemu' or 'lxc'. Only consider backups for guests of this type.
 	Vmid         *int    `url:"vmid,omitempty" json:"vmid,omitempty"`                   // Only prune backups for this VM.
 }
 
@@ -94,13 +149,13 @@ type ReadStatusRequest struct {
 }
 
 type RrdRequest struct {
-	Ds        string `url:"ds" json:"ds"`               // The list of datasources you want to display.
-	Node      string `url:"node" json:"node"`           // The cluster node name.
-	Storage   string `url:"storage" json:"storage"`     // The storage identifier.
-	Timeframe string `url:"timeframe" json:"timeframe"` // Specify the time frame you are interested in.
+	Ds        string    `url:"ds" json:"ds"`               // The list of datasources you want to display.
+	Node      string    `url:"node" json:"node"`           // The cluster node name.
+	Storage   string    `url:"storage" json:"storage"`     // The storage identifier.
+	Timeframe Timeframe `url:"timeframe" json:"timeframe"` // Specify the time frame you are interested in.
 
 	// The following parameters are optional
-	Cf *string `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
+	Cf *Cf `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
 }
 
 type RrdResponse struct {
@@ -108,37 +163,37 @@ type RrdResponse struct {
 }
 
 type RrddataRequest struct {
-	Node      string `url:"node" json:"node"`           // The cluster node name.
-	Storage   string `url:"storage" json:"storage"`     // The storage identifier.
-	Timeframe string `url:"timeframe" json:"timeframe"` // Specify the time frame you are interested in.
+	Node      string    `url:"node" json:"node"`           // The cluster node name.
+	Storage   string    `url:"storage" json:"storage"`     // The storage identifier.
+	Timeframe Timeframe `url:"timeframe" json:"timeframe"` // Specify the time frame you are interested in.
 
 	// The following parameters are optional
-	Cf *string `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
+	Cf *Cf `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
 }
 
 type UploadRequest struct {
-	Content  string `url:"content" json:"content"`   // Content type.
-	Filename string `url:"filename" json:"filename"` // The name of the file to create. Caution: This will be normalized!
-	Node     string `url:"node" json:"node"`         // The cluster node name.
-	Storage  string `url:"storage" json:"storage"`   // The storage identifier.
+	Content  Content `url:"content" json:"content"`   // Content type.
+	Filename string  `url:"filename" json:"filename"` // The name of the file to create. Caution: This will be normalized!
+	Node     string  `url:"node" json:"node"`         // The cluster node name.
+	Storage  string  `url:"storage" json:"storage"`   // The storage identifier.
 
 	// The following parameters are optional
-	Checksum          *string `url:"checksum,omitempty" json:"checksum,omitempty"`                     // The expected checksum of the file.
-	ChecksumAlgorithm *string `url:"checksum-algorithm,omitempty" json:"checksum-algorithm,omitempty"` // The algorithm to calculate the checksum of the file.
-	Tmpfilename       *string `url:"tmpfilename,omitempty" json:"tmpfilename,omitempty"`               // The source file name. This parameter is usually set by the REST handler. You can only overwrite it when connecting to the trusted port on localhost.
+	Checksum          *string            `url:"checksum,omitempty" json:"checksum,omitempty"`                     // The expected checksum of the file.
+	ChecksumAlgorithm *ChecksumAlgorithm `url:"checksum-algorithm,omitempty" json:"checksum-algorithm,omitempty"` // The algorithm to calculate the checksum of the file.
+	Tmpfilename       *string            `url:"tmpfilename,omitempty" json:"tmpfilename,omitempty"`               // The source file name. This parameter is usually set by the REST handler. You can only overwrite it when connecting to the trusted port on localhost.
 }
 
 type DownloadUrlRequest struct {
-	Content  string `url:"content" json:"content"`   // Content type.
-	Filename string `url:"filename" json:"filename"` // The name of the file to create. Caution: This will be normalized!
-	Node     string `url:"node" json:"node"`         // The cluster node name.
-	Storage  string `url:"storage" json:"storage"`   // The storage identifier.
-	Url      string `url:"url" json:"url"`           // The URL to download the file from.
+	Content  Content `url:"content" json:"content"`   // Content type.
+	Filename string  `url:"filename" json:"filename"` // The name of the file to create. Caution: This will be normalized!
+	Node     string  `url:"node" json:"node"`         // The cluster node name.
+	Storage  string  `url:"storage" json:"storage"`   // The storage identifier.
+	Url      string  `url:"url" json:"url"`           // The URL to download the file from.
 
 	// The following parameters are optional
-	Checksum           *string       `url:"checksum,omitempty" json:"checksum,omitempty"`                       // The expected checksum of the file.
-	ChecksumAlgorithm  *string       `url:"checksum-algorithm,omitempty" json:"checksum-algorithm,omitempty"`   // The algorithm to calculate the checksum of the file.
-	VerifyCertificates *util.PVEBool `url:"verify-certificates,omitempty" json:"verify-certificates,omitempty"` // If false, no SSL/TLS certificates will be verified.
+	Checksum           *string            `url:"checksum,omitempty" json:"checksum,omitempty"`                       // The expected checksum of the file.
+	ChecksumAlgorithm  *ChecksumAlgorithm `url:"checksum-algorithm,omitempty" json:"checksum-algorithm,omitempty"`   // The algorithm to calculate the checksum of the file.
+	VerifyCertificates *util.PVEBool      `url:"verify-certificates,omitempty" json:"verify-certificates,omitempty"` // If false, no SSL/TLS certificates will be verified.
 }
 
 // Index Get status for all datastores.

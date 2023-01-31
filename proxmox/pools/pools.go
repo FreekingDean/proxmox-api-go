@@ -7,6 +7,27 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	MembersType_QEMU    MembersType = "qemu"
+	MembersType_LXC     MembersType = "lxc"
+	MembersType_OPENVZ  MembersType = "openvz"
+	MembersType_STORAGE MembersType = "storage"
+
+	Type_QEMU    Type = "qemu"
+	Type_LXC     Type = "lxc"
+	Type_STORAGE Type = "storage"
+)
+
+type MembersType string
+type Type string
+
+func PtrMembersType(i MembersType) *MembersType {
+	return &i
+}
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -36,13 +57,13 @@ type FindRequest struct {
 	Poolid string `url:"poolid" json:"poolid"`
 
 	// The following parameters are optional
-	Type *string `url:"type,omitempty" json:"type,omitempty"`
+	Type *Type `url:"type,omitempty" json:"type,omitempty"`
 }
 
 type Members struct {
-	Id   string `url:"id" json:"id"`
-	Node string `url:"node" json:"node"`
-	Type string `url:"type" json:"type"`
+	Id   string      `url:"id" json:"id"`
+	Node string      `url:"node" json:"node"`
+	Type MembersType `url:"type" json:"type"`
 
 	// The following parameters are optional
 	Storage *string `url:"storage,omitempty" json:"storage,omitempty"`

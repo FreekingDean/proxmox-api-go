@@ -6,6 +6,17 @@ import (
 	"context"
 )
 
+const (
+	Type_QEMU Type = "qemu"
+	Type_LXC  Type = "lxc"
+)
+
+type Type string
+
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -26,8 +37,8 @@ type IndexResponse struct {
 }
 
 type GetGuestsNotInBackupNotBackedUpResponse struct {
-	Type string `url:"type" json:"type"` // Type of the guest.
-	Vmid int    `url:"vmid" json:"vmid"` // VMID of the guest.
+	Type Type `url:"type" json:"type"` // Type of the guest.
+	Vmid int  `url:"vmid" json:"vmid"` // VMID of the guest.
 
 	// The following parameters are optional
 	Name *string `url:"name,omitempty" json:"name,omitempty"` // Name of the guest

@@ -6,6 +6,18 @@ import (
 	"context"
 )
 
+const (
+	Type_USER    Type = "user"
+	Type_NETWORK Type = "network"
+	Type_META    Type = "meta"
+)
+
+type Type string
+
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -42,7 +54,7 @@ type MassUpdateRequest struct {
 
 type CloudinitGeneratedConfigDumpRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
-	Type string `url:"type" json:"type"` // Config type.
+	Type Type   `url:"type" json:"type"` // Config type.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }

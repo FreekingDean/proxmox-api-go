@@ -8,6 +8,1394 @@ import (
 	"net/url"
 )
 
+const (
+	Arch_AMD64 Arch = "amd64"
+	Arch_I386  Arch = "i386"
+	Arch_ARM64 Arch = "arm64"
+	Arch_ARMHF Arch = "armhf"
+
+	Cf_AVERAGE Cf = "AVERAGE"
+	Cf_MAX     Cf = "MAX"
+
+	Cmode_SHELL   Cmode = "shell"
+	Cmode_CONSOLE Cmode = "console"
+	Cmode_TTY     Cmode = "tty"
+
+	Disk_ROOTFS Disk = "rootfs"
+	Disk_MP0    Disk = "mp0"
+	Disk_MP1    Disk = "mp1"
+	Disk_MP2    Disk = "mp2"
+	Disk_MP3    Disk = "mp3"
+	Disk_MP4    Disk = "mp4"
+	Disk_MP5    Disk = "mp5"
+	Disk_MP6    Disk = "mp6"
+	Disk_MP7    Disk = "mp7"
+	Disk_MP8    Disk = "mp8"
+	Disk_MP9    Disk = "mp9"
+	Disk_MP10   Disk = "mp10"
+	Disk_MP11   Disk = "mp11"
+	Disk_MP12   Disk = "mp12"
+	Disk_MP13   Disk = "mp13"
+	Disk_MP14   Disk = "mp14"
+	Disk_MP15   Disk = "mp15"
+	Disk_MP16   Disk = "mp16"
+	Disk_MP17   Disk = "mp17"
+	Disk_MP18   Disk = "mp18"
+	Disk_MP19   Disk = "mp19"
+	Disk_MP20   Disk = "mp20"
+	Disk_MP21   Disk = "mp21"
+	Disk_MP22   Disk = "mp22"
+	Disk_MP23   Disk = "mp23"
+	Disk_MP24   Disk = "mp24"
+	Disk_MP25   Disk = "mp25"
+	Disk_MP26   Disk = "mp26"
+	Disk_MP27   Disk = "mp27"
+	Disk_MP28   Disk = "mp28"
+	Disk_MP29   Disk = "mp29"
+	Disk_MP30   Disk = "mp30"
+	Disk_MP31   Disk = "mp31"
+	Disk_MP32   Disk = "mp32"
+	Disk_MP33   Disk = "mp33"
+	Disk_MP34   Disk = "mp34"
+	Disk_MP35   Disk = "mp35"
+	Disk_MP36   Disk = "mp36"
+	Disk_MP37   Disk = "mp37"
+	Disk_MP38   Disk = "mp38"
+	Disk_MP39   Disk = "mp39"
+	Disk_MP40   Disk = "mp40"
+	Disk_MP41   Disk = "mp41"
+	Disk_MP42   Disk = "mp42"
+	Disk_MP43   Disk = "mp43"
+	Disk_MP44   Disk = "mp44"
+	Disk_MP45   Disk = "mp45"
+	Disk_MP46   Disk = "mp46"
+	Disk_MP47   Disk = "mp47"
+	Disk_MP48   Disk = "mp48"
+	Disk_MP49   Disk = "mp49"
+	Disk_MP50   Disk = "mp50"
+	Disk_MP51   Disk = "mp51"
+	Disk_MP52   Disk = "mp52"
+	Disk_MP53   Disk = "mp53"
+	Disk_MP54   Disk = "mp54"
+	Disk_MP55   Disk = "mp55"
+	Disk_MP56   Disk = "mp56"
+	Disk_MP57   Disk = "mp57"
+	Disk_MP58   Disk = "mp58"
+	Disk_MP59   Disk = "mp59"
+	Disk_MP60   Disk = "mp60"
+	Disk_MP61   Disk = "mp61"
+	Disk_MP62   Disk = "mp62"
+	Disk_MP63   Disk = "mp63"
+	Disk_MP64   Disk = "mp64"
+	Disk_MP65   Disk = "mp65"
+	Disk_MP66   Disk = "mp66"
+	Disk_MP67   Disk = "mp67"
+	Disk_MP68   Disk = "mp68"
+	Disk_MP69   Disk = "mp69"
+	Disk_MP70   Disk = "mp70"
+	Disk_MP71   Disk = "mp71"
+	Disk_MP72   Disk = "mp72"
+	Disk_MP73   Disk = "mp73"
+	Disk_MP74   Disk = "mp74"
+	Disk_MP75   Disk = "mp75"
+	Disk_MP76   Disk = "mp76"
+	Disk_MP77   Disk = "mp77"
+	Disk_MP78   Disk = "mp78"
+	Disk_MP79   Disk = "mp79"
+	Disk_MP80   Disk = "mp80"
+	Disk_MP81   Disk = "mp81"
+	Disk_MP82   Disk = "mp82"
+	Disk_MP83   Disk = "mp83"
+	Disk_MP84   Disk = "mp84"
+	Disk_MP85   Disk = "mp85"
+	Disk_MP86   Disk = "mp86"
+	Disk_MP87   Disk = "mp87"
+	Disk_MP88   Disk = "mp88"
+	Disk_MP89   Disk = "mp89"
+	Disk_MP90   Disk = "mp90"
+	Disk_MP91   Disk = "mp91"
+	Disk_MP92   Disk = "mp92"
+	Disk_MP93   Disk = "mp93"
+	Disk_MP94   Disk = "mp94"
+	Disk_MP95   Disk = "mp95"
+	Disk_MP96   Disk = "mp96"
+	Disk_MP97   Disk = "mp97"
+	Disk_MP98   Disk = "mp98"
+	Disk_MP99   Disk = "mp99"
+	Disk_MP100  Disk = "mp100"
+	Disk_MP101  Disk = "mp101"
+	Disk_MP102  Disk = "mp102"
+	Disk_MP103  Disk = "mp103"
+	Disk_MP104  Disk = "mp104"
+	Disk_MP105  Disk = "mp105"
+	Disk_MP106  Disk = "mp106"
+	Disk_MP107  Disk = "mp107"
+	Disk_MP108  Disk = "mp108"
+	Disk_MP109  Disk = "mp109"
+	Disk_MP110  Disk = "mp110"
+	Disk_MP111  Disk = "mp111"
+	Disk_MP112  Disk = "mp112"
+	Disk_MP113  Disk = "mp113"
+	Disk_MP114  Disk = "mp114"
+	Disk_MP115  Disk = "mp115"
+	Disk_MP116  Disk = "mp116"
+	Disk_MP117  Disk = "mp117"
+	Disk_MP118  Disk = "mp118"
+	Disk_MP119  Disk = "mp119"
+	Disk_MP120  Disk = "mp120"
+	Disk_MP121  Disk = "mp121"
+	Disk_MP122  Disk = "mp122"
+	Disk_MP123  Disk = "mp123"
+	Disk_MP124  Disk = "mp124"
+	Disk_MP125  Disk = "mp125"
+	Disk_MP126  Disk = "mp126"
+	Disk_MP127  Disk = "mp127"
+	Disk_MP128  Disk = "mp128"
+	Disk_MP129  Disk = "mp129"
+	Disk_MP130  Disk = "mp130"
+	Disk_MP131  Disk = "mp131"
+	Disk_MP132  Disk = "mp132"
+	Disk_MP133  Disk = "mp133"
+	Disk_MP134  Disk = "mp134"
+	Disk_MP135  Disk = "mp135"
+	Disk_MP136  Disk = "mp136"
+	Disk_MP137  Disk = "mp137"
+	Disk_MP138  Disk = "mp138"
+	Disk_MP139  Disk = "mp139"
+	Disk_MP140  Disk = "mp140"
+	Disk_MP141  Disk = "mp141"
+	Disk_MP142  Disk = "mp142"
+	Disk_MP143  Disk = "mp143"
+	Disk_MP144  Disk = "mp144"
+	Disk_MP145  Disk = "mp145"
+	Disk_MP146  Disk = "mp146"
+	Disk_MP147  Disk = "mp147"
+	Disk_MP148  Disk = "mp148"
+	Disk_MP149  Disk = "mp149"
+	Disk_MP150  Disk = "mp150"
+	Disk_MP151  Disk = "mp151"
+	Disk_MP152  Disk = "mp152"
+	Disk_MP153  Disk = "mp153"
+	Disk_MP154  Disk = "mp154"
+	Disk_MP155  Disk = "mp155"
+	Disk_MP156  Disk = "mp156"
+	Disk_MP157  Disk = "mp157"
+	Disk_MP158  Disk = "mp158"
+	Disk_MP159  Disk = "mp159"
+	Disk_MP160  Disk = "mp160"
+	Disk_MP161  Disk = "mp161"
+	Disk_MP162  Disk = "mp162"
+	Disk_MP163  Disk = "mp163"
+	Disk_MP164  Disk = "mp164"
+	Disk_MP165  Disk = "mp165"
+	Disk_MP166  Disk = "mp166"
+	Disk_MP167  Disk = "mp167"
+	Disk_MP168  Disk = "mp168"
+	Disk_MP169  Disk = "mp169"
+	Disk_MP170  Disk = "mp170"
+	Disk_MP171  Disk = "mp171"
+	Disk_MP172  Disk = "mp172"
+	Disk_MP173  Disk = "mp173"
+	Disk_MP174  Disk = "mp174"
+	Disk_MP175  Disk = "mp175"
+	Disk_MP176  Disk = "mp176"
+	Disk_MP177  Disk = "mp177"
+	Disk_MP178  Disk = "mp178"
+	Disk_MP179  Disk = "mp179"
+	Disk_MP180  Disk = "mp180"
+	Disk_MP181  Disk = "mp181"
+	Disk_MP182  Disk = "mp182"
+	Disk_MP183  Disk = "mp183"
+	Disk_MP184  Disk = "mp184"
+	Disk_MP185  Disk = "mp185"
+	Disk_MP186  Disk = "mp186"
+	Disk_MP187  Disk = "mp187"
+	Disk_MP188  Disk = "mp188"
+	Disk_MP189  Disk = "mp189"
+	Disk_MP190  Disk = "mp190"
+	Disk_MP191  Disk = "mp191"
+	Disk_MP192  Disk = "mp192"
+	Disk_MP193  Disk = "mp193"
+	Disk_MP194  Disk = "mp194"
+	Disk_MP195  Disk = "mp195"
+	Disk_MP196  Disk = "mp196"
+	Disk_MP197  Disk = "mp197"
+	Disk_MP198  Disk = "mp198"
+	Disk_MP199  Disk = "mp199"
+	Disk_MP200  Disk = "mp200"
+	Disk_MP201  Disk = "mp201"
+	Disk_MP202  Disk = "mp202"
+	Disk_MP203  Disk = "mp203"
+	Disk_MP204  Disk = "mp204"
+	Disk_MP205  Disk = "mp205"
+	Disk_MP206  Disk = "mp206"
+	Disk_MP207  Disk = "mp207"
+	Disk_MP208  Disk = "mp208"
+	Disk_MP209  Disk = "mp209"
+	Disk_MP210  Disk = "mp210"
+	Disk_MP211  Disk = "mp211"
+	Disk_MP212  Disk = "mp212"
+	Disk_MP213  Disk = "mp213"
+	Disk_MP214  Disk = "mp214"
+	Disk_MP215  Disk = "mp215"
+	Disk_MP216  Disk = "mp216"
+	Disk_MP217  Disk = "mp217"
+	Disk_MP218  Disk = "mp218"
+	Disk_MP219  Disk = "mp219"
+	Disk_MP220  Disk = "mp220"
+	Disk_MP221  Disk = "mp221"
+	Disk_MP222  Disk = "mp222"
+	Disk_MP223  Disk = "mp223"
+	Disk_MP224  Disk = "mp224"
+	Disk_MP225  Disk = "mp225"
+	Disk_MP226  Disk = "mp226"
+	Disk_MP227  Disk = "mp227"
+	Disk_MP228  Disk = "mp228"
+	Disk_MP229  Disk = "mp229"
+	Disk_MP230  Disk = "mp230"
+	Disk_MP231  Disk = "mp231"
+	Disk_MP232  Disk = "mp232"
+	Disk_MP233  Disk = "mp233"
+	Disk_MP234  Disk = "mp234"
+	Disk_MP235  Disk = "mp235"
+	Disk_MP236  Disk = "mp236"
+	Disk_MP237  Disk = "mp237"
+	Disk_MP238  Disk = "mp238"
+	Disk_MP239  Disk = "mp239"
+	Disk_MP240  Disk = "mp240"
+	Disk_MP241  Disk = "mp241"
+	Disk_MP242  Disk = "mp242"
+	Disk_MP243  Disk = "mp243"
+	Disk_MP244  Disk = "mp244"
+	Disk_MP245  Disk = "mp245"
+	Disk_MP246  Disk = "mp246"
+	Disk_MP247  Disk = "mp247"
+	Disk_MP248  Disk = "mp248"
+	Disk_MP249  Disk = "mp249"
+	Disk_MP250  Disk = "mp250"
+	Disk_MP251  Disk = "mp251"
+	Disk_MP252  Disk = "mp252"
+	Disk_MP253  Disk = "mp253"
+	Disk_MP254  Disk = "mp254"
+	Disk_MP255  Disk = "mp255"
+
+	Feature_SNAPSHOT Feature = "snapshot"
+	Feature_CLONE    Feature = "clone"
+	Feature_COPY     Feature = "copy"
+
+	Lock_BACKUP          Lock = "backup"
+	Lock_CREATE          Lock = "create"
+	Lock_DESTROYED       Lock = "destroyed"
+	Lock_DISK            Lock = "disk"
+	Lock_FSTRIM          Lock = "fstrim"
+	Lock_MIGRATE         Lock = "migrate"
+	Lock_MOUNTED         Lock = "mounted"
+	Lock_ROLLBACK        Lock = "rollback"
+	Lock_SNAPSHOT        Lock = "snapshot"
+	Lock_SNAPSHOT_DELETE Lock = "snapshot-delete"
+
+	NetType_VETH NetType = "veth"
+
+	Ostype_DEBIAN    Ostype = "debian"
+	Ostype_DEVUAN    Ostype = "devuan"
+	Ostype_UBUNTU    Ostype = "ubuntu"
+	Ostype_CENTOS    Ostype = "centos"
+	Ostype_FEDORA    Ostype = "fedora"
+	Ostype_OPENSUSE  Ostype = "opensuse"
+	Ostype_ARCHLINUX Ostype = "archlinux"
+	Ostype_ALPINE    Ostype = "alpine"
+	Ostype_GENTOO    Ostype = "gentoo"
+	Ostype_NIXOS     Ostype = "nixos"
+	Ostype_UNMANAGED Ostype = "unmanaged"
+
+	Status_STOPPED Status = "stopped"
+	Status_RUNNING Status = "running"
+
+	TargetVolume_ROOTFS    TargetVolume = "rootfs"
+	TargetVolume_MP0       TargetVolume = "mp0"
+	TargetVolume_MP1       TargetVolume = "mp1"
+	TargetVolume_MP2       TargetVolume = "mp2"
+	TargetVolume_MP3       TargetVolume = "mp3"
+	TargetVolume_MP4       TargetVolume = "mp4"
+	TargetVolume_MP5       TargetVolume = "mp5"
+	TargetVolume_MP6       TargetVolume = "mp6"
+	TargetVolume_MP7       TargetVolume = "mp7"
+	TargetVolume_MP8       TargetVolume = "mp8"
+	TargetVolume_MP9       TargetVolume = "mp9"
+	TargetVolume_MP10      TargetVolume = "mp10"
+	TargetVolume_MP11      TargetVolume = "mp11"
+	TargetVolume_MP12      TargetVolume = "mp12"
+	TargetVolume_MP13      TargetVolume = "mp13"
+	TargetVolume_MP14      TargetVolume = "mp14"
+	TargetVolume_MP15      TargetVolume = "mp15"
+	TargetVolume_MP16      TargetVolume = "mp16"
+	TargetVolume_MP17      TargetVolume = "mp17"
+	TargetVolume_MP18      TargetVolume = "mp18"
+	TargetVolume_MP19      TargetVolume = "mp19"
+	TargetVolume_MP20      TargetVolume = "mp20"
+	TargetVolume_MP21      TargetVolume = "mp21"
+	TargetVolume_MP22      TargetVolume = "mp22"
+	TargetVolume_MP23      TargetVolume = "mp23"
+	TargetVolume_MP24      TargetVolume = "mp24"
+	TargetVolume_MP25      TargetVolume = "mp25"
+	TargetVolume_MP26      TargetVolume = "mp26"
+	TargetVolume_MP27      TargetVolume = "mp27"
+	TargetVolume_MP28      TargetVolume = "mp28"
+	TargetVolume_MP29      TargetVolume = "mp29"
+	TargetVolume_MP30      TargetVolume = "mp30"
+	TargetVolume_MP31      TargetVolume = "mp31"
+	TargetVolume_MP32      TargetVolume = "mp32"
+	TargetVolume_MP33      TargetVolume = "mp33"
+	TargetVolume_MP34      TargetVolume = "mp34"
+	TargetVolume_MP35      TargetVolume = "mp35"
+	TargetVolume_MP36      TargetVolume = "mp36"
+	TargetVolume_MP37      TargetVolume = "mp37"
+	TargetVolume_MP38      TargetVolume = "mp38"
+	TargetVolume_MP39      TargetVolume = "mp39"
+	TargetVolume_MP40      TargetVolume = "mp40"
+	TargetVolume_MP41      TargetVolume = "mp41"
+	TargetVolume_MP42      TargetVolume = "mp42"
+	TargetVolume_MP43      TargetVolume = "mp43"
+	TargetVolume_MP44      TargetVolume = "mp44"
+	TargetVolume_MP45      TargetVolume = "mp45"
+	TargetVolume_MP46      TargetVolume = "mp46"
+	TargetVolume_MP47      TargetVolume = "mp47"
+	TargetVolume_MP48      TargetVolume = "mp48"
+	TargetVolume_MP49      TargetVolume = "mp49"
+	TargetVolume_MP50      TargetVolume = "mp50"
+	TargetVolume_MP51      TargetVolume = "mp51"
+	TargetVolume_MP52      TargetVolume = "mp52"
+	TargetVolume_MP53      TargetVolume = "mp53"
+	TargetVolume_MP54      TargetVolume = "mp54"
+	TargetVolume_MP55      TargetVolume = "mp55"
+	TargetVolume_MP56      TargetVolume = "mp56"
+	TargetVolume_MP57      TargetVolume = "mp57"
+	TargetVolume_MP58      TargetVolume = "mp58"
+	TargetVolume_MP59      TargetVolume = "mp59"
+	TargetVolume_MP60      TargetVolume = "mp60"
+	TargetVolume_MP61      TargetVolume = "mp61"
+	TargetVolume_MP62      TargetVolume = "mp62"
+	TargetVolume_MP63      TargetVolume = "mp63"
+	TargetVolume_MP64      TargetVolume = "mp64"
+	TargetVolume_MP65      TargetVolume = "mp65"
+	TargetVolume_MP66      TargetVolume = "mp66"
+	TargetVolume_MP67      TargetVolume = "mp67"
+	TargetVolume_MP68      TargetVolume = "mp68"
+	TargetVolume_MP69      TargetVolume = "mp69"
+	TargetVolume_MP70      TargetVolume = "mp70"
+	TargetVolume_MP71      TargetVolume = "mp71"
+	TargetVolume_MP72      TargetVolume = "mp72"
+	TargetVolume_MP73      TargetVolume = "mp73"
+	TargetVolume_MP74      TargetVolume = "mp74"
+	TargetVolume_MP75      TargetVolume = "mp75"
+	TargetVolume_MP76      TargetVolume = "mp76"
+	TargetVolume_MP77      TargetVolume = "mp77"
+	TargetVolume_MP78      TargetVolume = "mp78"
+	TargetVolume_MP79      TargetVolume = "mp79"
+	TargetVolume_MP80      TargetVolume = "mp80"
+	TargetVolume_MP81      TargetVolume = "mp81"
+	TargetVolume_MP82      TargetVolume = "mp82"
+	TargetVolume_MP83      TargetVolume = "mp83"
+	TargetVolume_MP84      TargetVolume = "mp84"
+	TargetVolume_MP85      TargetVolume = "mp85"
+	TargetVolume_MP86      TargetVolume = "mp86"
+	TargetVolume_MP87      TargetVolume = "mp87"
+	TargetVolume_MP88      TargetVolume = "mp88"
+	TargetVolume_MP89      TargetVolume = "mp89"
+	TargetVolume_MP90      TargetVolume = "mp90"
+	TargetVolume_MP91      TargetVolume = "mp91"
+	TargetVolume_MP92      TargetVolume = "mp92"
+	TargetVolume_MP93      TargetVolume = "mp93"
+	TargetVolume_MP94      TargetVolume = "mp94"
+	TargetVolume_MP95      TargetVolume = "mp95"
+	TargetVolume_MP96      TargetVolume = "mp96"
+	TargetVolume_MP97      TargetVolume = "mp97"
+	TargetVolume_MP98      TargetVolume = "mp98"
+	TargetVolume_MP99      TargetVolume = "mp99"
+	TargetVolume_MP100     TargetVolume = "mp100"
+	TargetVolume_MP101     TargetVolume = "mp101"
+	TargetVolume_MP102     TargetVolume = "mp102"
+	TargetVolume_MP103     TargetVolume = "mp103"
+	TargetVolume_MP104     TargetVolume = "mp104"
+	TargetVolume_MP105     TargetVolume = "mp105"
+	TargetVolume_MP106     TargetVolume = "mp106"
+	TargetVolume_MP107     TargetVolume = "mp107"
+	TargetVolume_MP108     TargetVolume = "mp108"
+	TargetVolume_MP109     TargetVolume = "mp109"
+	TargetVolume_MP110     TargetVolume = "mp110"
+	TargetVolume_MP111     TargetVolume = "mp111"
+	TargetVolume_MP112     TargetVolume = "mp112"
+	TargetVolume_MP113     TargetVolume = "mp113"
+	TargetVolume_MP114     TargetVolume = "mp114"
+	TargetVolume_MP115     TargetVolume = "mp115"
+	TargetVolume_MP116     TargetVolume = "mp116"
+	TargetVolume_MP117     TargetVolume = "mp117"
+	TargetVolume_MP118     TargetVolume = "mp118"
+	TargetVolume_MP119     TargetVolume = "mp119"
+	TargetVolume_MP120     TargetVolume = "mp120"
+	TargetVolume_MP121     TargetVolume = "mp121"
+	TargetVolume_MP122     TargetVolume = "mp122"
+	TargetVolume_MP123     TargetVolume = "mp123"
+	TargetVolume_MP124     TargetVolume = "mp124"
+	TargetVolume_MP125     TargetVolume = "mp125"
+	TargetVolume_MP126     TargetVolume = "mp126"
+	TargetVolume_MP127     TargetVolume = "mp127"
+	TargetVolume_MP128     TargetVolume = "mp128"
+	TargetVolume_MP129     TargetVolume = "mp129"
+	TargetVolume_MP130     TargetVolume = "mp130"
+	TargetVolume_MP131     TargetVolume = "mp131"
+	TargetVolume_MP132     TargetVolume = "mp132"
+	TargetVolume_MP133     TargetVolume = "mp133"
+	TargetVolume_MP134     TargetVolume = "mp134"
+	TargetVolume_MP135     TargetVolume = "mp135"
+	TargetVolume_MP136     TargetVolume = "mp136"
+	TargetVolume_MP137     TargetVolume = "mp137"
+	TargetVolume_MP138     TargetVolume = "mp138"
+	TargetVolume_MP139     TargetVolume = "mp139"
+	TargetVolume_MP140     TargetVolume = "mp140"
+	TargetVolume_MP141     TargetVolume = "mp141"
+	TargetVolume_MP142     TargetVolume = "mp142"
+	TargetVolume_MP143     TargetVolume = "mp143"
+	TargetVolume_MP144     TargetVolume = "mp144"
+	TargetVolume_MP145     TargetVolume = "mp145"
+	TargetVolume_MP146     TargetVolume = "mp146"
+	TargetVolume_MP147     TargetVolume = "mp147"
+	TargetVolume_MP148     TargetVolume = "mp148"
+	TargetVolume_MP149     TargetVolume = "mp149"
+	TargetVolume_MP150     TargetVolume = "mp150"
+	TargetVolume_MP151     TargetVolume = "mp151"
+	TargetVolume_MP152     TargetVolume = "mp152"
+	TargetVolume_MP153     TargetVolume = "mp153"
+	TargetVolume_MP154     TargetVolume = "mp154"
+	TargetVolume_MP155     TargetVolume = "mp155"
+	TargetVolume_MP156     TargetVolume = "mp156"
+	TargetVolume_MP157     TargetVolume = "mp157"
+	TargetVolume_MP158     TargetVolume = "mp158"
+	TargetVolume_MP159     TargetVolume = "mp159"
+	TargetVolume_MP160     TargetVolume = "mp160"
+	TargetVolume_MP161     TargetVolume = "mp161"
+	TargetVolume_MP162     TargetVolume = "mp162"
+	TargetVolume_MP163     TargetVolume = "mp163"
+	TargetVolume_MP164     TargetVolume = "mp164"
+	TargetVolume_MP165     TargetVolume = "mp165"
+	TargetVolume_MP166     TargetVolume = "mp166"
+	TargetVolume_MP167     TargetVolume = "mp167"
+	TargetVolume_MP168     TargetVolume = "mp168"
+	TargetVolume_MP169     TargetVolume = "mp169"
+	TargetVolume_MP170     TargetVolume = "mp170"
+	TargetVolume_MP171     TargetVolume = "mp171"
+	TargetVolume_MP172     TargetVolume = "mp172"
+	TargetVolume_MP173     TargetVolume = "mp173"
+	TargetVolume_MP174     TargetVolume = "mp174"
+	TargetVolume_MP175     TargetVolume = "mp175"
+	TargetVolume_MP176     TargetVolume = "mp176"
+	TargetVolume_MP177     TargetVolume = "mp177"
+	TargetVolume_MP178     TargetVolume = "mp178"
+	TargetVolume_MP179     TargetVolume = "mp179"
+	TargetVolume_MP180     TargetVolume = "mp180"
+	TargetVolume_MP181     TargetVolume = "mp181"
+	TargetVolume_MP182     TargetVolume = "mp182"
+	TargetVolume_MP183     TargetVolume = "mp183"
+	TargetVolume_MP184     TargetVolume = "mp184"
+	TargetVolume_MP185     TargetVolume = "mp185"
+	TargetVolume_MP186     TargetVolume = "mp186"
+	TargetVolume_MP187     TargetVolume = "mp187"
+	TargetVolume_MP188     TargetVolume = "mp188"
+	TargetVolume_MP189     TargetVolume = "mp189"
+	TargetVolume_MP190     TargetVolume = "mp190"
+	TargetVolume_MP191     TargetVolume = "mp191"
+	TargetVolume_MP192     TargetVolume = "mp192"
+	TargetVolume_MP193     TargetVolume = "mp193"
+	TargetVolume_MP194     TargetVolume = "mp194"
+	TargetVolume_MP195     TargetVolume = "mp195"
+	TargetVolume_MP196     TargetVolume = "mp196"
+	TargetVolume_MP197     TargetVolume = "mp197"
+	TargetVolume_MP198     TargetVolume = "mp198"
+	TargetVolume_MP199     TargetVolume = "mp199"
+	TargetVolume_MP200     TargetVolume = "mp200"
+	TargetVolume_MP201     TargetVolume = "mp201"
+	TargetVolume_MP202     TargetVolume = "mp202"
+	TargetVolume_MP203     TargetVolume = "mp203"
+	TargetVolume_MP204     TargetVolume = "mp204"
+	TargetVolume_MP205     TargetVolume = "mp205"
+	TargetVolume_MP206     TargetVolume = "mp206"
+	TargetVolume_MP207     TargetVolume = "mp207"
+	TargetVolume_MP208     TargetVolume = "mp208"
+	TargetVolume_MP209     TargetVolume = "mp209"
+	TargetVolume_MP210     TargetVolume = "mp210"
+	TargetVolume_MP211     TargetVolume = "mp211"
+	TargetVolume_MP212     TargetVolume = "mp212"
+	TargetVolume_MP213     TargetVolume = "mp213"
+	TargetVolume_MP214     TargetVolume = "mp214"
+	TargetVolume_MP215     TargetVolume = "mp215"
+	TargetVolume_MP216     TargetVolume = "mp216"
+	TargetVolume_MP217     TargetVolume = "mp217"
+	TargetVolume_MP218     TargetVolume = "mp218"
+	TargetVolume_MP219     TargetVolume = "mp219"
+	TargetVolume_MP220     TargetVolume = "mp220"
+	TargetVolume_MP221     TargetVolume = "mp221"
+	TargetVolume_MP222     TargetVolume = "mp222"
+	TargetVolume_MP223     TargetVolume = "mp223"
+	TargetVolume_MP224     TargetVolume = "mp224"
+	TargetVolume_MP225     TargetVolume = "mp225"
+	TargetVolume_MP226     TargetVolume = "mp226"
+	TargetVolume_MP227     TargetVolume = "mp227"
+	TargetVolume_MP228     TargetVolume = "mp228"
+	TargetVolume_MP229     TargetVolume = "mp229"
+	TargetVolume_MP230     TargetVolume = "mp230"
+	TargetVolume_MP231     TargetVolume = "mp231"
+	TargetVolume_MP232     TargetVolume = "mp232"
+	TargetVolume_MP233     TargetVolume = "mp233"
+	TargetVolume_MP234     TargetVolume = "mp234"
+	TargetVolume_MP235     TargetVolume = "mp235"
+	TargetVolume_MP236     TargetVolume = "mp236"
+	TargetVolume_MP237     TargetVolume = "mp237"
+	TargetVolume_MP238     TargetVolume = "mp238"
+	TargetVolume_MP239     TargetVolume = "mp239"
+	TargetVolume_MP240     TargetVolume = "mp240"
+	TargetVolume_MP241     TargetVolume = "mp241"
+	TargetVolume_MP242     TargetVolume = "mp242"
+	TargetVolume_MP243     TargetVolume = "mp243"
+	TargetVolume_MP244     TargetVolume = "mp244"
+	TargetVolume_MP245     TargetVolume = "mp245"
+	TargetVolume_MP246     TargetVolume = "mp246"
+	TargetVolume_MP247     TargetVolume = "mp247"
+	TargetVolume_MP248     TargetVolume = "mp248"
+	TargetVolume_MP249     TargetVolume = "mp249"
+	TargetVolume_MP250     TargetVolume = "mp250"
+	TargetVolume_MP251     TargetVolume = "mp251"
+	TargetVolume_MP252     TargetVolume = "mp252"
+	TargetVolume_MP253     TargetVolume = "mp253"
+	TargetVolume_MP254     TargetVolume = "mp254"
+	TargetVolume_MP255     TargetVolume = "mp255"
+	TargetVolume_UNUSED0   TargetVolume = "unused0"
+	TargetVolume_UNUSED1   TargetVolume = "unused1"
+	TargetVolume_UNUSED2   TargetVolume = "unused2"
+	TargetVolume_UNUSED3   TargetVolume = "unused3"
+	TargetVolume_UNUSED4   TargetVolume = "unused4"
+	TargetVolume_UNUSED5   TargetVolume = "unused5"
+	TargetVolume_UNUSED6   TargetVolume = "unused6"
+	TargetVolume_UNUSED7   TargetVolume = "unused7"
+	TargetVolume_UNUSED8   TargetVolume = "unused8"
+	TargetVolume_UNUSED9   TargetVolume = "unused9"
+	TargetVolume_UNUSED10  TargetVolume = "unused10"
+	TargetVolume_UNUSED11  TargetVolume = "unused11"
+	TargetVolume_UNUSED12  TargetVolume = "unused12"
+	TargetVolume_UNUSED13  TargetVolume = "unused13"
+	TargetVolume_UNUSED14  TargetVolume = "unused14"
+	TargetVolume_UNUSED15  TargetVolume = "unused15"
+	TargetVolume_UNUSED16  TargetVolume = "unused16"
+	TargetVolume_UNUSED17  TargetVolume = "unused17"
+	TargetVolume_UNUSED18  TargetVolume = "unused18"
+	TargetVolume_UNUSED19  TargetVolume = "unused19"
+	TargetVolume_UNUSED20  TargetVolume = "unused20"
+	TargetVolume_UNUSED21  TargetVolume = "unused21"
+	TargetVolume_UNUSED22  TargetVolume = "unused22"
+	TargetVolume_UNUSED23  TargetVolume = "unused23"
+	TargetVolume_UNUSED24  TargetVolume = "unused24"
+	TargetVolume_UNUSED25  TargetVolume = "unused25"
+	TargetVolume_UNUSED26  TargetVolume = "unused26"
+	TargetVolume_UNUSED27  TargetVolume = "unused27"
+	TargetVolume_UNUSED28  TargetVolume = "unused28"
+	TargetVolume_UNUSED29  TargetVolume = "unused29"
+	TargetVolume_UNUSED30  TargetVolume = "unused30"
+	TargetVolume_UNUSED31  TargetVolume = "unused31"
+	TargetVolume_UNUSED32  TargetVolume = "unused32"
+	TargetVolume_UNUSED33  TargetVolume = "unused33"
+	TargetVolume_UNUSED34  TargetVolume = "unused34"
+	TargetVolume_UNUSED35  TargetVolume = "unused35"
+	TargetVolume_UNUSED36  TargetVolume = "unused36"
+	TargetVolume_UNUSED37  TargetVolume = "unused37"
+	TargetVolume_UNUSED38  TargetVolume = "unused38"
+	TargetVolume_UNUSED39  TargetVolume = "unused39"
+	TargetVolume_UNUSED40  TargetVolume = "unused40"
+	TargetVolume_UNUSED41  TargetVolume = "unused41"
+	TargetVolume_UNUSED42  TargetVolume = "unused42"
+	TargetVolume_UNUSED43  TargetVolume = "unused43"
+	TargetVolume_UNUSED44  TargetVolume = "unused44"
+	TargetVolume_UNUSED45  TargetVolume = "unused45"
+	TargetVolume_UNUSED46  TargetVolume = "unused46"
+	TargetVolume_UNUSED47  TargetVolume = "unused47"
+	TargetVolume_UNUSED48  TargetVolume = "unused48"
+	TargetVolume_UNUSED49  TargetVolume = "unused49"
+	TargetVolume_UNUSED50  TargetVolume = "unused50"
+	TargetVolume_UNUSED51  TargetVolume = "unused51"
+	TargetVolume_UNUSED52  TargetVolume = "unused52"
+	TargetVolume_UNUSED53  TargetVolume = "unused53"
+	TargetVolume_UNUSED54  TargetVolume = "unused54"
+	TargetVolume_UNUSED55  TargetVolume = "unused55"
+	TargetVolume_UNUSED56  TargetVolume = "unused56"
+	TargetVolume_UNUSED57  TargetVolume = "unused57"
+	TargetVolume_UNUSED58  TargetVolume = "unused58"
+	TargetVolume_UNUSED59  TargetVolume = "unused59"
+	TargetVolume_UNUSED60  TargetVolume = "unused60"
+	TargetVolume_UNUSED61  TargetVolume = "unused61"
+	TargetVolume_UNUSED62  TargetVolume = "unused62"
+	TargetVolume_UNUSED63  TargetVolume = "unused63"
+	TargetVolume_UNUSED64  TargetVolume = "unused64"
+	TargetVolume_UNUSED65  TargetVolume = "unused65"
+	TargetVolume_UNUSED66  TargetVolume = "unused66"
+	TargetVolume_UNUSED67  TargetVolume = "unused67"
+	TargetVolume_UNUSED68  TargetVolume = "unused68"
+	TargetVolume_UNUSED69  TargetVolume = "unused69"
+	TargetVolume_UNUSED70  TargetVolume = "unused70"
+	TargetVolume_UNUSED71  TargetVolume = "unused71"
+	TargetVolume_UNUSED72  TargetVolume = "unused72"
+	TargetVolume_UNUSED73  TargetVolume = "unused73"
+	TargetVolume_UNUSED74  TargetVolume = "unused74"
+	TargetVolume_UNUSED75  TargetVolume = "unused75"
+	TargetVolume_UNUSED76  TargetVolume = "unused76"
+	TargetVolume_UNUSED77  TargetVolume = "unused77"
+	TargetVolume_UNUSED78  TargetVolume = "unused78"
+	TargetVolume_UNUSED79  TargetVolume = "unused79"
+	TargetVolume_UNUSED80  TargetVolume = "unused80"
+	TargetVolume_UNUSED81  TargetVolume = "unused81"
+	TargetVolume_UNUSED82  TargetVolume = "unused82"
+	TargetVolume_UNUSED83  TargetVolume = "unused83"
+	TargetVolume_UNUSED84  TargetVolume = "unused84"
+	TargetVolume_UNUSED85  TargetVolume = "unused85"
+	TargetVolume_UNUSED86  TargetVolume = "unused86"
+	TargetVolume_UNUSED87  TargetVolume = "unused87"
+	TargetVolume_UNUSED88  TargetVolume = "unused88"
+	TargetVolume_UNUSED89  TargetVolume = "unused89"
+	TargetVolume_UNUSED90  TargetVolume = "unused90"
+	TargetVolume_UNUSED91  TargetVolume = "unused91"
+	TargetVolume_UNUSED92  TargetVolume = "unused92"
+	TargetVolume_UNUSED93  TargetVolume = "unused93"
+	TargetVolume_UNUSED94  TargetVolume = "unused94"
+	TargetVolume_UNUSED95  TargetVolume = "unused95"
+	TargetVolume_UNUSED96  TargetVolume = "unused96"
+	TargetVolume_UNUSED97  TargetVolume = "unused97"
+	TargetVolume_UNUSED98  TargetVolume = "unused98"
+	TargetVolume_UNUSED99  TargetVolume = "unused99"
+	TargetVolume_UNUSED100 TargetVolume = "unused100"
+	TargetVolume_UNUSED101 TargetVolume = "unused101"
+	TargetVolume_UNUSED102 TargetVolume = "unused102"
+	TargetVolume_UNUSED103 TargetVolume = "unused103"
+	TargetVolume_UNUSED104 TargetVolume = "unused104"
+	TargetVolume_UNUSED105 TargetVolume = "unused105"
+	TargetVolume_UNUSED106 TargetVolume = "unused106"
+	TargetVolume_UNUSED107 TargetVolume = "unused107"
+	TargetVolume_UNUSED108 TargetVolume = "unused108"
+	TargetVolume_UNUSED109 TargetVolume = "unused109"
+	TargetVolume_UNUSED110 TargetVolume = "unused110"
+	TargetVolume_UNUSED111 TargetVolume = "unused111"
+	TargetVolume_UNUSED112 TargetVolume = "unused112"
+	TargetVolume_UNUSED113 TargetVolume = "unused113"
+	TargetVolume_UNUSED114 TargetVolume = "unused114"
+	TargetVolume_UNUSED115 TargetVolume = "unused115"
+	TargetVolume_UNUSED116 TargetVolume = "unused116"
+	TargetVolume_UNUSED117 TargetVolume = "unused117"
+	TargetVolume_UNUSED118 TargetVolume = "unused118"
+	TargetVolume_UNUSED119 TargetVolume = "unused119"
+	TargetVolume_UNUSED120 TargetVolume = "unused120"
+	TargetVolume_UNUSED121 TargetVolume = "unused121"
+	TargetVolume_UNUSED122 TargetVolume = "unused122"
+	TargetVolume_UNUSED123 TargetVolume = "unused123"
+	TargetVolume_UNUSED124 TargetVolume = "unused124"
+	TargetVolume_UNUSED125 TargetVolume = "unused125"
+	TargetVolume_UNUSED126 TargetVolume = "unused126"
+	TargetVolume_UNUSED127 TargetVolume = "unused127"
+	TargetVolume_UNUSED128 TargetVolume = "unused128"
+	TargetVolume_UNUSED129 TargetVolume = "unused129"
+	TargetVolume_UNUSED130 TargetVolume = "unused130"
+	TargetVolume_UNUSED131 TargetVolume = "unused131"
+	TargetVolume_UNUSED132 TargetVolume = "unused132"
+	TargetVolume_UNUSED133 TargetVolume = "unused133"
+	TargetVolume_UNUSED134 TargetVolume = "unused134"
+	TargetVolume_UNUSED135 TargetVolume = "unused135"
+	TargetVolume_UNUSED136 TargetVolume = "unused136"
+	TargetVolume_UNUSED137 TargetVolume = "unused137"
+	TargetVolume_UNUSED138 TargetVolume = "unused138"
+	TargetVolume_UNUSED139 TargetVolume = "unused139"
+	TargetVolume_UNUSED140 TargetVolume = "unused140"
+	TargetVolume_UNUSED141 TargetVolume = "unused141"
+	TargetVolume_UNUSED142 TargetVolume = "unused142"
+	TargetVolume_UNUSED143 TargetVolume = "unused143"
+	TargetVolume_UNUSED144 TargetVolume = "unused144"
+	TargetVolume_UNUSED145 TargetVolume = "unused145"
+	TargetVolume_UNUSED146 TargetVolume = "unused146"
+	TargetVolume_UNUSED147 TargetVolume = "unused147"
+	TargetVolume_UNUSED148 TargetVolume = "unused148"
+	TargetVolume_UNUSED149 TargetVolume = "unused149"
+	TargetVolume_UNUSED150 TargetVolume = "unused150"
+	TargetVolume_UNUSED151 TargetVolume = "unused151"
+	TargetVolume_UNUSED152 TargetVolume = "unused152"
+	TargetVolume_UNUSED153 TargetVolume = "unused153"
+	TargetVolume_UNUSED154 TargetVolume = "unused154"
+	TargetVolume_UNUSED155 TargetVolume = "unused155"
+	TargetVolume_UNUSED156 TargetVolume = "unused156"
+	TargetVolume_UNUSED157 TargetVolume = "unused157"
+	TargetVolume_UNUSED158 TargetVolume = "unused158"
+	TargetVolume_UNUSED159 TargetVolume = "unused159"
+	TargetVolume_UNUSED160 TargetVolume = "unused160"
+	TargetVolume_UNUSED161 TargetVolume = "unused161"
+	TargetVolume_UNUSED162 TargetVolume = "unused162"
+	TargetVolume_UNUSED163 TargetVolume = "unused163"
+	TargetVolume_UNUSED164 TargetVolume = "unused164"
+	TargetVolume_UNUSED165 TargetVolume = "unused165"
+	TargetVolume_UNUSED166 TargetVolume = "unused166"
+	TargetVolume_UNUSED167 TargetVolume = "unused167"
+	TargetVolume_UNUSED168 TargetVolume = "unused168"
+	TargetVolume_UNUSED169 TargetVolume = "unused169"
+	TargetVolume_UNUSED170 TargetVolume = "unused170"
+	TargetVolume_UNUSED171 TargetVolume = "unused171"
+	TargetVolume_UNUSED172 TargetVolume = "unused172"
+	TargetVolume_UNUSED173 TargetVolume = "unused173"
+	TargetVolume_UNUSED174 TargetVolume = "unused174"
+	TargetVolume_UNUSED175 TargetVolume = "unused175"
+	TargetVolume_UNUSED176 TargetVolume = "unused176"
+	TargetVolume_UNUSED177 TargetVolume = "unused177"
+	TargetVolume_UNUSED178 TargetVolume = "unused178"
+	TargetVolume_UNUSED179 TargetVolume = "unused179"
+	TargetVolume_UNUSED180 TargetVolume = "unused180"
+	TargetVolume_UNUSED181 TargetVolume = "unused181"
+	TargetVolume_UNUSED182 TargetVolume = "unused182"
+	TargetVolume_UNUSED183 TargetVolume = "unused183"
+	TargetVolume_UNUSED184 TargetVolume = "unused184"
+	TargetVolume_UNUSED185 TargetVolume = "unused185"
+	TargetVolume_UNUSED186 TargetVolume = "unused186"
+	TargetVolume_UNUSED187 TargetVolume = "unused187"
+	TargetVolume_UNUSED188 TargetVolume = "unused188"
+	TargetVolume_UNUSED189 TargetVolume = "unused189"
+	TargetVolume_UNUSED190 TargetVolume = "unused190"
+	TargetVolume_UNUSED191 TargetVolume = "unused191"
+	TargetVolume_UNUSED192 TargetVolume = "unused192"
+	TargetVolume_UNUSED193 TargetVolume = "unused193"
+	TargetVolume_UNUSED194 TargetVolume = "unused194"
+	TargetVolume_UNUSED195 TargetVolume = "unused195"
+	TargetVolume_UNUSED196 TargetVolume = "unused196"
+	TargetVolume_UNUSED197 TargetVolume = "unused197"
+	TargetVolume_UNUSED198 TargetVolume = "unused198"
+	TargetVolume_UNUSED199 TargetVolume = "unused199"
+	TargetVolume_UNUSED200 TargetVolume = "unused200"
+	TargetVolume_UNUSED201 TargetVolume = "unused201"
+	TargetVolume_UNUSED202 TargetVolume = "unused202"
+	TargetVolume_UNUSED203 TargetVolume = "unused203"
+	TargetVolume_UNUSED204 TargetVolume = "unused204"
+	TargetVolume_UNUSED205 TargetVolume = "unused205"
+	TargetVolume_UNUSED206 TargetVolume = "unused206"
+	TargetVolume_UNUSED207 TargetVolume = "unused207"
+	TargetVolume_UNUSED208 TargetVolume = "unused208"
+	TargetVolume_UNUSED209 TargetVolume = "unused209"
+	TargetVolume_UNUSED210 TargetVolume = "unused210"
+	TargetVolume_UNUSED211 TargetVolume = "unused211"
+	TargetVolume_UNUSED212 TargetVolume = "unused212"
+	TargetVolume_UNUSED213 TargetVolume = "unused213"
+	TargetVolume_UNUSED214 TargetVolume = "unused214"
+	TargetVolume_UNUSED215 TargetVolume = "unused215"
+	TargetVolume_UNUSED216 TargetVolume = "unused216"
+	TargetVolume_UNUSED217 TargetVolume = "unused217"
+	TargetVolume_UNUSED218 TargetVolume = "unused218"
+	TargetVolume_UNUSED219 TargetVolume = "unused219"
+	TargetVolume_UNUSED220 TargetVolume = "unused220"
+	TargetVolume_UNUSED221 TargetVolume = "unused221"
+	TargetVolume_UNUSED222 TargetVolume = "unused222"
+	TargetVolume_UNUSED223 TargetVolume = "unused223"
+	TargetVolume_UNUSED224 TargetVolume = "unused224"
+	TargetVolume_UNUSED225 TargetVolume = "unused225"
+	TargetVolume_UNUSED226 TargetVolume = "unused226"
+	TargetVolume_UNUSED227 TargetVolume = "unused227"
+	TargetVolume_UNUSED228 TargetVolume = "unused228"
+	TargetVolume_UNUSED229 TargetVolume = "unused229"
+	TargetVolume_UNUSED230 TargetVolume = "unused230"
+	TargetVolume_UNUSED231 TargetVolume = "unused231"
+	TargetVolume_UNUSED232 TargetVolume = "unused232"
+	TargetVolume_UNUSED233 TargetVolume = "unused233"
+	TargetVolume_UNUSED234 TargetVolume = "unused234"
+	TargetVolume_UNUSED235 TargetVolume = "unused235"
+	TargetVolume_UNUSED236 TargetVolume = "unused236"
+	TargetVolume_UNUSED237 TargetVolume = "unused237"
+	TargetVolume_UNUSED238 TargetVolume = "unused238"
+	TargetVolume_UNUSED239 TargetVolume = "unused239"
+	TargetVolume_UNUSED240 TargetVolume = "unused240"
+	TargetVolume_UNUSED241 TargetVolume = "unused241"
+	TargetVolume_UNUSED242 TargetVolume = "unused242"
+	TargetVolume_UNUSED243 TargetVolume = "unused243"
+	TargetVolume_UNUSED244 TargetVolume = "unused244"
+	TargetVolume_UNUSED245 TargetVolume = "unused245"
+	TargetVolume_UNUSED246 TargetVolume = "unused246"
+	TargetVolume_UNUSED247 TargetVolume = "unused247"
+	TargetVolume_UNUSED248 TargetVolume = "unused248"
+	TargetVolume_UNUSED249 TargetVolume = "unused249"
+	TargetVolume_UNUSED250 TargetVolume = "unused250"
+	TargetVolume_UNUSED251 TargetVolume = "unused251"
+	TargetVolume_UNUSED252 TargetVolume = "unused252"
+	TargetVolume_UNUSED253 TargetVolume = "unused253"
+	TargetVolume_UNUSED254 TargetVolume = "unused254"
+	TargetVolume_UNUSED255 TargetVolume = "unused255"
+
+	Timeframe_HOUR  Timeframe = "hour"
+	Timeframe_DAY   Timeframe = "day"
+	Timeframe_WEEK  Timeframe = "week"
+	Timeframe_MONTH Timeframe = "month"
+	Timeframe_YEAR  Timeframe = "year"
+
+	Volume_ROOTFS    Volume = "rootfs"
+	Volume_MP0       Volume = "mp0"
+	Volume_MP1       Volume = "mp1"
+	Volume_MP2       Volume = "mp2"
+	Volume_MP3       Volume = "mp3"
+	Volume_MP4       Volume = "mp4"
+	Volume_MP5       Volume = "mp5"
+	Volume_MP6       Volume = "mp6"
+	Volume_MP7       Volume = "mp7"
+	Volume_MP8       Volume = "mp8"
+	Volume_MP9       Volume = "mp9"
+	Volume_MP10      Volume = "mp10"
+	Volume_MP11      Volume = "mp11"
+	Volume_MP12      Volume = "mp12"
+	Volume_MP13      Volume = "mp13"
+	Volume_MP14      Volume = "mp14"
+	Volume_MP15      Volume = "mp15"
+	Volume_MP16      Volume = "mp16"
+	Volume_MP17      Volume = "mp17"
+	Volume_MP18      Volume = "mp18"
+	Volume_MP19      Volume = "mp19"
+	Volume_MP20      Volume = "mp20"
+	Volume_MP21      Volume = "mp21"
+	Volume_MP22      Volume = "mp22"
+	Volume_MP23      Volume = "mp23"
+	Volume_MP24      Volume = "mp24"
+	Volume_MP25      Volume = "mp25"
+	Volume_MP26      Volume = "mp26"
+	Volume_MP27      Volume = "mp27"
+	Volume_MP28      Volume = "mp28"
+	Volume_MP29      Volume = "mp29"
+	Volume_MP30      Volume = "mp30"
+	Volume_MP31      Volume = "mp31"
+	Volume_MP32      Volume = "mp32"
+	Volume_MP33      Volume = "mp33"
+	Volume_MP34      Volume = "mp34"
+	Volume_MP35      Volume = "mp35"
+	Volume_MP36      Volume = "mp36"
+	Volume_MP37      Volume = "mp37"
+	Volume_MP38      Volume = "mp38"
+	Volume_MP39      Volume = "mp39"
+	Volume_MP40      Volume = "mp40"
+	Volume_MP41      Volume = "mp41"
+	Volume_MP42      Volume = "mp42"
+	Volume_MP43      Volume = "mp43"
+	Volume_MP44      Volume = "mp44"
+	Volume_MP45      Volume = "mp45"
+	Volume_MP46      Volume = "mp46"
+	Volume_MP47      Volume = "mp47"
+	Volume_MP48      Volume = "mp48"
+	Volume_MP49      Volume = "mp49"
+	Volume_MP50      Volume = "mp50"
+	Volume_MP51      Volume = "mp51"
+	Volume_MP52      Volume = "mp52"
+	Volume_MP53      Volume = "mp53"
+	Volume_MP54      Volume = "mp54"
+	Volume_MP55      Volume = "mp55"
+	Volume_MP56      Volume = "mp56"
+	Volume_MP57      Volume = "mp57"
+	Volume_MP58      Volume = "mp58"
+	Volume_MP59      Volume = "mp59"
+	Volume_MP60      Volume = "mp60"
+	Volume_MP61      Volume = "mp61"
+	Volume_MP62      Volume = "mp62"
+	Volume_MP63      Volume = "mp63"
+	Volume_MP64      Volume = "mp64"
+	Volume_MP65      Volume = "mp65"
+	Volume_MP66      Volume = "mp66"
+	Volume_MP67      Volume = "mp67"
+	Volume_MP68      Volume = "mp68"
+	Volume_MP69      Volume = "mp69"
+	Volume_MP70      Volume = "mp70"
+	Volume_MP71      Volume = "mp71"
+	Volume_MP72      Volume = "mp72"
+	Volume_MP73      Volume = "mp73"
+	Volume_MP74      Volume = "mp74"
+	Volume_MP75      Volume = "mp75"
+	Volume_MP76      Volume = "mp76"
+	Volume_MP77      Volume = "mp77"
+	Volume_MP78      Volume = "mp78"
+	Volume_MP79      Volume = "mp79"
+	Volume_MP80      Volume = "mp80"
+	Volume_MP81      Volume = "mp81"
+	Volume_MP82      Volume = "mp82"
+	Volume_MP83      Volume = "mp83"
+	Volume_MP84      Volume = "mp84"
+	Volume_MP85      Volume = "mp85"
+	Volume_MP86      Volume = "mp86"
+	Volume_MP87      Volume = "mp87"
+	Volume_MP88      Volume = "mp88"
+	Volume_MP89      Volume = "mp89"
+	Volume_MP90      Volume = "mp90"
+	Volume_MP91      Volume = "mp91"
+	Volume_MP92      Volume = "mp92"
+	Volume_MP93      Volume = "mp93"
+	Volume_MP94      Volume = "mp94"
+	Volume_MP95      Volume = "mp95"
+	Volume_MP96      Volume = "mp96"
+	Volume_MP97      Volume = "mp97"
+	Volume_MP98      Volume = "mp98"
+	Volume_MP99      Volume = "mp99"
+	Volume_MP100     Volume = "mp100"
+	Volume_MP101     Volume = "mp101"
+	Volume_MP102     Volume = "mp102"
+	Volume_MP103     Volume = "mp103"
+	Volume_MP104     Volume = "mp104"
+	Volume_MP105     Volume = "mp105"
+	Volume_MP106     Volume = "mp106"
+	Volume_MP107     Volume = "mp107"
+	Volume_MP108     Volume = "mp108"
+	Volume_MP109     Volume = "mp109"
+	Volume_MP110     Volume = "mp110"
+	Volume_MP111     Volume = "mp111"
+	Volume_MP112     Volume = "mp112"
+	Volume_MP113     Volume = "mp113"
+	Volume_MP114     Volume = "mp114"
+	Volume_MP115     Volume = "mp115"
+	Volume_MP116     Volume = "mp116"
+	Volume_MP117     Volume = "mp117"
+	Volume_MP118     Volume = "mp118"
+	Volume_MP119     Volume = "mp119"
+	Volume_MP120     Volume = "mp120"
+	Volume_MP121     Volume = "mp121"
+	Volume_MP122     Volume = "mp122"
+	Volume_MP123     Volume = "mp123"
+	Volume_MP124     Volume = "mp124"
+	Volume_MP125     Volume = "mp125"
+	Volume_MP126     Volume = "mp126"
+	Volume_MP127     Volume = "mp127"
+	Volume_MP128     Volume = "mp128"
+	Volume_MP129     Volume = "mp129"
+	Volume_MP130     Volume = "mp130"
+	Volume_MP131     Volume = "mp131"
+	Volume_MP132     Volume = "mp132"
+	Volume_MP133     Volume = "mp133"
+	Volume_MP134     Volume = "mp134"
+	Volume_MP135     Volume = "mp135"
+	Volume_MP136     Volume = "mp136"
+	Volume_MP137     Volume = "mp137"
+	Volume_MP138     Volume = "mp138"
+	Volume_MP139     Volume = "mp139"
+	Volume_MP140     Volume = "mp140"
+	Volume_MP141     Volume = "mp141"
+	Volume_MP142     Volume = "mp142"
+	Volume_MP143     Volume = "mp143"
+	Volume_MP144     Volume = "mp144"
+	Volume_MP145     Volume = "mp145"
+	Volume_MP146     Volume = "mp146"
+	Volume_MP147     Volume = "mp147"
+	Volume_MP148     Volume = "mp148"
+	Volume_MP149     Volume = "mp149"
+	Volume_MP150     Volume = "mp150"
+	Volume_MP151     Volume = "mp151"
+	Volume_MP152     Volume = "mp152"
+	Volume_MP153     Volume = "mp153"
+	Volume_MP154     Volume = "mp154"
+	Volume_MP155     Volume = "mp155"
+	Volume_MP156     Volume = "mp156"
+	Volume_MP157     Volume = "mp157"
+	Volume_MP158     Volume = "mp158"
+	Volume_MP159     Volume = "mp159"
+	Volume_MP160     Volume = "mp160"
+	Volume_MP161     Volume = "mp161"
+	Volume_MP162     Volume = "mp162"
+	Volume_MP163     Volume = "mp163"
+	Volume_MP164     Volume = "mp164"
+	Volume_MP165     Volume = "mp165"
+	Volume_MP166     Volume = "mp166"
+	Volume_MP167     Volume = "mp167"
+	Volume_MP168     Volume = "mp168"
+	Volume_MP169     Volume = "mp169"
+	Volume_MP170     Volume = "mp170"
+	Volume_MP171     Volume = "mp171"
+	Volume_MP172     Volume = "mp172"
+	Volume_MP173     Volume = "mp173"
+	Volume_MP174     Volume = "mp174"
+	Volume_MP175     Volume = "mp175"
+	Volume_MP176     Volume = "mp176"
+	Volume_MP177     Volume = "mp177"
+	Volume_MP178     Volume = "mp178"
+	Volume_MP179     Volume = "mp179"
+	Volume_MP180     Volume = "mp180"
+	Volume_MP181     Volume = "mp181"
+	Volume_MP182     Volume = "mp182"
+	Volume_MP183     Volume = "mp183"
+	Volume_MP184     Volume = "mp184"
+	Volume_MP185     Volume = "mp185"
+	Volume_MP186     Volume = "mp186"
+	Volume_MP187     Volume = "mp187"
+	Volume_MP188     Volume = "mp188"
+	Volume_MP189     Volume = "mp189"
+	Volume_MP190     Volume = "mp190"
+	Volume_MP191     Volume = "mp191"
+	Volume_MP192     Volume = "mp192"
+	Volume_MP193     Volume = "mp193"
+	Volume_MP194     Volume = "mp194"
+	Volume_MP195     Volume = "mp195"
+	Volume_MP196     Volume = "mp196"
+	Volume_MP197     Volume = "mp197"
+	Volume_MP198     Volume = "mp198"
+	Volume_MP199     Volume = "mp199"
+	Volume_MP200     Volume = "mp200"
+	Volume_MP201     Volume = "mp201"
+	Volume_MP202     Volume = "mp202"
+	Volume_MP203     Volume = "mp203"
+	Volume_MP204     Volume = "mp204"
+	Volume_MP205     Volume = "mp205"
+	Volume_MP206     Volume = "mp206"
+	Volume_MP207     Volume = "mp207"
+	Volume_MP208     Volume = "mp208"
+	Volume_MP209     Volume = "mp209"
+	Volume_MP210     Volume = "mp210"
+	Volume_MP211     Volume = "mp211"
+	Volume_MP212     Volume = "mp212"
+	Volume_MP213     Volume = "mp213"
+	Volume_MP214     Volume = "mp214"
+	Volume_MP215     Volume = "mp215"
+	Volume_MP216     Volume = "mp216"
+	Volume_MP217     Volume = "mp217"
+	Volume_MP218     Volume = "mp218"
+	Volume_MP219     Volume = "mp219"
+	Volume_MP220     Volume = "mp220"
+	Volume_MP221     Volume = "mp221"
+	Volume_MP222     Volume = "mp222"
+	Volume_MP223     Volume = "mp223"
+	Volume_MP224     Volume = "mp224"
+	Volume_MP225     Volume = "mp225"
+	Volume_MP226     Volume = "mp226"
+	Volume_MP227     Volume = "mp227"
+	Volume_MP228     Volume = "mp228"
+	Volume_MP229     Volume = "mp229"
+	Volume_MP230     Volume = "mp230"
+	Volume_MP231     Volume = "mp231"
+	Volume_MP232     Volume = "mp232"
+	Volume_MP233     Volume = "mp233"
+	Volume_MP234     Volume = "mp234"
+	Volume_MP235     Volume = "mp235"
+	Volume_MP236     Volume = "mp236"
+	Volume_MP237     Volume = "mp237"
+	Volume_MP238     Volume = "mp238"
+	Volume_MP239     Volume = "mp239"
+	Volume_MP240     Volume = "mp240"
+	Volume_MP241     Volume = "mp241"
+	Volume_MP242     Volume = "mp242"
+	Volume_MP243     Volume = "mp243"
+	Volume_MP244     Volume = "mp244"
+	Volume_MP245     Volume = "mp245"
+	Volume_MP246     Volume = "mp246"
+	Volume_MP247     Volume = "mp247"
+	Volume_MP248     Volume = "mp248"
+	Volume_MP249     Volume = "mp249"
+	Volume_MP250     Volume = "mp250"
+	Volume_MP251     Volume = "mp251"
+	Volume_MP252     Volume = "mp252"
+	Volume_MP253     Volume = "mp253"
+	Volume_MP254     Volume = "mp254"
+	Volume_MP255     Volume = "mp255"
+	Volume_UNUSED0   Volume = "unused0"
+	Volume_UNUSED1   Volume = "unused1"
+	Volume_UNUSED2   Volume = "unused2"
+	Volume_UNUSED3   Volume = "unused3"
+	Volume_UNUSED4   Volume = "unused4"
+	Volume_UNUSED5   Volume = "unused5"
+	Volume_UNUSED6   Volume = "unused6"
+	Volume_UNUSED7   Volume = "unused7"
+	Volume_UNUSED8   Volume = "unused8"
+	Volume_UNUSED9   Volume = "unused9"
+	Volume_UNUSED10  Volume = "unused10"
+	Volume_UNUSED11  Volume = "unused11"
+	Volume_UNUSED12  Volume = "unused12"
+	Volume_UNUSED13  Volume = "unused13"
+	Volume_UNUSED14  Volume = "unused14"
+	Volume_UNUSED15  Volume = "unused15"
+	Volume_UNUSED16  Volume = "unused16"
+	Volume_UNUSED17  Volume = "unused17"
+	Volume_UNUSED18  Volume = "unused18"
+	Volume_UNUSED19  Volume = "unused19"
+	Volume_UNUSED20  Volume = "unused20"
+	Volume_UNUSED21  Volume = "unused21"
+	Volume_UNUSED22  Volume = "unused22"
+	Volume_UNUSED23  Volume = "unused23"
+	Volume_UNUSED24  Volume = "unused24"
+	Volume_UNUSED25  Volume = "unused25"
+	Volume_UNUSED26  Volume = "unused26"
+	Volume_UNUSED27  Volume = "unused27"
+	Volume_UNUSED28  Volume = "unused28"
+	Volume_UNUSED29  Volume = "unused29"
+	Volume_UNUSED30  Volume = "unused30"
+	Volume_UNUSED31  Volume = "unused31"
+	Volume_UNUSED32  Volume = "unused32"
+	Volume_UNUSED33  Volume = "unused33"
+	Volume_UNUSED34  Volume = "unused34"
+	Volume_UNUSED35  Volume = "unused35"
+	Volume_UNUSED36  Volume = "unused36"
+	Volume_UNUSED37  Volume = "unused37"
+	Volume_UNUSED38  Volume = "unused38"
+	Volume_UNUSED39  Volume = "unused39"
+	Volume_UNUSED40  Volume = "unused40"
+	Volume_UNUSED41  Volume = "unused41"
+	Volume_UNUSED42  Volume = "unused42"
+	Volume_UNUSED43  Volume = "unused43"
+	Volume_UNUSED44  Volume = "unused44"
+	Volume_UNUSED45  Volume = "unused45"
+	Volume_UNUSED46  Volume = "unused46"
+	Volume_UNUSED47  Volume = "unused47"
+	Volume_UNUSED48  Volume = "unused48"
+	Volume_UNUSED49  Volume = "unused49"
+	Volume_UNUSED50  Volume = "unused50"
+	Volume_UNUSED51  Volume = "unused51"
+	Volume_UNUSED52  Volume = "unused52"
+	Volume_UNUSED53  Volume = "unused53"
+	Volume_UNUSED54  Volume = "unused54"
+	Volume_UNUSED55  Volume = "unused55"
+	Volume_UNUSED56  Volume = "unused56"
+	Volume_UNUSED57  Volume = "unused57"
+	Volume_UNUSED58  Volume = "unused58"
+	Volume_UNUSED59  Volume = "unused59"
+	Volume_UNUSED60  Volume = "unused60"
+	Volume_UNUSED61  Volume = "unused61"
+	Volume_UNUSED62  Volume = "unused62"
+	Volume_UNUSED63  Volume = "unused63"
+	Volume_UNUSED64  Volume = "unused64"
+	Volume_UNUSED65  Volume = "unused65"
+	Volume_UNUSED66  Volume = "unused66"
+	Volume_UNUSED67  Volume = "unused67"
+	Volume_UNUSED68  Volume = "unused68"
+	Volume_UNUSED69  Volume = "unused69"
+	Volume_UNUSED70  Volume = "unused70"
+	Volume_UNUSED71  Volume = "unused71"
+	Volume_UNUSED72  Volume = "unused72"
+	Volume_UNUSED73  Volume = "unused73"
+	Volume_UNUSED74  Volume = "unused74"
+	Volume_UNUSED75  Volume = "unused75"
+	Volume_UNUSED76  Volume = "unused76"
+	Volume_UNUSED77  Volume = "unused77"
+	Volume_UNUSED78  Volume = "unused78"
+	Volume_UNUSED79  Volume = "unused79"
+	Volume_UNUSED80  Volume = "unused80"
+	Volume_UNUSED81  Volume = "unused81"
+	Volume_UNUSED82  Volume = "unused82"
+	Volume_UNUSED83  Volume = "unused83"
+	Volume_UNUSED84  Volume = "unused84"
+	Volume_UNUSED85  Volume = "unused85"
+	Volume_UNUSED86  Volume = "unused86"
+	Volume_UNUSED87  Volume = "unused87"
+	Volume_UNUSED88  Volume = "unused88"
+	Volume_UNUSED89  Volume = "unused89"
+	Volume_UNUSED90  Volume = "unused90"
+	Volume_UNUSED91  Volume = "unused91"
+	Volume_UNUSED92  Volume = "unused92"
+	Volume_UNUSED93  Volume = "unused93"
+	Volume_UNUSED94  Volume = "unused94"
+	Volume_UNUSED95  Volume = "unused95"
+	Volume_UNUSED96  Volume = "unused96"
+	Volume_UNUSED97  Volume = "unused97"
+	Volume_UNUSED98  Volume = "unused98"
+	Volume_UNUSED99  Volume = "unused99"
+	Volume_UNUSED100 Volume = "unused100"
+	Volume_UNUSED101 Volume = "unused101"
+	Volume_UNUSED102 Volume = "unused102"
+	Volume_UNUSED103 Volume = "unused103"
+	Volume_UNUSED104 Volume = "unused104"
+	Volume_UNUSED105 Volume = "unused105"
+	Volume_UNUSED106 Volume = "unused106"
+	Volume_UNUSED107 Volume = "unused107"
+	Volume_UNUSED108 Volume = "unused108"
+	Volume_UNUSED109 Volume = "unused109"
+	Volume_UNUSED110 Volume = "unused110"
+	Volume_UNUSED111 Volume = "unused111"
+	Volume_UNUSED112 Volume = "unused112"
+	Volume_UNUSED113 Volume = "unused113"
+	Volume_UNUSED114 Volume = "unused114"
+	Volume_UNUSED115 Volume = "unused115"
+	Volume_UNUSED116 Volume = "unused116"
+	Volume_UNUSED117 Volume = "unused117"
+	Volume_UNUSED118 Volume = "unused118"
+	Volume_UNUSED119 Volume = "unused119"
+	Volume_UNUSED120 Volume = "unused120"
+	Volume_UNUSED121 Volume = "unused121"
+	Volume_UNUSED122 Volume = "unused122"
+	Volume_UNUSED123 Volume = "unused123"
+	Volume_UNUSED124 Volume = "unused124"
+	Volume_UNUSED125 Volume = "unused125"
+	Volume_UNUSED126 Volume = "unused126"
+	Volume_UNUSED127 Volume = "unused127"
+	Volume_UNUSED128 Volume = "unused128"
+	Volume_UNUSED129 Volume = "unused129"
+	Volume_UNUSED130 Volume = "unused130"
+	Volume_UNUSED131 Volume = "unused131"
+	Volume_UNUSED132 Volume = "unused132"
+	Volume_UNUSED133 Volume = "unused133"
+	Volume_UNUSED134 Volume = "unused134"
+	Volume_UNUSED135 Volume = "unused135"
+	Volume_UNUSED136 Volume = "unused136"
+	Volume_UNUSED137 Volume = "unused137"
+	Volume_UNUSED138 Volume = "unused138"
+	Volume_UNUSED139 Volume = "unused139"
+	Volume_UNUSED140 Volume = "unused140"
+	Volume_UNUSED141 Volume = "unused141"
+	Volume_UNUSED142 Volume = "unused142"
+	Volume_UNUSED143 Volume = "unused143"
+	Volume_UNUSED144 Volume = "unused144"
+	Volume_UNUSED145 Volume = "unused145"
+	Volume_UNUSED146 Volume = "unused146"
+	Volume_UNUSED147 Volume = "unused147"
+	Volume_UNUSED148 Volume = "unused148"
+	Volume_UNUSED149 Volume = "unused149"
+	Volume_UNUSED150 Volume = "unused150"
+	Volume_UNUSED151 Volume = "unused151"
+	Volume_UNUSED152 Volume = "unused152"
+	Volume_UNUSED153 Volume = "unused153"
+	Volume_UNUSED154 Volume = "unused154"
+	Volume_UNUSED155 Volume = "unused155"
+	Volume_UNUSED156 Volume = "unused156"
+	Volume_UNUSED157 Volume = "unused157"
+	Volume_UNUSED158 Volume = "unused158"
+	Volume_UNUSED159 Volume = "unused159"
+	Volume_UNUSED160 Volume = "unused160"
+	Volume_UNUSED161 Volume = "unused161"
+	Volume_UNUSED162 Volume = "unused162"
+	Volume_UNUSED163 Volume = "unused163"
+	Volume_UNUSED164 Volume = "unused164"
+	Volume_UNUSED165 Volume = "unused165"
+	Volume_UNUSED166 Volume = "unused166"
+	Volume_UNUSED167 Volume = "unused167"
+	Volume_UNUSED168 Volume = "unused168"
+	Volume_UNUSED169 Volume = "unused169"
+	Volume_UNUSED170 Volume = "unused170"
+	Volume_UNUSED171 Volume = "unused171"
+	Volume_UNUSED172 Volume = "unused172"
+	Volume_UNUSED173 Volume = "unused173"
+	Volume_UNUSED174 Volume = "unused174"
+	Volume_UNUSED175 Volume = "unused175"
+	Volume_UNUSED176 Volume = "unused176"
+	Volume_UNUSED177 Volume = "unused177"
+	Volume_UNUSED178 Volume = "unused178"
+	Volume_UNUSED179 Volume = "unused179"
+	Volume_UNUSED180 Volume = "unused180"
+	Volume_UNUSED181 Volume = "unused181"
+	Volume_UNUSED182 Volume = "unused182"
+	Volume_UNUSED183 Volume = "unused183"
+	Volume_UNUSED184 Volume = "unused184"
+	Volume_UNUSED185 Volume = "unused185"
+	Volume_UNUSED186 Volume = "unused186"
+	Volume_UNUSED187 Volume = "unused187"
+	Volume_UNUSED188 Volume = "unused188"
+	Volume_UNUSED189 Volume = "unused189"
+	Volume_UNUSED190 Volume = "unused190"
+	Volume_UNUSED191 Volume = "unused191"
+	Volume_UNUSED192 Volume = "unused192"
+	Volume_UNUSED193 Volume = "unused193"
+	Volume_UNUSED194 Volume = "unused194"
+	Volume_UNUSED195 Volume = "unused195"
+	Volume_UNUSED196 Volume = "unused196"
+	Volume_UNUSED197 Volume = "unused197"
+	Volume_UNUSED198 Volume = "unused198"
+	Volume_UNUSED199 Volume = "unused199"
+	Volume_UNUSED200 Volume = "unused200"
+	Volume_UNUSED201 Volume = "unused201"
+	Volume_UNUSED202 Volume = "unused202"
+	Volume_UNUSED203 Volume = "unused203"
+	Volume_UNUSED204 Volume = "unused204"
+	Volume_UNUSED205 Volume = "unused205"
+	Volume_UNUSED206 Volume = "unused206"
+	Volume_UNUSED207 Volume = "unused207"
+	Volume_UNUSED208 Volume = "unused208"
+	Volume_UNUSED209 Volume = "unused209"
+	Volume_UNUSED210 Volume = "unused210"
+	Volume_UNUSED211 Volume = "unused211"
+	Volume_UNUSED212 Volume = "unused212"
+	Volume_UNUSED213 Volume = "unused213"
+	Volume_UNUSED214 Volume = "unused214"
+	Volume_UNUSED215 Volume = "unused215"
+	Volume_UNUSED216 Volume = "unused216"
+	Volume_UNUSED217 Volume = "unused217"
+	Volume_UNUSED218 Volume = "unused218"
+	Volume_UNUSED219 Volume = "unused219"
+	Volume_UNUSED220 Volume = "unused220"
+	Volume_UNUSED221 Volume = "unused221"
+	Volume_UNUSED222 Volume = "unused222"
+	Volume_UNUSED223 Volume = "unused223"
+	Volume_UNUSED224 Volume = "unused224"
+	Volume_UNUSED225 Volume = "unused225"
+	Volume_UNUSED226 Volume = "unused226"
+	Volume_UNUSED227 Volume = "unused227"
+	Volume_UNUSED228 Volume = "unused228"
+	Volume_UNUSED229 Volume = "unused229"
+	Volume_UNUSED230 Volume = "unused230"
+	Volume_UNUSED231 Volume = "unused231"
+	Volume_UNUSED232 Volume = "unused232"
+	Volume_UNUSED233 Volume = "unused233"
+	Volume_UNUSED234 Volume = "unused234"
+	Volume_UNUSED235 Volume = "unused235"
+	Volume_UNUSED236 Volume = "unused236"
+	Volume_UNUSED237 Volume = "unused237"
+	Volume_UNUSED238 Volume = "unused238"
+	Volume_UNUSED239 Volume = "unused239"
+	Volume_UNUSED240 Volume = "unused240"
+	Volume_UNUSED241 Volume = "unused241"
+	Volume_UNUSED242 Volume = "unused242"
+	Volume_UNUSED243 Volume = "unused243"
+	Volume_UNUSED244 Volume = "unused244"
+	Volume_UNUSED245 Volume = "unused245"
+	Volume_UNUSED246 Volume = "unused246"
+	Volume_UNUSED247 Volume = "unused247"
+	Volume_UNUSED248 Volume = "unused248"
+	Volume_UNUSED249 Volume = "unused249"
+	Volume_UNUSED250 Volume = "unused250"
+	Volume_UNUSED251 Volume = "unused251"
+	Volume_UNUSED252 Volume = "unused252"
+	Volume_UNUSED253 Volume = "unused253"
+	Volume_UNUSED254 Volume = "unused254"
+	Volume_UNUSED255 Volume = "unused255"
+)
+
+type Arch string
+type Cf string
+type Cmode string
+type Disk string
+type Feature string
+type Lock string
+type NetType string
+type Ostype string
+type Status string
+type TargetVolume string
+type Timeframe string
+type Volume string
+
+func PtrArch(i Arch) *Arch {
+	return &i
+}
+func PtrCf(i Cf) *Cf {
+	return &i
+}
+func PtrCmode(i Cmode) *Cmode {
+	return &i
+}
+func PtrDisk(i Disk) *Disk {
+	return &i
+}
+func PtrFeature(i Feature) *Feature {
+	return &i
+}
+func PtrLock(i Lock) *Lock {
+	return &i
+}
+func PtrNetType(i NetType) *NetType {
+	return &i
+}
+func PtrOstype(i Ostype) *Ostype {
+	return &i
+}
+func PtrStatus(i Status) *Status {
+	return &i
+}
+func PtrTargetVolume(i TargetVolume) *TargetVolume {
+	return &i
+}
+func PtrTimeframe(i Timeframe) *Timeframe {
+	return &i
+}
+func PtrVolume(i Volume) *Volume {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -28,7 +1416,7 @@ type IndexRequest struct {
 }
 
 type IndexResponse struct {
-	Status string `url:"status" json:"status"` // LXC Container status.
+	Status Status `url:"status" json:"status"` // LXC Container status.
 	Vmid   int    `url:"vmid" json:"vmid"`     // The (unique) ID of the VM.
 
 	// The following parameters are optional
@@ -69,22 +1457,34 @@ func (t Mps) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeArray(key, v, t)
 }
 
-// Use volume as container root.
-type Rootfs struct {
-	Volume string `url:"volume" json:"volume"` // Volume, device or directory to mount into the container.
+// Specifies network interfaces for the container.
+type Net struct {
+	Name string `url:"name" json:"name"` // Name of the network device as seen from inside the container. (lxc.network.name)
 
 	// The following parameters are optional
-	Acl          *util.PVEBool `url:"acl,omitempty" json:"acl,omitempty"`                   // Explicitly enable or disable ACL support.
-	Mountoptions *string       `url:"mountoptions,omitempty" json:"mountoptions,omitempty"` // Extra mount options for rootfs/mps.
-	Quota        *util.PVEBool `url:"quota,omitempty" json:"quota,omitempty"`               // Enable user quotas inside the container (not supported with zfs subvolumes)
-	Replicate    *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`       // Will include this volume to a storage replica job.
-	Ro           *util.PVEBool `url:"ro,omitempty" json:"ro,omitempty"`                     // Read-only mount point
-	Shared       *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`             // Mark this non-volume mount point as available on multiple nodes (see 'nodes')
-	Size         *string       `url:"size,omitempty" json:"size,omitempty"`                 // Volume size (read only value).
+	Bridge   *string       `url:"bridge,omitempty" json:"bridge,omitempty"`     // Bridge to attach the network device to.
+	Firewall *util.PVEBool `url:"firewall,omitempty" json:"firewall,omitempty"` // Controls whether this interface's firewall rules should be used.
+	Gw       *string       `url:"gw,omitempty" json:"gw,omitempty"`             // Default gateway for IPv4 traffic.
+	Gw6      *string       `url:"gw6,omitempty" json:"gw6,omitempty"`           // Default gateway for IPv6 traffic.
+	Hwaddr   *string       `url:"hwaddr,omitempty" json:"hwaddr,omitempty"`     // The interface MAC address. This is dynamically allocated by default, but you can set that statically if needed, for example to always have the same link-local IPv6 address. (lxc.network.hwaddr)
+	Ip       *string       `url:"ip,omitempty" json:"ip,omitempty"`             // IPv4 address in CIDR format.
+	Ip6      *string       `url:"ip6,omitempty" json:"ip6,omitempty"`           // IPv6 address in CIDR format.
+	Mtu      *int          `url:"mtu,omitempty" json:"mtu,omitempty"`           // Maximum transfer unit of the interface. (lxc.network.mtu)
+	Rate     *float64      `url:"rate,omitempty" json:"rate,omitempty"`         // Apply rate limiting to the interface
+	Tag      *int          `url:"tag,omitempty" json:"tag,omitempty"`           // VLAN tag for this interface.
+	Trunks   *string       `url:"trunks,omitempty" json:"trunks,omitempty"`     // VLAN ids to pass through the interface
+	Type     *NetType      `url:"type,omitempty" json:"type,omitempty"`         // Network interface type.
 }
 
-func (t Rootfs) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[volume=]<volume> [,acl=<1|0>] [,mountoptions=<opt[;opt...]>] [,quota=<1|0>] [,replicate=<1|0>] [,ro=<1|0>] [,shared=<1|0>] [,size=<DiskSize>]`)
+func (t Net) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `name=<string> [,bridge=<bridge>] [,firewall=<1|0>] [,gw=<GatewayIPv4>] [,gw6=<GatewayIPv6>] [,hwaddr=<XX:XX:XX:XX:XX:XX>] [,ip=<(IPv4/CIDR|dhcp|manual)>] [,ip6=<(IPv6/CIDR|auto|dhcp|manual)>] [,mtu=<integer>] [,rate=<mbps>] [,tag=<integer>] [,trunks=<vlanid[;vlanid...]>] [,type=<veth>]`)
+}
+
+// Array of Net
+type Nets []Net
+
+func (t Nets) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
 }
 
 // Reference to unused volumes. This is used internally, and should not be modified manually.
@@ -104,34 +1504,22 @@ func (t Unuseds) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeArray(key, v, t)
 }
 
-// Specifies network interfaces for the container.
-type Net struct {
-	Name string `url:"name" json:"name"` // Name of the network device as seen from inside the container. (lxc.network.name)
+// Use volume as container root.
+type Rootfs struct {
+	Volume string `url:"volume" json:"volume"` // Volume, device or directory to mount into the container.
 
 	// The following parameters are optional
-	Bridge   *string       `url:"bridge,omitempty" json:"bridge,omitempty"`     // Bridge to attach the network device to.
-	Firewall *util.PVEBool `url:"firewall,omitempty" json:"firewall,omitempty"` // Controls whether this interface's firewall rules should be used.
-	Gw       *string       `url:"gw,omitempty" json:"gw,omitempty"`             // Default gateway for IPv4 traffic.
-	Gw6      *string       `url:"gw6,omitempty" json:"gw6,omitempty"`           // Default gateway for IPv6 traffic.
-	Hwaddr   *string       `url:"hwaddr,omitempty" json:"hwaddr,omitempty"`     // The interface MAC address. This is dynamically allocated by default, but you can set that statically if needed, for example to always have the same link-local IPv6 address. (lxc.network.hwaddr)
-	Ip       *string       `url:"ip,omitempty" json:"ip,omitempty"`             // IPv4 address in CIDR format.
-	Ip6      *string       `url:"ip6,omitempty" json:"ip6,omitempty"`           // IPv6 address in CIDR format.
-	Mtu      *int          `url:"mtu,omitempty" json:"mtu,omitempty"`           // Maximum transfer unit of the interface. (lxc.network.mtu)
-	Rate     *float64      `url:"rate,omitempty" json:"rate,omitempty"`         // Apply rate limiting to the interface
-	Tag      *int          `url:"tag,omitempty" json:"tag,omitempty"`           // VLAN tag for this interface.
-	Trunks   *string       `url:"trunks,omitempty" json:"trunks,omitempty"`     // VLAN ids to pass through the interface
-	Type     *string       `url:"type,omitempty" json:"type,omitempty"`         // Network interface type.
+	Acl          *util.PVEBool `url:"acl,omitempty" json:"acl,omitempty"`                   // Explicitly enable or disable ACL support.
+	Mountoptions *string       `url:"mountoptions,omitempty" json:"mountoptions,omitempty"` // Extra mount options for rootfs/mps.
+	Quota        *util.PVEBool `url:"quota,omitempty" json:"quota,omitempty"`               // Enable user quotas inside the container (not supported with zfs subvolumes)
+	Replicate    *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`       // Will include this volume to a storage replica job.
+	Ro           *util.PVEBool `url:"ro,omitempty" json:"ro,omitempty"`                     // Read-only mount point
+	Shared       *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`             // Mark this non-volume mount point as available on multiple nodes (see 'nodes')
+	Size         *string       `url:"size,omitempty" json:"size,omitempty"`                 // Volume size (read only value).
 }
 
-func (t Net) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `name=<string> [,bridge=<bridge>] [,firewall=<1|0>] [,gw=<GatewayIPv4>] [,gw6=<GatewayIPv6>] [,hwaddr=<XX:XX:XX:XX:XX:XX>] [,ip=<(IPv4/CIDR|dhcp|manual)>] [,ip6=<(IPv6/CIDR|auto|dhcp|manual)>] [,mtu=<integer>] [,rate=<mbps>] [,tag=<integer>] [,trunks=<vlanid[;vlanid...]>] [,type=<veth>]`)
-}
-
-// Array of Net
-type Nets []Net
-
-func (t Nets) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
+func (t Rootfs) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[volume=]<volume> [,acl=<1|0>] [,mountoptions=<opt[;opt...]>] [,quota=<1|0>] [,replicate=<1|0>] [,ro=<1|0>] [,shared=<1|0>] [,size=<DiskSize>]`)
 }
 
 // Allow containers access to advanced features.
@@ -156,9 +1544,9 @@ type CreateRequest struct {
 	Vmid       int    `url:"vmid" json:"vmid"`             // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Arch               *string       `url:"arch,omitempty" json:"arch,omitempty"`                                 // OS architecture type.
+	Arch               *Arch         `url:"arch,omitempty" json:"arch,omitempty"`                                 // OS architecture type.
 	Bwlimit            *float64      `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`                           // Override I/O bandwidth limit (in KiB/s).
-	Cmode              *string       `url:"cmode,omitempty" json:"cmode,omitempty"`                               // Console mode. By default, the console command tries to open a connection to one of the available tty devices. By setting cmode to 'console' it tries to attach to /dev/console instead. If you set cmode to 'shell', it simply invokes a shell inside the container (no login).
+	Cmode              *Cmode        `url:"cmode,omitempty" json:"cmode,omitempty"`                               // Console mode. By default, the console command tries to open a connection to one of the available tty devices. By setting cmode to 'console' it tries to attach to /dev/console instead. If you set cmode to 'shell', it simply invokes a shell inside the container (no login).
 	Console            *util.PVEBool `url:"console,omitempty" json:"console,omitempty"`                           // Attach a console device (/dev/console) to the container.
 	Cores              *int          `url:"cores,omitempty" json:"cores,omitempty"`                               // The number of cores assigned to the container. A container can use all available cores by default.
 	Cpulimit           *float64      `url:"cpulimit,omitempty" json:"cpulimit,omitempty"`                         // Limit of CPU usage. NOTE: If the computer has 2 CPUs, it has a total of '2' CPU time. Value '0' indicates no CPU limit.
@@ -170,13 +1558,13 @@ type CreateRequest struct {
 	Hookscript         *string       `url:"hookscript,omitempty" json:"hookscript,omitempty"`                     // Script that will be exectued during various steps in the containers lifetime.
 	Hostname           *string       `url:"hostname,omitempty" json:"hostname,omitempty"`                         // Set a host name for the container.
 	IgnoreUnpackErrors *util.PVEBool `url:"ignore-unpack-errors,omitempty" json:"ignore-unpack-errors,omitempty"` // Ignore errors when extracting the template.
-	Lock               *string       `url:"lock,omitempty" json:"lock,omitempty"`                                 // Lock/unlock the container.
+	Lock               *Lock         `url:"lock,omitempty" json:"lock,omitempty"`                                 // Lock/unlock the container.
 	Memory             *int          `url:"memory,omitempty" json:"memory,omitempty"`                             // Amount of RAM for the container in MB.
 	Mps                *Mps          `url:"mp[n],omitempty" json:"mp[n],omitempty"`                               // Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
 	Nameserver         *string       `url:"nameserver,omitempty" json:"nameserver,omitempty"`                     // Sets DNS server IP address for a container. Create will automatically use the setting from the host if you neither set searchdomain nor nameserver.
 	Nets               *Nets         `url:"net[n],omitempty" json:"net[n],omitempty"`                             // Specifies network interfaces for the container.
 	Onboot             *util.PVEBool `url:"onboot,omitempty" json:"onboot,omitempty"`                             // Specifies whether a container will be started during system bootup.
-	Ostype             *string       `url:"ostype,omitempty" json:"ostype,omitempty"`                             // OS type. This is used to setup configuration inside the container, and corresponds to lxc setup scripts in /usr/share/lxc/config/<ostype>.common.conf. Value 'unmanaged' can be used to skip and OS specific setup.
+	Ostype             *Ostype       `url:"ostype,omitempty" json:"ostype,omitempty"`                             // OS type. This is used to setup configuration inside the container, and corresponds to lxc setup scripts in /usr/share/lxc/config/<ostype>.common.conf. Value 'unmanaged' can be used to skip and OS specific setup.
 	Password           *string       `url:"password,omitempty" json:"password,omitempty"`                         // Sets root password inside container.
 	Pool               *string       `url:"pool,omitempty" json:"pool,omitempty"`                                 // Add the VM to the specified pool.
 	Protection         *util.PVEBool `url:"protection,omitempty" json:"protection,omitempty"`                     // Sets the protection flag of the container. This will prevent the CT or CT's disk remove/update operation.
@@ -230,8 +1618,8 @@ type VmConfigResponse struct {
 	Digest string `url:"digest" json:"digest"` // SHA1 digest of configuration file. This can be used to prevent concurrent modifications.
 
 	// The following parameters are optional
-	Arch         *string       `url:"arch,omitempty" json:"arch,omitempty"`                 // OS architecture type.
-	Cmode        *string       `url:"cmode,omitempty" json:"cmode,omitempty"`               // Console mode. By default, the console command tries to open a connection to one of the available tty devices. By setting cmode to 'console' it tries to attach to /dev/console instead. If you set cmode to 'shell', it simply invokes a shell inside the container (no login).
+	Arch         *Arch         `url:"arch,omitempty" json:"arch,omitempty"`                 // OS architecture type.
+	Cmode        *Cmode        `url:"cmode,omitempty" json:"cmode,omitempty"`               // Console mode. By default, the console command tries to open a connection to one of the available tty devices. By setting cmode to 'console' it tries to attach to /dev/console instead. If you set cmode to 'shell', it simply invokes a shell inside the container (no login).
 	Console      *util.PVEBool `url:"console,omitempty" json:"console,omitempty"`           // Attach a console device (/dev/console) to the container.
 	Cores        *int          `url:"cores,omitempty" json:"cores,omitempty"`               // The number of cores assigned to the container. A container can use all available cores by default.
 	Cpulimit     *float64      `url:"cpulimit,omitempty" json:"cpulimit,omitempty"`         // Limit of CPU usage. NOTE: If the computer has 2 CPUs, it has a total of '2' CPU time. Value '0' indicates no CPU limit.
@@ -241,14 +1629,14 @@ type VmConfigResponse struct {
 	Features     *Features     `url:"features,omitempty" json:"features,omitempty"`         // Allow containers access to advanced features.
 	Hookscript   *string       `url:"hookscript,omitempty" json:"hookscript,omitempty"`     // Script that will be exectued during various steps in the containers lifetime.
 	Hostname     *string       `url:"hostname,omitempty" json:"hostname,omitempty"`         // Set a host name for the container.
-	Lock         *string       `url:"lock,omitempty" json:"lock,omitempty"`                 // Lock/unlock the container.
+	Lock         *Lock         `url:"lock,omitempty" json:"lock,omitempty"`                 // Lock/unlock the container.
 	Lxc          *[][]string   `url:"lxc,omitempty" json:"lxc,omitempty"`                   // Array of lxc low-level configurations ([[key1, value1], [key2, value2] ...]).
 	Memory       *int          `url:"memory,omitempty" json:"memory,omitempty"`             // Amount of RAM for the container in MB.
 	Mps          *Mps          `url:"mp[n],omitempty" json:"mp[n],omitempty"`               // Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
 	Nameserver   *string       `url:"nameserver,omitempty" json:"nameserver,omitempty"`     // Sets DNS server IP address for a container. Create will automatically use the setting from the host if you neither set searchdomain nor nameserver.
 	Nets         *Nets         `url:"net[n],omitempty" json:"net[n],omitempty"`             // Specifies network interfaces for the container.
 	Onboot       *util.PVEBool `url:"onboot,omitempty" json:"onboot,omitempty"`             // Specifies whether a container will be started during system bootup.
-	Ostype       *string       `url:"ostype,omitempty" json:"ostype,omitempty"`             // OS type. This is used to setup configuration inside the container, and corresponds to lxc setup scripts in /usr/share/lxc/config/<ostype>.common.conf. Value 'unmanaged' can be used to skip and OS specific setup.
+	Ostype       *Ostype       `url:"ostype,omitempty" json:"ostype,omitempty"`             // OS type. This is used to setup configuration inside the container, and corresponds to lxc setup scripts in /usr/share/lxc/config/<ostype>.common.conf. Value 'unmanaged' can be used to skip and OS specific setup.
 	Protection   *util.PVEBool `url:"protection,omitempty" json:"protection,omitempty"`     // Sets the protection flag of the container. This will prevent the CT or CT's disk remove/update operation.
 	Rootfs       *Rootfs       `url:"rootfs,omitempty" json:"rootfs,omitempty"`             // Use volume as container root.
 	Searchdomain *string       `url:"searchdomain,omitempty" json:"searchdomain,omitempty"` // Sets DNS search domains for a container. Create will automatically use the setting from the host if you neither set searchdomain nor nameserver.
@@ -267,8 +1655,8 @@ type UpdateVmConfigRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Arch         *string       `url:"arch,omitempty" json:"arch,omitempty"`                 // OS architecture type.
-	Cmode        *string       `url:"cmode,omitempty" json:"cmode,omitempty"`               // Console mode. By default, the console command tries to open a connection to one of the available tty devices. By setting cmode to 'console' it tries to attach to /dev/console instead. If you set cmode to 'shell', it simply invokes a shell inside the container (no login).
+	Arch         *Arch         `url:"arch,omitempty" json:"arch,omitempty"`                 // OS architecture type.
+	Cmode        *Cmode        `url:"cmode,omitempty" json:"cmode,omitempty"`               // Console mode. By default, the console command tries to open a connection to one of the available tty devices. By setting cmode to 'console' it tries to attach to /dev/console instead. If you set cmode to 'shell', it simply invokes a shell inside the container (no login).
 	Console      *util.PVEBool `url:"console,omitempty" json:"console,omitempty"`           // Attach a console device (/dev/console) to the container.
 	Cores        *int          `url:"cores,omitempty" json:"cores,omitempty"`               // The number of cores assigned to the container. A container can use all available cores by default.
 	Cpulimit     *float64      `url:"cpulimit,omitempty" json:"cpulimit,omitempty"`         // Limit of CPU usage. NOTE: If the computer has 2 CPUs, it has a total of '2' CPU time. Value '0' indicates no CPU limit.
@@ -280,13 +1668,13 @@ type UpdateVmConfigRequest struct {
 	Features     *Features     `url:"features,omitempty" json:"features,omitempty"`         // Allow containers access to advanced features.
 	Hookscript   *string       `url:"hookscript,omitempty" json:"hookscript,omitempty"`     // Script that will be exectued during various steps in the containers lifetime.
 	Hostname     *string       `url:"hostname,omitempty" json:"hostname,omitempty"`         // Set a host name for the container.
-	Lock         *string       `url:"lock,omitempty" json:"lock,omitempty"`                 // Lock/unlock the container.
+	Lock         *Lock         `url:"lock,omitempty" json:"lock,omitempty"`                 // Lock/unlock the container.
 	Memory       *int          `url:"memory,omitempty" json:"memory,omitempty"`             // Amount of RAM for the container in MB.
 	Mps          *Mps          `url:"mp[n],omitempty" json:"mp[n],omitempty"`               // Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
 	Nameserver   *string       `url:"nameserver,omitempty" json:"nameserver,omitempty"`     // Sets DNS server IP address for a container. Create will automatically use the setting from the host if you neither set searchdomain nor nameserver.
 	Nets         *Nets         `url:"net[n],omitempty" json:"net[n],omitempty"`             // Specifies network interfaces for the container.
 	Onboot       *util.PVEBool `url:"onboot,omitempty" json:"onboot,omitempty"`             // Specifies whether a container will be started during system bootup.
-	Ostype       *string       `url:"ostype,omitempty" json:"ostype,omitempty"`             // OS type. This is used to setup configuration inside the container, and corresponds to lxc setup scripts in /usr/share/lxc/config/<ostype>.common.conf. Value 'unmanaged' can be used to skip and OS specific setup.
+	Ostype       *Ostype       `url:"ostype,omitempty" json:"ostype,omitempty"`             // OS type. This is used to setup configuration inside the container, and corresponds to lxc setup scripts in /usr/share/lxc/config/<ostype>.common.conf. Value 'unmanaged' can be used to skip and OS specific setup.
 	Protection   *util.PVEBool `url:"protection,omitempty" json:"protection,omitempty"`     // Sets the protection flag of the container. This will prevent the CT or CT's disk remove/update operation.
 	Revert       *string       `url:"revert,omitempty" json:"revert,omitempty"`             // Revert a pending change.
 	Rootfs       *Rootfs       `url:"rootfs,omitempty" json:"rootfs,omitempty"`             // Use volume as container root.
@@ -302,13 +1690,13 @@ type UpdateVmConfigRequest struct {
 }
 
 type RrdRequest struct {
-	Ds        string `url:"ds" json:"ds"`               // The list of datasources you want to display.
-	Node      string `url:"node" json:"node"`           // The cluster node name.
-	Timeframe string `url:"timeframe" json:"timeframe"` // Specify the time frame you are interested in.
-	Vmid      int    `url:"vmid" json:"vmid"`           // The (unique) ID of the VM.
+	Ds        string    `url:"ds" json:"ds"`               // The list of datasources you want to display.
+	Node      string    `url:"node" json:"node"`           // The cluster node name.
+	Timeframe Timeframe `url:"timeframe" json:"timeframe"` // Specify the time frame you are interested in.
+	Vmid      int       `url:"vmid" json:"vmid"`           // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Cf *string `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
+	Cf *Cf `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
 }
 
 type RrdResponse struct {
@@ -316,12 +1704,12 @@ type RrdResponse struct {
 }
 
 type RrddataRequest struct {
-	Node      string `url:"node" json:"node"`           // The cluster node name.
-	Timeframe string `url:"timeframe" json:"timeframe"` // Specify the time frame you are interested in.
-	Vmid      int    `url:"vmid" json:"vmid"`           // The (unique) ID of the VM.
+	Node      string    `url:"node" json:"node"`           // The cluster node name.
+	Timeframe Timeframe `url:"timeframe" json:"timeframe"` // Specify the time frame you are interested in.
+	Vmid      int       `url:"vmid" json:"vmid"`           // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Cf *string `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
+	Cf *Cf `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
 }
 
 type VncproxyRequest struct {
@@ -414,9 +1802,9 @@ type MigrateVmRequest struct {
 }
 
 type VmFeatureRequest struct {
-	Feature string `url:"feature" json:"feature"` // Feature to check.
-	Node    string `url:"node" json:"node"`       // The cluster node name.
-	Vmid    int    `url:"vmid" json:"vmid"`       // The (unique) ID of the VM.
+	Feature Feature `url:"feature" json:"feature"` // Feature to check.
+	Node    string  `url:"node" json:"node"`       // The cluster node name.
+	Vmid    int     `url:"vmid" json:"vmid"`       // The (unique) ID of the VM.
 
 	// The following parameters are optional
 	Snapname *string `url:"snapname,omitempty" json:"snapname,omitempty"` // The name of the snapshot.
@@ -449,7 +1837,7 @@ type CloneVmRequest struct {
 }
 
 type ResizeVmRequest struct {
-	Disk string `url:"disk" json:"disk"` // The disk you want to resize.
+	Disk Disk   `url:"disk" json:"disk"` // The disk you want to resize.
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Size string `url:"size" json:"size"` // The new size. With the '+' sign the value is added to the actual size of the volume and without it, the value is taken as an absolute one. Shrinking disk size is not supported.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
@@ -461,7 +1849,7 @@ type ResizeVmRequest struct {
 type MoveVolumeRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
 	Vmid   int    `url:"vmid" json:"vmid"`     // The (unique) ID of the VM.
-	Volume string `url:"volume" json:"volume"` // Volume which will be moved.
+	Volume Volume `url:"volume" json:"volume"` // Volume which will be moved.
 
 	// The following parameters are optional
 	Bwlimit      *float64      `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`             // Override I/O bandwidth limit (in KiB/s).
@@ -470,7 +1858,7 @@ type MoveVolumeRequest struct {
 	Storage      *string       `url:"storage,omitempty" json:"storage,omitempty"`             // Target Storage.
 	TargetDigest *string       `url:"target-digest,omitempty" json:"target-digest,omitempty"` // Prevent changes if current configuration file of the target " . 		  "container has a different SHA1 digest. This can be used to prevent " . 		  "concurrent modifications.
 	TargetVmid   *int          `url:"target-vmid,omitempty" json:"target-vmid,omitempty"`     // The (unique) ID of the VM.
-	TargetVolume *string       `url:"target-volume,omitempty" json:"target-volume,omitempty"` // The config key the volume will be moved to. Default is the source volume key.
+	TargetVolume *TargetVolume `url:"target-volume,omitempty" json:"target-volume,omitempty"` // The config key the volume will be moved to. Default is the source volume key.
 }
 
 type VmPendingRequest struct {

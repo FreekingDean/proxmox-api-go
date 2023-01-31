@@ -7,6 +7,52 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	Mode_LDAP              Mode = "ldap"
+	Mode_LDAPS             Mode = "ldaps"
+	Mode_LDAP_AND_STARTTLS Mode = "ldap+starttls"
+
+	Scope_USERS  Scope = "users"
+	Scope_GROUPS Scope = "groups"
+	Scope_BOTH   Scope = "both"
+
+	Sslversion_TLSV1   Sslversion = "tlsv1"
+	Sslversion_TLSV1_1 Sslversion = "tlsv1_1"
+	Sslversion_TLSV1_2 Sslversion = "tlsv1_2"
+	Sslversion_TLSV1_3 Sslversion = "tlsv1_3"
+
+	Tfa_YUBICO Tfa = "yubico"
+	Tfa_OATH   Tfa = "oath"
+
+	Type_AD     Type = "ad"
+	Type_LDAP   Type = "ldap"
+	Type_OPENID Type = "openid"
+	Type_PAM    Type = "pam"
+	Type_PVE    Type = "pve"
+)
+
+type Mode string
+type Scope string
+type Sslversion string
+type Tfa string
+type Type string
+
+func PtrMode(i Mode) *Mode {
+	return &i
+}
+func PtrScope(i Scope) *Scope {
+	return &i
+}
+func PtrSslversion(i Sslversion) *Sslversion {
+	return &i
+}
+func PtrTfa(i Tfa) *Tfa {
+	return &i
+}
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -27,12 +73,12 @@ type IndexResponse struct {
 
 	// The following parameters are optional
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"` // A comment. The GUI use this text when you select a domain (Realm) on the login window.
-	Tfa     *string `url:"tfa,omitempty" json:"tfa,omitempty"`         // Two-factor authentication provider.
+	Tfa     *Tfa    `url:"tfa,omitempty" json:"tfa,omitempty"`         // Two-factor authentication provider.
 }
 
 type CreateRequest struct {
 	Realm string `url:"realm" json:"realm"` // Authentication domain ID
-	Type  string `url:"type" json:"type"`   // Realm type.
+	Type  Type   `url:"type" json:"type"`   // Realm type.
 
 	// The following parameters are optional
 	AcrValues           *string       `url:"acr-values,omitempty" json:"acr-values,omitempty"`                       // Specifies the Authentication Context Class Reference values that theAuthorization Server is being requested to use for the Auth Request.
@@ -54,7 +100,7 @@ type CreateRequest struct {
 	GroupFilter         *string       `url:"group_filter,omitempty" json:"group_filter,omitempty"`                   // LDAP filter for group sync.
 	GroupNameAttr       *string       `url:"group_name_attr,omitempty" json:"group_name_attr,omitempty"`             // LDAP attribute representing a groups name. If not set or found, the first value of the DN will be used as name.
 	IssuerUrl           *string       `url:"issuer-url,omitempty" json:"issuer-url,omitempty"`                       // OpenID Issuer Url
-	Mode                *string       `url:"mode,omitempty" json:"mode,omitempty"`                                   // LDAP protocol mode.
+	Mode                *Mode         `url:"mode,omitempty" json:"mode,omitempty"`                                   // LDAP protocol mode.
 	Password            *string       `url:"password,omitempty" json:"password,omitempty"`                           // LDAP bind password. Will be stored in '/etc/pve/priv/realm/<REALM>.pw'.
 	Port                *int          `url:"port,omitempty" json:"port,omitempty"`                                   // Server port.
 	Prompt              *string       `url:"prompt,omitempty" json:"prompt,omitempty"`                               // Specifies whether the Authorization Server prompts the End-User for reauthentication and consent.
@@ -62,7 +108,7 @@ type CreateRequest struct {
 	Secure              *util.PVEBool `url:"secure,omitempty" json:"secure,omitempty"`                               // Use secure LDAPS protocol. DEPRECATED: use 'mode' instead.
 	Server1             *string       `url:"server1,omitempty" json:"server1,omitempty"`                             // Server IP address (or DNS name)
 	Server2             *string       `url:"server2,omitempty" json:"server2,omitempty"`                             // Fallback Server IP address (or DNS name)
-	Sslversion          *string       `url:"sslversion,omitempty" json:"sslversion,omitempty"`                       // LDAPS TLS/SSL version. It's not recommended to use version older than 1.2!
+	Sslversion          *Sslversion   `url:"sslversion,omitempty" json:"sslversion,omitempty"`                       // LDAPS TLS/SSL version. It's not recommended to use version older than 1.2!
 	SyncAttributes      *string       `url:"sync_attributes,omitempty" json:"sync_attributes,omitempty"`             // Comma separated list of key=value pairs for specifying which LDAP attributes map to which PVE user field. For example, to map the LDAP attribute 'mail' to PVEs 'email', write 'email=mail'. By default, each PVE user field is represented by an LDAP attribute of the same name.
 	SyncDefaultsOptions *string       `url:"sync-defaults-options,omitempty" json:"sync-defaults-options,omitempty"` // The default options for behavior of synchronizations.
 	Tfa                 *string       `url:"tfa,omitempty" json:"tfa,omitempty"`                                     // Use Two-factor authentication.
@@ -102,7 +148,7 @@ type UpdateRequest struct {
 	GroupFilter         *string       `url:"group_filter,omitempty" json:"group_filter,omitempty"`                   // LDAP filter for group sync.
 	GroupNameAttr       *string       `url:"group_name_attr,omitempty" json:"group_name_attr,omitempty"`             // LDAP attribute representing a groups name. If not set or found, the first value of the DN will be used as name.
 	IssuerUrl           *string       `url:"issuer-url,omitempty" json:"issuer-url,omitempty"`                       // OpenID Issuer Url
-	Mode                *string       `url:"mode,omitempty" json:"mode,omitempty"`                                   // LDAP protocol mode.
+	Mode                *Mode         `url:"mode,omitempty" json:"mode,omitempty"`                                   // LDAP protocol mode.
 	Password            *string       `url:"password,omitempty" json:"password,omitempty"`                           // LDAP bind password. Will be stored in '/etc/pve/priv/realm/<REALM>.pw'.
 	Port                *int          `url:"port,omitempty" json:"port,omitempty"`                                   // Server port.
 	Prompt              *string       `url:"prompt,omitempty" json:"prompt,omitempty"`                               // Specifies whether the Authorization Server prompts the End-User for reauthentication and consent.
@@ -110,7 +156,7 @@ type UpdateRequest struct {
 	Secure              *util.PVEBool `url:"secure,omitempty" json:"secure,omitempty"`                               // Use secure LDAPS protocol. DEPRECATED: use 'mode' instead.
 	Server1             *string       `url:"server1,omitempty" json:"server1,omitempty"`                             // Server IP address (or DNS name)
 	Server2             *string       `url:"server2,omitempty" json:"server2,omitempty"`                             // Fallback Server IP address (or DNS name)
-	Sslversion          *string       `url:"sslversion,omitempty" json:"sslversion,omitempty"`                       // LDAPS TLS/SSL version. It's not recommended to use version older than 1.2!
+	Sslversion          *Sslversion   `url:"sslversion,omitempty" json:"sslversion,omitempty"`                       // LDAPS TLS/SSL version. It's not recommended to use version older than 1.2!
 	SyncAttributes      *string       `url:"sync_attributes,omitempty" json:"sync_attributes,omitempty"`             // Comma separated list of key=value pairs for specifying which LDAP attributes map to which PVE user field. For example, to map the LDAP attribute 'mail' to PVEs 'email', write 'email=mail'. By default, each PVE user field is represented by an LDAP attribute of the same name.
 	SyncDefaultsOptions *string       `url:"sync-defaults-options,omitempty" json:"sync-defaults-options,omitempty"` // The default options for behavior of synchronizations.
 	Tfa                 *string       `url:"tfa,omitempty" json:"tfa,omitempty"`                                     // Use Two-factor authentication.
@@ -133,7 +179,7 @@ type SyncRequest struct {
 	Full           *util.PVEBool `url:"full,omitempty" json:"full,omitempty"`                       // DEPRECATED: use 'remove-vanished' instead. If set, uses the LDAP Directory as source of truth, deleting users or groups not returned from the sync and removing all locally modified properties of synced users. If not set, only syncs information which is present in the synced data, and does not delete or modify anything else.
 	Purge          *util.PVEBool `url:"purge,omitempty" json:"purge,omitempty"`                     // DEPRECATED: use 'remove-vanished' instead. Remove ACLs for users or groups which were removed from the config during a sync.
 	RemoveVanished *string       `url:"remove-vanished,omitempty" json:"remove-vanished,omitempty"` // A semicolon-seperated list of things to remove when they or the user vanishes during a sync. The following values are possible: 'entry' removes the user/group when not returned from the sync. 'properties' removes the set properties on existing user/group that do not appear in the source (even custom ones). 'acl' removes acls when the user/group is not returned from the sync.
-	Scope          *string       `url:"scope,omitempty" json:"scope,omitempty"`                     // Select what to sync.
+	Scope          *Scope        `url:"scope,omitempty" json:"scope,omitempty"`                     // Select what to sync.
 }
 
 // Index Authentication domain index.

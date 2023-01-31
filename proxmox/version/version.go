@@ -6,6 +6,19 @@ import (
 	"context"
 )
 
+const (
+	Console_APPLET  Console = "applet"
+	Console_VV      Console = "vv"
+	Console_HTML5   Console = "html5"
+	Console_XTERMJS Console = "xtermjs"
+)
+
+type Console string
+
+func PtrConsole(i Console) *Console {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -26,7 +39,7 @@ type IndexResponse struct {
 	Version string `url:"version" json:"version"` // The full pve-manager package version of this node.
 
 	// The following parameters are optional
-	Console *string `url:"console,omitempty" json:"console,omitempty"` // The default console viewer to use.
+	Console *Console `url:"console,omitempty" json:"console,omitempty"` // The default console viewer to use.
 }
 
 // Index API version details, including some parts of the global datacenter config.

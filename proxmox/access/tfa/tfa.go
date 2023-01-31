@@ -7,6 +7,30 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	EntriesType_TOTP     EntriesType = "totp"
+	EntriesType_U2F      EntriesType = "u2f"
+	EntriesType_WEBAUTHN EntriesType = "webauthn"
+	EntriesType_RECOVERY EntriesType = "recovery"
+	EntriesType_YUBICO   EntriesType = "yubico"
+
+	Type_TOTP     Type = "totp"
+	Type_U2F      Type = "u2f"
+	Type_WEBAUTHN Type = "webauthn"
+	Type_RECOVERY Type = "recovery"
+	Type_YUBICO   Type = "yubico"
+)
+
+type EntriesType string
+type Type string
+
+func PtrEntriesType(i EntriesType) *EntriesType {
+	return &i
+}
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -23,10 +47,10 @@ func New(c HTTPClient) *Client {
 
 // TFA Entry.
 type Entries struct {
-	Created     int    `url:"created" json:"created"`         // Creation time of this entry as unix epoch.
-	Description string `url:"description" json:"description"` // User chosen description for this entry.
-	Id          string `url:"id" json:"id"`                   // The id used to reference this entry.
-	Type        string `url:"type" json:"type"`               // TFA Entry Type.
+	Created     int         `url:"created" json:"created"`         // Creation time of this entry as unix epoch.
+	Description string      `url:"description" json:"description"` // User chosen description for this entry.
+	Id          string      `url:"id" json:"id"`                   // The id used to reference this entry.
+	Type        EntriesType `url:"type" json:"type"`               // TFA Entry Type.
 
 	// The following parameters are optional
 	Enable *util.PVEBool `url:"enable,omitempty" json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
@@ -57,14 +81,14 @@ type FindResponse struct {
 	Created     int    `url:"created" json:"created"`         // Creation time of this entry as unix epoch.
 	Description string `url:"description" json:"description"` // User chosen description for this entry.
 	Id          string `url:"id" json:"id"`                   // The id used to reference this entry.
-	Type        string `url:"type" json:"type"`               // TFA Entry Type.
+	Type        Type   `url:"type" json:"type"`               // TFA Entry Type.
 
 	// The following parameters are optional
 	Enable *util.PVEBool `url:"enable,omitempty" json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
 }
 
 type ChildCreateRequest struct {
-	Type   string `url:"type" json:"type"`     // TFA Entry Type.
+	Type   Type   `url:"type" json:"type"`     // TFA Entry Type.
 	Userid string `url:"userid" json:"userid"` // User ID
 
 	// The following parameters are optional
@@ -94,7 +118,7 @@ type GetTfaEntryIdResponse struct {
 	Created     int    `url:"created" json:"created"`         // Creation time of this entry as unix epoch.
 	Description string `url:"description" json:"description"` // User chosen description for this entry.
 	Id          string `url:"id" json:"id"`                   // The id used to reference this entry.
-	Type        string `url:"type" json:"type"`               // TFA Entry Type.
+	Type        Type   `url:"type" json:"type"`               // TFA Entry Type.
 
 	// The following parameters are optional
 	Enable *util.PVEBool `url:"enable,omitempty" json:"enable,omitempty"` // Whether this TFA entry is currently enabled.

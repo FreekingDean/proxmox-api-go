@@ -7,6 +7,16 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	Type_VNET Type = "vnet"
+)
+
+type Type string
+
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -35,7 +45,7 @@ type CreateRequest struct {
 	// The following parameters are optional
 	Alias     *string       `url:"alias,omitempty" json:"alias,omitempty"`         // alias name of the vnet
 	Tag       *int          `url:"tag,omitempty" json:"tag,omitempty"`             // vlan or vxlan id
-	Type      *string       `url:"type,omitempty" json:"type,omitempty"`           // Type
+	Type      *Type         `url:"type,omitempty" json:"type,omitempty"`           // Type
 	Vlanaware *util.PVEBool `url:"vlanaware,omitempty" json:"vlanaware,omitempty"` // Allow vm VLANs to pass through this vnet.
 }
 

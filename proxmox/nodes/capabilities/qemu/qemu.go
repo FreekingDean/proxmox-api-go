@@ -7,6 +7,17 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	Type_Q35    Type = "q35"
+	Type_I440FX Type = "i440fx"
+)
+
+type Type string
+
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -45,7 +56,7 @@ type TypesMachinesRequest struct {
 
 type TypesMachinesResponse struct {
 	Id      string `url:"id" json:"id"`           // Full name of machine type and version.
-	Type    string `url:"type" json:"type"`       // The machine type.
+	Type    Type   `url:"type" json:"type"`       // The machine type.
 	Version string `url:"version" json:"version"` // The machine version.
 
 }

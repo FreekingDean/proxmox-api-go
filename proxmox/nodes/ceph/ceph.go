@@ -7,6 +7,25 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	Action_STOP    Action = "stop"
+	Action_DESTROY Action = "destroy"
+
+	Service_OSD Service = "osd"
+	Service_MON Service = "mon"
+	Service_MDS Service = "mds"
+)
+
+type Action string
+type Service string
+
+func PtrAction(i Action) *Action {
+	return &i
+}
+func PtrService(i Service) *Service {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -108,10 +127,10 @@ type RulesRequest struct {
 }
 
 type CmdSafetyRequest struct {
-	Action  string `url:"action" json:"action"`   // Action to check
-	Id      string `url:"id" json:"id"`           // ID of the service
-	Node    string `url:"node" json:"node"`       // The cluster node name.
-	Service string `url:"service" json:"service"` // Service type
+	Action  Action  `url:"action" json:"action"`   // Action to check
+	Id      string  `url:"id" json:"id"`           // ID of the service
+	Node    string  `url:"node" json:"node"`       // The cluster node name.
+	Service Service `url:"service" json:"service"` // Service type
 
 }
 

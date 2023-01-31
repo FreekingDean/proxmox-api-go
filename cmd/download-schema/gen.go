@@ -52,6 +52,7 @@ func LoadPackage(curdir string, s *jsonschema.Schema) error {
 		Name:    packageName,
 		Methods: make([]*OperationTempl, 0),
 		Types:   make([]*Type, 0),
+		Enums:   make(map[string][]string),
 	}
 	if s.Info["GET"] != nil {
 		p.Methods = append(
@@ -148,7 +149,9 @@ func LoadPackage(curdir string, s *jsonschema.Schema) error {
 			}
 		}
 	}
-	t, err := template.ParseFiles("cmd/download-schema/templates/package.go.tmpl")
+	t, err := template.New("package.go.tmpl").Funcs(template.FuncMap{
+		"Enumify": Enumify,
+	}).ParseFiles("cmd/download-schema/templates/package.go.tmpl")
 	if err != nil {
 		return err
 	}
@@ -202,6 +205,7 @@ type Package struct {
 	Util      bool
 	Methods   []*OperationTempl
 	Types     []*Type
+	Enums     map[string][]string
 	ImportURL bool
 }
 
@@ -223,6 +227,7 @@ type Type struct {
 	Type               string
 	Description        string
 	Format             string
+	Enum               []string
 }
 
 func (p *Package) AddType(t *Type) {
@@ -365,4 +370,35 @@ func (t *TypeSorter) Swap(i, j int) {
 	temp := t.types[i]
 	t.types[i] = t.types[j]
 	t.types[j] = temp
+}
+
+func (p *Package) AddEnum(name string, enum []string) {
+	if enums, ok := p.Enums[name]; ok {
+		for _, val := range enum {
+			if !inSlice(enums, val) {
+				p.Enums[name] = append(p.Enums[name], val)
+			}
+		}
+		return
+	}
+	p.Enums[name] = enum
+}
+
+func inSlice(sl []string, val string) bool {
+	for _, v := range sl {
+		if v == val {
+			return true
+		}
+	}
+
+	return false
+}
+
+func Enumify(s string) string {
+	s = strings.ToUpper(s)
+	s = strings.Replace(s, "-", "_", -1)
+	s = strings.Replace(s, ".", "_", -1)
+	s = strings.Replace(s, "/", "_", -1)
+	s = strings.Replace(s, "+", "_AND_", -1)
+	return s
 }

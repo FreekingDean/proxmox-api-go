@@ -6,6 +6,32 @@ import (
 	"context"
 )
 
+const (
+	Log_EMERG   Log = "emerg"
+	Log_ALERT   Log = "alert"
+	Log_CRIT    Log = "crit"
+	Log_ERR     Log = "err"
+	Log_WARNING Log = "warning"
+	Log_NOTICE  Log = "notice"
+	Log_INFO    Log = "info"
+	Log_DEBUG   Log = "debug"
+	Log_NOLOG   Log = "nolog"
+
+	Type_IN    Type = "in"
+	Type_OUT   Type = "out"
+	Type_GROUP Type = "group"
+)
+
+type Log string
+type Type string
+
+func PtrLog(i Log) *Log {
+	return &i
+}
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -33,7 +59,7 @@ type IndexResponse struct {
 type CreateRequest struct {
 	Action string `url:"action" json:"action"` // Rule action ('ACCEPT', 'DROP', 'REJECT') or security group name.
 	Node   string `url:"node" json:"node"`     // The cluster node name.
-	Type   string `url:"type" json:"type"`     // Rule type.
+	Type   Type   `url:"type" json:"type"`     // Rule type.
 	Vmid   int    `url:"vmid" json:"vmid"`     // The (unique) ID of the VM.
 
 	// The following parameters are optional
@@ -44,7 +70,7 @@ type CreateRequest struct {
 	Enable   *int    `url:"enable,omitempty" json:"enable,omitempty"`       // Flag to enable/disable a rule.
 	IcmpType *string `url:"icmp-type,omitempty" json:"icmp-type,omitempty"` // Specify icmp-type. Only valid if proto equals 'icmp'.
 	Iface    *string `url:"iface,omitempty" json:"iface,omitempty"`         // Network interface name. You have to use network configuration key names for VMs and containers ('net\d+'). Host related rules can use arbitrary strings.
-	Log      *string `url:"log,omitempty" json:"log,omitempty"`             // Log level for firewall rule.
+	Log      *Log    `url:"log,omitempty" json:"log,omitempty"`             // Log level for firewall rule.
 	Macro    *string `url:"macro,omitempty" json:"macro,omitempty"`         // Use predefined standard macro.
 	Pos      *int    `url:"pos,omitempty" json:"pos,omitempty"`             // Update rule at position <pos>.
 	Proto    *string `url:"proto,omitempty" json:"proto,omitempty"`         // IP protocol. You can use protocol names ('tcp'/'udp') or simple numbers, as defined in '/etc/protocols'.
@@ -73,7 +99,7 @@ type FindResponse struct {
 	IcmpType  *string `url:"icmp-type,omitempty" json:"icmp-type,omitempty"`
 	Iface     *string `url:"iface,omitempty" json:"iface,omitempty"`
 	Ipversion *int    `url:"ipversion,omitempty" json:"ipversion,omitempty"`
-	Log       *string `url:"log,omitempty" json:"log,omitempty"` // Log level for firewall rule
+	Log       *Log    `url:"log,omitempty" json:"log,omitempty"` // Log level for firewall rule
 	Macro     *string `url:"macro,omitempty" json:"macro,omitempty"`
 	Proto     *string `url:"proto,omitempty" json:"proto,omitempty"`
 	Source    *string `url:"source,omitempty" json:"source,omitempty"`
@@ -94,14 +120,14 @@ type UpdateRequest struct {
 	Enable   *int    `url:"enable,omitempty" json:"enable,omitempty"`       // Flag to enable/disable a rule.
 	IcmpType *string `url:"icmp-type,omitempty" json:"icmp-type,omitempty"` // Specify icmp-type. Only valid if proto equals 'icmp'.
 	Iface    *string `url:"iface,omitempty" json:"iface,omitempty"`         // Network interface name. You have to use network configuration key names for VMs and containers ('net\d+'). Host related rules can use arbitrary strings.
-	Log      *string `url:"log,omitempty" json:"log,omitempty"`             // Log level for firewall rule.
+	Log      *Log    `url:"log,omitempty" json:"log,omitempty"`             // Log level for firewall rule.
 	Macro    *string `url:"macro,omitempty" json:"macro,omitempty"`         // Use predefined standard macro.
 	Moveto   *int    `url:"moveto,omitempty" json:"moveto,omitempty"`       // Move rule to new position <moveto>. Other arguments are ignored.
 	Pos      *int    `url:"pos,omitempty" json:"pos,omitempty"`             // Update rule at position <pos>.
 	Proto    *string `url:"proto,omitempty" json:"proto,omitempty"`         // IP protocol. You can use protocol names ('tcp'/'udp') or simple numbers, as defined in '/etc/protocols'.
 	Source   *string `url:"source,omitempty" json:"source,omitempty"`       // Restrict packet source address. This can refer to a single IP address, an IP set ('+ipsetname') or an IP alias definition. You can also specify an address range like '20.34.101.207-201.3.9.99', or a list of IP addresses and networks (entries are separated by comma). Please do not mix IPv4 and IPv6 addresses inside such lists.
 	Sport    *string `url:"sport,omitempty" json:"sport,omitempty"`         // Restrict TCP/UDP source port. You can use service names or simple numbers (0-65535), as defined in '/etc/services'. Port ranges can be specified with '\d+:\d+', for example '80:85', and you can use comma separated list to match several ports or ranges.
-	Type     *string `url:"type,omitempty" json:"type,omitempty"`           // Rule type.
+	Type     *Type   `url:"type,omitempty" json:"type,omitempty"`           // Rule type.
 }
 
 type DeleteRequest struct {

@@ -7,6 +7,24 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	MigrationType_SECURE   MigrationType = "secure"
+	MigrationType_INSECURE MigrationType = "insecure"
+
+	Status_STOPPED Status = "stopped"
+	Status_RUNNING Status = "running"
+)
+
+type MigrationType string
+type Status string
+
+func PtrMigrationType(i MigrationType) *MigrationType {
+	return &i
+}
+func PtrStatus(i Status) *Status {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -39,7 +57,7 @@ type VmStatusCurrentRequest struct {
 
 type VmStatusCurrentResponse struct {
 	Ha     map[string]interface{} `url:"ha" json:"ha"`         // HA manager service status.
-	Status string                 `url:"status" json:"status"` // Qemu process status.
+	Status Status                 `url:"status" json:"status"` // Qemu process status.
 	Vmid   int                    `url:"vmid" json:"vmid"`     // The (unique) ID of the VM.
 
 	// The following parameters are optional
@@ -63,15 +81,15 @@ type VmStartRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	ForceCpu         *string       `url:"force-cpu,omitempty" json:"force-cpu,omitempty"`                 // Override QEMU's -cpu argument with the given string.
-	Machine          *string       `url:"machine,omitempty" json:"machine,omitempty"`                     // Specifies the Qemu machine type.
-	Migratedfrom     *string       `url:"migratedfrom,omitempty" json:"migratedfrom,omitempty"`           // The cluster node name.
-	MigrationNetwork *string       `url:"migration_network,omitempty" json:"migration_network,omitempty"` // CIDR of the (sub) network that is used for migration.
-	MigrationType    *string       `url:"migration_type,omitempty" json:"migration_type,omitempty"`       // Migration traffic is encrypted using an SSH tunnel by default. On secure, completely private networks this can be disabled to increase performance.
-	Skiplock         *util.PVEBool `url:"skiplock,omitempty" json:"skiplock,omitempty"`                   // Ignore locks - only root is allowed to use this option.
-	Stateuri         *string       `url:"stateuri,omitempty" json:"stateuri,omitempty"`                   // Some command save/restore state from this location.
-	Targetstorage    *string       `url:"targetstorage,omitempty" json:"targetstorage,omitempty"`         // Mapping from source to target storages. Providing only a single storage ID maps all source storages to that storage. Providing the special value '1' will map each source storage to itself.
-	Timeout          *int          `url:"timeout,omitempty" json:"timeout,omitempty"`                     // Wait maximal timeout seconds.
+	ForceCpu         *string        `url:"force-cpu,omitempty" json:"force-cpu,omitempty"`                 // Override QEMU's -cpu argument with the given string.
+	Machine          *string        `url:"machine,omitempty" json:"machine,omitempty"`                     // Specifies the Qemu machine type.
+	Migratedfrom     *string        `url:"migratedfrom,omitempty" json:"migratedfrom,omitempty"`           // The cluster node name.
+	MigrationNetwork *string        `url:"migration_network,omitempty" json:"migration_network,omitempty"` // CIDR of the (sub) network that is used for migration.
+	MigrationType    *MigrationType `url:"migration_type,omitempty" json:"migration_type,omitempty"`       // Migration traffic is encrypted using an SSH tunnel by default. On secure, completely private networks this can be disabled to increase performance.
+	Skiplock         *util.PVEBool  `url:"skiplock,omitempty" json:"skiplock,omitempty"`                   // Ignore locks - only root is allowed to use this option.
+	Stateuri         *string        `url:"stateuri,omitempty" json:"stateuri,omitempty"`                   // Some command save/restore state from this location.
+	Targetstorage    *string        `url:"targetstorage,omitempty" json:"targetstorage,omitempty"`         // Mapping from source to target storages. Providing only a single storage ID maps all source storages to that storage. Providing the special value '1' will map each source storage to itself.
+	Timeout          *int           `url:"timeout,omitempty" json:"timeout,omitempty"`                     // Wait maximal timeout seconds.
 }
 
 type VmStopRequest struct {

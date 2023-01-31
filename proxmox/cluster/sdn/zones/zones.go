@@ -7,6 +7,28 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	Type_EVPN   Type = "evpn"
+	Type_FAUCET Type = "faucet"
+	Type_QINQ   Type = "qinq"
+	Type_SIMPLE Type = "simple"
+	Type_VLAN   Type = "vlan"
+	Type_VXLAN  Type = "vxlan"
+
+	VlanProtocol_802_1Q  VlanProtocol = "802.1q"
+	VlanProtocol_802_1AD VlanProtocol = "802.1ad"
+)
+
+type Type string
+type VlanProtocol string
+
+func PtrType(i Type) *Type {
+	return &i
+}
+func PtrVlanProtocol(i VlanProtocol) *VlanProtocol {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -26,7 +48,7 @@ type IndexRequest struct {
 	// The following parameters are optional
 	Pending *util.PVEBool `url:"pending,omitempty" json:"pending,omitempty"` // Display pending config.
 	Running *util.PVEBool `url:"running,omitempty" json:"running,omitempty"` // Display running config.
-	Type    *string       `url:"type,omitempty" json:"type,omitempty"`       // Only list SDN zones of specific type
+	Type    *Type         `url:"type,omitempty" json:"type,omitempty"`       // Only list SDN zones of specific type
 }
 
 type IndexResponse struct {
@@ -44,7 +66,7 @@ type IndexResponse struct {
 }
 
 type CreateRequest struct {
-	Type string `url:"type" json:"type"` // Plugin type.
+	Type Type   `url:"type" json:"type"` // Plugin type.
 	Zone string `url:"zone" json:"zone"` // The SDN zone object identifier.
 
 	// The following parameters are optional
@@ -67,7 +89,7 @@ type CreateRequest struct {
 	Reversedns               *string       `url:"reversedns,omitempty" json:"reversedns,omitempty"`                                   // reverse dns api server
 	RtImport                 *string       `url:"rt-import,omitempty" json:"rt-import,omitempty"`                                     // Route-Target import
 	Tag                      *int          `url:"tag,omitempty" json:"tag,omitempty"`                                                 // Service-VLAN Tag
-	VlanProtocol             *string       `url:"vlan-protocol,omitempty" json:"vlan-protocol,omitempty"`
+	VlanProtocol             *VlanProtocol `url:"vlan-protocol,omitempty" json:"vlan-protocol,omitempty"`
 	VrfVxlan                 *int          `url:"vrf-vxlan,omitempty" json:"vrf-vxlan,omitempty"` // l3vni.
 }
 
@@ -104,7 +126,7 @@ type UpdateRequest struct {
 	Reversedns               *string       `url:"reversedns,omitempty" json:"reversedns,omitempty"`                                   // reverse dns api server
 	RtImport                 *string       `url:"rt-import,omitempty" json:"rt-import,omitempty"`                                     // Route-Target import
 	Tag                      *int          `url:"tag,omitempty" json:"tag,omitempty"`                                                 // Service-VLAN Tag
-	VlanProtocol             *string       `url:"vlan-protocol,omitempty" json:"vlan-protocol,omitempty"`
+	VlanProtocol             *VlanProtocol `url:"vlan-protocol,omitempty" json:"vlan-protocol,omitempty"`
 	VrfVxlan                 *int          `url:"vrf-vxlan,omitempty" json:"vrf-vxlan,omitempty"` // l3vni.
 }
 

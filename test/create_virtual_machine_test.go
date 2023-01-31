@@ -27,7 +27,7 @@ func TestCreateVirtualMachine(t *testing.T) {
 		assert.Equal(t, "fake-csrf", r.Header.Get("CSRFPreventionToken"))
 		assert.Equal(t, "/nodes/some-node/qemu", r.URL.Path)
 		assert.ElementsMatchf(t,
-			strings.Split("file=test-file,bps=1,detect_zeroes=1,media=iso", ","),
+			strings.Split("file=test-file,bps=1,detect_zeroes=1,media=disk", ","),
 			strings.Split(r.Form.Get("ide0"), ","),
 			"Bad formvalue %+v", r.Form,
 		)
@@ -44,7 +44,7 @@ func TestCreateVirtualMachine(t *testing.T) {
 			qemu.Ide{
 				File:         "test-file",
 				Bps:          proxmox.Int(1),
-				Media:        proxmox.String("iso"),
+				Media:        qemu.PtrIdeMedia(qemu.IdeMedia_DISK),
 				DetectZeroes: proxmox.PVEBool(true),
 			},
 		},

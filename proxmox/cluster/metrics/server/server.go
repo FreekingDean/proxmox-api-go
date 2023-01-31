@@ -7,6 +7,32 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	Influxdbproto_UDP   Influxdbproto = "udp"
+	Influxdbproto_HTTP  Influxdbproto = "http"
+	Influxdbproto_HTTPS Influxdbproto = "https"
+
+	Proto_UDP Proto = "udp"
+	Proto_TCP Proto = "tcp"
+
+	Type_GRAPHITE Type = "graphite"
+	Type_INFLUXDB Type = "influxdb"
+)
+
+type Influxdbproto string
+type Proto string
+type Type string
+
+func PtrInfluxdbproto(i Influxdbproto) *Influxdbproto {
+	return &i
+}
+func PtrProto(i Proto) *Proto {
+	return &i
+}
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -38,21 +64,21 @@ type ChildCreateRequest struct {
 	Id     string `url:"id" json:"id"`         // The ID of the entry.
 	Port   int    `url:"port" json:"port"`     // server network port
 	Server string `url:"server" json:"server"` // server dns name or IP address
-	Type   string `url:"type" json:"type"`     // Plugin type.
+	Type   Type   `url:"type" json:"type"`     // Plugin type.
 
 	// The following parameters are optional
-	ApiPathPrefix     *string       `url:"api-path-prefix,omitempty" json:"api-path-prefix,omitempty"` // An API path prefix inserted between '<host>:<port>/' and '/api2/'. Can be useful if the InfluxDB service runs behind a reverse proxy.
-	Bucket            *string       `url:"bucket,omitempty" json:"bucket,omitempty"`                   // The InfluxDB bucket/db. Only necessary when using the http v2 api.
-	Disable           *util.PVEBool `url:"disable,omitempty" json:"disable,omitempty"`                 // Flag to disable the plugin.
-	Influxdbproto     *string       `url:"influxdbproto,omitempty" json:"influxdbproto,omitempty"`
-	MaxBodySize       *int          `url:"max-body-size,omitempty" json:"max-body-size,omitempty"`           // InfluxDB max-body-size in bytes. Requests are batched up to this size.
-	Mtu               *int          `url:"mtu,omitempty" json:"mtu,omitempty"`                               // MTU for metrics transmission over UDP
-	Organization      *string       `url:"organization,omitempty" json:"organization,omitempty"`             // The InfluxDB organization. Only necessary when using the http v2 api. Has no meaning when using v2 compatibility api.
-	Path              *string       `url:"path,omitempty" json:"path,omitempty"`                             // root graphite path (ex: proxmox.mycluster.mykey)
-	Proto             *string       `url:"proto,omitempty" json:"proto,omitempty"`                           // Protocol to send graphite data. TCP or UDP (default)
-	Timeout           *int          `url:"timeout,omitempty" json:"timeout,omitempty"`                       // graphite TCP socket timeout (default=1)
-	Token             *string       `url:"token,omitempty" json:"token,omitempty"`                           // The InfluxDB access token. Only necessary when using the http v2 api. If the v2 compatibility api is used, use 'user:password' instead.
-	VerifyCertificate *util.PVEBool `url:"verify-certificate,omitempty" json:"verify-certificate,omitempty"` // Set to 0 to disable certificate verification for https endpoints.
+	ApiPathPrefix     *string        `url:"api-path-prefix,omitempty" json:"api-path-prefix,omitempty"` // An API path prefix inserted between '<host>:<port>/' and '/api2/'. Can be useful if the InfluxDB service runs behind a reverse proxy.
+	Bucket            *string        `url:"bucket,omitempty" json:"bucket,omitempty"`                   // The InfluxDB bucket/db. Only necessary when using the http v2 api.
+	Disable           *util.PVEBool  `url:"disable,omitempty" json:"disable,omitempty"`                 // Flag to disable the plugin.
+	Influxdbproto     *Influxdbproto `url:"influxdbproto,omitempty" json:"influxdbproto,omitempty"`
+	MaxBodySize       *int           `url:"max-body-size,omitempty" json:"max-body-size,omitempty"`           // InfluxDB max-body-size in bytes. Requests are batched up to this size.
+	Mtu               *int           `url:"mtu,omitempty" json:"mtu,omitempty"`                               // MTU for metrics transmission over UDP
+	Organization      *string        `url:"organization,omitempty" json:"organization,omitempty"`             // The InfluxDB organization. Only necessary when using the http v2 api. Has no meaning when using v2 compatibility api.
+	Path              *string        `url:"path,omitempty" json:"path,omitempty"`                             // root graphite path (ex: proxmox.mycluster.mykey)
+	Proto             *Proto         `url:"proto,omitempty" json:"proto,omitempty"`                           // Protocol to send graphite data. TCP or UDP (default)
+	Timeout           *int           `url:"timeout,omitempty" json:"timeout,omitempty"`                       // graphite TCP socket timeout (default=1)
+	Token             *string        `url:"token,omitempty" json:"token,omitempty"`                           // The InfluxDB access token. Only necessary when using the http v2 api. If the v2 compatibility api is used, use 'user:password' instead.
+	VerifyCertificate *util.PVEBool  `url:"verify-certificate,omitempty" json:"verify-certificate,omitempty"` // Set to 0 to disable certificate verification for https endpoints.
 }
 
 type UpdateRequest struct {
@@ -61,20 +87,20 @@ type UpdateRequest struct {
 	Server string `url:"server" json:"server"` // server dns name or IP address
 
 	// The following parameters are optional
-	ApiPathPrefix     *string       `url:"api-path-prefix,omitempty" json:"api-path-prefix,omitempty"` // An API path prefix inserted between '<host>:<port>/' and '/api2/'. Can be useful if the InfluxDB service runs behind a reverse proxy.
-	Bucket            *string       `url:"bucket,omitempty" json:"bucket,omitempty"`                   // The InfluxDB bucket/db. Only necessary when using the http v2 api.
-	Delete            *string       `url:"delete,omitempty" json:"delete,omitempty"`                   // A list of settings you want to delete.
-	Digest            *string       `url:"digest,omitempty" json:"digest,omitempty"`                   // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
-	Disable           *util.PVEBool `url:"disable,omitempty" json:"disable,omitempty"`                 // Flag to disable the plugin.
-	Influxdbproto     *string       `url:"influxdbproto,omitempty" json:"influxdbproto,omitempty"`
-	MaxBodySize       *int          `url:"max-body-size,omitempty" json:"max-body-size,omitempty"`           // InfluxDB max-body-size in bytes. Requests are batched up to this size.
-	Mtu               *int          `url:"mtu,omitempty" json:"mtu,omitempty"`                               // MTU for metrics transmission over UDP
-	Organization      *string       `url:"organization,omitempty" json:"organization,omitempty"`             // The InfluxDB organization. Only necessary when using the http v2 api. Has no meaning when using v2 compatibility api.
-	Path              *string       `url:"path,omitempty" json:"path,omitempty"`                             // root graphite path (ex: proxmox.mycluster.mykey)
-	Proto             *string       `url:"proto,omitempty" json:"proto,omitempty"`                           // Protocol to send graphite data. TCP or UDP (default)
-	Timeout           *int          `url:"timeout,omitempty" json:"timeout,omitempty"`                       // graphite TCP socket timeout (default=1)
-	Token             *string       `url:"token,omitempty" json:"token,omitempty"`                           // The InfluxDB access token. Only necessary when using the http v2 api. If the v2 compatibility api is used, use 'user:password' instead.
-	VerifyCertificate *util.PVEBool `url:"verify-certificate,omitempty" json:"verify-certificate,omitempty"` // Set to 0 to disable certificate verification for https endpoints.
+	ApiPathPrefix     *string        `url:"api-path-prefix,omitempty" json:"api-path-prefix,omitempty"` // An API path prefix inserted between '<host>:<port>/' and '/api2/'. Can be useful if the InfluxDB service runs behind a reverse proxy.
+	Bucket            *string        `url:"bucket,omitempty" json:"bucket,omitempty"`                   // The InfluxDB bucket/db. Only necessary when using the http v2 api.
+	Delete            *string        `url:"delete,omitempty" json:"delete,omitempty"`                   // A list of settings you want to delete.
+	Digest            *string        `url:"digest,omitempty" json:"digest,omitempty"`                   // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
+	Disable           *util.PVEBool  `url:"disable,omitempty" json:"disable,omitempty"`                 // Flag to disable the plugin.
+	Influxdbproto     *Influxdbproto `url:"influxdbproto,omitempty" json:"influxdbproto,omitempty"`
+	MaxBodySize       *int           `url:"max-body-size,omitempty" json:"max-body-size,omitempty"`           // InfluxDB max-body-size in bytes. Requests are batched up to this size.
+	Mtu               *int           `url:"mtu,omitempty" json:"mtu,omitempty"`                               // MTU for metrics transmission over UDP
+	Organization      *string        `url:"organization,omitempty" json:"organization,omitempty"`             // The InfluxDB organization. Only necessary when using the http v2 api. Has no meaning when using v2 compatibility api.
+	Path              *string        `url:"path,omitempty" json:"path,omitempty"`                             // root graphite path (ex: proxmox.mycluster.mykey)
+	Proto             *Proto         `url:"proto,omitempty" json:"proto,omitempty"`                           // Protocol to send graphite data. TCP or UDP (default)
+	Timeout           *int           `url:"timeout,omitempty" json:"timeout,omitempty"`                       // graphite TCP socket timeout (default=1)
+	Token             *string        `url:"token,omitempty" json:"token,omitempty"`                           // The InfluxDB access token. Only necessary when using the http v2 api. If the v2 compatibility api is used, use 'user:password' instead.
+	VerifyCertificate *util.PVEBool  `url:"verify-certificate,omitempty" json:"verify-certificate,omitempty"` // Set to 0 to disable certificate verification for https endpoints.
 }
 
 type DeleteRequest struct {

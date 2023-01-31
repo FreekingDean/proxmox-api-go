@@ -7,6 +7,16 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	Type_SUBNET Type = "subnet"
+)
+
+type Type string
+
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -31,7 +41,7 @@ type IndexRequest struct {
 
 type CreateRequest struct {
 	Subnet string `url:"subnet" json:"subnet"` // The SDN subnet object identifier.
-	Type   string `url:"type" json:"type"`
+	Type   Type   `url:"type" json:"type"`
 	Vnet   string `url:"vnet" json:"vnet"` // associated vnet
 
 	// The following parameters are optional

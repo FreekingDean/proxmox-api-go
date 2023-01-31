@@ -7,6 +7,25 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	Source_ARCHIVE Source = "archive"
+	Source_ACTIVE  Source = "active"
+	Source_ALL     Source = "all"
+
+	Status_RUNNING Status = "running"
+	Status_STOPPED Status = "stopped"
+)
+
+type Source string
+type Status string
+
+func PtrSource(i Source) *Source {
+	return &i
+}
+func PtrStatus(i Status) *Status {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -28,7 +47,7 @@ type IndexRequest struct {
 	Errors       *util.PVEBool `url:"errors,omitempty" json:"errors,omitempty"`             // Only list tasks with a status of ERROR.
 	Limit        *int          `url:"limit,omitempty" json:"limit,omitempty"`               // Only list this amount of tasks.
 	Since        *int          `url:"since,omitempty" json:"since,omitempty"`               // Only list tasks since this UNIX epoch.
-	Source       *string       `url:"source,omitempty" json:"source,omitempty"`             // List archived, active or all tasks.
+	Source       *Source       `url:"source,omitempty" json:"source,omitempty"`             // List archived, active or all tasks.
 	Start        *int          `url:"start,omitempty" json:"start,omitempty"`               // List tasks beginning from this offset.
 	Statusfilter *string       `url:"statusfilter,omitempty" json:"statusfilter,omitempty"` // List of Task States that should be returned.
 	Typefilter   *string       `url:"typefilter,omitempty" json:"typefilter,omitempty"`     // Only list tasks of this type (e.g., vzstart, vzdump).
@@ -88,7 +107,7 @@ type ReadTaskStatusResponse struct {
 	Node      string  `url:"node" json:"node"`
 	Pid       int     `url:"pid" json:"pid"`
 	Starttime float64 `url:"starttime" json:"starttime"`
-	Status    string  `url:"status" json:"status"`
+	Status    Status  `url:"status" json:"status"`
 	Type      string  `url:"type" json:"type"`
 	Upid      string  `url:"upid" json:"upid"`
 	User      string  `url:"user" json:"user"`

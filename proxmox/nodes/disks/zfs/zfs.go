@@ -8,6 +8,36 @@ import (
 	"net/url"
 )
 
+const (
+	Compression_ON   Compression = "on"
+	Compression_OFF  Compression = "off"
+	Compression_GZIP Compression = "gzip"
+	Compression_LZ4  Compression = "lz4"
+	Compression_LZJB Compression = "lzjb"
+	Compression_ZLE  Compression = "zle"
+	Compression_ZSTD Compression = "zstd"
+
+	Raidlevel_SINGLE Raidlevel = "single"
+	Raidlevel_MIRROR Raidlevel = "mirror"
+	Raidlevel_RAID10 Raidlevel = "raid10"
+	Raidlevel_RAIDZ  Raidlevel = "raidz"
+	Raidlevel_RAIDZ2 Raidlevel = "raidz2"
+	Raidlevel_RAIDZ3 Raidlevel = "raidz3"
+	Raidlevel_DRAID  Raidlevel = "draid"
+	Raidlevel_DRAID2 Raidlevel = "draid2"
+	Raidlevel_DRAID3 Raidlevel = "draid3"
+)
+
+type Compression string
+type Raidlevel string
+
+func PtrCompression(i Compression) *Compression {
+	return &i
+}
+func PtrRaidlevel(i Raidlevel) *Raidlevel {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -48,15 +78,15 @@ func (t DraidConfig) EncodeValues(key string, v *url.Values) error {
 }
 
 type CreateRequest struct {
-	Devices   string `url:"devices" json:"devices"`     // The block devices you want to create the zpool on.
-	Name      string `url:"name" json:"name"`           // The storage identifier.
-	Node      string `url:"node" json:"node"`           // The cluster node name.
-	Raidlevel string `url:"raidlevel" json:"raidlevel"` // The RAID level to use.
+	Devices   string    `url:"devices" json:"devices"`     // The block devices you want to create the zpool on.
+	Name      string    `url:"name" json:"name"`           // The storage identifier.
+	Node      string    `url:"node" json:"node"`           // The cluster node name.
+	Raidlevel Raidlevel `url:"raidlevel" json:"raidlevel"` // The RAID level to use.
 
 	// The following parameters are optional
 	AddStorage  *util.PVEBool `url:"add_storage,omitempty" json:"add_storage,omitempty"` // Configure storage using the zpool.
 	Ashift      *int          `url:"ashift,omitempty" json:"ashift,omitempty"`           // Pool sector size exponent.
-	Compression *string       `url:"compression,omitempty" json:"compression,omitempty"` // The compression algorithm to use.
+	Compression *Compression  `url:"compression,omitempty" json:"compression,omitempty"` // The compression algorithm to use.
 	DraidConfig *DraidConfig  `url:"draid-config,omitempty" json:"draid-config,omitempty"`
 }
 

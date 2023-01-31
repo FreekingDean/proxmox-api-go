@@ -7,6 +7,17 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	Type_UNUSED        Type = "unused"
+	Type_JOURNAL_DISKS Type = "journal_disks"
+)
+
+type Type string
+
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -32,7 +43,7 @@ type ListRequest struct {
 	// The following parameters are optional
 	IncludePartitions *util.PVEBool `url:"include-partitions,omitempty" json:"include-partitions,omitempty"` // Also include partitions.
 	Skipsmart         *util.PVEBool `url:"skipsmart,omitempty" json:"skipsmart,omitempty"`                   // Skip smart checks.
-	Type              *string       `url:"type,omitempty" json:"type,omitempty"`                             // Only list specific types of disks.
+	Type              *Type         `url:"type,omitempty" json:"type,omitempty"`                             // Only list specific types of disks.
 }
 
 type ListResponse struct {

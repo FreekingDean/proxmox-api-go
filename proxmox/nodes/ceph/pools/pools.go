@@ -8,6 +8,34 @@ import (
 	"net/url"
 )
 
+const (
+	Application_RBD    Application = "rbd"
+	Application_CEPHFS Application = "cephfs"
+	Application_RGW    Application = "rgw"
+
+	PgAutoscaleMode_ON   PgAutoscaleMode = "on"
+	PgAutoscaleMode_OFF  PgAutoscaleMode = "off"
+	PgAutoscaleMode_WARN PgAutoscaleMode = "warn"
+
+	Type_REPLICATED Type = "replicated"
+	Type_ERASURE    Type = "erasure"
+	Type_UNKNOWN    Type = "unknown"
+)
+
+type Application string
+type PgAutoscaleMode string
+type Type string
+
+func PtrApplication(i Application) *Application {
+	return &i
+}
+func PtrPgAutoscaleMode(i PgAutoscaleMode) *PgAutoscaleMode {
+	return &i
+}
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -37,7 +65,7 @@ type IndexResponse struct {
 	Pool          int     `url:"pool" json:"pool"`
 	PoolName      string  `url:"pool_name" json:"pool_name"`
 	Size          int     `url:"size" json:"size"`
-	Type          string  `url:"type" json:"type"`
+	Type          Type    `url:"type" json:"type"`
 
 	// The following parameters are optional
 	ApplicationMetadata *map[string]interface{} `url:"application_metadata,omitempty" json:"application_metadata,omitempty"`
@@ -69,17 +97,17 @@ type CreateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	AddStorages     *util.PVEBool  `url:"add_storages,omitempty" json:"add_storages,omitempty"`           // Configure VM and CT storage using the new pool.
-	Application     *string        `url:"application,omitempty" json:"application,omitempty"`             // The application of the pool.
-	CrushRule       *string        `url:"crush_rule,omitempty" json:"crush_rule,omitempty"`               // The rule to use for mapping object placement in the cluster.
-	ErasureCoding   *ErasureCoding `url:"erasure-coding,omitempty" json:"erasure-coding,omitempty"`       // Create an erasure coded pool for RBD with an accompaning replicated pool for metadata storage. With EC, the common ceph options 'size', 'min_size' and 'crush_rule' parameters will be applied to the metadata pool.
-	MinSize         *int           `url:"min_size,omitempty" json:"min_size,omitempty"`                   // Minimum number of replicas per object
-	PgAutoscaleMode *string        `url:"pg_autoscale_mode,omitempty" json:"pg_autoscale_mode,omitempty"` // The automatic PG scaling mode of the pool.
-	PgNum           *int           `url:"pg_num,omitempty" json:"pg_num,omitempty"`                       // Number of placement groups.
-	PgNumMin        *int           `url:"pg_num_min,omitempty" json:"pg_num_min,omitempty"`               // Minimal number of placement groups.
-	Size            *int           `url:"size,omitempty" json:"size,omitempty"`                           // Number of replicas per object
-	TargetSize      *string        `url:"target_size,omitempty" json:"target_size,omitempty"`             // The estimated target size of the pool for the PG autoscaler.
-	TargetSizeRatio *float64       `url:"target_size_ratio,omitempty" json:"target_size_ratio,omitempty"` // The estimated target ratio of the pool for the PG autoscaler.
+	AddStorages     *util.PVEBool    `url:"add_storages,omitempty" json:"add_storages,omitempty"`           // Configure VM and CT storage using the new pool.
+	Application     *Application     `url:"application,omitempty" json:"application,omitempty"`             // The application of the pool.
+	CrushRule       *string          `url:"crush_rule,omitempty" json:"crush_rule,omitempty"`               // The rule to use for mapping object placement in the cluster.
+	ErasureCoding   *ErasureCoding   `url:"erasure-coding,omitempty" json:"erasure-coding,omitempty"`       // Create an erasure coded pool for RBD with an accompaning replicated pool for metadata storage. With EC, the common ceph options 'size', 'min_size' and 'crush_rule' parameters will be applied to the metadata pool.
+	MinSize         *int             `url:"min_size,omitempty" json:"min_size,omitempty"`                   // Minimum number of replicas per object
+	PgAutoscaleMode *PgAutoscaleMode `url:"pg_autoscale_mode,omitempty" json:"pg_autoscale_mode,omitempty"` // The automatic PG scaling mode of the pool.
+	PgNum           *int             `url:"pg_num,omitempty" json:"pg_num,omitempty"`                       // Number of placement groups.
+	PgNumMin        *int             `url:"pg_num_min,omitempty" json:"pg_num_min,omitempty"`               // Minimal number of placement groups.
+	Size            *int             `url:"size,omitempty" json:"size,omitempty"`                           // Number of replicas per object
+	TargetSize      *string          `url:"target_size,omitempty" json:"target_size,omitempty"`             // The estimated target size of the pool for the PG autoscaler.
+	TargetSizeRatio *float64         `url:"target_size_ratio,omitempty" json:"target_size_ratio,omitempty"` // The estimated target ratio of the pool for the PG autoscaler.
 }
 
 type FindRequest struct {
@@ -105,12 +133,12 @@ type FindResponse struct {
 	WriteFadviseDontneed util.PVEBool `url:"write_fadvise_dontneed" json:"write_fadvise_dontneed"`
 
 	// The following parameters are optional
-	Application     *string                   `url:"application,omitempty" json:"application,omitempty"` // The application of the pool.
+	Application     *Application              `url:"application,omitempty" json:"application,omitempty"` // The application of the pool.
 	ApplicationList *[]map[string]interface{} `url:"application_list,omitempty" json:"application_list,omitempty"`
 	AutoscaleStatus *map[string]interface{}   `url:"autoscale_status,omitempty" json:"autoscale_status,omitempty"`
 	CrushRule       *string                   `url:"crush_rule,omitempty" json:"crush_rule,omitempty"`               // The rule to use for mapping object placement in the cluster.
 	MinSize         *int                      `url:"min_size,omitempty" json:"min_size,omitempty"`                   // Minimum number of replicas per object
-	PgAutoscaleMode *string                   `url:"pg_autoscale_mode,omitempty" json:"pg_autoscale_mode,omitempty"` // The automatic PG scaling mode of the pool.
+	PgAutoscaleMode *PgAutoscaleMode          `url:"pg_autoscale_mode,omitempty" json:"pg_autoscale_mode,omitempty"` // The automatic PG scaling mode of the pool.
 	PgNum           *int                      `url:"pg_num,omitempty" json:"pg_num,omitempty"`                       // Number of placement groups.
 	PgNumMin        *int                      `url:"pg_num_min,omitempty" json:"pg_num_min,omitempty"`               // Minimal number of placement groups.
 	Size            *int                      `url:"size,omitempty" json:"size,omitempty"`                           // Number of replicas per object
@@ -124,15 +152,15 @@ type UpdateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Application     *string  `url:"application,omitempty" json:"application,omitempty"`             // The application of the pool.
-	CrushRule       *string  `url:"crush_rule,omitempty" json:"crush_rule,omitempty"`               // The rule to use for mapping object placement in the cluster.
-	MinSize         *int     `url:"min_size,omitempty" json:"min_size,omitempty"`                   // Minimum number of replicas per object
-	PgAutoscaleMode *string  `url:"pg_autoscale_mode,omitempty" json:"pg_autoscale_mode,omitempty"` // The automatic PG scaling mode of the pool.
-	PgNum           *int     `url:"pg_num,omitempty" json:"pg_num,omitempty"`                       // Number of placement groups.
-	PgNumMin        *int     `url:"pg_num_min,omitempty" json:"pg_num_min,omitempty"`               // Minimal number of placement groups.
-	Size            *int     `url:"size,omitempty" json:"size,omitempty"`                           // Number of replicas per object
-	TargetSize      *string  `url:"target_size,omitempty" json:"target_size,omitempty"`             // The estimated target size of the pool for the PG autoscaler.
-	TargetSizeRatio *float64 `url:"target_size_ratio,omitempty" json:"target_size_ratio,omitempty"` // The estimated target ratio of the pool for the PG autoscaler.
+	Application     *Application     `url:"application,omitempty" json:"application,omitempty"`             // The application of the pool.
+	CrushRule       *string          `url:"crush_rule,omitempty" json:"crush_rule,omitempty"`               // The rule to use for mapping object placement in the cluster.
+	MinSize         *int             `url:"min_size,omitempty" json:"min_size,omitempty"`                   // Minimum number of replicas per object
+	PgAutoscaleMode *PgAutoscaleMode `url:"pg_autoscale_mode,omitempty" json:"pg_autoscale_mode,omitempty"` // The automatic PG scaling mode of the pool.
+	PgNum           *int             `url:"pg_num,omitempty" json:"pg_num,omitempty"`                       // Number of placement groups.
+	PgNumMin        *int             `url:"pg_num_min,omitempty" json:"pg_num_min,omitempty"`               // Minimal number of placement groups.
+	Size            *int             `url:"size,omitempty" json:"size,omitempty"`                           // Number of replicas per object
+	TargetSize      *string          `url:"target_size,omitempty" json:"target_size,omitempty"`             // The estimated target size of the pool for the PG autoscaler.
+	TargetSizeRatio *float64         `url:"target_size_ratio,omitempty" json:"target_size_ratio,omitempty"` // The estimated target ratio of the pool for the PG autoscaler.
 }
 
 type DeleteRequest struct {

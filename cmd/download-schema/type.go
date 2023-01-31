@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"sort"
 	"strings"
@@ -83,6 +84,10 @@ func (p *Package) defineType(name string, jsonName string, schema *jsonschema.JS
 		t.Type = strings.TrimSuffix(t.Type, "[N]") + "s"
 	}
 
+	if len(schema.Enum) > 0 {
+		t.Enum = schema.Enum
+	}
+
 	return t
 }
 
@@ -107,6 +112,15 @@ func (p *Package) defineStruct(name, description string, properties map[string]*
 			t.OptionalProperties = append(t.OptionalProperties, pt)
 		} else {
 			t.Properties = append(t.Properties, pt)
+		}
+		if len(pt.Enum) > 0 {
+			prefix := ""
+			if !strings.HasSuffix(t.Name, "Request") && !strings.HasSuffix(t.Name, "Response") {
+				prefix = t.Name
+				prefix = strings.TrimSuffix(prefix, "[N]")
+			}
+			pt.Type = fmt.Sprintf("%s%s", prefix, Nameify(name))
+			p.AddEnum(pt.Type, pt.Enum)
 		}
 	}
 	sort.Sort(&TypeSorter{t.Properties})

@@ -7,6 +7,24 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	FilesFileType_LIST    FilesFileType = "list"
+	FilesFileType_SOURCES FilesFileType = "sources"
+
+	RepositoriesFiletype_LIST    RepositoriesFiletype = "list"
+	RepositoriesFiletype_SOURCES RepositoriesFiletype = "sources"
+)
+
+type FilesFileType string
+type RepositoriesFiletype string
+
+func PtrFilesFileType(i FilesFileType) *FilesFileType {
+	return &i
+}
+func PtrRepositoriesFiletype(i RepositoriesFiletype) *RepositoriesFiletype {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -56,23 +74,17 @@ type RepositoriesRequest struct {
 
 }
 
-type Errors struct {
-	Error string `url:"error" json:"error"` // The error message
-	Path  string `url:"path" json:"path"`   // Path to the problematic file.
-
-}
-
 type Options struct {
 	Key    string   `url:"Key" json:"Key"`
 	Values []string `url:"Values" json:"Values"`
 }
 
 type Repositories struct {
-	Enabled  util.PVEBool `url:"Enabled" json:"Enabled"`   // Whether the repository is enabled or not
-	Filetype string       `url:"FileType" json:"FileType"` // Format of the defining file.
-	Suites   []string     `url:"Suites" json:"Suites"`     // List of package distribuitions
-	Types    []string     `url:"Types" json:"Types"`       // List of package types.
-	Uris     []string     `url:"URIs" json:"URIs"`         // List of repository URIs.
+	Enabled  util.PVEBool         `url:"Enabled" json:"Enabled"`   // Whether the repository is enabled or not
+	Filetype RepositoriesFiletype `url:"FileType" json:"FileType"` // Format of the defining file.
+	Suites   []string             `url:"Suites" json:"Suites"`     // List of package distribuitions
+	Types    []string             `url:"Types" json:"Types"`       // List of package types.
+	Uris     []string             `url:"URIs" json:"URIs"`         // List of repository URIs.
 
 	// The following parameters are optional
 	Comment    *string    `url:"Comment,omitempty" json:"Comment,omitempty"`       // Associated comment
@@ -82,7 +94,7 @@ type Repositories struct {
 
 type Files struct {
 	Digest       []int          `url:"digest" json:"digest"`             // Digest of the file as bytes.
-	FileType     string         `url:"file-type" json:"file-type"`       // Format of the file.
+	FileType     FilesFileType  `url:"file-type" json:"file-type"`       // Format of the file.
 	Path         string         `url:"path" json:"path"`                 // Path to the problematic file.
 	Repositories []Repositories `url:"repositories" json:"repositories"` // The parsed repositories.
 
@@ -104,6 +116,12 @@ type StandardRepos struct {
 
 	// The following parameters are optional
 	Status *util.PVEBool `url:"status,omitempty" json:"status,omitempty"` // Indicating enabled/disabled status, if the repository is configured.
+}
+
+type Errors struct {
+	Error string `url:"error" json:"error"` // The error message
+	Path  string `url:"path" json:"path"`   // Path to the problematic file.
+
 }
 
 // Result from parsing the APT repository files in /etc/apt/.

@@ -7,6 +7,23 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	RemoveJob_LOCAL RemoveJob = "local"
+	RemoveJob_FULL  RemoveJob = "full"
+
+	Type_LOCAL Type = "local"
+)
+
+type RemoveJob string
+type Type string
+
+func PtrRemoveJob(i RemoveJob) *RemoveJob {
+	return &i
+}
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -24,13 +41,13 @@ func New(c HTTPClient) *Client {
 type CreateRequest struct {
 	Id     string `url:"id" json:"id"`         // Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. '<GUEST>-<JOBNUM>'.
 	Target string `url:"target" json:"target"` // Target node.
-	Type   string `url:"type" json:"type"`     // Section type.
+	Type   Type   `url:"type" json:"type"`     // Section type.
 
 	// The following parameters are optional
 	Comment   *string       `url:"comment,omitempty" json:"comment,omitempty"`       // Description.
 	Disable   *util.PVEBool `url:"disable,omitempty" json:"disable,omitempty"`       // Flag to disable/deactivate the entry.
 	Rate      *float64      `url:"rate,omitempty" json:"rate,omitempty"`             // Rate limit in mbps (megabytes per second) as floating point number.
-	RemoveJob *string       `url:"remove_job,omitempty" json:"remove_job,omitempty"` // Mark the replication job for removal. The job will remove all local replication snapshots. When set to 'full', it also tries to remove replicated volumes on the target. The job then removes itself from the configuration file.
+	RemoveJob *RemoveJob    `url:"remove_job,omitempty" json:"remove_job,omitempty"` // Mark the replication job for removal. The job will remove all local replication snapshots. When set to 'full', it also tries to remove replicated volumes on the target. The job then removes itself from the configuration file.
 	Schedule  *string       `url:"schedule,omitempty" json:"schedule,omitempty"`     // Storage replication schedule. The format is a subset of `systemd` calendar events.
 	Source    *string       `url:"source,omitempty" json:"source,omitempty"`         // For internal use, to detect if the guest was stolen.
 }
@@ -49,7 +66,7 @@ type UpdateRequest struct {
 	Digest    *string       `url:"digest,omitempty" json:"digest,omitempty"`         // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 	Disable   *util.PVEBool `url:"disable,omitempty" json:"disable,omitempty"`       // Flag to disable/deactivate the entry.
 	Rate      *float64      `url:"rate,omitempty" json:"rate,omitempty"`             // Rate limit in mbps (megabytes per second) as floating point number.
-	RemoveJob *string       `url:"remove_job,omitempty" json:"remove_job,omitempty"` // Mark the replication job for removal. The job will remove all local replication snapshots. When set to 'full', it also tries to remove replicated volumes on the target. The job then removes itself from the configuration file.
+	RemoveJob *RemoveJob    `url:"remove_job,omitempty" json:"remove_job,omitempty"` // Mark the replication job for removal. The job will remove all local replication snapshots. When set to 'full', it also tries to remove replicated volumes on the target. The job then removes itself from the configuration file.
 	Schedule  *string       `url:"schedule,omitempty" json:"schedule,omitempty"`     // Storage replication schedule. The format is a subset of `systemd` calendar events.
 	Source    *string       `url:"source,omitempty" json:"source,omitempty"`         // For internal use, to detect if the guest was stolen.
 }

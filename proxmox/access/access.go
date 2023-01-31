@@ -7,6 +7,18 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	Type_USER  Type = "user"
+	Type_GROUP Type = "group"
+	Type_TOKEN Type = "token"
+)
+
+type Type string
+
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -28,7 +40,7 @@ type IndexResponse struct {
 type ReadAclResponse struct {
 	Path   string `url:"path" json:"path"` // Access control path
 	Roleid string `url:"roleid" json:"roleid"`
-	Type   string `url:"type" json:"type"`
+	Type   Type   `url:"type" json:"type"`
 	Ugid   string `url:"ugid" json:"ugid"`
 
 	// The following parameters are optional

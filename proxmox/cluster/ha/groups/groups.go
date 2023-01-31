@@ -7,6 +7,16 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	Type_GROUP Type = "group"
+)
+
+type Type string
+
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -33,7 +43,7 @@ type CreateRequest struct {
 	Comment    *string       `url:"comment,omitempty" json:"comment,omitempty"`       // Description.
 	Nofailback *util.PVEBool `url:"nofailback,omitempty" json:"nofailback,omitempty"` // The CRM tries to run services on the node with the highest priority. If a node with higher priority comes online, the CRM migrates the service to that node. Enabling nofailback prevents that behavior.
 	Restricted *util.PVEBool `url:"restricted,omitempty" json:"restricted,omitempty"` // Resources bound to restricted groups may only run on nodes defined by the group.
-	Type       *string       `url:"type,omitempty" json:"type,omitempty"`             // Group type.
+	Type       *Type         `url:"type,omitempty" json:"type,omitempty"`             // Group type.
 }
 
 type FindRequest struct {

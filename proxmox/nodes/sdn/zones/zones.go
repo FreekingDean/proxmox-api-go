@@ -6,6 +6,18 @@ import (
 	"context"
 )
 
+const (
+	Status_AVAILABLE Status = "available"
+	Status_PENDING   Status = "pending"
+	Status_ERROR     Status = "error"
+)
+
+type Status string
+
+func PtrStatus(i Status) *Status {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -26,7 +38,7 @@ type IndexRequest struct {
 }
 
 type IndexResponse struct {
-	Status string `url:"status" json:"status"` // Status of zone
+	Status Status `url:"status" json:"status"` // Status of zone
 	Zone   string `url:"zone" json:"zone"`     // The SDN zone object identifier.
 
 }

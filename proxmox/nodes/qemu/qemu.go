@@ -8,6 +8,1195 @@ import (
 	"net/url"
 )
 
+const (
+	AgentType_VIRTIO AgentType = "virtio"
+	AgentType_ISA    AgentType = "isa"
+
+	Arch_X86_64  Arch = "x86_64"
+	Arch_AARCH64 Arch = "aarch64"
+
+	Audio0Device_ICH9_INTEL_HDA Audio0Device = "ich9-intel-hda"
+	Audio0Device_INTEL_HDA      Audio0Device = "intel-hda"
+	Audio0Device_AC97           Audio0Device = "AC97"
+
+	Audio0Driver_SPICE Audio0Driver = "spice"
+	Audio0Driver_NONE  Audio0Driver = "none"
+
+	Bios_SEABIOS Bios = "seabios"
+	Bios_OVMF    Bios = "ovmf"
+
+	Cf_AVERAGE Cf = "AVERAGE"
+	Cf_MAX     Cf = "MAX"
+
+	Citype_CONFIGDRIVE2 Citype = "configdrive2"
+	Citype_NOCLOUD      Citype = "nocloud"
+	Citype_OPENNEBULA   Citype = "opennebula"
+
+	Disk_IDE0      Disk = "ide0"
+	Disk_IDE1      Disk = "ide1"
+	Disk_IDE2      Disk = "ide2"
+	Disk_IDE3      Disk = "ide3"
+	Disk_SCSI0     Disk = "scsi0"
+	Disk_SCSI1     Disk = "scsi1"
+	Disk_SCSI2     Disk = "scsi2"
+	Disk_SCSI3     Disk = "scsi3"
+	Disk_SCSI4     Disk = "scsi4"
+	Disk_SCSI5     Disk = "scsi5"
+	Disk_SCSI6     Disk = "scsi6"
+	Disk_SCSI7     Disk = "scsi7"
+	Disk_SCSI8     Disk = "scsi8"
+	Disk_SCSI9     Disk = "scsi9"
+	Disk_SCSI10    Disk = "scsi10"
+	Disk_SCSI11    Disk = "scsi11"
+	Disk_SCSI12    Disk = "scsi12"
+	Disk_SCSI13    Disk = "scsi13"
+	Disk_SCSI14    Disk = "scsi14"
+	Disk_SCSI15    Disk = "scsi15"
+	Disk_SCSI16    Disk = "scsi16"
+	Disk_SCSI17    Disk = "scsi17"
+	Disk_SCSI18    Disk = "scsi18"
+	Disk_SCSI19    Disk = "scsi19"
+	Disk_SCSI20    Disk = "scsi20"
+	Disk_SCSI21    Disk = "scsi21"
+	Disk_SCSI22    Disk = "scsi22"
+	Disk_SCSI23    Disk = "scsi23"
+	Disk_SCSI24    Disk = "scsi24"
+	Disk_SCSI25    Disk = "scsi25"
+	Disk_SCSI26    Disk = "scsi26"
+	Disk_SCSI27    Disk = "scsi27"
+	Disk_SCSI28    Disk = "scsi28"
+	Disk_SCSI29    Disk = "scsi29"
+	Disk_SCSI30    Disk = "scsi30"
+	Disk_VIRTIO0   Disk = "virtio0"
+	Disk_VIRTIO1   Disk = "virtio1"
+	Disk_VIRTIO2   Disk = "virtio2"
+	Disk_VIRTIO3   Disk = "virtio3"
+	Disk_VIRTIO4   Disk = "virtio4"
+	Disk_VIRTIO5   Disk = "virtio5"
+	Disk_VIRTIO6   Disk = "virtio6"
+	Disk_VIRTIO7   Disk = "virtio7"
+	Disk_VIRTIO8   Disk = "virtio8"
+	Disk_VIRTIO9   Disk = "virtio9"
+	Disk_VIRTIO10  Disk = "virtio10"
+	Disk_VIRTIO11  Disk = "virtio11"
+	Disk_VIRTIO12  Disk = "virtio12"
+	Disk_VIRTIO13  Disk = "virtio13"
+	Disk_VIRTIO14  Disk = "virtio14"
+	Disk_VIRTIO15  Disk = "virtio15"
+	Disk_SATA0     Disk = "sata0"
+	Disk_SATA1     Disk = "sata1"
+	Disk_SATA2     Disk = "sata2"
+	Disk_SATA3     Disk = "sata3"
+	Disk_SATA4     Disk = "sata4"
+	Disk_SATA5     Disk = "sata5"
+	Disk_EFIDISK0  Disk = "efidisk0"
+	Disk_TPMSTATE0 Disk = "tpmstate0"
+	Disk_UNUSED0   Disk = "unused0"
+	Disk_UNUSED1   Disk = "unused1"
+	Disk_UNUSED2   Disk = "unused2"
+	Disk_UNUSED3   Disk = "unused3"
+	Disk_UNUSED4   Disk = "unused4"
+	Disk_UNUSED5   Disk = "unused5"
+	Disk_UNUSED6   Disk = "unused6"
+	Disk_UNUSED7   Disk = "unused7"
+	Disk_UNUSED8   Disk = "unused8"
+	Disk_UNUSED9   Disk = "unused9"
+	Disk_UNUSED10  Disk = "unused10"
+	Disk_UNUSED11  Disk = "unused11"
+	Disk_UNUSED12  Disk = "unused12"
+	Disk_UNUSED13  Disk = "unused13"
+	Disk_UNUSED14  Disk = "unused14"
+	Disk_UNUSED15  Disk = "unused15"
+	Disk_UNUSED16  Disk = "unused16"
+	Disk_UNUSED17  Disk = "unused17"
+	Disk_UNUSED18  Disk = "unused18"
+	Disk_UNUSED19  Disk = "unused19"
+	Disk_UNUSED20  Disk = "unused20"
+	Disk_UNUSED21  Disk = "unused21"
+	Disk_UNUSED22  Disk = "unused22"
+	Disk_UNUSED23  Disk = "unused23"
+	Disk_UNUSED24  Disk = "unused24"
+	Disk_UNUSED25  Disk = "unused25"
+	Disk_UNUSED26  Disk = "unused26"
+	Disk_UNUSED27  Disk = "unused27"
+	Disk_UNUSED28  Disk = "unused28"
+	Disk_UNUSED29  Disk = "unused29"
+	Disk_UNUSED30  Disk = "unused30"
+	Disk_UNUSED31  Disk = "unused31"
+	Disk_UNUSED32  Disk = "unused32"
+	Disk_UNUSED33  Disk = "unused33"
+	Disk_UNUSED34  Disk = "unused34"
+	Disk_UNUSED35  Disk = "unused35"
+	Disk_UNUSED36  Disk = "unused36"
+	Disk_UNUSED37  Disk = "unused37"
+	Disk_UNUSED38  Disk = "unused38"
+	Disk_UNUSED39  Disk = "unused39"
+	Disk_UNUSED40  Disk = "unused40"
+	Disk_UNUSED41  Disk = "unused41"
+	Disk_UNUSED42  Disk = "unused42"
+	Disk_UNUSED43  Disk = "unused43"
+	Disk_UNUSED44  Disk = "unused44"
+	Disk_UNUSED45  Disk = "unused45"
+	Disk_UNUSED46  Disk = "unused46"
+	Disk_UNUSED47  Disk = "unused47"
+	Disk_UNUSED48  Disk = "unused48"
+	Disk_UNUSED49  Disk = "unused49"
+	Disk_UNUSED50  Disk = "unused50"
+	Disk_UNUSED51  Disk = "unused51"
+	Disk_UNUSED52  Disk = "unused52"
+	Disk_UNUSED53  Disk = "unused53"
+	Disk_UNUSED54  Disk = "unused54"
+	Disk_UNUSED55  Disk = "unused55"
+	Disk_UNUSED56  Disk = "unused56"
+	Disk_UNUSED57  Disk = "unused57"
+	Disk_UNUSED58  Disk = "unused58"
+	Disk_UNUSED59  Disk = "unused59"
+	Disk_UNUSED60  Disk = "unused60"
+	Disk_UNUSED61  Disk = "unused61"
+	Disk_UNUSED62  Disk = "unused62"
+	Disk_UNUSED63  Disk = "unused63"
+	Disk_UNUSED64  Disk = "unused64"
+	Disk_UNUSED65  Disk = "unused65"
+	Disk_UNUSED66  Disk = "unused66"
+	Disk_UNUSED67  Disk = "unused67"
+	Disk_UNUSED68  Disk = "unused68"
+	Disk_UNUSED69  Disk = "unused69"
+	Disk_UNUSED70  Disk = "unused70"
+	Disk_UNUSED71  Disk = "unused71"
+	Disk_UNUSED72  Disk = "unused72"
+	Disk_UNUSED73  Disk = "unused73"
+	Disk_UNUSED74  Disk = "unused74"
+	Disk_UNUSED75  Disk = "unused75"
+	Disk_UNUSED76  Disk = "unused76"
+	Disk_UNUSED77  Disk = "unused77"
+	Disk_UNUSED78  Disk = "unused78"
+	Disk_UNUSED79  Disk = "unused79"
+	Disk_UNUSED80  Disk = "unused80"
+	Disk_UNUSED81  Disk = "unused81"
+	Disk_UNUSED82  Disk = "unused82"
+	Disk_UNUSED83  Disk = "unused83"
+	Disk_UNUSED84  Disk = "unused84"
+	Disk_UNUSED85  Disk = "unused85"
+	Disk_UNUSED86  Disk = "unused86"
+	Disk_UNUSED87  Disk = "unused87"
+	Disk_UNUSED88  Disk = "unused88"
+	Disk_UNUSED89  Disk = "unused89"
+	Disk_UNUSED90  Disk = "unused90"
+	Disk_UNUSED91  Disk = "unused91"
+	Disk_UNUSED92  Disk = "unused92"
+	Disk_UNUSED93  Disk = "unused93"
+	Disk_UNUSED94  Disk = "unused94"
+	Disk_UNUSED95  Disk = "unused95"
+	Disk_UNUSED96  Disk = "unused96"
+	Disk_UNUSED97  Disk = "unused97"
+	Disk_UNUSED98  Disk = "unused98"
+	Disk_UNUSED99  Disk = "unused99"
+	Disk_UNUSED100 Disk = "unused100"
+	Disk_UNUSED101 Disk = "unused101"
+	Disk_UNUSED102 Disk = "unused102"
+	Disk_UNUSED103 Disk = "unused103"
+	Disk_UNUSED104 Disk = "unused104"
+	Disk_UNUSED105 Disk = "unused105"
+	Disk_UNUSED106 Disk = "unused106"
+	Disk_UNUSED107 Disk = "unused107"
+	Disk_UNUSED108 Disk = "unused108"
+	Disk_UNUSED109 Disk = "unused109"
+	Disk_UNUSED110 Disk = "unused110"
+	Disk_UNUSED111 Disk = "unused111"
+	Disk_UNUSED112 Disk = "unused112"
+	Disk_UNUSED113 Disk = "unused113"
+	Disk_UNUSED114 Disk = "unused114"
+	Disk_UNUSED115 Disk = "unused115"
+	Disk_UNUSED116 Disk = "unused116"
+	Disk_UNUSED117 Disk = "unused117"
+	Disk_UNUSED118 Disk = "unused118"
+	Disk_UNUSED119 Disk = "unused119"
+	Disk_UNUSED120 Disk = "unused120"
+	Disk_UNUSED121 Disk = "unused121"
+	Disk_UNUSED122 Disk = "unused122"
+	Disk_UNUSED123 Disk = "unused123"
+	Disk_UNUSED124 Disk = "unused124"
+	Disk_UNUSED125 Disk = "unused125"
+	Disk_UNUSED126 Disk = "unused126"
+	Disk_UNUSED127 Disk = "unused127"
+	Disk_UNUSED128 Disk = "unused128"
+	Disk_UNUSED129 Disk = "unused129"
+	Disk_UNUSED130 Disk = "unused130"
+	Disk_UNUSED131 Disk = "unused131"
+	Disk_UNUSED132 Disk = "unused132"
+	Disk_UNUSED133 Disk = "unused133"
+	Disk_UNUSED134 Disk = "unused134"
+	Disk_UNUSED135 Disk = "unused135"
+	Disk_UNUSED136 Disk = "unused136"
+	Disk_UNUSED137 Disk = "unused137"
+	Disk_UNUSED138 Disk = "unused138"
+	Disk_UNUSED139 Disk = "unused139"
+	Disk_UNUSED140 Disk = "unused140"
+	Disk_UNUSED141 Disk = "unused141"
+	Disk_UNUSED142 Disk = "unused142"
+	Disk_UNUSED143 Disk = "unused143"
+	Disk_UNUSED144 Disk = "unused144"
+	Disk_UNUSED145 Disk = "unused145"
+	Disk_UNUSED146 Disk = "unused146"
+	Disk_UNUSED147 Disk = "unused147"
+	Disk_UNUSED148 Disk = "unused148"
+	Disk_UNUSED149 Disk = "unused149"
+	Disk_UNUSED150 Disk = "unused150"
+	Disk_UNUSED151 Disk = "unused151"
+	Disk_UNUSED152 Disk = "unused152"
+	Disk_UNUSED153 Disk = "unused153"
+	Disk_UNUSED154 Disk = "unused154"
+	Disk_UNUSED155 Disk = "unused155"
+	Disk_UNUSED156 Disk = "unused156"
+	Disk_UNUSED157 Disk = "unused157"
+	Disk_UNUSED158 Disk = "unused158"
+	Disk_UNUSED159 Disk = "unused159"
+	Disk_UNUSED160 Disk = "unused160"
+	Disk_UNUSED161 Disk = "unused161"
+	Disk_UNUSED162 Disk = "unused162"
+	Disk_UNUSED163 Disk = "unused163"
+	Disk_UNUSED164 Disk = "unused164"
+	Disk_UNUSED165 Disk = "unused165"
+	Disk_UNUSED166 Disk = "unused166"
+	Disk_UNUSED167 Disk = "unused167"
+	Disk_UNUSED168 Disk = "unused168"
+	Disk_UNUSED169 Disk = "unused169"
+	Disk_UNUSED170 Disk = "unused170"
+	Disk_UNUSED171 Disk = "unused171"
+	Disk_UNUSED172 Disk = "unused172"
+	Disk_UNUSED173 Disk = "unused173"
+	Disk_UNUSED174 Disk = "unused174"
+	Disk_UNUSED175 Disk = "unused175"
+	Disk_UNUSED176 Disk = "unused176"
+	Disk_UNUSED177 Disk = "unused177"
+	Disk_UNUSED178 Disk = "unused178"
+	Disk_UNUSED179 Disk = "unused179"
+	Disk_UNUSED180 Disk = "unused180"
+	Disk_UNUSED181 Disk = "unused181"
+	Disk_UNUSED182 Disk = "unused182"
+	Disk_UNUSED183 Disk = "unused183"
+	Disk_UNUSED184 Disk = "unused184"
+	Disk_UNUSED185 Disk = "unused185"
+	Disk_UNUSED186 Disk = "unused186"
+	Disk_UNUSED187 Disk = "unused187"
+	Disk_UNUSED188 Disk = "unused188"
+	Disk_UNUSED189 Disk = "unused189"
+	Disk_UNUSED190 Disk = "unused190"
+	Disk_UNUSED191 Disk = "unused191"
+	Disk_UNUSED192 Disk = "unused192"
+	Disk_UNUSED193 Disk = "unused193"
+	Disk_UNUSED194 Disk = "unused194"
+	Disk_UNUSED195 Disk = "unused195"
+	Disk_UNUSED196 Disk = "unused196"
+	Disk_UNUSED197 Disk = "unused197"
+	Disk_UNUSED198 Disk = "unused198"
+	Disk_UNUSED199 Disk = "unused199"
+	Disk_UNUSED200 Disk = "unused200"
+	Disk_UNUSED201 Disk = "unused201"
+	Disk_UNUSED202 Disk = "unused202"
+	Disk_UNUSED203 Disk = "unused203"
+	Disk_UNUSED204 Disk = "unused204"
+	Disk_UNUSED205 Disk = "unused205"
+	Disk_UNUSED206 Disk = "unused206"
+	Disk_UNUSED207 Disk = "unused207"
+	Disk_UNUSED208 Disk = "unused208"
+	Disk_UNUSED209 Disk = "unused209"
+	Disk_UNUSED210 Disk = "unused210"
+	Disk_UNUSED211 Disk = "unused211"
+	Disk_UNUSED212 Disk = "unused212"
+	Disk_UNUSED213 Disk = "unused213"
+	Disk_UNUSED214 Disk = "unused214"
+	Disk_UNUSED215 Disk = "unused215"
+	Disk_UNUSED216 Disk = "unused216"
+	Disk_UNUSED217 Disk = "unused217"
+	Disk_UNUSED218 Disk = "unused218"
+	Disk_UNUSED219 Disk = "unused219"
+	Disk_UNUSED220 Disk = "unused220"
+	Disk_UNUSED221 Disk = "unused221"
+	Disk_UNUSED222 Disk = "unused222"
+	Disk_UNUSED223 Disk = "unused223"
+	Disk_UNUSED224 Disk = "unused224"
+	Disk_UNUSED225 Disk = "unused225"
+	Disk_UNUSED226 Disk = "unused226"
+	Disk_UNUSED227 Disk = "unused227"
+	Disk_UNUSED228 Disk = "unused228"
+	Disk_UNUSED229 Disk = "unused229"
+	Disk_UNUSED230 Disk = "unused230"
+	Disk_UNUSED231 Disk = "unused231"
+	Disk_UNUSED232 Disk = "unused232"
+	Disk_UNUSED233 Disk = "unused233"
+	Disk_UNUSED234 Disk = "unused234"
+	Disk_UNUSED235 Disk = "unused235"
+	Disk_UNUSED236 Disk = "unused236"
+	Disk_UNUSED237 Disk = "unused237"
+	Disk_UNUSED238 Disk = "unused238"
+	Disk_UNUSED239 Disk = "unused239"
+	Disk_UNUSED240 Disk = "unused240"
+	Disk_UNUSED241 Disk = "unused241"
+	Disk_UNUSED242 Disk = "unused242"
+	Disk_UNUSED243 Disk = "unused243"
+	Disk_UNUSED244 Disk = "unused244"
+	Disk_UNUSED245 Disk = "unused245"
+	Disk_UNUSED246 Disk = "unused246"
+	Disk_UNUSED247 Disk = "unused247"
+	Disk_UNUSED248 Disk = "unused248"
+	Disk_UNUSED249 Disk = "unused249"
+	Disk_UNUSED250 Disk = "unused250"
+	Disk_UNUSED251 Disk = "unused251"
+	Disk_UNUSED252 Disk = "unused252"
+	Disk_UNUSED253 Disk = "unused253"
+	Disk_UNUSED254 Disk = "unused254"
+	Disk_UNUSED255 Disk = "unused255"
+
+	Efidisk0Efitype_2M Efidisk0Efitype = "2m"
+	Efidisk0Efitype_4M Efidisk0Efitype = "4m"
+
+	Efidisk0Format_RAW   Efidisk0Format = "raw"
+	Efidisk0Format_COW   Efidisk0Format = "cow"
+	Efidisk0Format_QCOW  Efidisk0Format = "qcow"
+	Efidisk0Format_QED   Efidisk0Format = "qed"
+	Efidisk0Format_QCOW2 Efidisk0Format = "qcow2"
+	Efidisk0Format_VMDK  Efidisk0Format = "vmdk"
+	Efidisk0Format_CLOOP Efidisk0Format = "cloop"
+
+	Feature_SNAPSHOT Feature = "snapshot"
+	Feature_CLONE    Feature = "clone"
+	Feature_COPY     Feature = "copy"
+
+	Format_RAW   Format = "raw"
+	Format_QCOW2 Format = "qcow2"
+	Format_VMDK  Format = "vmdk"
+
+	Hugepages_ANY  Hugepages = "any"
+	Hugepages_2    Hugepages = "2"
+	Hugepages_1024 Hugepages = "1024"
+
+	IdeAio_NATIVE   IdeAio = "native"
+	IdeAio_THREADS  IdeAio = "threads"
+	IdeAio_IO_URING IdeAio = "io_uring"
+
+	IdeCache_NONE         IdeCache = "none"
+	IdeCache_WRITETHROUGH IdeCache = "writethrough"
+	IdeCache_WRITEBACK    IdeCache = "writeback"
+	IdeCache_UNSAFE       IdeCache = "unsafe"
+	IdeCache_DIRECTSYNC   IdeCache = "directsync"
+
+	IdeDiscard_IGNORE IdeDiscard = "ignore"
+	IdeDiscard_ON     IdeDiscard = "on"
+
+	IdeFormat_RAW   IdeFormat = "raw"
+	IdeFormat_COW   IdeFormat = "cow"
+	IdeFormat_QCOW  IdeFormat = "qcow"
+	IdeFormat_QED   IdeFormat = "qed"
+	IdeFormat_QCOW2 IdeFormat = "qcow2"
+	IdeFormat_VMDK  IdeFormat = "vmdk"
+	IdeFormat_CLOOP IdeFormat = "cloop"
+
+	IdeMedia_CDROM IdeMedia = "cdrom"
+	IdeMedia_DISK  IdeMedia = "disk"
+
+	IdeRerror_IGNORE IdeRerror = "ignore"
+	IdeRerror_REPORT IdeRerror = "report"
+	IdeRerror_STOP   IdeRerror = "stop"
+
+	IdeTrans_NONE IdeTrans = "none"
+	IdeTrans_LBA  IdeTrans = "lba"
+	IdeTrans_AUTO IdeTrans = "auto"
+
+	IdeWerror_ENOSPC IdeWerror = "enospc"
+	IdeWerror_IGNORE IdeWerror = "ignore"
+	IdeWerror_REPORT IdeWerror = "report"
+	IdeWerror_STOP   IdeWerror = "stop"
+
+	Keyboard_DE    Keyboard = "de"
+	Keyboard_DE_CH Keyboard = "de-ch"
+	Keyboard_DA    Keyboard = "da"
+	Keyboard_EN_GB Keyboard = "en-gb"
+	Keyboard_EN_US Keyboard = "en-us"
+	Keyboard_ES    Keyboard = "es"
+	Keyboard_FI    Keyboard = "fi"
+	Keyboard_FR    Keyboard = "fr"
+	Keyboard_FR_BE Keyboard = "fr-be"
+	Keyboard_FR_CA Keyboard = "fr-ca"
+	Keyboard_FR_CH Keyboard = "fr-ch"
+	Keyboard_HU    Keyboard = "hu"
+	Keyboard_IS    Keyboard = "is"
+	Keyboard_IT    Keyboard = "it"
+	Keyboard_JA    Keyboard = "ja"
+	Keyboard_LT    Keyboard = "lt"
+	Keyboard_MK    Keyboard = "mk"
+	Keyboard_NL    Keyboard = "nl"
+	Keyboard_NO    Keyboard = "no"
+	Keyboard_PL    Keyboard = "pl"
+	Keyboard_PT    Keyboard = "pt"
+	Keyboard_PT_BR Keyboard = "pt-br"
+	Keyboard_SV    Keyboard = "sv"
+	Keyboard_SL    Keyboard = "sl"
+	Keyboard_TR    Keyboard = "tr"
+
+	Lock_BACKUP          Lock = "backup"
+	Lock_CLONE           Lock = "clone"
+	Lock_CREATE          Lock = "create"
+	Lock_MIGRATE         Lock = "migrate"
+	Lock_ROLLBACK        Lock = "rollback"
+	Lock_SNAPSHOT        Lock = "snapshot"
+	Lock_SNAPSHOT_DELETE Lock = "snapshot-delete"
+	Lock_SUSPENDING      Lock = "suspending"
+	Lock_SUSPENDED       Lock = "suspended"
+
+	MigrationType_SECURE   MigrationType = "secure"
+	MigrationType_INSECURE MigrationType = "insecure"
+
+	NetModel_E1000         NetModel = "e1000"
+	NetModel_E1000_82540EM NetModel = "e1000-82540em"
+	NetModel_E1000_82544GC NetModel = "e1000-82544gc"
+	NetModel_E1000_82545EM NetModel = "e1000-82545em"
+	NetModel_E1000E        NetModel = "e1000e"
+	NetModel_I82551        NetModel = "i82551"
+	NetModel_I82557B       NetModel = "i82557b"
+	NetModel_I82559ER      NetModel = "i82559er"
+	NetModel_NE2K_ISA      NetModel = "ne2k_isa"
+	NetModel_NE2K_PCI      NetModel = "ne2k_pci"
+	NetModel_PCNET         NetModel = "pcnet"
+	NetModel_RTL8139       NetModel = "rtl8139"
+	NetModel_VIRTIO        NetModel = "virtio"
+	NetModel_VMXNET3       NetModel = "vmxnet3"
+
+	NumaPolicy_PREFERRED  NumaPolicy = "preferred"
+	NumaPolicy_BIND       NumaPolicy = "bind"
+	NumaPolicy_INTERLEAVE NumaPolicy = "interleave"
+
+	Ostype_OTHER   Ostype = "other"
+	Ostype_WXP     Ostype = "wxp"
+	Ostype_W2K     Ostype = "w2k"
+	Ostype_W2K3    Ostype = "w2k3"
+	Ostype_W2K8    Ostype = "w2k8"
+	Ostype_WVISTA  Ostype = "wvista"
+	Ostype_WIN7    Ostype = "win7"
+	Ostype_WIN8    Ostype = "win8"
+	Ostype_WIN10   Ostype = "win10"
+	Ostype_WIN11   Ostype = "win11"
+	Ostype_L24     Ostype = "l24"
+	Ostype_L26     Ostype = "l26"
+	Ostype_SOLARIS Ostype = "solaris"
+
+	Rng0Source__DEV_URANDOM Rng0Source = "/dev/urandom"
+	Rng0Source__DEV_RANDOM  Rng0Source = "/dev/random"
+	Rng0Source__DEV_HWRNG   Rng0Source = "/dev/hwrng"
+
+	SataAio_NATIVE   SataAio = "native"
+	SataAio_THREADS  SataAio = "threads"
+	SataAio_IO_URING SataAio = "io_uring"
+
+	SataCache_NONE         SataCache = "none"
+	SataCache_WRITETHROUGH SataCache = "writethrough"
+	SataCache_WRITEBACK    SataCache = "writeback"
+	SataCache_UNSAFE       SataCache = "unsafe"
+	SataCache_DIRECTSYNC   SataCache = "directsync"
+
+	SataDiscard_IGNORE SataDiscard = "ignore"
+	SataDiscard_ON     SataDiscard = "on"
+
+	SataFormat_RAW   SataFormat = "raw"
+	SataFormat_COW   SataFormat = "cow"
+	SataFormat_QCOW  SataFormat = "qcow"
+	SataFormat_QED   SataFormat = "qed"
+	SataFormat_QCOW2 SataFormat = "qcow2"
+	SataFormat_VMDK  SataFormat = "vmdk"
+	SataFormat_CLOOP SataFormat = "cloop"
+
+	SataMedia_CDROM SataMedia = "cdrom"
+	SataMedia_DISK  SataMedia = "disk"
+
+	SataRerror_IGNORE SataRerror = "ignore"
+	SataRerror_REPORT SataRerror = "report"
+	SataRerror_STOP   SataRerror = "stop"
+
+	SataTrans_NONE SataTrans = "none"
+	SataTrans_LBA  SataTrans = "lba"
+	SataTrans_AUTO SataTrans = "auto"
+
+	SataWerror_ENOSPC SataWerror = "enospc"
+	SataWerror_IGNORE SataWerror = "ignore"
+	SataWerror_REPORT SataWerror = "report"
+	SataWerror_STOP   SataWerror = "stop"
+
+	ScsiAio_NATIVE   ScsiAio = "native"
+	ScsiAio_THREADS  ScsiAio = "threads"
+	ScsiAio_IO_URING ScsiAio = "io_uring"
+
+	ScsiCache_NONE         ScsiCache = "none"
+	ScsiCache_WRITETHROUGH ScsiCache = "writethrough"
+	ScsiCache_WRITEBACK    ScsiCache = "writeback"
+	ScsiCache_UNSAFE       ScsiCache = "unsafe"
+	ScsiCache_DIRECTSYNC   ScsiCache = "directsync"
+
+	ScsiDiscard_IGNORE ScsiDiscard = "ignore"
+	ScsiDiscard_ON     ScsiDiscard = "on"
+
+	ScsiFormat_RAW   ScsiFormat = "raw"
+	ScsiFormat_COW   ScsiFormat = "cow"
+	ScsiFormat_QCOW  ScsiFormat = "qcow"
+	ScsiFormat_QED   ScsiFormat = "qed"
+	ScsiFormat_QCOW2 ScsiFormat = "qcow2"
+	ScsiFormat_VMDK  ScsiFormat = "vmdk"
+	ScsiFormat_CLOOP ScsiFormat = "cloop"
+
+	ScsiMedia_CDROM ScsiMedia = "cdrom"
+	ScsiMedia_DISK  ScsiMedia = "disk"
+
+	ScsiRerror_IGNORE ScsiRerror = "ignore"
+	ScsiRerror_REPORT ScsiRerror = "report"
+	ScsiRerror_STOP   ScsiRerror = "stop"
+
+	ScsiTrans_NONE ScsiTrans = "none"
+	ScsiTrans_LBA  ScsiTrans = "lba"
+	ScsiTrans_AUTO ScsiTrans = "auto"
+
+	ScsiWerror_ENOSPC ScsiWerror = "enospc"
+	ScsiWerror_IGNORE ScsiWerror = "ignore"
+	ScsiWerror_REPORT ScsiWerror = "report"
+	ScsiWerror_STOP   ScsiWerror = "stop"
+
+	Scsihw_LSI                Scsihw = "lsi"
+	Scsihw_LSI53C810          Scsihw = "lsi53c810"
+	Scsihw_VIRTIO_SCSI_PCI    Scsihw = "virtio-scsi-pci"
+	Scsihw_VIRTIO_SCSI_SINGLE Scsihw = "virtio-scsi-single"
+	Scsihw_MEGASAS            Scsihw = "megasas"
+	Scsihw_PVSCSI             Scsihw = "pvscsi"
+
+	Serial_SERIAL0 Serial = "serial0"
+	Serial_SERIAL1 Serial = "serial1"
+	Serial_SERIAL2 Serial = "serial2"
+	Serial_SERIAL3 Serial = "serial3"
+
+	SpiceEnhancementsVideostreaming_OFF    SpiceEnhancementsVideostreaming = "off"
+	SpiceEnhancementsVideostreaming_ALL    SpiceEnhancementsVideostreaming = "all"
+	SpiceEnhancementsVideostreaming_FILTER SpiceEnhancementsVideostreaming = "filter"
+
+	Status_STOPPED Status = "stopped"
+	Status_RUNNING Status = "running"
+
+	TargetDisk_IDE0      TargetDisk = "ide0"
+	TargetDisk_IDE1      TargetDisk = "ide1"
+	TargetDisk_IDE2      TargetDisk = "ide2"
+	TargetDisk_IDE3      TargetDisk = "ide3"
+	TargetDisk_SCSI0     TargetDisk = "scsi0"
+	TargetDisk_SCSI1     TargetDisk = "scsi1"
+	TargetDisk_SCSI2     TargetDisk = "scsi2"
+	TargetDisk_SCSI3     TargetDisk = "scsi3"
+	TargetDisk_SCSI4     TargetDisk = "scsi4"
+	TargetDisk_SCSI5     TargetDisk = "scsi5"
+	TargetDisk_SCSI6     TargetDisk = "scsi6"
+	TargetDisk_SCSI7     TargetDisk = "scsi7"
+	TargetDisk_SCSI8     TargetDisk = "scsi8"
+	TargetDisk_SCSI9     TargetDisk = "scsi9"
+	TargetDisk_SCSI10    TargetDisk = "scsi10"
+	TargetDisk_SCSI11    TargetDisk = "scsi11"
+	TargetDisk_SCSI12    TargetDisk = "scsi12"
+	TargetDisk_SCSI13    TargetDisk = "scsi13"
+	TargetDisk_SCSI14    TargetDisk = "scsi14"
+	TargetDisk_SCSI15    TargetDisk = "scsi15"
+	TargetDisk_SCSI16    TargetDisk = "scsi16"
+	TargetDisk_SCSI17    TargetDisk = "scsi17"
+	TargetDisk_SCSI18    TargetDisk = "scsi18"
+	TargetDisk_SCSI19    TargetDisk = "scsi19"
+	TargetDisk_SCSI20    TargetDisk = "scsi20"
+	TargetDisk_SCSI21    TargetDisk = "scsi21"
+	TargetDisk_SCSI22    TargetDisk = "scsi22"
+	TargetDisk_SCSI23    TargetDisk = "scsi23"
+	TargetDisk_SCSI24    TargetDisk = "scsi24"
+	TargetDisk_SCSI25    TargetDisk = "scsi25"
+	TargetDisk_SCSI26    TargetDisk = "scsi26"
+	TargetDisk_SCSI27    TargetDisk = "scsi27"
+	TargetDisk_SCSI28    TargetDisk = "scsi28"
+	TargetDisk_SCSI29    TargetDisk = "scsi29"
+	TargetDisk_SCSI30    TargetDisk = "scsi30"
+	TargetDisk_VIRTIO0   TargetDisk = "virtio0"
+	TargetDisk_VIRTIO1   TargetDisk = "virtio1"
+	TargetDisk_VIRTIO2   TargetDisk = "virtio2"
+	TargetDisk_VIRTIO3   TargetDisk = "virtio3"
+	TargetDisk_VIRTIO4   TargetDisk = "virtio4"
+	TargetDisk_VIRTIO5   TargetDisk = "virtio5"
+	TargetDisk_VIRTIO6   TargetDisk = "virtio6"
+	TargetDisk_VIRTIO7   TargetDisk = "virtio7"
+	TargetDisk_VIRTIO8   TargetDisk = "virtio8"
+	TargetDisk_VIRTIO9   TargetDisk = "virtio9"
+	TargetDisk_VIRTIO10  TargetDisk = "virtio10"
+	TargetDisk_VIRTIO11  TargetDisk = "virtio11"
+	TargetDisk_VIRTIO12  TargetDisk = "virtio12"
+	TargetDisk_VIRTIO13  TargetDisk = "virtio13"
+	TargetDisk_VIRTIO14  TargetDisk = "virtio14"
+	TargetDisk_VIRTIO15  TargetDisk = "virtio15"
+	TargetDisk_SATA0     TargetDisk = "sata0"
+	TargetDisk_SATA1     TargetDisk = "sata1"
+	TargetDisk_SATA2     TargetDisk = "sata2"
+	TargetDisk_SATA3     TargetDisk = "sata3"
+	TargetDisk_SATA4     TargetDisk = "sata4"
+	TargetDisk_SATA5     TargetDisk = "sata5"
+	TargetDisk_EFIDISK0  TargetDisk = "efidisk0"
+	TargetDisk_TPMSTATE0 TargetDisk = "tpmstate0"
+	TargetDisk_UNUSED0   TargetDisk = "unused0"
+	TargetDisk_UNUSED1   TargetDisk = "unused1"
+	TargetDisk_UNUSED2   TargetDisk = "unused2"
+	TargetDisk_UNUSED3   TargetDisk = "unused3"
+	TargetDisk_UNUSED4   TargetDisk = "unused4"
+	TargetDisk_UNUSED5   TargetDisk = "unused5"
+	TargetDisk_UNUSED6   TargetDisk = "unused6"
+	TargetDisk_UNUSED7   TargetDisk = "unused7"
+	TargetDisk_UNUSED8   TargetDisk = "unused8"
+	TargetDisk_UNUSED9   TargetDisk = "unused9"
+	TargetDisk_UNUSED10  TargetDisk = "unused10"
+	TargetDisk_UNUSED11  TargetDisk = "unused11"
+	TargetDisk_UNUSED12  TargetDisk = "unused12"
+	TargetDisk_UNUSED13  TargetDisk = "unused13"
+	TargetDisk_UNUSED14  TargetDisk = "unused14"
+	TargetDisk_UNUSED15  TargetDisk = "unused15"
+	TargetDisk_UNUSED16  TargetDisk = "unused16"
+	TargetDisk_UNUSED17  TargetDisk = "unused17"
+	TargetDisk_UNUSED18  TargetDisk = "unused18"
+	TargetDisk_UNUSED19  TargetDisk = "unused19"
+	TargetDisk_UNUSED20  TargetDisk = "unused20"
+	TargetDisk_UNUSED21  TargetDisk = "unused21"
+	TargetDisk_UNUSED22  TargetDisk = "unused22"
+	TargetDisk_UNUSED23  TargetDisk = "unused23"
+	TargetDisk_UNUSED24  TargetDisk = "unused24"
+	TargetDisk_UNUSED25  TargetDisk = "unused25"
+	TargetDisk_UNUSED26  TargetDisk = "unused26"
+	TargetDisk_UNUSED27  TargetDisk = "unused27"
+	TargetDisk_UNUSED28  TargetDisk = "unused28"
+	TargetDisk_UNUSED29  TargetDisk = "unused29"
+	TargetDisk_UNUSED30  TargetDisk = "unused30"
+	TargetDisk_UNUSED31  TargetDisk = "unused31"
+	TargetDisk_UNUSED32  TargetDisk = "unused32"
+	TargetDisk_UNUSED33  TargetDisk = "unused33"
+	TargetDisk_UNUSED34  TargetDisk = "unused34"
+	TargetDisk_UNUSED35  TargetDisk = "unused35"
+	TargetDisk_UNUSED36  TargetDisk = "unused36"
+	TargetDisk_UNUSED37  TargetDisk = "unused37"
+	TargetDisk_UNUSED38  TargetDisk = "unused38"
+	TargetDisk_UNUSED39  TargetDisk = "unused39"
+	TargetDisk_UNUSED40  TargetDisk = "unused40"
+	TargetDisk_UNUSED41  TargetDisk = "unused41"
+	TargetDisk_UNUSED42  TargetDisk = "unused42"
+	TargetDisk_UNUSED43  TargetDisk = "unused43"
+	TargetDisk_UNUSED44  TargetDisk = "unused44"
+	TargetDisk_UNUSED45  TargetDisk = "unused45"
+	TargetDisk_UNUSED46  TargetDisk = "unused46"
+	TargetDisk_UNUSED47  TargetDisk = "unused47"
+	TargetDisk_UNUSED48  TargetDisk = "unused48"
+	TargetDisk_UNUSED49  TargetDisk = "unused49"
+	TargetDisk_UNUSED50  TargetDisk = "unused50"
+	TargetDisk_UNUSED51  TargetDisk = "unused51"
+	TargetDisk_UNUSED52  TargetDisk = "unused52"
+	TargetDisk_UNUSED53  TargetDisk = "unused53"
+	TargetDisk_UNUSED54  TargetDisk = "unused54"
+	TargetDisk_UNUSED55  TargetDisk = "unused55"
+	TargetDisk_UNUSED56  TargetDisk = "unused56"
+	TargetDisk_UNUSED57  TargetDisk = "unused57"
+	TargetDisk_UNUSED58  TargetDisk = "unused58"
+	TargetDisk_UNUSED59  TargetDisk = "unused59"
+	TargetDisk_UNUSED60  TargetDisk = "unused60"
+	TargetDisk_UNUSED61  TargetDisk = "unused61"
+	TargetDisk_UNUSED62  TargetDisk = "unused62"
+	TargetDisk_UNUSED63  TargetDisk = "unused63"
+	TargetDisk_UNUSED64  TargetDisk = "unused64"
+	TargetDisk_UNUSED65  TargetDisk = "unused65"
+	TargetDisk_UNUSED66  TargetDisk = "unused66"
+	TargetDisk_UNUSED67  TargetDisk = "unused67"
+	TargetDisk_UNUSED68  TargetDisk = "unused68"
+	TargetDisk_UNUSED69  TargetDisk = "unused69"
+	TargetDisk_UNUSED70  TargetDisk = "unused70"
+	TargetDisk_UNUSED71  TargetDisk = "unused71"
+	TargetDisk_UNUSED72  TargetDisk = "unused72"
+	TargetDisk_UNUSED73  TargetDisk = "unused73"
+	TargetDisk_UNUSED74  TargetDisk = "unused74"
+	TargetDisk_UNUSED75  TargetDisk = "unused75"
+	TargetDisk_UNUSED76  TargetDisk = "unused76"
+	TargetDisk_UNUSED77  TargetDisk = "unused77"
+	TargetDisk_UNUSED78  TargetDisk = "unused78"
+	TargetDisk_UNUSED79  TargetDisk = "unused79"
+	TargetDisk_UNUSED80  TargetDisk = "unused80"
+	TargetDisk_UNUSED81  TargetDisk = "unused81"
+	TargetDisk_UNUSED82  TargetDisk = "unused82"
+	TargetDisk_UNUSED83  TargetDisk = "unused83"
+	TargetDisk_UNUSED84  TargetDisk = "unused84"
+	TargetDisk_UNUSED85  TargetDisk = "unused85"
+	TargetDisk_UNUSED86  TargetDisk = "unused86"
+	TargetDisk_UNUSED87  TargetDisk = "unused87"
+	TargetDisk_UNUSED88  TargetDisk = "unused88"
+	TargetDisk_UNUSED89  TargetDisk = "unused89"
+	TargetDisk_UNUSED90  TargetDisk = "unused90"
+	TargetDisk_UNUSED91  TargetDisk = "unused91"
+	TargetDisk_UNUSED92  TargetDisk = "unused92"
+	TargetDisk_UNUSED93  TargetDisk = "unused93"
+	TargetDisk_UNUSED94  TargetDisk = "unused94"
+	TargetDisk_UNUSED95  TargetDisk = "unused95"
+	TargetDisk_UNUSED96  TargetDisk = "unused96"
+	TargetDisk_UNUSED97  TargetDisk = "unused97"
+	TargetDisk_UNUSED98  TargetDisk = "unused98"
+	TargetDisk_UNUSED99  TargetDisk = "unused99"
+	TargetDisk_UNUSED100 TargetDisk = "unused100"
+	TargetDisk_UNUSED101 TargetDisk = "unused101"
+	TargetDisk_UNUSED102 TargetDisk = "unused102"
+	TargetDisk_UNUSED103 TargetDisk = "unused103"
+	TargetDisk_UNUSED104 TargetDisk = "unused104"
+	TargetDisk_UNUSED105 TargetDisk = "unused105"
+	TargetDisk_UNUSED106 TargetDisk = "unused106"
+	TargetDisk_UNUSED107 TargetDisk = "unused107"
+	TargetDisk_UNUSED108 TargetDisk = "unused108"
+	TargetDisk_UNUSED109 TargetDisk = "unused109"
+	TargetDisk_UNUSED110 TargetDisk = "unused110"
+	TargetDisk_UNUSED111 TargetDisk = "unused111"
+	TargetDisk_UNUSED112 TargetDisk = "unused112"
+	TargetDisk_UNUSED113 TargetDisk = "unused113"
+	TargetDisk_UNUSED114 TargetDisk = "unused114"
+	TargetDisk_UNUSED115 TargetDisk = "unused115"
+	TargetDisk_UNUSED116 TargetDisk = "unused116"
+	TargetDisk_UNUSED117 TargetDisk = "unused117"
+	TargetDisk_UNUSED118 TargetDisk = "unused118"
+	TargetDisk_UNUSED119 TargetDisk = "unused119"
+	TargetDisk_UNUSED120 TargetDisk = "unused120"
+	TargetDisk_UNUSED121 TargetDisk = "unused121"
+	TargetDisk_UNUSED122 TargetDisk = "unused122"
+	TargetDisk_UNUSED123 TargetDisk = "unused123"
+	TargetDisk_UNUSED124 TargetDisk = "unused124"
+	TargetDisk_UNUSED125 TargetDisk = "unused125"
+	TargetDisk_UNUSED126 TargetDisk = "unused126"
+	TargetDisk_UNUSED127 TargetDisk = "unused127"
+	TargetDisk_UNUSED128 TargetDisk = "unused128"
+	TargetDisk_UNUSED129 TargetDisk = "unused129"
+	TargetDisk_UNUSED130 TargetDisk = "unused130"
+	TargetDisk_UNUSED131 TargetDisk = "unused131"
+	TargetDisk_UNUSED132 TargetDisk = "unused132"
+	TargetDisk_UNUSED133 TargetDisk = "unused133"
+	TargetDisk_UNUSED134 TargetDisk = "unused134"
+	TargetDisk_UNUSED135 TargetDisk = "unused135"
+	TargetDisk_UNUSED136 TargetDisk = "unused136"
+	TargetDisk_UNUSED137 TargetDisk = "unused137"
+	TargetDisk_UNUSED138 TargetDisk = "unused138"
+	TargetDisk_UNUSED139 TargetDisk = "unused139"
+	TargetDisk_UNUSED140 TargetDisk = "unused140"
+	TargetDisk_UNUSED141 TargetDisk = "unused141"
+	TargetDisk_UNUSED142 TargetDisk = "unused142"
+	TargetDisk_UNUSED143 TargetDisk = "unused143"
+	TargetDisk_UNUSED144 TargetDisk = "unused144"
+	TargetDisk_UNUSED145 TargetDisk = "unused145"
+	TargetDisk_UNUSED146 TargetDisk = "unused146"
+	TargetDisk_UNUSED147 TargetDisk = "unused147"
+	TargetDisk_UNUSED148 TargetDisk = "unused148"
+	TargetDisk_UNUSED149 TargetDisk = "unused149"
+	TargetDisk_UNUSED150 TargetDisk = "unused150"
+	TargetDisk_UNUSED151 TargetDisk = "unused151"
+	TargetDisk_UNUSED152 TargetDisk = "unused152"
+	TargetDisk_UNUSED153 TargetDisk = "unused153"
+	TargetDisk_UNUSED154 TargetDisk = "unused154"
+	TargetDisk_UNUSED155 TargetDisk = "unused155"
+	TargetDisk_UNUSED156 TargetDisk = "unused156"
+	TargetDisk_UNUSED157 TargetDisk = "unused157"
+	TargetDisk_UNUSED158 TargetDisk = "unused158"
+	TargetDisk_UNUSED159 TargetDisk = "unused159"
+	TargetDisk_UNUSED160 TargetDisk = "unused160"
+	TargetDisk_UNUSED161 TargetDisk = "unused161"
+	TargetDisk_UNUSED162 TargetDisk = "unused162"
+	TargetDisk_UNUSED163 TargetDisk = "unused163"
+	TargetDisk_UNUSED164 TargetDisk = "unused164"
+	TargetDisk_UNUSED165 TargetDisk = "unused165"
+	TargetDisk_UNUSED166 TargetDisk = "unused166"
+	TargetDisk_UNUSED167 TargetDisk = "unused167"
+	TargetDisk_UNUSED168 TargetDisk = "unused168"
+	TargetDisk_UNUSED169 TargetDisk = "unused169"
+	TargetDisk_UNUSED170 TargetDisk = "unused170"
+	TargetDisk_UNUSED171 TargetDisk = "unused171"
+	TargetDisk_UNUSED172 TargetDisk = "unused172"
+	TargetDisk_UNUSED173 TargetDisk = "unused173"
+	TargetDisk_UNUSED174 TargetDisk = "unused174"
+	TargetDisk_UNUSED175 TargetDisk = "unused175"
+	TargetDisk_UNUSED176 TargetDisk = "unused176"
+	TargetDisk_UNUSED177 TargetDisk = "unused177"
+	TargetDisk_UNUSED178 TargetDisk = "unused178"
+	TargetDisk_UNUSED179 TargetDisk = "unused179"
+	TargetDisk_UNUSED180 TargetDisk = "unused180"
+	TargetDisk_UNUSED181 TargetDisk = "unused181"
+	TargetDisk_UNUSED182 TargetDisk = "unused182"
+	TargetDisk_UNUSED183 TargetDisk = "unused183"
+	TargetDisk_UNUSED184 TargetDisk = "unused184"
+	TargetDisk_UNUSED185 TargetDisk = "unused185"
+	TargetDisk_UNUSED186 TargetDisk = "unused186"
+	TargetDisk_UNUSED187 TargetDisk = "unused187"
+	TargetDisk_UNUSED188 TargetDisk = "unused188"
+	TargetDisk_UNUSED189 TargetDisk = "unused189"
+	TargetDisk_UNUSED190 TargetDisk = "unused190"
+	TargetDisk_UNUSED191 TargetDisk = "unused191"
+	TargetDisk_UNUSED192 TargetDisk = "unused192"
+	TargetDisk_UNUSED193 TargetDisk = "unused193"
+	TargetDisk_UNUSED194 TargetDisk = "unused194"
+	TargetDisk_UNUSED195 TargetDisk = "unused195"
+	TargetDisk_UNUSED196 TargetDisk = "unused196"
+	TargetDisk_UNUSED197 TargetDisk = "unused197"
+	TargetDisk_UNUSED198 TargetDisk = "unused198"
+	TargetDisk_UNUSED199 TargetDisk = "unused199"
+	TargetDisk_UNUSED200 TargetDisk = "unused200"
+	TargetDisk_UNUSED201 TargetDisk = "unused201"
+	TargetDisk_UNUSED202 TargetDisk = "unused202"
+	TargetDisk_UNUSED203 TargetDisk = "unused203"
+	TargetDisk_UNUSED204 TargetDisk = "unused204"
+	TargetDisk_UNUSED205 TargetDisk = "unused205"
+	TargetDisk_UNUSED206 TargetDisk = "unused206"
+	TargetDisk_UNUSED207 TargetDisk = "unused207"
+	TargetDisk_UNUSED208 TargetDisk = "unused208"
+	TargetDisk_UNUSED209 TargetDisk = "unused209"
+	TargetDisk_UNUSED210 TargetDisk = "unused210"
+	TargetDisk_UNUSED211 TargetDisk = "unused211"
+	TargetDisk_UNUSED212 TargetDisk = "unused212"
+	TargetDisk_UNUSED213 TargetDisk = "unused213"
+	TargetDisk_UNUSED214 TargetDisk = "unused214"
+	TargetDisk_UNUSED215 TargetDisk = "unused215"
+	TargetDisk_UNUSED216 TargetDisk = "unused216"
+	TargetDisk_UNUSED217 TargetDisk = "unused217"
+	TargetDisk_UNUSED218 TargetDisk = "unused218"
+	TargetDisk_UNUSED219 TargetDisk = "unused219"
+	TargetDisk_UNUSED220 TargetDisk = "unused220"
+	TargetDisk_UNUSED221 TargetDisk = "unused221"
+	TargetDisk_UNUSED222 TargetDisk = "unused222"
+	TargetDisk_UNUSED223 TargetDisk = "unused223"
+	TargetDisk_UNUSED224 TargetDisk = "unused224"
+	TargetDisk_UNUSED225 TargetDisk = "unused225"
+	TargetDisk_UNUSED226 TargetDisk = "unused226"
+	TargetDisk_UNUSED227 TargetDisk = "unused227"
+	TargetDisk_UNUSED228 TargetDisk = "unused228"
+	TargetDisk_UNUSED229 TargetDisk = "unused229"
+	TargetDisk_UNUSED230 TargetDisk = "unused230"
+	TargetDisk_UNUSED231 TargetDisk = "unused231"
+	TargetDisk_UNUSED232 TargetDisk = "unused232"
+	TargetDisk_UNUSED233 TargetDisk = "unused233"
+	TargetDisk_UNUSED234 TargetDisk = "unused234"
+	TargetDisk_UNUSED235 TargetDisk = "unused235"
+	TargetDisk_UNUSED236 TargetDisk = "unused236"
+	TargetDisk_UNUSED237 TargetDisk = "unused237"
+	TargetDisk_UNUSED238 TargetDisk = "unused238"
+	TargetDisk_UNUSED239 TargetDisk = "unused239"
+	TargetDisk_UNUSED240 TargetDisk = "unused240"
+	TargetDisk_UNUSED241 TargetDisk = "unused241"
+	TargetDisk_UNUSED242 TargetDisk = "unused242"
+	TargetDisk_UNUSED243 TargetDisk = "unused243"
+	TargetDisk_UNUSED244 TargetDisk = "unused244"
+	TargetDisk_UNUSED245 TargetDisk = "unused245"
+	TargetDisk_UNUSED246 TargetDisk = "unused246"
+	TargetDisk_UNUSED247 TargetDisk = "unused247"
+	TargetDisk_UNUSED248 TargetDisk = "unused248"
+	TargetDisk_UNUSED249 TargetDisk = "unused249"
+	TargetDisk_UNUSED250 TargetDisk = "unused250"
+	TargetDisk_UNUSED251 TargetDisk = "unused251"
+	TargetDisk_UNUSED252 TargetDisk = "unused252"
+	TargetDisk_UNUSED253 TargetDisk = "unused253"
+	TargetDisk_UNUSED254 TargetDisk = "unused254"
+	TargetDisk_UNUSED255 TargetDisk = "unused255"
+
+	Timeframe_HOUR  Timeframe = "hour"
+	Timeframe_DAY   Timeframe = "day"
+	Timeframe_WEEK  Timeframe = "week"
+	Timeframe_MONTH Timeframe = "month"
+	Timeframe_YEAR  Timeframe = "year"
+
+	Tpmstate0Version_V1_2 Tpmstate0Version = "v1.2"
+	Tpmstate0Version_V2_0 Tpmstate0Version = "v2.0"
+
+	VgaType_CIRRUS    VgaType = "cirrus"
+	VgaType_QXL       VgaType = "qxl"
+	VgaType_QXL2      VgaType = "qxl2"
+	VgaType_QXL3      VgaType = "qxl3"
+	VgaType_QXL4      VgaType = "qxl4"
+	VgaType_NONE      VgaType = "none"
+	VgaType_SERIAL0   VgaType = "serial0"
+	VgaType_SERIAL1   VgaType = "serial1"
+	VgaType_SERIAL2   VgaType = "serial2"
+	VgaType_SERIAL3   VgaType = "serial3"
+	VgaType_STD       VgaType = "std"
+	VgaType_VIRTIO    VgaType = "virtio"
+	VgaType_VIRTIO_GL VgaType = "virtio-gl"
+	VgaType_VMWARE    VgaType = "vmware"
+
+	VirtioAio_NATIVE   VirtioAio = "native"
+	VirtioAio_THREADS  VirtioAio = "threads"
+	VirtioAio_IO_URING VirtioAio = "io_uring"
+
+	VirtioCache_NONE         VirtioCache = "none"
+	VirtioCache_WRITETHROUGH VirtioCache = "writethrough"
+	VirtioCache_WRITEBACK    VirtioCache = "writeback"
+	VirtioCache_UNSAFE       VirtioCache = "unsafe"
+	VirtioCache_DIRECTSYNC   VirtioCache = "directsync"
+
+	VirtioDiscard_IGNORE VirtioDiscard = "ignore"
+	VirtioDiscard_ON     VirtioDiscard = "on"
+
+	VirtioFormat_RAW   VirtioFormat = "raw"
+	VirtioFormat_COW   VirtioFormat = "cow"
+	VirtioFormat_QCOW  VirtioFormat = "qcow"
+	VirtioFormat_QED   VirtioFormat = "qed"
+	VirtioFormat_QCOW2 VirtioFormat = "qcow2"
+	VirtioFormat_VMDK  VirtioFormat = "vmdk"
+	VirtioFormat_CLOOP VirtioFormat = "cloop"
+
+	VirtioMedia_CDROM VirtioMedia = "cdrom"
+	VirtioMedia_DISK  VirtioMedia = "disk"
+
+	VirtioRerror_IGNORE VirtioRerror = "ignore"
+	VirtioRerror_REPORT VirtioRerror = "report"
+	VirtioRerror_STOP   VirtioRerror = "stop"
+
+	VirtioTrans_NONE VirtioTrans = "none"
+	VirtioTrans_LBA  VirtioTrans = "lba"
+	VirtioTrans_AUTO VirtioTrans = "auto"
+
+	VirtioWerror_ENOSPC VirtioWerror = "enospc"
+	VirtioWerror_IGNORE VirtioWerror = "ignore"
+	VirtioWerror_REPORT VirtioWerror = "report"
+	VirtioWerror_STOP   VirtioWerror = "stop"
+)
+
+type AgentType string
+type Arch string
+type Audio0Device string
+type Audio0Driver string
+type Bios string
+type Cf string
+type Citype string
+type Disk string
+type Efidisk0Efitype string
+type Efidisk0Format string
+type Feature string
+type Format string
+type Hugepages string
+type IdeAio string
+type IdeCache string
+type IdeDiscard string
+type IdeFormat string
+type IdeMedia string
+type IdeRerror string
+type IdeTrans string
+type IdeWerror string
+type Keyboard string
+type Lock string
+type MigrationType string
+type NetModel string
+type NumaPolicy string
+type Ostype string
+type Rng0Source string
+type SataAio string
+type SataCache string
+type SataDiscard string
+type SataFormat string
+type SataMedia string
+type SataRerror string
+type SataTrans string
+type SataWerror string
+type ScsiAio string
+type ScsiCache string
+type ScsiDiscard string
+type ScsiFormat string
+type ScsiMedia string
+type ScsiRerror string
+type ScsiTrans string
+type ScsiWerror string
+type Scsihw string
+type Serial string
+type SpiceEnhancementsVideostreaming string
+type Status string
+type TargetDisk string
+type Timeframe string
+type Tpmstate0Version string
+type VgaType string
+type VirtioAio string
+type VirtioCache string
+type VirtioDiscard string
+type VirtioFormat string
+type VirtioMedia string
+type VirtioRerror string
+type VirtioTrans string
+type VirtioWerror string
+
+func PtrAgentType(i AgentType) *AgentType {
+	return &i
+}
+func PtrArch(i Arch) *Arch {
+	return &i
+}
+func PtrAudio0Device(i Audio0Device) *Audio0Device {
+	return &i
+}
+func PtrAudio0Driver(i Audio0Driver) *Audio0Driver {
+	return &i
+}
+func PtrBios(i Bios) *Bios {
+	return &i
+}
+func PtrCf(i Cf) *Cf {
+	return &i
+}
+func PtrCitype(i Citype) *Citype {
+	return &i
+}
+func PtrDisk(i Disk) *Disk {
+	return &i
+}
+func PtrEfidisk0Efitype(i Efidisk0Efitype) *Efidisk0Efitype {
+	return &i
+}
+func PtrEfidisk0Format(i Efidisk0Format) *Efidisk0Format {
+	return &i
+}
+func PtrFeature(i Feature) *Feature {
+	return &i
+}
+func PtrFormat(i Format) *Format {
+	return &i
+}
+func PtrHugepages(i Hugepages) *Hugepages {
+	return &i
+}
+func PtrIdeAio(i IdeAio) *IdeAio {
+	return &i
+}
+func PtrIdeCache(i IdeCache) *IdeCache {
+	return &i
+}
+func PtrIdeDiscard(i IdeDiscard) *IdeDiscard {
+	return &i
+}
+func PtrIdeFormat(i IdeFormat) *IdeFormat {
+	return &i
+}
+func PtrIdeMedia(i IdeMedia) *IdeMedia {
+	return &i
+}
+func PtrIdeRerror(i IdeRerror) *IdeRerror {
+	return &i
+}
+func PtrIdeTrans(i IdeTrans) *IdeTrans {
+	return &i
+}
+func PtrIdeWerror(i IdeWerror) *IdeWerror {
+	return &i
+}
+func PtrKeyboard(i Keyboard) *Keyboard {
+	return &i
+}
+func PtrLock(i Lock) *Lock {
+	return &i
+}
+func PtrMigrationType(i MigrationType) *MigrationType {
+	return &i
+}
+func PtrNetModel(i NetModel) *NetModel {
+	return &i
+}
+func PtrNumaPolicy(i NumaPolicy) *NumaPolicy {
+	return &i
+}
+func PtrOstype(i Ostype) *Ostype {
+	return &i
+}
+func PtrRng0Source(i Rng0Source) *Rng0Source {
+	return &i
+}
+func PtrSataAio(i SataAio) *SataAio {
+	return &i
+}
+func PtrSataCache(i SataCache) *SataCache {
+	return &i
+}
+func PtrSataDiscard(i SataDiscard) *SataDiscard {
+	return &i
+}
+func PtrSataFormat(i SataFormat) *SataFormat {
+	return &i
+}
+func PtrSataMedia(i SataMedia) *SataMedia {
+	return &i
+}
+func PtrSataRerror(i SataRerror) *SataRerror {
+	return &i
+}
+func PtrSataTrans(i SataTrans) *SataTrans {
+	return &i
+}
+func PtrSataWerror(i SataWerror) *SataWerror {
+	return &i
+}
+func PtrScsiAio(i ScsiAio) *ScsiAio {
+	return &i
+}
+func PtrScsiCache(i ScsiCache) *ScsiCache {
+	return &i
+}
+func PtrScsiDiscard(i ScsiDiscard) *ScsiDiscard {
+	return &i
+}
+func PtrScsiFormat(i ScsiFormat) *ScsiFormat {
+	return &i
+}
+func PtrScsiMedia(i ScsiMedia) *ScsiMedia {
+	return &i
+}
+func PtrScsiRerror(i ScsiRerror) *ScsiRerror {
+	return &i
+}
+func PtrScsiTrans(i ScsiTrans) *ScsiTrans {
+	return &i
+}
+func PtrScsiWerror(i ScsiWerror) *ScsiWerror {
+	return &i
+}
+func PtrScsihw(i Scsihw) *Scsihw {
+	return &i
+}
+func PtrSerial(i Serial) *Serial {
+	return &i
+}
+func PtrSpiceEnhancementsVideostreaming(i SpiceEnhancementsVideostreaming) *SpiceEnhancementsVideostreaming {
+	return &i
+}
+func PtrStatus(i Status) *Status {
+	return &i
+}
+func PtrTargetDisk(i TargetDisk) *TargetDisk {
+	return &i
+}
+func PtrTimeframe(i Timeframe) *Timeframe {
+	return &i
+}
+func PtrTpmstate0Version(i Tpmstate0Version) *Tpmstate0Version {
+	return &i
+}
+func PtrVgaType(i VgaType) *VgaType {
+	return &i
+}
+func PtrVirtioAio(i VirtioAio) *VirtioAio {
+	return &i
+}
+func PtrVirtioCache(i VirtioCache) *VirtioCache {
+	return &i
+}
+func PtrVirtioDiscard(i VirtioDiscard) *VirtioDiscard {
+	return &i
+}
+func PtrVirtioFormat(i VirtioFormat) *VirtioFormat {
+	return &i
+}
+func PtrVirtioMedia(i VirtioMedia) *VirtioMedia {
+	return &i
+}
+func PtrVirtioRerror(i VirtioRerror) *VirtioRerror {
+	return &i
+}
+func PtrVirtioTrans(i VirtioTrans) *VirtioTrans {
+	return &i
+}
+func PtrVirtioWerror(i VirtioWerror) *VirtioWerror {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -30,7 +1219,7 @@ type IndexRequest struct {
 }
 
 type IndexResponse struct {
-	Status string `url:"status" json:"status"` // Qemu process status.
+	Status Status `url:"status" json:"status"` // Qemu process status.
 	Vmid   int    `url:"vmid" json:"vmid"`     // The (unique) ID of the VM.
 
 	// The following parameters are optional
@@ -47,95 +1236,6 @@ type IndexResponse struct {
 	Uptime         *int     `url:"uptime,omitempty" json:"uptime,omitempty"`                   // Uptime.
 }
 
-// Configure the VGA hardware.
-type Vga struct {
-
-	// The following parameters are optional
-	Memory *int    `url:"memory,omitempty" json:"memory,omitempty"` // Sets the VGA memory (in MiB). Has no effect with serial display.
-	Type   *string `url:"type,omitempty" json:"type,omitempty"`     // Select the VGA type.
-}
-
-func (t Vga) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[[type=]<enum>] [,memory=<integer>]`)
-}
-
-// Configure additional enhancements for SPICE.
-type SpiceEnhancements struct {
-
-	// The following parameters are optional
-	Foldersharing  *util.PVEBool `url:"foldersharing,omitempty" json:"foldersharing,omitempty"`   // Enable folder sharing via SPICE. Needs Spice-WebDAV daemon installed in the VM.
-	Videostreaming *string       `url:"videostreaming,omitempty" json:"videostreaming,omitempty"` // Enable video streaming. Uses compression for detected video streams.
-}
-
-func (t SpiceEnhancements) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[foldersharing=<1|0>] [,videostreaming=<off|all|filter>]`)
-}
-
-// Reference to unused volumes. This is used internally, and should not be modified manually.
-type Unused struct {
-	File string `url:"file" json:"file"` // The drive's backing volume.
-
-}
-
-func (t Unused) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[file=]<volume>`)
-}
-
-// Array of Unused
-type Unuseds []Unused
-
-func (t Unuseds) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Configure a Disk for storing EFI vars. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Note that SIZE_IN_GiB is ignored here and that the default EFI vars are copied to the volume instead. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
-type Efidisk0 struct {
-	File string `url:"file" json:"file"` // The drive's backing volume.
-
-	// The following parameters are optional
-	Efitype         *string       `url:"efitype,omitempty" json:"efitype,omitempty"`                     // Size and type of the OVMF EFI vars. '4m' is newer and recommended, and required for Secure Boot. For backwards compatibility, '2m' is used if not otherwise specified.
-	Format          *string       `url:"format,omitempty" json:"format,omitempty"`                       // The drive's backing file's data format.
-	ImportFrom      *string       `url:"import-from,omitempty" json:"import-from,omitempty"`             // Create a new disk, importing from this source (volume ID or absolute path). When an absolute path is specified, it's up to you to ensure that the source is not actively used by another process during the import!
-	PreEnrolledKeys *util.PVEBool `url:"pre-enrolled-keys,omitempty" json:"pre-enrolled-keys,omitempty"` // Use am EFI vars template with distribution-specific and Microsoft Standard keys enrolled, if used with 'efitype=4m'. Note that this will enable Secure Boot by default, though it can still be turned off from within the VM.
-	Size            *string       `url:"size,omitempty" json:"size,omitempty"`                           // Disk size. This is purely informational and has no effect.
-}
-
-func (t Efidisk0) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[file=]<volume> [,efitype=<2m|4m>] [,format=<enum>] [,import-from=<source volume>] [,pre-enrolled-keys=<1|0>] [,size=<DiskSize>]`)
-}
-
-// Configure a audio device, useful in combination with QXL/Spice.
-type Audio0 struct {
-	Device string `url:"device" json:"device"` // Configure an audio device.
-
-	// The following parameters are optional
-	Driver *string `url:"driver,omitempty" json:"driver,omitempty"` // Driver backend for the audio device.
-}
-
-func (t Audio0) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `device=<ich9-intel-hda|intel-hda|AC97> [,driver=<spice|none>]`)
-}
-
-// Array of Ipconfig
-type Ipconfigs []string
-
-func (t Ipconfigs) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Configure a VirtIO-based Random Number Generator.
-type Rng0 struct {
-	Source string `url:"source" json:"source"` // The file on the host to gather entropy from. In most cases '/dev/urandom' should be preferred over '/dev/random' to avoid entropy-starvation issues on the host. Using urandom does *not* decrease security in any meaningful way, as it's still seeded from real entropy, and the bytes provided will most likely be mixed with real entropy on the guest as well. '/dev/hwrng' can be used to pass through a hardware RNG from the host.
-
-	// The following parameters are optional
-	MaxBytes *int `url:"max_bytes,omitempty" json:"max_bytes,omitempty"` // Maximum bytes of entropy allowed to get injected into the guest every 'period' milliseconds. Prefer a lower value when using '/dev/random' as source. Use `0` to disable limiting (potentially dangerous!).
-	Period   *int `url:"period,omitempty" json:"period,omitempty"`       // Every 'period' milliseconds the entropy-injection quota is reset, allowing the guest to retrieve another 'max_bytes' of entropy.
-}
-
-func (t Rng0) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[source=]</dev/urandom|/dev/random|/dev/hwrng> [,max_bytes=<integer>] [,period=<integer>]`)
-}
-
 // Inter-VM shared memory. Useful for direct communication between VMs, or to the host.
 type Ivshmem struct {
 	Size int `url:"size" json:"size"` // The size of the file in MB.
@@ -148,262 +1248,9 @@ func (t Ivshmem) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `size=<integer> [,name=<string>]`)
 }
 
-// NUMA topology.
-type Numa struct {
-	Cpus string `url:"cpus" json:"cpus"` // CPUs accessing this NUMA node.
-
-	// The following parameters are optional
-	Hostnodes *string  `url:"hostnodes,omitempty" json:"hostnodes,omitempty"` // Host NUMA nodes to use.
-	Memory    *float64 `url:"memory,omitempty" json:"memory,omitempty"`       // Amount of memory this NUMA node provides.
-	Policy    *string  `url:"policy,omitempty" json:"policy,omitempty"`       // NUMA allocation policy.
-}
-
-func (t Numa) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `cpus=<id[-id];...> [,hostnodes=<id[-id];...>] [,memory=<number>] [,policy=<preferred|bind|interleave>]`)
-}
-
-// Array of Numa
-type Numas []Numa
-
-func (t Numas) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Configure an USB device (n is 0 to 4, for machine version >= 7.1 and ostype l26 or windows > 7, n can be up to 14).
-type Usb struct {
-	Host string `url:"host" json:"host"` // The Host USB device or port or the value 'spice'. HOSTUSBDEVICE syntax is:  'bus-port(.port)*' (decimal numbers) or 'vendor_id:product_id' (hexadeciaml numbers) or 'spice' You can use the 'lsusb -t' command to list existing usb devices. NOTE: This option allows direct access to host hardware. So it is no longer possible to migrate such machines - use with special care. The value 'spice' can be used to add a usb redirection devices for spice.
-
-	// The following parameters are optional
-	Usb3 *util.PVEBool `url:"usb3,omitempty" json:"usb3,omitempty"` // Specifies whether if given host option is a USB3 device or port. For modern guests (machine version >= 7.1 and ostype l26 and windows > 7), this flag is irrelevant (all devices are plugged into a xhci controller).
-}
-
-func (t Usb) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[host=]<HOSTUSBDEVICE|spice> [,usb3=<1|0>]`)
-}
-
-// Array of Usb
-type Usbs []Usb
-
-func (t Usbs) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Array of Serial
-type Serials []string
-
-func (t Serials) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Configure a Disk for storing TPM state. The format is fixed to 'raw'. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Note that SIZE_IN_GiB is ignored here and 4 MiB will be used instead. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
-type Tpmstate0 struct {
-	File string `url:"file" json:"file"` // The drive's backing volume.
-
-	// The following parameters are optional
-	ImportFrom *string `url:"import-from,omitempty" json:"import-from,omitempty"` // Create a new disk, importing from this source (volume ID or absolute path). When an absolute path is specified, it's up to you to ensure that the source is not actively used by another process during the import!
-	Size       *string `url:"size,omitempty" json:"size,omitempty"`               // Disk size. This is purely informational and has no effect.
-	Version    *string `url:"version,omitempty" json:"version,omitempty"`         // The TPM interface version. v2.0 is newer and should be preferred. Note that this cannot be changed later on.
-}
-
-func (t Tpmstate0) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[file=]<volume> [,import-from=<source volume>] [,size=<DiskSize>] [,version=<v1.2|v2.0>]`)
-}
-
-// Use volume as IDE hard disk or CD-ROM (n is 0 to 3). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
-type Ide struct {
-	File string `url:"file" json:"file"` // The drive's backing volume.
-
-	// The following parameters are optional
-	Aio             *string       `url:"aio,omitempty" json:"aio,omitempty"`                               // AIO type to use.
-	Backup          *util.PVEBool `url:"backup,omitempty" json:"backup,omitempty"`                         // Whether the drive should be included when making backups.
-	Bps             *int          `url:"bps,omitempty" json:"bps,omitempty"`                               // Maximum r/w speed in bytes per second.
-	BpsMaxLength    *int          `url:"bps_max_length,omitempty" json:"bps_max_length,omitempty"`         // Maximum length of I/O bursts in seconds.
-	BpsRd           *int          `url:"bps_rd,omitempty" json:"bps_rd,omitempty"`                         // Maximum read speed in bytes per second.
-	BpsRdMaxLength  *int          `url:"bps_rd_max_length,omitempty" json:"bps_rd_max_length,omitempty"`   // Maximum length of read I/O bursts in seconds.
-	BpsWr           *int          `url:"bps_wr,omitempty" json:"bps_wr,omitempty"`                         // Maximum write speed in bytes per second.
-	BpsWrMaxLength  *int          `url:"bps_wr_max_length,omitempty" json:"bps_wr_max_length,omitempty"`   // Maximum length of write I/O bursts in seconds.
-	Cache           *string       `url:"cache,omitempty" json:"cache,omitempty"`                           // The drive's cache mode
-	Cyls            *int          `url:"cyls,omitempty" json:"cyls,omitempty"`                             // Force the drive's physical geometry to have a specific cylinder count.
-	DetectZeroes    *util.PVEBool `url:"detect_zeroes,omitempty" json:"detect_zeroes,omitempty"`           // Controls whether to detect and try to optimize writes of zeroes.
-	Discard         *string       `url:"discard,omitempty" json:"discard,omitempty"`                       // Controls whether to pass discard/trim requests to the underlying storage.
-	Format          *string       `url:"format,omitempty" json:"format,omitempty"`                         // The drive's backing file's data format.
-	Heads           *int          `url:"heads,omitempty" json:"heads,omitempty"`                           // Force the drive's physical geometry to have a specific head count.
-	ImportFrom      *string       `url:"import-from,omitempty" json:"import-from,omitempty"`               // Create a new disk, importing from this source (volume ID or absolute path). When an absolute path is specified, it's up to you to ensure that the source is not actively used by another process during the import!
-	Iops            *int          `url:"iops,omitempty" json:"iops,omitempty"`                             // Maximum r/w I/O in operations per second.
-	IopsMax         *int          `url:"iops_max,omitempty" json:"iops_max,omitempty"`                     // Maximum unthrottled r/w I/O pool in operations per second.
-	IopsMaxLength   *int          `url:"iops_max_length,omitempty" json:"iops_max_length,omitempty"`       // Maximum length of I/O bursts in seconds.
-	IopsRd          *int          `url:"iops_rd,omitempty" json:"iops_rd,omitempty"`                       // Maximum read I/O in operations per second.
-	IopsRdMax       *int          `url:"iops_rd_max,omitempty" json:"iops_rd_max,omitempty"`               // Maximum unthrottled read I/O pool in operations per second.
-	IopsRdMaxLength *int          `url:"iops_rd_max_length,omitempty" json:"iops_rd_max_length,omitempty"` // Maximum length of read I/O bursts in seconds.
-	IopsWr          *int          `url:"iops_wr,omitempty" json:"iops_wr,omitempty"`                       // Maximum write I/O in operations per second.
-	IopsWrMax       *int          `url:"iops_wr_max,omitempty" json:"iops_wr_max,omitempty"`               // Maximum unthrottled write I/O pool in operations per second.
-	IopsWrMaxLength *int          `url:"iops_wr_max_length,omitempty" json:"iops_wr_max_length,omitempty"` // Maximum length of write I/O bursts in seconds.
-	Mbps            *float64      `url:"mbps,omitempty" json:"mbps,omitempty"`                             // Maximum r/w speed in megabytes per second.
-	MbpsMax         *float64      `url:"mbps_max,omitempty" json:"mbps_max,omitempty"`                     // Maximum unthrottled r/w pool in megabytes per second.
-	MbpsRd          *float64      `url:"mbps_rd,omitempty" json:"mbps_rd,omitempty"`                       // Maximum read speed in megabytes per second.
-	MbpsRdMax       *float64      `url:"mbps_rd_max,omitempty" json:"mbps_rd_max,omitempty"`               // Maximum unthrottled read pool in megabytes per second.
-	MbpsWr          *float64      `url:"mbps_wr,omitempty" json:"mbps_wr,omitempty"`                       // Maximum write speed in megabytes per second.
-	MbpsWrMax       *float64      `url:"mbps_wr_max,omitempty" json:"mbps_wr_max,omitempty"`               // Maximum unthrottled write pool in megabytes per second.
-	Media           *string       `url:"media,omitempty" json:"media,omitempty"`                           // The drive's media type.
-	Model           *string       `url:"model,omitempty" json:"model,omitempty"`                           // The drive's reported model name, url-encoded, up to 40 bytes long.
-	Replicate       *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`                   // Whether the drive should considered for replication jobs.
-	Rerror          *string       `url:"rerror,omitempty" json:"rerror,omitempty"`                         // Read error action.
-	Secs            *int          `url:"secs,omitempty" json:"secs,omitempty"`                             // Force the drive's physical geometry to have a specific sector count.
-	Serial          *string       `url:"serial,omitempty" json:"serial,omitempty"`                         // The drive's reported serial number, url-encoded, up to 20 bytes long.
-	Shared          *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`                         // Mark this locally-managed volume as available on all nodes
-	Size            *string       `url:"size,omitempty" json:"size,omitempty"`                             // Disk size. This is purely informational and has no effect.
-	Snapshot        *util.PVEBool `url:"snapshot,omitempty" json:"snapshot,omitempty"`                     // Controls qemu's snapshot mode feature. If activated, changes made to the disk are temporary and will be discarded when the VM is shutdown.
-	Ssd             *util.PVEBool `url:"ssd,omitempty" json:"ssd,omitempty"`                               // Whether to expose this drive as an SSD, rather than a rotational hard disk.
-	Trans           *string       `url:"trans,omitempty" json:"trans,omitempty"`                           // Force disk geometry bios translation mode.
-	Werror          *string       `url:"werror,omitempty" json:"werror,omitempty"`                         // Write error action.
-	Wwn             *string       `url:"wwn,omitempty" json:"wwn,omitempty"`                               // The drive's worldwide name, encoded as 16 bytes hex string, prefixed by '0x'.
-}
-
-func (t Ide) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[file=]<volume> [,aio=<native|threads|io_uring>] [,backup=<1|0>] [,bps=<bps>] [,bps_max_length=<seconds>] [,bps_rd=<bps>] [,bps_rd_max_length=<seconds>] [,bps_wr=<bps>] [,bps_wr_max_length=<seconds>] [,cache=<enum>] [,cyls=<integer>] [,detect_zeroes=<1|0>] [,discard=<ignore|on>] [,format=<enum>] [,heads=<integer>] [,import-from=<source volume>] [,iops=<iops>] [,iops_max=<iops>] [,iops_max_length=<seconds>] [,iops_rd=<iops>] [,iops_rd_max=<iops>] [,iops_rd_max_length=<seconds>] [,iops_wr=<iops>] [,iops_wr_max=<iops>] [,iops_wr_max_length=<seconds>] [,mbps=<mbps>] [,mbps_max=<mbps>] [,mbps_rd=<mbps>] [,mbps_rd_max=<mbps>] [,mbps_wr=<mbps>] [,mbps_wr_max=<mbps>] [,media=<cdrom|disk>] [,model=<model>] [,replicate=<1|0>] [,rerror=<ignore|report|stop>] [,secs=<integer>] [,serial=<serial>] [,shared=<1|0>] [,size=<DiskSize>] [,snapshot=<1|0>] [,ssd=<1|0>] [,trans=<none|lba|auto>] [,werror=<enum>] [,wwn=<wwn>]`)
-}
-
-// Array of Ide
-type Ides []Ide
-
-func (t Ides) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Use volume as SCSI hard disk or CD-ROM (n is 0 to 30). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
-type Scsi struct {
-	File string `url:"file" json:"file"` // The drive's backing volume.
-
-	// The following parameters are optional
-	Aio             *string       `url:"aio,omitempty" json:"aio,omitempty"`                               // AIO type to use.
-	Backup          *util.PVEBool `url:"backup,omitempty" json:"backup,omitempty"`                         // Whether the drive should be included when making backups.
-	Bps             *int          `url:"bps,omitempty" json:"bps,omitempty"`                               // Maximum r/w speed in bytes per second.
-	BpsMaxLength    *int          `url:"bps_max_length,omitempty" json:"bps_max_length,omitempty"`         // Maximum length of I/O bursts in seconds.
-	BpsRd           *int          `url:"bps_rd,omitempty" json:"bps_rd,omitempty"`                         // Maximum read speed in bytes per second.
-	BpsRdMaxLength  *int          `url:"bps_rd_max_length,omitempty" json:"bps_rd_max_length,omitempty"`   // Maximum length of read I/O bursts in seconds.
-	BpsWr           *int          `url:"bps_wr,omitempty" json:"bps_wr,omitempty"`                         // Maximum write speed in bytes per second.
-	BpsWrMaxLength  *int          `url:"bps_wr_max_length,omitempty" json:"bps_wr_max_length,omitempty"`   // Maximum length of write I/O bursts in seconds.
-	Cache           *string       `url:"cache,omitempty" json:"cache,omitempty"`                           // The drive's cache mode
-	Cyls            *int          `url:"cyls,omitempty" json:"cyls,omitempty"`                             // Force the drive's physical geometry to have a specific cylinder count.
-	DetectZeroes    *util.PVEBool `url:"detect_zeroes,omitempty" json:"detect_zeroes,omitempty"`           // Controls whether to detect and try to optimize writes of zeroes.
-	Discard         *string       `url:"discard,omitempty" json:"discard,omitempty"`                       // Controls whether to pass discard/trim requests to the underlying storage.
-	Format          *string       `url:"format,omitempty" json:"format,omitempty"`                         // The drive's backing file's data format.
-	Heads           *int          `url:"heads,omitempty" json:"heads,omitempty"`                           // Force the drive's physical geometry to have a specific head count.
-	ImportFrom      *string       `url:"import-from,omitempty" json:"import-from,omitempty"`               // Create a new disk, importing from this source (volume ID or absolute path). When an absolute path is specified, it's up to you to ensure that the source is not actively used by another process during the import!
-	Iops            *int          `url:"iops,omitempty" json:"iops,omitempty"`                             // Maximum r/w I/O in operations per second.
-	IopsMax         *int          `url:"iops_max,omitempty" json:"iops_max,omitempty"`                     // Maximum unthrottled r/w I/O pool in operations per second.
-	IopsMaxLength   *int          `url:"iops_max_length,omitempty" json:"iops_max_length,omitempty"`       // Maximum length of I/O bursts in seconds.
-	IopsRd          *int          `url:"iops_rd,omitempty" json:"iops_rd,omitempty"`                       // Maximum read I/O in operations per second.
-	IopsRdMax       *int          `url:"iops_rd_max,omitempty" json:"iops_rd_max,omitempty"`               // Maximum unthrottled read I/O pool in operations per second.
-	IopsRdMaxLength *int          `url:"iops_rd_max_length,omitempty" json:"iops_rd_max_length,omitempty"` // Maximum length of read I/O bursts in seconds.
-	IopsWr          *int          `url:"iops_wr,omitempty" json:"iops_wr,omitempty"`                       // Maximum write I/O in operations per second.
-	IopsWrMax       *int          `url:"iops_wr_max,omitempty" json:"iops_wr_max,omitempty"`               // Maximum unthrottled write I/O pool in operations per second.
-	IopsWrMaxLength *int          `url:"iops_wr_max_length,omitempty" json:"iops_wr_max_length,omitempty"` // Maximum length of write I/O bursts in seconds.
-	Iothread        *util.PVEBool `url:"iothread,omitempty" json:"iothread,omitempty"`                     // Whether to use iothreads for this drive
-	Mbps            *float64      `url:"mbps,omitempty" json:"mbps,omitempty"`                             // Maximum r/w speed in megabytes per second.
-	MbpsMax         *float64      `url:"mbps_max,omitempty" json:"mbps_max,omitempty"`                     // Maximum unthrottled r/w pool in megabytes per second.
-	MbpsRd          *float64      `url:"mbps_rd,omitempty" json:"mbps_rd,omitempty"`                       // Maximum read speed in megabytes per second.
-	MbpsRdMax       *float64      `url:"mbps_rd_max,omitempty" json:"mbps_rd_max,omitempty"`               // Maximum unthrottled read pool in megabytes per second.
-	MbpsWr          *float64      `url:"mbps_wr,omitempty" json:"mbps_wr,omitempty"`                       // Maximum write speed in megabytes per second.
-	MbpsWrMax       *float64      `url:"mbps_wr_max,omitempty" json:"mbps_wr_max,omitempty"`               // Maximum unthrottled write pool in megabytes per second.
-	Media           *string       `url:"media,omitempty" json:"media,omitempty"`                           // The drive's media type.
-	Queues          *int          `url:"queues,omitempty" json:"queues,omitempty"`                         // Number of queues.
-	Replicate       *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`                   // Whether the drive should considered for replication jobs.
-	Rerror          *string       `url:"rerror,omitempty" json:"rerror,omitempty"`                         // Read error action.
-	Ro              *util.PVEBool `url:"ro,omitempty" json:"ro,omitempty"`                                 // Whether the drive is read-only.
-	Scsiblock       *util.PVEBool `url:"scsiblock,omitempty" json:"scsiblock,omitempty"`                   // whether to use scsi-block for full passthrough of host block device WARNING: can lead to I/O errors in combination with low memory or high memory fragmentation on host
-	Secs            *int          `url:"secs,omitempty" json:"secs,omitempty"`                             // Force the drive's physical geometry to have a specific sector count.
-	Serial          *string       `url:"serial,omitempty" json:"serial,omitempty"`                         // The drive's reported serial number, url-encoded, up to 20 bytes long.
-	Shared          *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`                         // Mark this locally-managed volume as available on all nodes
-	Size            *string       `url:"size,omitempty" json:"size,omitempty"`                             // Disk size. This is purely informational and has no effect.
-	Snapshot        *util.PVEBool `url:"snapshot,omitempty" json:"snapshot,omitempty"`                     // Controls qemu's snapshot mode feature. If activated, changes made to the disk are temporary and will be discarded when the VM is shutdown.
-	Ssd             *util.PVEBool `url:"ssd,omitempty" json:"ssd,omitempty"`                               // Whether to expose this drive as an SSD, rather than a rotational hard disk.
-	Trans           *string       `url:"trans,omitempty" json:"trans,omitempty"`                           // Force disk geometry bios translation mode.
-	Werror          *string       `url:"werror,omitempty" json:"werror,omitempty"`                         // Write error action.
-	Wwn             *string       `url:"wwn,omitempty" json:"wwn,omitempty"`                               // The drive's worldwide name, encoded as 16 bytes hex string, prefixed by '0x'.
-}
-
-func (t Scsi) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[file=]<volume> [,aio=<native|threads|io_uring>] [,backup=<1|0>] [,bps=<bps>] [,bps_max_length=<seconds>] [,bps_rd=<bps>] [,bps_rd_max_length=<seconds>] [,bps_wr=<bps>] [,bps_wr_max_length=<seconds>] [,cache=<enum>] [,cyls=<integer>] [,detect_zeroes=<1|0>] [,discard=<ignore|on>] [,format=<enum>] [,heads=<integer>] [,import-from=<source volume>] [,iops=<iops>] [,iops_max=<iops>] [,iops_max_length=<seconds>] [,iops_rd=<iops>] [,iops_rd_max=<iops>] [,iops_rd_max_length=<seconds>] [,iops_wr=<iops>] [,iops_wr_max=<iops>] [,iops_wr_max_length=<seconds>] [,iothread=<1|0>] [,mbps=<mbps>] [,mbps_max=<mbps>] [,mbps_rd=<mbps>] [,mbps_rd_max=<mbps>] [,mbps_wr=<mbps>] [,mbps_wr_max=<mbps>] [,media=<cdrom|disk>] [,queues=<integer>] [,replicate=<1|0>] [,rerror=<ignore|report|stop>] [,ro=<1|0>] [,scsiblock=<1|0>] [,secs=<integer>] [,serial=<serial>] [,shared=<1|0>] [,size=<DiskSize>] [,snapshot=<1|0>] [,ssd=<1|0>] [,trans=<none|lba|auto>] [,werror=<enum>] [,wwn=<wwn>]`)
-}
-
-// Array of Scsi
-type Scsis []Scsi
-
-func (t Scsis) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Array of Hostpci
-type Hostpcis []string
-
-func (t Hostpcis) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Use volume as VIRTIO hard disk (n is 0 to 15). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
-type Virtio struct {
-	File string `url:"file" json:"file"` // The drive's backing volume.
-
-	// The following parameters are optional
-	Aio             *string       `url:"aio,omitempty" json:"aio,omitempty"`                               // AIO type to use.
-	Backup          *util.PVEBool `url:"backup,omitempty" json:"backup,omitempty"`                         // Whether the drive should be included when making backups.
-	Bps             *int          `url:"bps,omitempty" json:"bps,omitempty"`                               // Maximum r/w speed in bytes per second.
-	BpsMaxLength    *int          `url:"bps_max_length,omitempty" json:"bps_max_length,omitempty"`         // Maximum length of I/O bursts in seconds.
-	BpsRd           *int          `url:"bps_rd,omitempty" json:"bps_rd,omitempty"`                         // Maximum read speed in bytes per second.
-	BpsRdMaxLength  *int          `url:"bps_rd_max_length,omitempty" json:"bps_rd_max_length,omitempty"`   // Maximum length of read I/O bursts in seconds.
-	BpsWr           *int          `url:"bps_wr,omitempty" json:"bps_wr,omitempty"`                         // Maximum write speed in bytes per second.
-	BpsWrMaxLength  *int          `url:"bps_wr_max_length,omitempty" json:"bps_wr_max_length,omitempty"`   // Maximum length of write I/O bursts in seconds.
-	Cache           *string       `url:"cache,omitempty" json:"cache,omitempty"`                           // The drive's cache mode
-	Cyls            *int          `url:"cyls,omitempty" json:"cyls,omitempty"`                             // Force the drive's physical geometry to have a specific cylinder count.
-	DetectZeroes    *util.PVEBool `url:"detect_zeroes,omitempty" json:"detect_zeroes,omitempty"`           // Controls whether to detect and try to optimize writes of zeroes.
-	Discard         *string       `url:"discard,omitempty" json:"discard,omitempty"`                       // Controls whether to pass discard/trim requests to the underlying storage.
-	Format          *string       `url:"format,omitempty" json:"format,omitempty"`                         // The drive's backing file's data format.
-	Heads           *int          `url:"heads,omitempty" json:"heads,omitempty"`                           // Force the drive's physical geometry to have a specific head count.
-	ImportFrom      *string       `url:"import-from,omitempty" json:"import-from,omitempty"`               // Create a new disk, importing from this source (volume ID or absolute path). When an absolute path is specified, it's up to you to ensure that the source is not actively used by another process during the import!
-	Iops            *int          `url:"iops,omitempty" json:"iops,omitempty"`                             // Maximum r/w I/O in operations per second.
-	IopsMax         *int          `url:"iops_max,omitempty" json:"iops_max,omitempty"`                     // Maximum unthrottled r/w I/O pool in operations per second.
-	IopsMaxLength   *int          `url:"iops_max_length,omitempty" json:"iops_max_length,omitempty"`       // Maximum length of I/O bursts in seconds.
-	IopsRd          *int          `url:"iops_rd,omitempty" json:"iops_rd,omitempty"`                       // Maximum read I/O in operations per second.
-	IopsRdMax       *int          `url:"iops_rd_max,omitempty" json:"iops_rd_max,omitempty"`               // Maximum unthrottled read I/O pool in operations per second.
-	IopsRdMaxLength *int          `url:"iops_rd_max_length,omitempty" json:"iops_rd_max_length,omitempty"` // Maximum length of read I/O bursts in seconds.
-	IopsWr          *int          `url:"iops_wr,omitempty" json:"iops_wr,omitempty"`                       // Maximum write I/O in operations per second.
-	IopsWrMax       *int          `url:"iops_wr_max,omitempty" json:"iops_wr_max,omitempty"`               // Maximum unthrottled write I/O pool in operations per second.
-	IopsWrMaxLength *int          `url:"iops_wr_max_length,omitempty" json:"iops_wr_max_length,omitempty"` // Maximum length of write I/O bursts in seconds.
-	Iothread        *util.PVEBool `url:"iothread,omitempty" json:"iothread,omitempty"`                     // Whether to use iothreads for this drive
-	Mbps            *float64      `url:"mbps,omitempty" json:"mbps,omitempty"`                             // Maximum r/w speed in megabytes per second.
-	MbpsMax         *float64      `url:"mbps_max,omitempty" json:"mbps_max,omitempty"`                     // Maximum unthrottled r/w pool in megabytes per second.
-	MbpsRd          *float64      `url:"mbps_rd,omitempty" json:"mbps_rd,omitempty"`                       // Maximum read speed in megabytes per second.
-	MbpsRdMax       *float64      `url:"mbps_rd_max,omitempty" json:"mbps_rd_max,omitempty"`               // Maximum unthrottled read pool in megabytes per second.
-	MbpsWr          *float64      `url:"mbps_wr,omitempty" json:"mbps_wr,omitempty"`                       // Maximum write speed in megabytes per second.
-	MbpsWrMax       *float64      `url:"mbps_wr_max,omitempty" json:"mbps_wr_max,omitempty"`               // Maximum unthrottled write pool in megabytes per second.
-	Media           *string       `url:"media,omitempty" json:"media,omitempty"`                           // The drive's media type.
-	Replicate       *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`                   // Whether the drive should considered for replication jobs.
-	Rerror          *string       `url:"rerror,omitempty" json:"rerror,omitempty"`                         // Read error action.
-	Ro              *util.PVEBool `url:"ro,omitempty" json:"ro,omitempty"`                                 // Whether the drive is read-only.
-	Secs            *int          `url:"secs,omitempty" json:"secs,omitempty"`                             // Force the drive's physical geometry to have a specific sector count.
-	Serial          *string       `url:"serial,omitempty" json:"serial,omitempty"`                         // The drive's reported serial number, url-encoded, up to 20 bytes long.
-	Shared          *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`                         // Mark this locally-managed volume as available on all nodes
-	Size            *string       `url:"size,omitempty" json:"size,omitempty"`                             // Disk size. This is purely informational and has no effect.
-	Snapshot        *util.PVEBool `url:"snapshot,omitempty" json:"snapshot,omitempty"`                     // Controls qemu's snapshot mode feature. If activated, changes made to the disk are temporary and will be discarded when the VM is shutdown.
-	Trans           *string       `url:"trans,omitempty" json:"trans,omitempty"`                           // Force disk geometry bios translation mode.
-	Werror          *string       `url:"werror,omitempty" json:"werror,omitempty"`                         // Write error action.
-}
-
-func (t Virtio) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[file=]<volume> [,aio=<native|threads|io_uring>] [,backup=<1|0>] [,bps=<bps>] [,bps_max_length=<seconds>] [,bps_rd=<bps>] [,bps_rd_max_length=<seconds>] [,bps_wr=<bps>] [,bps_wr_max_length=<seconds>] [,cache=<enum>] [,cyls=<integer>] [,detect_zeroes=<1|0>] [,discard=<ignore|on>] [,format=<enum>] [,heads=<integer>] [,import-from=<source volume>] [,iops=<iops>] [,iops_max=<iops>] [,iops_max_length=<seconds>] [,iops_rd=<iops>] [,iops_rd_max=<iops>] [,iops_rd_max_length=<seconds>] [,iops_wr=<iops>] [,iops_wr_max=<iops>] [,iops_wr_max_length=<seconds>] [,iothread=<1|0>] [,mbps=<mbps>] [,mbps_max=<mbps>] [,mbps_rd=<mbps>] [,mbps_rd_max=<mbps>] [,mbps_wr=<mbps>] [,mbps_wr_max=<mbps>] [,media=<cdrom|disk>] [,replicate=<1|0>] [,rerror=<ignore|report|stop>] [,ro=<1|0>] [,secs=<integer>] [,serial=<serial>] [,shared=<1|0>] [,size=<DiskSize>] [,snapshot=<1|0>] [,trans=<none|lba|auto>] [,werror=<enum>]`)
-}
-
-// Array of Virtio
-type Virtios []Virtio
-
-func (t Virtios) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
 // Specify network devices.
 type Net struct {
-	Model string `url:"model" json:"model"` // Network Card Model. The 'virtio' model provides the best performance with very low CPU overhead. If your guest does not support this driver, it is usually best to use 'e1000'.
+	Model NetModel `url:"model" json:"model"` // Network Card Model. The 'virtio' model provides the best performance with very low CPU overhead. If your guest does not support this driver, it is usually best to use 'e1000'.
 
 	// The following parameters are optional
 	Bridge   *string       `url:"bridge,omitempty" json:"bridge,omitempty"`       // Bridge to attach the network device to. The Proxmox VE standard bridge is called 'vmbr0'. If you do not specify a bridge, we create a kvm user (NATed) network device, which provides DHCP and DNS services. The following addresses are used:  10.0.2.2  Gateway 10.0.2.3  DNS Server 10.0.2.4  SMB Server The DHCP server assign addresses to the guest starting from 10.0.2.15.
@@ -428,6 +1275,50 @@ func (t Nets) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeArray(key, v, t)
 }
 
+// Configure a Disk for storing EFI vars. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Note that SIZE_IN_GiB is ignored here and that the default EFI vars are copied to the volume instead. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+type Efidisk0 struct {
+	File string `url:"file" json:"file"` // The drive's backing volume.
+
+	// The following parameters are optional
+	Efitype         *Efidisk0Efitype `url:"efitype,omitempty" json:"efitype,omitempty"`                     // Size and type of the OVMF EFI vars. '4m' is newer and recommended, and required for Secure Boot. For backwards compatibility, '2m' is used if not otherwise specified.
+	Format          *Efidisk0Format  `url:"format,omitempty" json:"format,omitempty"`                       // The drive's backing file's data format.
+	ImportFrom      *string          `url:"import-from,omitempty" json:"import-from,omitempty"`             // Create a new disk, importing from this source (volume ID or absolute path). When an absolute path is specified, it's up to you to ensure that the source is not actively used by another process during the import!
+	PreEnrolledKeys *util.PVEBool    `url:"pre-enrolled-keys,omitempty" json:"pre-enrolled-keys,omitempty"` // Use am EFI vars template with distribution-specific and Microsoft Standard keys enrolled, if used with 'efitype=4m'. Note that this will enable Secure Boot by default, though it can still be turned off from within the VM.
+	Size            *string          `url:"size,omitempty" json:"size,omitempty"`                           // Disk size. This is purely informational and has no effect.
+}
+
+func (t Efidisk0) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[file=]<volume> [,efitype=<2m|4m>] [,format=<enum>] [,import-from=<source volume>] [,pre-enrolled-keys=<1|0>] [,size=<DiskSize>]`)
+}
+
+// Array of Serial
+type Serials []string
+
+func (t Serials) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// NUMA topology.
+type Numa struct {
+	Cpus string `url:"cpus" json:"cpus"` // CPUs accessing this NUMA node.
+
+	// The following parameters are optional
+	Hostnodes *string     `url:"hostnodes,omitempty" json:"hostnodes,omitempty"` // Host NUMA nodes to use.
+	Memory    *float64    `url:"memory,omitempty" json:"memory,omitempty"`       // Amount of memory this NUMA node provides.
+	Policy    *NumaPolicy `url:"policy,omitempty" json:"policy,omitempty"`       // NUMA allocation policy.
+}
+
+func (t Numa) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `cpus=<id[-id];...> [,hostnodes=<id[-id];...>] [,memory=<number>] [,policy=<preferred|bind|interleave>]`)
+}
+
+// Array of Numa
+type Numas []Numa
+
+func (t Numas) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
 // Array of Parallel
 type Parallels []string
 
@@ -435,12 +1326,29 @@ func (t Parallels) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeArray(key, v, t)
 }
 
-// Use volume as SATA hard disk or CD-ROM (n is 0 to 5). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
-type Sata struct {
+// Reference to unused volumes. This is used internally, and should not be modified manually.
+type Unused struct {
+	File string `url:"file" json:"file"` // The drive's backing volume.
+
+}
+
+func (t Unused) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[file=]<volume>`)
+}
+
+// Array of Unused
+type Unuseds []Unused
+
+func (t Unuseds) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// Use volume as IDE hard disk or CD-ROM (n is 0 to 3). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+type Ide struct {
 	File string `url:"file" json:"file"` // The drive's backing volume.
 
 	// The following parameters are optional
-	Aio             *string       `url:"aio,omitempty" json:"aio,omitempty"`                               // AIO type to use.
+	Aio             *IdeAio       `url:"aio,omitempty" json:"aio,omitempty"`                               // AIO type to use.
 	Backup          *util.PVEBool `url:"backup,omitempty" json:"backup,omitempty"`                         // Whether the drive should be included when making backups.
 	Bps             *int          `url:"bps,omitempty" json:"bps,omitempty"`                               // Maximum r/w speed in bytes per second.
 	BpsMaxLength    *int          `url:"bps_max_length,omitempty" json:"bps_max_length,omitempty"`         // Maximum length of I/O bursts in seconds.
@@ -448,11 +1356,11 @@ type Sata struct {
 	BpsRdMaxLength  *int          `url:"bps_rd_max_length,omitempty" json:"bps_rd_max_length,omitempty"`   // Maximum length of read I/O bursts in seconds.
 	BpsWr           *int          `url:"bps_wr,omitempty" json:"bps_wr,omitempty"`                         // Maximum write speed in bytes per second.
 	BpsWrMaxLength  *int          `url:"bps_wr_max_length,omitempty" json:"bps_wr_max_length,omitempty"`   // Maximum length of write I/O bursts in seconds.
-	Cache           *string       `url:"cache,omitempty" json:"cache,omitempty"`                           // The drive's cache mode
+	Cache           *IdeCache     `url:"cache,omitempty" json:"cache,omitempty"`                           // The drive's cache mode
 	Cyls            *int          `url:"cyls,omitempty" json:"cyls,omitempty"`                             // Force the drive's physical geometry to have a specific cylinder count.
 	DetectZeroes    *util.PVEBool `url:"detect_zeroes,omitempty" json:"detect_zeroes,omitempty"`           // Controls whether to detect and try to optimize writes of zeroes.
-	Discard         *string       `url:"discard,omitempty" json:"discard,omitempty"`                       // Controls whether to pass discard/trim requests to the underlying storage.
-	Format          *string       `url:"format,omitempty" json:"format,omitempty"`                         // The drive's backing file's data format.
+	Discard         *IdeDiscard   `url:"discard,omitempty" json:"discard,omitempty"`                       // Controls whether to pass discard/trim requests to the underlying storage.
+	Format          *IdeFormat    `url:"format,omitempty" json:"format,omitempty"`                         // The drive's backing file's data format.
 	Heads           *int          `url:"heads,omitempty" json:"heads,omitempty"`                           // Force the drive's physical geometry to have a specific head count.
 	ImportFrom      *string       `url:"import-from,omitempty" json:"import-from,omitempty"`               // Create a new disk, importing from this source (volume ID or absolute path). When an absolute path is specified, it's up to you to ensure that the source is not actively used by another process during the import!
 	Iops            *int          `url:"iops,omitempty" json:"iops,omitempty"`                             // Maximum r/w I/O in operations per second.
@@ -470,17 +1378,311 @@ type Sata struct {
 	MbpsRdMax       *float64      `url:"mbps_rd_max,omitempty" json:"mbps_rd_max,omitempty"`               // Maximum unthrottled read pool in megabytes per second.
 	MbpsWr          *float64      `url:"mbps_wr,omitempty" json:"mbps_wr,omitempty"`                       // Maximum write speed in megabytes per second.
 	MbpsWrMax       *float64      `url:"mbps_wr_max,omitempty" json:"mbps_wr_max,omitempty"`               // Maximum unthrottled write pool in megabytes per second.
-	Media           *string       `url:"media,omitempty" json:"media,omitempty"`                           // The drive's media type.
+	Media           *IdeMedia     `url:"media,omitempty" json:"media,omitempty"`                           // The drive's media type.
+	Model           *string       `url:"model,omitempty" json:"model,omitempty"`                           // The drive's reported model name, url-encoded, up to 40 bytes long.
 	Replicate       *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`                   // Whether the drive should considered for replication jobs.
-	Rerror          *string       `url:"rerror,omitempty" json:"rerror,omitempty"`                         // Read error action.
+	Rerror          *IdeRerror    `url:"rerror,omitempty" json:"rerror,omitempty"`                         // Read error action.
 	Secs            *int          `url:"secs,omitempty" json:"secs,omitempty"`                             // Force the drive's physical geometry to have a specific sector count.
 	Serial          *string       `url:"serial,omitempty" json:"serial,omitempty"`                         // The drive's reported serial number, url-encoded, up to 20 bytes long.
 	Shared          *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`                         // Mark this locally-managed volume as available on all nodes
 	Size            *string       `url:"size,omitempty" json:"size,omitempty"`                             // Disk size. This is purely informational and has no effect.
 	Snapshot        *util.PVEBool `url:"snapshot,omitempty" json:"snapshot,omitempty"`                     // Controls qemu's snapshot mode feature. If activated, changes made to the disk are temporary and will be discarded when the VM is shutdown.
 	Ssd             *util.PVEBool `url:"ssd,omitempty" json:"ssd,omitempty"`                               // Whether to expose this drive as an SSD, rather than a rotational hard disk.
-	Trans           *string       `url:"trans,omitempty" json:"trans,omitempty"`                           // Force disk geometry bios translation mode.
-	Werror          *string       `url:"werror,omitempty" json:"werror,omitempty"`                         // Write error action.
+	Trans           *IdeTrans     `url:"trans,omitempty" json:"trans,omitempty"`                           // Force disk geometry bios translation mode.
+	Werror          *IdeWerror    `url:"werror,omitempty" json:"werror,omitempty"`                         // Write error action.
+	Wwn             *string       `url:"wwn,omitempty" json:"wwn,omitempty"`                               // The drive's worldwide name, encoded as 16 bytes hex string, prefixed by '0x'.
+}
+
+func (t Ide) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[file=]<volume> [,aio=<native|threads|io_uring>] [,backup=<1|0>] [,bps=<bps>] [,bps_max_length=<seconds>] [,bps_rd=<bps>] [,bps_rd_max_length=<seconds>] [,bps_wr=<bps>] [,bps_wr_max_length=<seconds>] [,cache=<enum>] [,cyls=<integer>] [,detect_zeroes=<1|0>] [,discard=<ignore|on>] [,format=<enum>] [,heads=<integer>] [,import-from=<source volume>] [,iops=<iops>] [,iops_max=<iops>] [,iops_max_length=<seconds>] [,iops_rd=<iops>] [,iops_rd_max=<iops>] [,iops_rd_max_length=<seconds>] [,iops_wr=<iops>] [,iops_wr_max=<iops>] [,iops_wr_max_length=<seconds>] [,mbps=<mbps>] [,mbps_max=<mbps>] [,mbps_rd=<mbps>] [,mbps_rd_max=<mbps>] [,mbps_wr=<mbps>] [,mbps_wr_max=<mbps>] [,media=<cdrom|disk>] [,model=<model>] [,replicate=<1|0>] [,rerror=<ignore|report|stop>] [,secs=<integer>] [,serial=<serial>] [,shared=<1|0>] [,size=<DiskSize>] [,snapshot=<1|0>] [,ssd=<1|0>] [,trans=<none|lba|auto>] [,werror=<enum>] [,wwn=<wwn>]`)
+}
+
+// Array of Ide
+type Ides []Ide
+
+func (t Ides) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// Configure additional enhancements for SPICE.
+type SpiceEnhancements struct {
+
+	// The following parameters are optional
+	Foldersharing  *util.PVEBool                    `url:"foldersharing,omitempty" json:"foldersharing,omitempty"`   // Enable folder sharing via SPICE. Needs Spice-WebDAV daemon installed in the VM.
+	Videostreaming *SpiceEnhancementsVideostreaming `url:"videostreaming,omitempty" json:"videostreaming,omitempty"` // Enable video streaming. Uses compression for detected video streams.
+}
+
+func (t SpiceEnhancements) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[foldersharing=<1|0>] [,videostreaming=<off|all|filter>]`)
+}
+
+// Configure a VirtIO-based Random Number Generator.
+type Rng0 struct {
+	Source Rng0Source `url:"source" json:"source"` // The file on the host to gather entropy from. In most cases '/dev/urandom' should be preferred over '/dev/random' to avoid entropy-starvation issues on the host. Using urandom does *not* decrease security in any meaningful way, as it's still seeded from real entropy, and the bytes provided will most likely be mixed with real entropy on the guest as well. '/dev/hwrng' can be used to pass through a hardware RNG from the host.
+
+	// The following parameters are optional
+	MaxBytes *int `url:"max_bytes,omitempty" json:"max_bytes,omitempty"` // Maximum bytes of entropy allowed to get injected into the guest every 'period' milliseconds. Prefer a lower value when using '/dev/random' as source. Use `0` to disable limiting (potentially dangerous!).
+	Period   *int `url:"period,omitempty" json:"period,omitempty"`       // Every 'period' milliseconds the entropy-injection quota is reset, allowing the guest to retrieve another 'max_bytes' of entropy.
+}
+
+func (t Rng0) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[source=]</dev/urandom|/dev/random|/dev/hwrng> [,max_bytes=<integer>] [,period=<integer>]`)
+}
+
+// Array of Hostpci
+type Hostpcis []string
+
+func (t Hostpcis) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// Configure the VGA hardware.
+type Vga struct {
+
+	// The following parameters are optional
+	Memory *int     `url:"memory,omitempty" json:"memory,omitempty"` // Sets the VGA memory (in MiB). Has no effect with serial display.
+	Type   *VgaType `url:"type,omitempty" json:"type,omitempty"`     // Select the VGA type.
+}
+
+func (t Vga) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[[type=]<enum>] [,memory=<integer>]`)
+}
+
+// Array of Ipconfig
+type Ipconfigs []string
+
+func (t Ipconfigs) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// Use volume as VIRTIO hard disk (n is 0 to 15). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+type Virtio struct {
+	File string `url:"file" json:"file"` // The drive's backing volume.
+
+	// The following parameters are optional
+	Aio             *VirtioAio     `url:"aio,omitempty" json:"aio,omitempty"`                               // AIO type to use.
+	Backup          *util.PVEBool  `url:"backup,omitempty" json:"backup,omitempty"`                         // Whether the drive should be included when making backups.
+	Bps             *int           `url:"bps,omitempty" json:"bps,omitempty"`                               // Maximum r/w speed in bytes per second.
+	BpsMaxLength    *int           `url:"bps_max_length,omitempty" json:"bps_max_length,omitempty"`         // Maximum length of I/O bursts in seconds.
+	BpsRd           *int           `url:"bps_rd,omitempty" json:"bps_rd,omitempty"`                         // Maximum read speed in bytes per second.
+	BpsRdMaxLength  *int           `url:"bps_rd_max_length,omitempty" json:"bps_rd_max_length,omitempty"`   // Maximum length of read I/O bursts in seconds.
+	BpsWr           *int           `url:"bps_wr,omitempty" json:"bps_wr,omitempty"`                         // Maximum write speed in bytes per second.
+	BpsWrMaxLength  *int           `url:"bps_wr_max_length,omitempty" json:"bps_wr_max_length,omitempty"`   // Maximum length of write I/O bursts in seconds.
+	Cache           *VirtioCache   `url:"cache,omitempty" json:"cache,omitempty"`                           // The drive's cache mode
+	Cyls            *int           `url:"cyls,omitempty" json:"cyls,omitempty"`                             // Force the drive's physical geometry to have a specific cylinder count.
+	DetectZeroes    *util.PVEBool  `url:"detect_zeroes,omitempty" json:"detect_zeroes,omitempty"`           // Controls whether to detect and try to optimize writes of zeroes.
+	Discard         *VirtioDiscard `url:"discard,omitempty" json:"discard,omitempty"`                       // Controls whether to pass discard/trim requests to the underlying storage.
+	Format          *VirtioFormat  `url:"format,omitempty" json:"format,omitempty"`                         // The drive's backing file's data format.
+	Heads           *int           `url:"heads,omitempty" json:"heads,omitempty"`                           // Force the drive's physical geometry to have a specific head count.
+	ImportFrom      *string        `url:"import-from,omitempty" json:"import-from,omitempty"`               // Create a new disk, importing from this source (volume ID or absolute path). When an absolute path is specified, it's up to you to ensure that the source is not actively used by another process during the import!
+	Iops            *int           `url:"iops,omitempty" json:"iops,omitempty"`                             // Maximum r/w I/O in operations per second.
+	IopsMax         *int           `url:"iops_max,omitempty" json:"iops_max,omitempty"`                     // Maximum unthrottled r/w I/O pool in operations per second.
+	IopsMaxLength   *int           `url:"iops_max_length,omitempty" json:"iops_max_length,omitempty"`       // Maximum length of I/O bursts in seconds.
+	IopsRd          *int           `url:"iops_rd,omitempty" json:"iops_rd,omitempty"`                       // Maximum read I/O in operations per second.
+	IopsRdMax       *int           `url:"iops_rd_max,omitempty" json:"iops_rd_max,omitempty"`               // Maximum unthrottled read I/O pool in operations per second.
+	IopsRdMaxLength *int           `url:"iops_rd_max_length,omitempty" json:"iops_rd_max_length,omitempty"` // Maximum length of read I/O bursts in seconds.
+	IopsWr          *int           `url:"iops_wr,omitempty" json:"iops_wr,omitempty"`                       // Maximum write I/O in operations per second.
+	IopsWrMax       *int           `url:"iops_wr_max,omitempty" json:"iops_wr_max,omitempty"`               // Maximum unthrottled write I/O pool in operations per second.
+	IopsWrMaxLength *int           `url:"iops_wr_max_length,omitempty" json:"iops_wr_max_length,omitempty"` // Maximum length of write I/O bursts in seconds.
+	Iothread        *util.PVEBool  `url:"iothread,omitempty" json:"iothread,omitempty"`                     // Whether to use iothreads for this drive
+	Mbps            *float64       `url:"mbps,omitempty" json:"mbps,omitempty"`                             // Maximum r/w speed in megabytes per second.
+	MbpsMax         *float64       `url:"mbps_max,omitempty" json:"mbps_max,omitempty"`                     // Maximum unthrottled r/w pool in megabytes per second.
+	MbpsRd          *float64       `url:"mbps_rd,omitempty" json:"mbps_rd,omitempty"`                       // Maximum read speed in megabytes per second.
+	MbpsRdMax       *float64       `url:"mbps_rd_max,omitempty" json:"mbps_rd_max,omitempty"`               // Maximum unthrottled read pool in megabytes per second.
+	MbpsWr          *float64       `url:"mbps_wr,omitempty" json:"mbps_wr,omitempty"`                       // Maximum write speed in megabytes per second.
+	MbpsWrMax       *float64       `url:"mbps_wr_max,omitempty" json:"mbps_wr_max,omitempty"`               // Maximum unthrottled write pool in megabytes per second.
+	Media           *VirtioMedia   `url:"media,omitempty" json:"media,omitempty"`                           // The drive's media type.
+	Replicate       *util.PVEBool  `url:"replicate,omitempty" json:"replicate,omitempty"`                   // Whether the drive should considered for replication jobs.
+	Rerror          *VirtioRerror  `url:"rerror,omitempty" json:"rerror,omitempty"`                         // Read error action.
+	Ro              *util.PVEBool  `url:"ro,omitempty" json:"ro,omitempty"`                                 // Whether the drive is read-only.
+	Secs            *int           `url:"secs,omitempty" json:"secs,omitempty"`                             // Force the drive's physical geometry to have a specific sector count.
+	Serial          *string        `url:"serial,omitempty" json:"serial,omitempty"`                         // The drive's reported serial number, url-encoded, up to 20 bytes long.
+	Shared          *util.PVEBool  `url:"shared,omitempty" json:"shared,omitempty"`                         // Mark this locally-managed volume as available on all nodes
+	Size            *string        `url:"size,omitempty" json:"size,omitempty"`                             // Disk size. This is purely informational and has no effect.
+	Snapshot        *util.PVEBool  `url:"snapshot,omitempty" json:"snapshot,omitempty"`                     // Controls qemu's snapshot mode feature. If activated, changes made to the disk are temporary and will be discarded when the VM is shutdown.
+	Trans           *VirtioTrans   `url:"trans,omitempty" json:"trans,omitempty"`                           // Force disk geometry bios translation mode.
+	Werror          *VirtioWerror  `url:"werror,omitempty" json:"werror,omitempty"`                         // Write error action.
+}
+
+func (t Virtio) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[file=]<volume> [,aio=<native|threads|io_uring>] [,backup=<1|0>] [,bps=<bps>] [,bps_max_length=<seconds>] [,bps_rd=<bps>] [,bps_rd_max_length=<seconds>] [,bps_wr=<bps>] [,bps_wr_max_length=<seconds>] [,cache=<enum>] [,cyls=<integer>] [,detect_zeroes=<1|0>] [,discard=<ignore|on>] [,format=<enum>] [,heads=<integer>] [,import-from=<source volume>] [,iops=<iops>] [,iops_max=<iops>] [,iops_max_length=<seconds>] [,iops_rd=<iops>] [,iops_rd_max=<iops>] [,iops_rd_max_length=<seconds>] [,iops_wr=<iops>] [,iops_wr_max=<iops>] [,iops_wr_max_length=<seconds>] [,iothread=<1|0>] [,mbps=<mbps>] [,mbps_max=<mbps>] [,mbps_rd=<mbps>] [,mbps_rd_max=<mbps>] [,mbps_wr=<mbps>] [,mbps_wr_max=<mbps>] [,media=<cdrom|disk>] [,replicate=<1|0>] [,rerror=<ignore|report|stop>] [,ro=<1|0>] [,secs=<integer>] [,serial=<serial>] [,shared=<1|0>] [,size=<DiskSize>] [,snapshot=<1|0>] [,trans=<none|lba|auto>] [,werror=<enum>]`)
+}
+
+// Array of Virtio
+type Virtios []Virtio
+
+func (t Virtios) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// Use volume as SCSI hard disk or CD-ROM (n is 0 to 30). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+type Scsi struct {
+	File string `url:"file" json:"file"` // The drive's backing volume.
+
+	// The following parameters are optional
+	Aio             *ScsiAio      `url:"aio,omitempty" json:"aio,omitempty"`                               // AIO type to use.
+	Backup          *util.PVEBool `url:"backup,omitempty" json:"backup,omitempty"`                         // Whether the drive should be included when making backups.
+	Bps             *int          `url:"bps,omitempty" json:"bps,omitempty"`                               // Maximum r/w speed in bytes per second.
+	BpsMaxLength    *int          `url:"bps_max_length,omitempty" json:"bps_max_length,omitempty"`         // Maximum length of I/O bursts in seconds.
+	BpsRd           *int          `url:"bps_rd,omitempty" json:"bps_rd,omitempty"`                         // Maximum read speed in bytes per second.
+	BpsRdMaxLength  *int          `url:"bps_rd_max_length,omitempty" json:"bps_rd_max_length,omitempty"`   // Maximum length of read I/O bursts in seconds.
+	BpsWr           *int          `url:"bps_wr,omitempty" json:"bps_wr,omitempty"`                         // Maximum write speed in bytes per second.
+	BpsWrMaxLength  *int          `url:"bps_wr_max_length,omitempty" json:"bps_wr_max_length,omitempty"`   // Maximum length of write I/O bursts in seconds.
+	Cache           *ScsiCache    `url:"cache,omitempty" json:"cache,omitempty"`                           // The drive's cache mode
+	Cyls            *int          `url:"cyls,omitempty" json:"cyls,omitempty"`                             // Force the drive's physical geometry to have a specific cylinder count.
+	DetectZeroes    *util.PVEBool `url:"detect_zeroes,omitempty" json:"detect_zeroes,omitempty"`           // Controls whether to detect and try to optimize writes of zeroes.
+	Discard         *ScsiDiscard  `url:"discard,omitempty" json:"discard,omitempty"`                       // Controls whether to pass discard/trim requests to the underlying storage.
+	Format          *ScsiFormat   `url:"format,omitempty" json:"format,omitempty"`                         // The drive's backing file's data format.
+	Heads           *int          `url:"heads,omitempty" json:"heads,omitempty"`                           // Force the drive's physical geometry to have a specific head count.
+	ImportFrom      *string       `url:"import-from,omitempty" json:"import-from,omitempty"`               // Create a new disk, importing from this source (volume ID or absolute path). When an absolute path is specified, it's up to you to ensure that the source is not actively used by another process during the import!
+	Iops            *int          `url:"iops,omitempty" json:"iops,omitempty"`                             // Maximum r/w I/O in operations per second.
+	IopsMax         *int          `url:"iops_max,omitempty" json:"iops_max,omitempty"`                     // Maximum unthrottled r/w I/O pool in operations per second.
+	IopsMaxLength   *int          `url:"iops_max_length,omitempty" json:"iops_max_length,omitempty"`       // Maximum length of I/O bursts in seconds.
+	IopsRd          *int          `url:"iops_rd,omitempty" json:"iops_rd,omitempty"`                       // Maximum read I/O in operations per second.
+	IopsRdMax       *int          `url:"iops_rd_max,omitempty" json:"iops_rd_max,omitempty"`               // Maximum unthrottled read I/O pool in operations per second.
+	IopsRdMaxLength *int          `url:"iops_rd_max_length,omitempty" json:"iops_rd_max_length,omitempty"` // Maximum length of read I/O bursts in seconds.
+	IopsWr          *int          `url:"iops_wr,omitempty" json:"iops_wr,omitempty"`                       // Maximum write I/O in operations per second.
+	IopsWrMax       *int          `url:"iops_wr_max,omitempty" json:"iops_wr_max,omitempty"`               // Maximum unthrottled write I/O pool in operations per second.
+	IopsWrMaxLength *int          `url:"iops_wr_max_length,omitempty" json:"iops_wr_max_length,omitempty"` // Maximum length of write I/O bursts in seconds.
+	Iothread        *util.PVEBool `url:"iothread,omitempty" json:"iothread,omitempty"`                     // Whether to use iothreads for this drive
+	Mbps            *float64      `url:"mbps,omitempty" json:"mbps,omitempty"`                             // Maximum r/w speed in megabytes per second.
+	MbpsMax         *float64      `url:"mbps_max,omitempty" json:"mbps_max,omitempty"`                     // Maximum unthrottled r/w pool in megabytes per second.
+	MbpsRd          *float64      `url:"mbps_rd,omitempty" json:"mbps_rd,omitempty"`                       // Maximum read speed in megabytes per second.
+	MbpsRdMax       *float64      `url:"mbps_rd_max,omitempty" json:"mbps_rd_max,omitempty"`               // Maximum unthrottled read pool in megabytes per second.
+	MbpsWr          *float64      `url:"mbps_wr,omitempty" json:"mbps_wr,omitempty"`                       // Maximum write speed in megabytes per second.
+	MbpsWrMax       *float64      `url:"mbps_wr_max,omitempty" json:"mbps_wr_max,omitempty"`               // Maximum unthrottled write pool in megabytes per second.
+	Media           *ScsiMedia    `url:"media,omitempty" json:"media,omitempty"`                           // The drive's media type.
+	Queues          *int          `url:"queues,omitempty" json:"queues,omitempty"`                         // Number of queues.
+	Replicate       *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`                   // Whether the drive should considered for replication jobs.
+	Rerror          *ScsiRerror   `url:"rerror,omitempty" json:"rerror,omitempty"`                         // Read error action.
+	Ro              *util.PVEBool `url:"ro,omitempty" json:"ro,omitempty"`                                 // Whether the drive is read-only.
+	Scsiblock       *util.PVEBool `url:"scsiblock,omitempty" json:"scsiblock,omitempty"`                   // whether to use scsi-block for full passthrough of host block device WARNING: can lead to I/O errors in combination with low memory or high memory fragmentation on host
+	Secs            *int          `url:"secs,omitempty" json:"secs,omitempty"`                             // Force the drive's physical geometry to have a specific sector count.
+	Serial          *string       `url:"serial,omitempty" json:"serial,omitempty"`                         // The drive's reported serial number, url-encoded, up to 20 bytes long.
+	Shared          *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`                         // Mark this locally-managed volume as available on all nodes
+	Size            *string       `url:"size,omitempty" json:"size,omitempty"`                             // Disk size. This is purely informational and has no effect.
+	Snapshot        *util.PVEBool `url:"snapshot,omitempty" json:"snapshot,omitempty"`                     // Controls qemu's snapshot mode feature. If activated, changes made to the disk are temporary and will be discarded when the VM is shutdown.
+	Ssd             *util.PVEBool `url:"ssd,omitempty" json:"ssd,omitempty"`                               // Whether to expose this drive as an SSD, rather than a rotational hard disk.
+	Trans           *ScsiTrans    `url:"trans,omitempty" json:"trans,omitempty"`                           // Force disk geometry bios translation mode.
+	Werror          *ScsiWerror   `url:"werror,omitempty" json:"werror,omitempty"`                         // Write error action.
+	Wwn             *string       `url:"wwn,omitempty" json:"wwn,omitempty"`                               // The drive's worldwide name, encoded as 16 bytes hex string, prefixed by '0x'.
+}
+
+func (t Scsi) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[file=]<volume> [,aio=<native|threads|io_uring>] [,backup=<1|0>] [,bps=<bps>] [,bps_max_length=<seconds>] [,bps_rd=<bps>] [,bps_rd_max_length=<seconds>] [,bps_wr=<bps>] [,bps_wr_max_length=<seconds>] [,cache=<enum>] [,cyls=<integer>] [,detect_zeroes=<1|0>] [,discard=<ignore|on>] [,format=<enum>] [,heads=<integer>] [,import-from=<source volume>] [,iops=<iops>] [,iops_max=<iops>] [,iops_max_length=<seconds>] [,iops_rd=<iops>] [,iops_rd_max=<iops>] [,iops_rd_max_length=<seconds>] [,iops_wr=<iops>] [,iops_wr_max=<iops>] [,iops_wr_max_length=<seconds>] [,iothread=<1|0>] [,mbps=<mbps>] [,mbps_max=<mbps>] [,mbps_rd=<mbps>] [,mbps_rd_max=<mbps>] [,mbps_wr=<mbps>] [,mbps_wr_max=<mbps>] [,media=<cdrom|disk>] [,queues=<integer>] [,replicate=<1|0>] [,rerror=<ignore|report|stop>] [,ro=<1|0>] [,scsiblock=<1|0>] [,secs=<integer>] [,serial=<serial>] [,shared=<1|0>] [,size=<DiskSize>] [,snapshot=<1|0>] [,ssd=<1|0>] [,trans=<none|lba|auto>] [,werror=<enum>] [,wwn=<wwn>]`)
+}
+
+// Array of Scsi
+type Scsis []Scsi
+
+func (t Scsis) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// Enable/disable communication with the Qemu Guest Agent and its properties.
+type Agent struct {
+	Enabled util.PVEBool `url:"enabled" json:"enabled"` // Enable/disable communication with a Qemu Guest Agent (QGA) running in the VM.
+
+	// The following parameters are optional
+	FstrimClonedDisks *util.PVEBool `url:"fstrim_cloned_disks,omitempty" json:"fstrim_cloned_disks,omitempty"` // Run fstrim after moving a disk or migrating the VM.
+	Type              *AgentType    `url:"type,omitempty" json:"type,omitempty"`                               // Select the agent type
+}
+
+func (t Agent) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[enabled=]<1|0> [,fstrim_cloned_disks=<1|0>] [,type=<virtio|isa>]`)
+}
+
+// Configure a Disk for storing TPM state. The format is fixed to 'raw'. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Note that SIZE_IN_GiB is ignored here and 4 MiB will be used instead. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+type Tpmstate0 struct {
+	File string `url:"file" json:"file"` // The drive's backing volume.
+
+	// The following parameters are optional
+	ImportFrom *string           `url:"import-from,omitempty" json:"import-from,omitempty"` // Create a new disk, importing from this source (volume ID or absolute path). When an absolute path is specified, it's up to you to ensure that the source is not actively used by another process during the import!
+	Size       *string           `url:"size,omitempty" json:"size,omitempty"`               // Disk size. This is purely informational and has no effect.
+	Version    *Tpmstate0Version `url:"version,omitempty" json:"version,omitempty"`         // The TPM interface version. v2.0 is newer and should be preferred. Note that this cannot be changed later on.
+}
+
+func (t Tpmstate0) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[file=]<volume> [,import-from=<source volume>] [,size=<DiskSize>] [,version=<v1.2|v2.0>]`)
+}
+
+// Configure an USB device (n is 0 to 4, for machine version >= 7.1 and ostype l26 or windows > 7, n can be up to 14).
+type Usb struct {
+	Host string `url:"host" json:"host"` // The Host USB device or port or the value 'spice'. HOSTUSBDEVICE syntax is:  'bus-port(.port)*' (decimal numbers) or 'vendor_id:product_id' (hexadeciaml numbers) or 'spice' You can use the 'lsusb -t' command to list existing usb devices. NOTE: This option allows direct access to host hardware. So it is no longer possible to migrate such machines - use with special care. The value 'spice' can be used to add a usb redirection devices for spice.
+
+	// The following parameters are optional
+	Usb3 *util.PVEBool `url:"usb3,omitempty" json:"usb3,omitempty"` // Specifies whether if given host option is a USB3 device or port. For modern guests (machine version >= 7.1 and ostype l26 and windows > 7), this flag is irrelevant (all devices are plugged into a xhci controller).
+}
+
+func (t Usb) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[host=]<HOSTUSBDEVICE|spice> [,usb3=<1|0>]`)
+}
+
+// Array of Usb
+type Usbs []Usb
+
+func (t Usbs) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// Configure a audio device, useful in combination with QXL/Spice.
+type Audio0 struct {
+	Device Audio0Device `url:"device" json:"device"` // Configure an audio device.
+
+	// The following parameters are optional
+	Driver *Audio0Driver `url:"driver,omitempty" json:"driver,omitempty"` // Driver backend for the audio device.
+}
+
+func (t Audio0) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `device=<ich9-intel-hda|intel-hda|AC97> [,driver=<spice|none>]`)
+}
+
+// Use volume as SATA hard disk or CD-ROM (n is 0 to 5). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+type Sata struct {
+	File string `url:"file" json:"file"` // The drive's backing volume.
+
+	// The following parameters are optional
+	Aio             *SataAio      `url:"aio,omitempty" json:"aio,omitempty"`                               // AIO type to use.
+	Backup          *util.PVEBool `url:"backup,omitempty" json:"backup,omitempty"`                         // Whether the drive should be included when making backups.
+	Bps             *int          `url:"bps,omitempty" json:"bps,omitempty"`                               // Maximum r/w speed in bytes per second.
+	BpsMaxLength    *int          `url:"bps_max_length,omitempty" json:"bps_max_length,omitempty"`         // Maximum length of I/O bursts in seconds.
+	BpsRd           *int          `url:"bps_rd,omitempty" json:"bps_rd,omitempty"`                         // Maximum read speed in bytes per second.
+	BpsRdMaxLength  *int          `url:"bps_rd_max_length,omitempty" json:"bps_rd_max_length,omitempty"`   // Maximum length of read I/O bursts in seconds.
+	BpsWr           *int          `url:"bps_wr,omitempty" json:"bps_wr,omitempty"`                         // Maximum write speed in bytes per second.
+	BpsWrMaxLength  *int          `url:"bps_wr_max_length,omitempty" json:"bps_wr_max_length,omitempty"`   // Maximum length of write I/O bursts in seconds.
+	Cache           *SataCache    `url:"cache,omitempty" json:"cache,omitempty"`                           // The drive's cache mode
+	Cyls            *int          `url:"cyls,omitempty" json:"cyls,omitempty"`                             // Force the drive's physical geometry to have a specific cylinder count.
+	DetectZeroes    *util.PVEBool `url:"detect_zeroes,omitempty" json:"detect_zeroes,omitempty"`           // Controls whether to detect and try to optimize writes of zeroes.
+	Discard         *SataDiscard  `url:"discard,omitempty" json:"discard,omitempty"`                       // Controls whether to pass discard/trim requests to the underlying storage.
+	Format          *SataFormat   `url:"format,omitempty" json:"format,omitempty"`                         // The drive's backing file's data format.
+	Heads           *int          `url:"heads,omitempty" json:"heads,omitempty"`                           // Force the drive's physical geometry to have a specific head count.
+	ImportFrom      *string       `url:"import-from,omitempty" json:"import-from,omitempty"`               // Create a new disk, importing from this source (volume ID or absolute path). When an absolute path is specified, it's up to you to ensure that the source is not actively used by another process during the import!
+	Iops            *int          `url:"iops,omitempty" json:"iops,omitempty"`                             // Maximum r/w I/O in operations per second.
+	IopsMax         *int          `url:"iops_max,omitempty" json:"iops_max,omitempty"`                     // Maximum unthrottled r/w I/O pool in operations per second.
+	IopsMaxLength   *int          `url:"iops_max_length,omitempty" json:"iops_max_length,omitempty"`       // Maximum length of I/O bursts in seconds.
+	IopsRd          *int          `url:"iops_rd,omitempty" json:"iops_rd,omitempty"`                       // Maximum read I/O in operations per second.
+	IopsRdMax       *int          `url:"iops_rd_max,omitempty" json:"iops_rd_max,omitempty"`               // Maximum unthrottled read I/O pool in operations per second.
+	IopsRdMaxLength *int          `url:"iops_rd_max_length,omitempty" json:"iops_rd_max_length,omitempty"` // Maximum length of read I/O bursts in seconds.
+	IopsWr          *int          `url:"iops_wr,omitempty" json:"iops_wr,omitempty"`                       // Maximum write I/O in operations per second.
+	IopsWrMax       *int          `url:"iops_wr_max,omitempty" json:"iops_wr_max,omitempty"`               // Maximum unthrottled write I/O pool in operations per second.
+	IopsWrMaxLength *int          `url:"iops_wr_max_length,omitempty" json:"iops_wr_max_length,omitempty"` // Maximum length of write I/O bursts in seconds.
+	Mbps            *float64      `url:"mbps,omitempty" json:"mbps,omitempty"`                             // Maximum r/w speed in megabytes per second.
+	MbpsMax         *float64      `url:"mbps_max,omitempty" json:"mbps_max,omitempty"`                     // Maximum unthrottled r/w pool in megabytes per second.
+	MbpsRd          *float64      `url:"mbps_rd,omitempty" json:"mbps_rd,omitempty"`                       // Maximum read speed in megabytes per second.
+	MbpsRdMax       *float64      `url:"mbps_rd_max,omitempty" json:"mbps_rd_max,omitempty"`               // Maximum unthrottled read pool in megabytes per second.
+	MbpsWr          *float64      `url:"mbps_wr,omitempty" json:"mbps_wr,omitempty"`                       // Maximum write speed in megabytes per second.
+	MbpsWrMax       *float64      `url:"mbps_wr_max,omitempty" json:"mbps_wr_max,omitempty"`               // Maximum unthrottled write pool in megabytes per second.
+	Media           *SataMedia    `url:"media,omitempty" json:"media,omitempty"`                           // The drive's media type.
+	Replicate       *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`                   // Whether the drive should considered for replication jobs.
+	Rerror          *SataRerror   `url:"rerror,omitempty" json:"rerror,omitempty"`                         // Read error action.
+	Secs            *int          `url:"secs,omitempty" json:"secs,omitempty"`                             // Force the drive's physical geometry to have a specific sector count.
+	Serial          *string       `url:"serial,omitempty" json:"serial,omitempty"`                         // The drive's reported serial number, url-encoded, up to 20 bytes long.
+	Shared          *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`                         // Mark this locally-managed volume as available on all nodes
+	Size            *string       `url:"size,omitempty" json:"size,omitempty"`                             // Disk size. This is purely informational and has no effect.
+	Snapshot        *util.PVEBool `url:"snapshot,omitempty" json:"snapshot,omitempty"`                     // Controls qemu's snapshot mode feature. If activated, changes made to the disk are temporary and will be discarded when the VM is shutdown.
+	Ssd             *util.PVEBool `url:"ssd,omitempty" json:"ssd,omitempty"`                               // Whether to expose this drive as an SSD, rather than a rotational hard disk.
+	Trans           *SataTrans    `url:"trans,omitempty" json:"trans,omitempty"`                           // Force disk geometry bios translation mode.
+	Werror          *SataWerror   `url:"werror,omitempty" json:"werror,omitempty"`                         // Write error action.
 	Wwn             *string       `url:"wwn,omitempty" json:"wwn,omitempty"`                               // The drive's worldwide name, encoded as 16 bytes hex string, prefixed by '0x'.
 }
 
@@ -495,19 +1697,6 @@ func (t Satas) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeArray(key, v, t)
 }
 
-// Enable/disable communication with the Qemu Guest Agent and its properties.
-type Agent struct {
-	Enabled util.PVEBool `url:"enabled" json:"enabled"` // Enable/disable communication with a Qemu Guest Agent (QGA) running in the VM.
-
-	// The following parameters are optional
-	FstrimClonedDisks *util.PVEBool `url:"fstrim_cloned_disks,omitempty" json:"fstrim_cloned_disks,omitempty"` // Run fstrim after moving a disk or migrating the VM.
-	Type              *string       `url:"type,omitempty" json:"type,omitempty"`                               // Select the agent type
-}
-
-func (t Agent) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[enabled=]<1|0> [,fstrim_cloned_disks=<1|0>] [,type=<virtio|isa>]`)
-}
-
 type CreateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
@@ -516,20 +1705,20 @@ type CreateRequest struct {
 	Acpi              *util.PVEBool      `url:"acpi,omitempty" json:"acpi,omitempty"`                             // Enable/disable ACPI.
 	Affinity          *string            `url:"affinity,omitempty" json:"affinity,omitempty"`                     // List of host cores used to execute guest processes, for example: 0,5,8-11
 	Agent             *Agent             `url:"agent,omitempty" json:"agent,omitempty"`                           // Enable/disable communication with the Qemu Guest Agent and its properties.
-	Arch              *string            `url:"arch,omitempty" json:"arch,omitempty"`                             // Virtual processor architecture. Defaults to the host.
+	Arch              *Arch              `url:"arch,omitempty" json:"arch,omitempty"`                             // Virtual processor architecture. Defaults to the host.
 	Archive           *string            `url:"archive,omitempty" json:"archive,omitempty"`                       // The backup archive. Either the file system path to a .tar or .vma file (use '-' to pipe data from stdin) or a proxmox storage backup volume identifier.
 	Args              *string            `url:"args,omitempty" json:"args,omitempty"`                             // Arbitrary arguments passed to kvm.
 	Audio0            *Audio0            `url:"audio0,omitempty" json:"audio0,omitempty"`                         // Configure a audio device, useful in combination with QXL/Spice.
 	Autostart         *util.PVEBool      `url:"autostart,omitempty" json:"autostart,omitempty"`                   // Automatic restart after crash (currently ignored).
 	Balloon           *int               `url:"balloon,omitempty" json:"balloon,omitempty"`                       // Amount of target RAM for the VM in MB. Using zero disables the ballon driver.
-	Bios              *string            `url:"bios,omitempty" json:"bios,omitempty"`                             // Select BIOS implementation.
+	Bios              *Bios              `url:"bios,omitempty" json:"bios,omitempty"`                             // Select BIOS implementation.
 	Boot              *string            `url:"boot,omitempty" json:"boot,omitempty"`                             // Specify guest boot order. Use the 'order=' sub-property as usage with no key or 'legacy=' is deprecated.
 	Bootdisk          *string            `url:"bootdisk,omitempty" json:"bootdisk,omitempty"`                     // Enable booting from specified disk. Deprecated: Use 'boot: order=foo;bar' instead.
 	Bwlimit           *int               `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`                       // Override I/O bandwidth limit (in KiB/s).
 	Cdrom             *string            `url:"cdrom,omitempty" json:"cdrom,omitempty"`                           // This is an alias for option -ide2
 	Cicustom          *string            `url:"cicustom,omitempty" json:"cicustom,omitempty"`                     // cloud-init: Specify custom files to replace the automatically generated ones at start.
 	Cipassword        *string            `url:"cipassword,omitempty" json:"cipassword,omitempty"`                 // cloud-init: Password to assign the user. Using this is generally not recommended. Use ssh keys instead. Also note that older cloud-init versions do not support hashed passwords.
-	Citype            *string            `url:"citype,omitempty" json:"citype,omitempty"`                         // Specifies the cloud-init configuration format. The default depends on the configured operating system type (`ostype`. We use the `nocloud` format for Linux, and `configdrive2` for windows.
+	Citype            *Citype            `url:"citype,omitempty" json:"citype,omitempty"`                         // Specifies the cloud-init configuration format. The default depends on the configured operating system type (`ostype`. We use the `nocloud` format for Linux, and `configdrive2` for windows.
 	Ciuser            *string            `url:"ciuser,omitempty" json:"ciuser,omitempty"`                         // cloud-init: User name to change ssh keys and password for instead of the image's configured default user.
 	Cores             *int               `url:"cores,omitempty" json:"cores,omitempty"`                           // The number of cores per socket.
 	Cpu               *string            `url:"cpu,omitempty" json:"cpu,omitempty"`                               // Emulated CPU type.
@@ -542,16 +1731,16 @@ type CreateRequest struct {
 	Hookscript        *string            `url:"hookscript,omitempty" json:"hookscript,omitempty"`                 // Script that will be executed during various steps in the vms lifetime.
 	Hostpcis          *Hostpcis          `url:"hostpci[n],omitempty" json:"hostpci[n],omitempty"`                 // Map host PCI devices into guest.
 	Hotplug           *string            `url:"hotplug,omitempty" json:"hotplug,omitempty"`                       // Selectively enable hotplug features. This is a comma separated list of hotplug features: 'network', 'disk', 'cpu', 'memory', 'usb' and 'cloudinit'. Use '0' to disable hotplug completely. Using '1' as value is an alias for the default `network,disk,usb`. USB hotplugging is possible for guests with machine version >= 7.1 and ostype l26 or windows > 7.
-	Hugepages         *string            `url:"hugepages,omitempty" json:"hugepages,omitempty"`                   // Enable/disable hugepages memory.
+	Hugepages         *Hugepages         `url:"hugepages,omitempty" json:"hugepages,omitempty"`                   // Enable/disable hugepages memory.
 	Ides              *Ides              `url:"ide[n],omitempty" json:"ide[n],omitempty"`                         // Use volume as IDE hard disk or CD-ROM (n is 0 to 3). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
 	Ipconfigs         *Ipconfigs         `url:"ipconfig[n],omitempty" json:"ipconfig[n],omitempty"`               // cloud-init: Specify IP addresses and gateways for the corresponding interface. IP addresses use CIDR notation, gateways are optional but need an IP of the same type specified. The special string 'dhcp' can be used for IP addresses to use DHCP, in which case no explicit gateway should be provided. For IPv6 the special string 'auto' can be used to use stateless autoconfiguration. This requires cloud-init 19.4 or newer. If cloud-init is enabled and neither an IPv4 nor an IPv6 address is specified, it defaults to using dhcp on IPv4.
 	Ivshmem           *Ivshmem           `url:"ivshmem,omitempty" json:"ivshmem,omitempty"`                       // Inter-VM shared memory. Useful for direct communication between VMs, or to the host.
 	Keephugepages     *util.PVEBool      `url:"keephugepages,omitempty" json:"keephugepages,omitempty"`           // Use together with hugepages. If enabled, hugepages will not not be deleted after VM shutdown and can be used for subsequent starts.
-	Keyboard          *string            `url:"keyboard,omitempty" json:"keyboard,omitempty"`                     // Keyboard layout for VNC server. This option is generally not required and is often better handled from within the guest OS.
+	Keyboard          *Keyboard          `url:"keyboard,omitempty" json:"keyboard,omitempty"`                     // Keyboard layout for VNC server. This option is generally not required and is often better handled from within the guest OS.
 	Kvm               *util.PVEBool      `url:"kvm,omitempty" json:"kvm,omitempty"`                               // Enable/disable KVM hardware virtualization.
 	LiveRestore       *util.PVEBool      `url:"live-restore,omitempty" json:"live-restore,omitempty"`             // Start the VM immediately from the backup and restore in background. PBS only.
 	Localtime         *util.PVEBool      `url:"localtime,omitempty" json:"localtime,omitempty"`                   // Set the real time clock (RTC) to local time. This is enabled by default if the `ostype` indicates a Microsoft Windows OS.
-	Lock              *string            `url:"lock,omitempty" json:"lock,omitempty"`                             // Lock/unlock the VM.
+	Lock              *Lock              `url:"lock,omitempty" json:"lock,omitempty"`                             // Lock/unlock the VM.
 	Machine           *string            `url:"machine,omitempty" json:"machine,omitempty"`                       // Specifies the Qemu machine type.
 	Memory            *int               `url:"memory,omitempty" json:"memory,omitempty"`                         // Amount of RAM for the VM in MB. This is the maximum available memory when you use the balloon device.
 	MigrateDowntime   *float64           `url:"migrate_downtime,omitempty" json:"migrate_downtime,omitempty"`     // Set maximum tolerated downtime (in seconds) for migrations.
@@ -562,14 +1751,14 @@ type CreateRequest struct {
 	Numa              *util.PVEBool      `url:"numa,omitempty" json:"numa,omitempty"`                             // Enable/disable NUMA.
 	Numas             *Numas             `url:"numa[n],omitempty" json:"numa[n],omitempty"`                       // NUMA topology.
 	Onboot            *util.PVEBool      `url:"onboot,omitempty" json:"onboot,omitempty"`                         // Specifies whether a VM will be started during system bootup.
-	Ostype            *string            `url:"ostype,omitempty" json:"ostype,omitempty"`                         // Specify guest operating system.
+	Ostype            *Ostype            `url:"ostype,omitempty" json:"ostype,omitempty"`                         // Specify guest operating system.
 	Parallels         *Parallels         `url:"parallel[n],omitempty" json:"parallel[n],omitempty"`               // Map host parallel devices (n is 0 to 2).
 	Pool              *string            `url:"pool,omitempty" json:"pool,omitempty"`                             // Add the VM to the specified pool.
 	Protection        *util.PVEBool      `url:"protection,omitempty" json:"protection,omitempty"`                 // Sets the protection flag of the VM. This will disable the remove VM and remove disk operations.
 	Reboot            *util.PVEBool      `url:"reboot,omitempty" json:"reboot,omitempty"`                         // Allow reboot. If set to '0' the VM exit on reboot.
 	Rng0              *Rng0              `url:"rng0,omitempty" json:"rng0,omitempty"`                             // Configure a VirtIO-based Random Number Generator.
 	Satas             *Satas             `url:"sata[n],omitempty" json:"sata[n],omitempty"`                       // Use volume as SATA hard disk or CD-ROM (n is 0 to 5). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
-	Scsihw            *string            `url:"scsihw,omitempty" json:"scsihw,omitempty"`                         // SCSI controller model
+	Scsihw            *Scsihw            `url:"scsihw,omitempty" json:"scsihw,omitempty"`                         // SCSI controller model
 	Scsis             *Scsis             `url:"scsi[n],omitempty" json:"scsi[n],omitempty"`                       // Use volume as SCSI hard disk or CD-ROM (n is 0 to 30). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
 	Searchdomain      *string            `url:"searchdomain,omitempty" json:"searchdomain,omitempty"`             // cloud-init: Sets DNS search domains for a container. Create will automatically use the setting from the host if neither searchdomain nor nameserver are set.
 	Serials           *Serials           `url:"serial[n],omitempty" json:"serial[n],omitempty"`                   // Create a serial device inside the VM (n is 0 to 3)
@@ -620,13 +1809,13 @@ type DeleteRequest struct {
 }
 
 type RrdRequest struct {
-	Ds        string `url:"ds" json:"ds"`               // The list of datasources you want to display.
-	Node      string `url:"node" json:"node"`           // The cluster node name.
-	Timeframe string `url:"timeframe" json:"timeframe"` // Specify the time frame you are interested in.
-	Vmid      int    `url:"vmid" json:"vmid"`           // The (unique) ID of the VM.
+	Ds        string    `url:"ds" json:"ds"`               // The list of datasources you want to display.
+	Node      string    `url:"node" json:"node"`           // The cluster node name.
+	Timeframe Timeframe `url:"timeframe" json:"timeframe"` // Specify the time frame you are interested in.
+	Vmid      int       `url:"vmid" json:"vmid"`           // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Cf *string `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
+	Cf *Cf `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
 }
 
 type RrdResponse struct {
@@ -634,12 +1823,12 @@ type RrdResponse struct {
 }
 
 type RrddataRequest struct {
-	Node      string `url:"node" json:"node"`           // The cluster node name.
-	Timeframe string `url:"timeframe" json:"timeframe"` // Specify the time frame you are interested in.
-	Vmid      int    `url:"vmid" json:"vmid"`           // The (unique) ID of the VM.
+	Node      string    `url:"node" json:"node"`           // The cluster node name.
+	Timeframe Timeframe `url:"timeframe" json:"timeframe"` // Specify the time frame you are interested in.
+	Vmid      int       `url:"vmid" json:"vmid"`           // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Cf *string `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
+	Cf *Cf `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
 }
 
 type VmConfigRequest struct {
@@ -651,109 +1840,15 @@ type VmConfigRequest struct {
 	Snapshot *string       `url:"snapshot,omitempty" json:"snapshot,omitempty"` // Fetch config values from given snapshot.
 }
 
-// Use volume as VIRTIO hard disk (n is 0 to 15).
-type SubVirtio struct {
+// Configure a Disk for storing EFI vars.
+type SubEfidisk0 struct {
 	File string `url:"file" json:"file"` // The drive's backing volume.
 
 	// The following parameters are optional
-	Aio             *string       `url:"aio,omitempty" json:"aio,omitempty"`                               // AIO type to use.
-	Backup          *util.PVEBool `url:"backup,omitempty" json:"backup,omitempty"`                         // Whether the drive should be included when making backups.
-	Bps             *int          `url:"bps,omitempty" json:"bps,omitempty"`                               // Maximum r/w speed in bytes per second.
-	BpsMaxLength    *int          `url:"bps_max_length,omitempty" json:"bps_max_length,omitempty"`         // Maximum length of I/O bursts in seconds.
-	BpsRd           *int          `url:"bps_rd,omitempty" json:"bps_rd,omitempty"`                         // Maximum read speed in bytes per second.
-	BpsRdMaxLength  *int          `url:"bps_rd_max_length,omitempty" json:"bps_rd_max_length,omitempty"`   // Maximum length of read I/O bursts in seconds.
-	BpsWr           *int          `url:"bps_wr,omitempty" json:"bps_wr,omitempty"`                         // Maximum write speed in bytes per second.
-	BpsWrMaxLength  *int          `url:"bps_wr_max_length,omitempty" json:"bps_wr_max_length,omitempty"`   // Maximum length of write I/O bursts in seconds.
-	Cache           *string       `url:"cache,omitempty" json:"cache,omitempty"`                           // The drive's cache mode
-	Cyls            *int          `url:"cyls,omitempty" json:"cyls,omitempty"`                             // Force the drive's physical geometry to have a specific cylinder count.
-	DetectZeroes    *util.PVEBool `url:"detect_zeroes,omitempty" json:"detect_zeroes,omitempty"`           // Controls whether to detect and try to optimize writes of zeroes.
-	Discard         *string       `url:"discard,omitempty" json:"discard,omitempty"`                       // Controls whether to pass discard/trim requests to the underlying storage.
-	Format          *string       `url:"format,omitempty" json:"format,omitempty"`                         // The drive's backing file's data format.
-	Heads           *int          `url:"heads,omitempty" json:"heads,omitempty"`                           // Force the drive's physical geometry to have a specific head count.
-	Iops            *int          `url:"iops,omitempty" json:"iops,omitempty"`                             // Maximum r/w I/O in operations per second.
-	IopsMax         *int          `url:"iops_max,omitempty" json:"iops_max,omitempty"`                     // Maximum unthrottled r/w I/O pool in operations per second.
-	IopsMaxLength   *int          `url:"iops_max_length,omitempty" json:"iops_max_length,omitempty"`       // Maximum length of I/O bursts in seconds.
-	IopsRd          *int          `url:"iops_rd,omitempty" json:"iops_rd,omitempty"`                       // Maximum read I/O in operations per second.
-	IopsRdMax       *int          `url:"iops_rd_max,omitempty" json:"iops_rd_max,omitempty"`               // Maximum unthrottled read I/O pool in operations per second.
-	IopsRdMaxLength *int          `url:"iops_rd_max_length,omitempty" json:"iops_rd_max_length,omitempty"` // Maximum length of read I/O bursts in seconds.
-	IopsWr          *int          `url:"iops_wr,omitempty" json:"iops_wr,omitempty"`                       // Maximum write I/O in operations per second.
-	IopsWrMax       *int          `url:"iops_wr_max,omitempty" json:"iops_wr_max,omitempty"`               // Maximum unthrottled write I/O pool in operations per second.
-	IopsWrMaxLength *int          `url:"iops_wr_max_length,omitempty" json:"iops_wr_max_length,omitempty"` // Maximum length of write I/O bursts in seconds.
-	Iothread        *util.PVEBool `url:"iothread,omitempty" json:"iothread,omitempty"`                     // Whether to use iothreads for this drive
-	Mbps            *float64      `url:"mbps,omitempty" json:"mbps,omitempty"`                             // Maximum r/w speed in megabytes per second.
-	MbpsMax         *float64      `url:"mbps_max,omitempty" json:"mbps_max,omitempty"`                     // Maximum unthrottled r/w pool in megabytes per second.
-	MbpsRd          *float64      `url:"mbps_rd,omitempty" json:"mbps_rd,omitempty"`                       // Maximum read speed in megabytes per second.
-	MbpsRdMax       *float64      `url:"mbps_rd_max,omitempty" json:"mbps_rd_max,omitempty"`               // Maximum unthrottled read pool in megabytes per second.
-	MbpsWr          *float64      `url:"mbps_wr,omitempty" json:"mbps_wr,omitempty"`                       // Maximum write speed in megabytes per second.
-	MbpsWrMax       *float64      `url:"mbps_wr_max,omitempty" json:"mbps_wr_max,omitempty"`               // Maximum unthrottled write pool in megabytes per second.
-	Media           *string       `url:"media,omitempty" json:"media,omitempty"`                           // The drive's media type.
-	Replicate       *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`                   // Whether the drive should considered for replication jobs.
-	Rerror          *string       `url:"rerror,omitempty" json:"rerror,omitempty"`                         // Read error action.
-	Ro              *util.PVEBool `url:"ro,omitempty" json:"ro,omitempty"`                                 // Whether the drive is read-only.
-	Secs            *int          `url:"secs,omitempty" json:"secs,omitempty"`                             // Force the drive's physical geometry to have a specific sector count.
-	Serial          *string       `url:"serial,omitempty" json:"serial,omitempty"`                         // The drive's reported serial number, url-encoded, up to 20 bytes long.
-	Shared          *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`                         // Mark this locally-managed volume as available on all nodes
-	Size            *string       `url:"size,omitempty" json:"size,omitempty"`                             // Disk size. This is purely informational and has no effect.
-	Snapshot        *util.PVEBool `url:"snapshot,omitempty" json:"snapshot,omitempty"`                     // Controls qemu's snapshot mode feature. If activated, changes made to the disk are temporary and will be discarded when the VM is shutdown.
-	Trans           *string       `url:"trans,omitempty" json:"trans,omitempty"`                           // Force disk geometry bios translation mode.
-	Werror          *string       `url:"werror,omitempty" json:"werror,omitempty"`                         // Write error action.
-}
-
-// Configure a Disk for storing TPM state. The format is fixed to 'raw'.
-type SubTpmstate0 struct {
-	File string `url:"file" json:"file"` // The drive's backing volume.
-
-	// The following parameters are optional
-	Size    *string `url:"size,omitempty" json:"size,omitempty"`       // Disk size. This is purely informational and has no effect.
-	Version *string `url:"version,omitempty" json:"version,omitempty"` // The TPM interface version. v2.0 is newer and should be preferred. Note that this cannot be changed later on.
-}
-
-// Use volume as SATA hard disk or CD-ROM (n is 0 to 5).
-type SubSata struct {
-	File string `url:"file" json:"file"` // The drive's backing volume.
-
-	// The following parameters are optional
-	Aio             *string       `url:"aio,omitempty" json:"aio,omitempty"`                               // AIO type to use.
-	Backup          *util.PVEBool `url:"backup,omitempty" json:"backup,omitempty"`                         // Whether the drive should be included when making backups.
-	Bps             *int          `url:"bps,omitempty" json:"bps,omitempty"`                               // Maximum r/w speed in bytes per second.
-	BpsMaxLength    *int          `url:"bps_max_length,omitempty" json:"bps_max_length,omitempty"`         // Maximum length of I/O bursts in seconds.
-	BpsRd           *int          `url:"bps_rd,omitempty" json:"bps_rd,omitempty"`                         // Maximum read speed in bytes per second.
-	BpsRdMaxLength  *int          `url:"bps_rd_max_length,omitempty" json:"bps_rd_max_length,omitempty"`   // Maximum length of read I/O bursts in seconds.
-	BpsWr           *int          `url:"bps_wr,omitempty" json:"bps_wr,omitempty"`                         // Maximum write speed in bytes per second.
-	BpsWrMaxLength  *int          `url:"bps_wr_max_length,omitempty" json:"bps_wr_max_length,omitempty"`   // Maximum length of write I/O bursts in seconds.
-	Cache           *string       `url:"cache,omitempty" json:"cache,omitempty"`                           // The drive's cache mode
-	Cyls            *int          `url:"cyls,omitempty" json:"cyls,omitempty"`                             // Force the drive's physical geometry to have a specific cylinder count.
-	DetectZeroes    *util.PVEBool `url:"detect_zeroes,omitempty" json:"detect_zeroes,omitempty"`           // Controls whether to detect and try to optimize writes of zeroes.
-	Discard         *string       `url:"discard,omitempty" json:"discard,omitempty"`                       // Controls whether to pass discard/trim requests to the underlying storage.
-	Format          *string       `url:"format,omitempty" json:"format,omitempty"`                         // The drive's backing file's data format.
-	Heads           *int          `url:"heads,omitempty" json:"heads,omitempty"`                           // Force the drive's physical geometry to have a specific head count.
-	Iops            *int          `url:"iops,omitempty" json:"iops,omitempty"`                             // Maximum r/w I/O in operations per second.
-	IopsMax         *int          `url:"iops_max,omitempty" json:"iops_max,omitempty"`                     // Maximum unthrottled r/w I/O pool in operations per second.
-	IopsMaxLength   *int          `url:"iops_max_length,omitempty" json:"iops_max_length,omitempty"`       // Maximum length of I/O bursts in seconds.
-	IopsRd          *int          `url:"iops_rd,omitempty" json:"iops_rd,omitempty"`                       // Maximum read I/O in operations per second.
-	IopsRdMax       *int          `url:"iops_rd_max,omitempty" json:"iops_rd_max,omitempty"`               // Maximum unthrottled read I/O pool in operations per second.
-	IopsRdMaxLength *int          `url:"iops_rd_max_length,omitempty" json:"iops_rd_max_length,omitempty"` // Maximum length of read I/O bursts in seconds.
-	IopsWr          *int          `url:"iops_wr,omitempty" json:"iops_wr,omitempty"`                       // Maximum write I/O in operations per second.
-	IopsWrMax       *int          `url:"iops_wr_max,omitempty" json:"iops_wr_max,omitempty"`               // Maximum unthrottled write I/O pool in operations per second.
-	IopsWrMaxLength *int          `url:"iops_wr_max_length,omitempty" json:"iops_wr_max_length,omitempty"` // Maximum length of write I/O bursts in seconds.
-	Mbps            *float64      `url:"mbps,omitempty" json:"mbps,omitempty"`                             // Maximum r/w speed in megabytes per second.
-	MbpsMax         *float64      `url:"mbps_max,omitempty" json:"mbps_max,omitempty"`                     // Maximum unthrottled r/w pool in megabytes per second.
-	MbpsRd          *float64      `url:"mbps_rd,omitempty" json:"mbps_rd,omitempty"`                       // Maximum read speed in megabytes per second.
-	MbpsRdMax       *float64      `url:"mbps_rd_max,omitempty" json:"mbps_rd_max,omitempty"`               // Maximum unthrottled read pool in megabytes per second.
-	MbpsWr          *float64      `url:"mbps_wr,omitempty" json:"mbps_wr,omitempty"`                       // Maximum write speed in megabytes per second.
-	MbpsWrMax       *float64      `url:"mbps_wr_max,omitempty" json:"mbps_wr_max,omitempty"`               // Maximum unthrottled write pool in megabytes per second.
-	Media           *string       `url:"media,omitempty" json:"media,omitempty"`                           // The drive's media type.
-	Replicate       *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`                   // Whether the drive should considered for replication jobs.
-	Rerror          *string       `url:"rerror,omitempty" json:"rerror,omitempty"`                         // Read error action.
-	Secs            *int          `url:"secs,omitempty" json:"secs,omitempty"`                             // Force the drive's physical geometry to have a specific sector count.
-	Serial          *string       `url:"serial,omitempty" json:"serial,omitempty"`                         // The drive's reported serial number, url-encoded, up to 20 bytes long.
-	Shared          *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`                         // Mark this locally-managed volume as available on all nodes
-	Size            *string       `url:"size,omitempty" json:"size,omitempty"`                             // Disk size. This is purely informational and has no effect.
-	Snapshot        *util.PVEBool `url:"snapshot,omitempty" json:"snapshot,omitempty"`                     // Controls qemu's snapshot mode feature. If activated, changes made to the disk are temporary and will be discarded when the VM is shutdown.
-	Ssd             *util.PVEBool `url:"ssd,omitempty" json:"ssd,omitempty"`                               // Whether to expose this drive as an SSD, rather than a rotational hard disk.
-	Trans           *string       `url:"trans,omitempty" json:"trans,omitempty"`                           // Force disk geometry bios translation mode.
-	Werror          *string       `url:"werror,omitempty" json:"werror,omitempty"`                         // Write error action.
-	Wwn             *string       `url:"wwn,omitempty" json:"wwn,omitempty"`                               // The drive's worldwide name, encoded as 16 bytes hex string, prefixed by '0x'.
+	Efitype         *Efidisk0Efitype `url:"efitype,omitempty" json:"efitype,omitempty"`                     // Size and type of the OVMF EFI vars. '4m' is newer and recommended, and required for Secure Boot. For backwards compatibility, '2m' is used if not otherwise specified.
+	Format          *Efidisk0Format  `url:"format,omitempty" json:"format,omitempty"`                       // The drive's backing file's data format.
+	PreEnrolledKeys *util.PVEBool    `url:"pre-enrolled-keys,omitempty" json:"pre-enrolled-keys,omitempty"` // Use am EFI vars template with distribution-specific and Microsoft Standard keys enrolled, if used with 'efitype=4m'. Note that this will enable Secure Boot by default, though it can still be turned off from within the VM.
+	Size            *string          `url:"size,omitempty" json:"size,omitempty"`                           // Disk size. This is purely informational and has no effect.
 }
 
 // Use volume as IDE hard disk or CD-ROM (n is 0 to 3).
@@ -761,7 +1856,7 @@ type SubIde struct {
 	File string `url:"file" json:"file"` // The drive's backing volume.
 
 	// The following parameters are optional
-	Aio             *string       `url:"aio,omitempty" json:"aio,omitempty"`                               // AIO type to use.
+	Aio             *IdeAio       `url:"aio,omitempty" json:"aio,omitempty"`                               // AIO type to use.
 	Backup          *util.PVEBool `url:"backup,omitempty" json:"backup,omitempty"`                         // Whether the drive should be included when making backups.
 	Bps             *int          `url:"bps,omitempty" json:"bps,omitempty"`                               // Maximum r/w speed in bytes per second.
 	BpsMaxLength    *int          `url:"bps_max_length,omitempty" json:"bps_max_length,omitempty"`         // Maximum length of I/O bursts in seconds.
@@ -769,11 +1864,11 @@ type SubIde struct {
 	BpsRdMaxLength  *int          `url:"bps_rd_max_length,omitempty" json:"bps_rd_max_length,omitempty"`   // Maximum length of read I/O bursts in seconds.
 	BpsWr           *int          `url:"bps_wr,omitempty" json:"bps_wr,omitempty"`                         // Maximum write speed in bytes per second.
 	BpsWrMaxLength  *int          `url:"bps_wr_max_length,omitempty" json:"bps_wr_max_length,omitempty"`   // Maximum length of write I/O bursts in seconds.
-	Cache           *string       `url:"cache,omitempty" json:"cache,omitempty"`                           // The drive's cache mode
+	Cache           *IdeCache     `url:"cache,omitempty" json:"cache,omitempty"`                           // The drive's cache mode
 	Cyls            *int          `url:"cyls,omitempty" json:"cyls,omitempty"`                             // Force the drive's physical geometry to have a specific cylinder count.
 	DetectZeroes    *util.PVEBool `url:"detect_zeroes,omitempty" json:"detect_zeroes,omitempty"`           // Controls whether to detect and try to optimize writes of zeroes.
-	Discard         *string       `url:"discard,omitempty" json:"discard,omitempty"`                       // Controls whether to pass discard/trim requests to the underlying storage.
-	Format          *string       `url:"format,omitempty" json:"format,omitempty"`                         // The drive's backing file's data format.
+	Discard         *IdeDiscard   `url:"discard,omitempty" json:"discard,omitempty"`                       // Controls whether to pass discard/trim requests to the underlying storage.
+	Format          *IdeFormat    `url:"format,omitempty" json:"format,omitempty"`                         // The drive's backing file's data format.
 	Heads           *int          `url:"heads,omitempty" json:"heads,omitempty"`                           // Force the drive's physical geometry to have a specific head count.
 	Iops            *int          `url:"iops,omitempty" json:"iops,omitempty"`                             // Maximum r/w I/O in operations per second.
 	IopsMax         *int          `url:"iops_max,omitempty" json:"iops_max,omitempty"`                     // Maximum unthrottled r/w I/O pool in operations per second.
@@ -790,27 +1885,27 @@ type SubIde struct {
 	MbpsRdMax       *float64      `url:"mbps_rd_max,omitempty" json:"mbps_rd_max,omitempty"`               // Maximum unthrottled read pool in megabytes per second.
 	MbpsWr          *float64      `url:"mbps_wr,omitempty" json:"mbps_wr,omitempty"`                       // Maximum write speed in megabytes per second.
 	MbpsWrMax       *float64      `url:"mbps_wr_max,omitempty" json:"mbps_wr_max,omitempty"`               // Maximum unthrottled write pool in megabytes per second.
-	Media           *string       `url:"media,omitempty" json:"media,omitempty"`                           // The drive's media type.
+	Media           *IdeMedia     `url:"media,omitempty" json:"media,omitempty"`                           // The drive's media type.
 	Model           *string       `url:"model,omitempty" json:"model,omitempty"`                           // The drive's reported model name, url-encoded, up to 40 bytes long.
 	Replicate       *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`                   // Whether the drive should considered for replication jobs.
-	Rerror          *string       `url:"rerror,omitempty" json:"rerror,omitempty"`                         // Read error action.
+	Rerror          *IdeRerror    `url:"rerror,omitempty" json:"rerror,omitempty"`                         // Read error action.
 	Secs            *int          `url:"secs,omitempty" json:"secs,omitempty"`                             // Force the drive's physical geometry to have a specific sector count.
 	Serial          *string       `url:"serial,omitempty" json:"serial,omitempty"`                         // The drive's reported serial number, url-encoded, up to 20 bytes long.
 	Shared          *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`                         // Mark this locally-managed volume as available on all nodes
 	Size            *string       `url:"size,omitempty" json:"size,omitempty"`                             // Disk size. This is purely informational and has no effect.
 	Snapshot        *util.PVEBool `url:"snapshot,omitempty" json:"snapshot,omitempty"`                     // Controls qemu's snapshot mode feature. If activated, changes made to the disk are temporary and will be discarded when the VM is shutdown.
 	Ssd             *util.PVEBool `url:"ssd,omitempty" json:"ssd,omitempty"`                               // Whether to expose this drive as an SSD, rather than a rotational hard disk.
-	Trans           *string       `url:"trans,omitempty" json:"trans,omitempty"`                           // Force disk geometry bios translation mode.
-	Werror          *string       `url:"werror,omitempty" json:"werror,omitempty"`                         // Write error action.
+	Trans           *IdeTrans     `url:"trans,omitempty" json:"trans,omitempty"`                           // Force disk geometry bios translation mode.
+	Werror          *IdeWerror    `url:"werror,omitempty" json:"werror,omitempty"`                         // Write error action.
 	Wwn             *string       `url:"wwn,omitempty" json:"wwn,omitempty"`                               // The drive's worldwide name, encoded as 16 bytes hex string, prefixed by '0x'.
 }
 
-// Use volume as SCSI hard disk or CD-ROM (n is 0 to 30).
-type SubScsi struct {
+// Use volume as SATA hard disk or CD-ROM (n is 0 to 5).
+type SubSata struct {
 	File string `url:"file" json:"file"` // The drive's backing volume.
 
 	// The following parameters are optional
-	Aio             *string       `url:"aio,omitempty" json:"aio,omitempty"`                               // AIO type to use.
+	Aio             *SataAio      `url:"aio,omitempty" json:"aio,omitempty"`                               // AIO type to use.
 	Backup          *util.PVEBool `url:"backup,omitempty" json:"backup,omitempty"`                         // Whether the drive should be included when making backups.
 	Bps             *int          `url:"bps,omitempty" json:"bps,omitempty"`                               // Maximum r/w speed in bytes per second.
 	BpsMaxLength    *int          `url:"bps_max_length,omitempty" json:"bps_max_length,omitempty"`         // Maximum length of I/O bursts in seconds.
@@ -818,11 +1913,116 @@ type SubScsi struct {
 	BpsRdMaxLength  *int          `url:"bps_rd_max_length,omitempty" json:"bps_rd_max_length,omitempty"`   // Maximum length of read I/O bursts in seconds.
 	BpsWr           *int          `url:"bps_wr,omitempty" json:"bps_wr,omitempty"`                         // Maximum write speed in bytes per second.
 	BpsWrMaxLength  *int          `url:"bps_wr_max_length,omitempty" json:"bps_wr_max_length,omitempty"`   // Maximum length of write I/O bursts in seconds.
-	Cache           *string       `url:"cache,omitempty" json:"cache,omitempty"`                           // The drive's cache mode
+	Cache           *SataCache    `url:"cache,omitempty" json:"cache,omitempty"`                           // The drive's cache mode
 	Cyls            *int          `url:"cyls,omitempty" json:"cyls,omitempty"`                             // Force the drive's physical geometry to have a specific cylinder count.
 	DetectZeroes    *util.PVEBool `url:"detect_zeroes,omitempty" json:"detect_zeroes,omitempty"`           // Controls whether to detect and try to optimize writes of zeroes.
-	Discard         *string       `url:"discard,omitempty" json:"discard,omitempty"`                       // Controls whether to pass discard/trim requests to the underlying storage.
-	Format          *string       `url:"format,omitempty" json:"format,omitempty"`                         // The drive's backing file's data format.
+	Discard         *SataDiscard  `url:"discard,omitempty" json:"discard,omitempty"`                       // Controls whether to pass discard/trim requests to the underlying storage.
+	Format          *SataFormat   `url:"format,omitempty" json:"format,omitempty"`                         // The drive's backing file's data format.
+	Heads           *int          `url:"heads,omitempty" json:"heads,omitempty"`                           // Force the drive's physical geometry to have a specific head count.
+	Iops            *int          `url:"iops,omitempty" json:"iops,omitempty"`                             // Maximum r/w I/O in operations per second.
+	IopsMax         *int          `url:"iops_max,omitempty" json:"iops_max,omitempty"`                     // Maximum unthrottled r/w I/O pool in operations per second.
+	IopsMaxLength   *int          `url:"iops_max_length,omitempty" json:"iops_max_length,omitempty"`       // Maximum length of I/O bursts in seconds.
+	IopsRd          *int          `url:"iops_rd,omitempty" json:"iops_rd,omitempty"`                       // Maximum read I/O in operations per second.
+	IopsRdMax       *int          `url:"iops_rd_max,omitempty" json:"iops_rd_max,omitempty"`               // Maximum unthrottled read I/O pool in operations per second.
+	IopsRdMaxLength *int          `url:"iops_rd_max_length,omitempty" json:"iops_rd_max_length,omitempty"` // Maximum length of read I/O bursts in seconds.
+	IopsWr          *int          `url:"iops_wr,omitempty" json:"iops_wr,omitempty"`                       // Maximum write I/O in operations per second.
+	IopsWrMax       *int          `url:"iops_wr_max,omitempty" json:"iops_wr_max,omitempty"`               // Maximum unthrottled write I/O pool in operations per second.
+	IopsWrMaxLength *int          `url:"iops_wr_max_length,omitempty" json:"iops_wr_max_length,omitempty"` // Maximum length of write I/O bursts in seconds.
+	Mbps            *float64      `url:"mbps,omitempty" json:"mbps,omitempty"`                             // Maximum r/w speed in megabytes per second.
+	MbpsMax         *float64      `url:"mbps_max,omitempty" json:"mbps_max,omitempty"`                     // Maximum unthrottled r/w pool in megabytes per second.
+	MbpsRd          *float64      `url:"mbps_rd,omitempty" json:"mbps_rd,omitempty"`                       // Maximum read speed in megabytes per second.
+	MbpsRdMax       *float64      `url:"mbps_rd_max,omitempty" json:"mbps_rd_max,omitempty"`               // Maximum unthrottled read pool in megabytes per second.
+	MbpsWr          *float64      `url:"mbps_wr,omitempty" json:"mbps_wr,omitempty"`                       // Maximum write speed in megabytes per second.
+	MbpsWrMax       *float64      `url:"mbps_wr_max,omitempty" json:"mbps_wr_max,omitempty"`               // Maximum unthrottled write pool in megabytes per second.
+	Media           *SataMedia    `url:"media,omitempty" json:"media,omitempty"`                           // The drive's media type.
+	Replicate       *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`                   // Whether the drive should considered for replication jobs.
+	Rerror          *SataRerror   `url:"rerror,omitempty" json:"rerror,omitempty"`                         // Read error action.
+	Secs            *int          `url:"secs,omitempty" json:"secs,omitempty"`                             // Force the drive's physical geometry to have a specific sector count.
+	Serial          *string       `url:"serial,omitempty" json:"serial,omitempty"`                         // The drive's reported serial number, url-encoded, up to 20 bytes long.
+	Shared          *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`                         // Mark this locally-managed volume as available on all nodes
+	Size            *string       `url:"size,omitempty" json:"size,omitempty"`                             // Disk size. This is purely informational and has no effect.
+	Snapshot        *util.PVEBool `url:"snapshot,omitempty" json:"snapshot,omitempty"`                     // Controls qemu's snapshot mode feature. If activated, changes made to the disk are temporary and will be discarded when the VM is shutdown.
+	Ssd             *util.PVEBool `url:"ssd,omitempty" json:"ssd,omitempty"`                               // Whether to expose this drive as an SSD, rather than a rotational hard disk.
+	Trans           *SataTrans    `url:"trans,omitempty" json:"trans,omitempty"`                           // Force disk geometry bios translation mode.
+	Werror          *SataWerror   `url:"werror,omitempty" json:"werror,omitempty"`                         // Write error action.
+	Wwn             *string       `url:"wwn,omitempty" json:"wwn,omitempty"`                               // The drive's worldwide name, encoded as 16 bytes hex string, prefixed by '0x'.
+}
+
+// Use volume as VIRTIO hard disk (n is 0 to 15).
+type SubVirtio struct {
+	File string `url:"file" json:"file"` // The drive's backing volume.
+
+	// The following parameters are optional
+	Aio             *VirtioAio     `url:"aio,omitempty" json:"aio,omitempty"`                               // AIO type to use.
+	Backup          *util.PVEBool  `url:"backup,omitempty" json:"backup,omitempty"`                         // Whether the drive should be included when making backups.
+	Bps             *int           `url:"bps,omitempty" json:"bps,omitempty"`                               // Maximum r/w speed in bytes per second.
+	BpsMaxLength    *int           `url:"bps_max_length,omitempty" json:"bps_max_length,omitempty"`         // Maximum length of I/O bursts in seconds.
+	BpsRd           *int           `url:"bps_rd,omitempty" json:"bps_rd,omitempty"`                         // Maximum read speed in bytes per second.
+	BpsRdMaxLength  *int           `url:"bps_rd_max_length,omitempty" json:"bps_rd_max_length,omitempty"`   // Maximum length of read I/O bursts in seconds.
+	BpsWr           *int           `url:"bps_wr,omitempty" json:"bps_wr,omitempty"`                         // Maximum write speed in bytes per second.
+	BpsWrMaxLength  *int           `url:"bps_wr_max_length,omitempty" json:"bps_wr_max_length,omitempty"`   // Maximum length of write I/O bursts in seconds.
+	Cache           *VirtioCache   `url:"cache,omitempty" json:"cache,omitempty"`                           // The drive's cache mode
+	Cyls            *int           `url:"cyls,omitempty" json:"cyls,omitempty"`                             // Force the drive's physical geometry to have a specific cylinder count.
+	DetectZeroes    *util.PVEBool  `url:"detect_zeroes,omitempty" json:"detect_zeroes,omitempty"`           // Controls whether to detect and try to optimize writes of zeroes.
+	Discard         *VirtioDiscard `url:"discard,omitempty" json:"discard,omitempty"`                       // Controls whether to pass discard/trim requests to the underlying storage.
+	Format          *VirtioFormat  `url:"format,omitempty" json:"format,omitempty"`                         // The drive's backing file's data format.
+	Heads           *int           `url:"heads,omitempty" json:"heads,omitempty"`                           // Force the drive's physical geometry to have a specific head count.
+	Iops            *int           `url:"iops,omitempty" json:"iops,omitempty"`                             // Maximum r/w I/O in operations per second.
+	IopsMax         *int           `url:"iops_max,omitempty" json:"iops_max,omitempty"`                     // Maximum unthrottled r/w I/O pool in operations per second.
+	IopsMaxLength   *int           `url:"iops_max_length,omitempty" json:"iops_max_length,omitempty"`       // Maximum length of I/O bursts in seconds.
+	IopsRd          *int           `url:"iops_rd,omitempty" json:"iops_rd,omitempty"`                       // Maximum read I/O in operations per second.
+	IopsRdMax       *int           `url:"iops_rd_max,omitempty" json:"iops_rd_max,omitempty"`               // Maximum unthrottled read I/O pool in operations per second.
+	IopsRdMaxLength *int           `url:"iops_rd_max_length,omitempty" json:"iops_rd_max_length,omitempty"` // Maximum length of read I/O bursts in seconds.
+	IopsWr          *int           `url:"iops_wr,omitempty" json:"iops_wr,omitempty"`                       // Maximum write I/O in operations per second.
+	IopsWrMax       *int           `url:"iops_wr_max,omitempty" json:"iops_wr_max,omitempty"`               // Maximum unthrottled write I/O pool in operations per second.
+	IopsWrMaxLength *int           `url:"iops_wr_max_length,omitempty" json:"iops_wr_max_length,omitempty"` // Maximum length of write I/O bursts in seconds.
+	Iothread        *util.PVEBool  `url:"iothread,omitempty" json:"iothread,omitempty"`                     // Whether to use iothreads for this drive
+	Mbps            *float64       `url:"mbps,omitempty" json:"mbps,omitempty"`                             // Maximum r/w speed in megabytes per second.
+	MbpsMax         *float64       `url:"mbps_max,omitempty" json:"mbps_max,omitempty"`                     // Maximum unthrottled r/w pool in megabytes per second.
+	MbpsRd          *float64       `url:"mbps_rd,omitempty" json:"mbps_rd,omitempty"`                       // Maximum read speed in megabytes per second.
+	MbpsRdMax       *float64       `url:"mbps_rd_max,omitempty" json:"mbps_rd_max,omitempty"`               // Maximum unthrottled read pool in megabytes per second.
+	MbpsWr          *float64       `url:"mbps_wr,omitempty" json:"mbps_wr,omitempty"`                       // Maximum write speed in megabytes per second.
+	MbpsWrMax       *float64       `url:"mbps_wr_max,omitempty" json:"mbps_wr_max,omitempty"`               // Maximum unthrottled write pool in megabytes per second.
+	Media           *VirtioMedia   `url:"media,omitempty" json:"media,omitempty"`                           // The drive's media type.
+	Replicate       *util.PVEBool  `url:"replicate,omitempty" json:"replicate,omitempty"`                   // Whether the drive should considered for replication jobs.
+	Rerror          *VirtioRerror  `url:"rerror,omitempty" json:"rerror,omitempty"`                         // Read error action.
+	Ro              *util.PVEBool  `url:"ro,omitempty" json:"ro,omitempty"`                                 // Whether the drive is read-only.
+	Secs            *int           `url:"secs,omitempty" json:"secs,omitempty"`                             // Force the drive's physical geometry to have a specific sector count.
+	Serial          *string        `url:"serial,omitempty" json:"serial,omitempty"`                         // The drive's reported serial number, url-encoded, up to 20 bytes long.
+	Shared          *util.PVEBool  `url:"shared,omitempty" json:"shared,omitempty"`                         // Mark this locally-managed volume as available on all nodes
+	Size            *string        `url:"size,omitempty" json:"size,omitempty"`                             // Disk size. This is purely informational and has no effect.
+	Snapshot        *util.PVEBool  `url:"snapshot,omitempty" json:"snapshot,omitempty"`                     // Controls qemu's snapshot mode feature. If activated, changes made to the disk are temporary and will be discarded when the VM is shutdown.
+	Trans           *VirtioTrans   `url:"trans,omitempty" json:"trans,omitempty"`                           // Force disk geometry bios translation mode.
+	Werror          *VirtioWerror  `url:"werror,omitempty" json:"werror,omitempty"`                         // Write error action.
+}
+
+// Configure a Disk for storing TPM state. The format is fixed to 'raw'.
+type SubTpmstate0 struct {
+	File string `url:"file" json:"file"` // The drive's backing volume.
+
+	// The following parameters are optional
+	Size    *string           `url:"size,omitempty" json:"size,omitempty"`       // Disk size. This is purely informational and has no effect.
+	Version *Tpmstate0Version `url:"version,omitempty" json:"version,omitempty"` // The TPM interface version. v2.0 is newer and should be preferred. Note that this cannot be changed later on.
+}
+
+// Use volume as SCSI hard disk or CD-ROM (n is 0 to 30).
+type SubScsi struct {
+	File string `url:"file" json:"file"` // The drive's backing volume.
+
+	// The following parameters are optional
+	Aio             *ScsiAio      `url:"aio,omitempty" json:"aio,omitempty"`                               // AIO type to use.
+	Backup          *util.PVEBool `url:"backup,omitempty" json:"backup,omitempty"`                         // Whether the drive should be included when making backups.
+	Bps             *int          `url:"bps,omitempty" json:"bps,omitempty"`                               // Maximum r/w speed in bytes per second.
+	BpsMaxLength    *int          `url:"bps_max_length,omitempty" json:"bps_max_length,omitempty"`         // Maximum length of I/O bursts in seconds.
+	BpsRd           *int          `url:"bps_rd,omitempty" json:"bps_rd,omitempty"`                         // Maximum read speed in bytes per second.
+	BpsRdMaxLength  *int          `url:"bps_rd_max_length,omitempty" json:"bps_rd_max_length,omitempty"`   // Maximum length of read I/O bursts in seconds.
+	BpsWr           *int          `url:"bps_wr,omitempty" json:"bps_wr,omitempty"`                         // Maximum write speed in bytes per second.
+	BpsWrMaxLength  *int          `url:"bps_wr_max_length,omitempty" json:"bps_wr_max_length,omitempty"`   // Maximum length of write I/O bursts in seconds.
+	Cache           *ScsiCache    `url:"cache,omitempty" json:"cache,omitempty"`                           // The drive's cache mode
+	Cyls            *int          `url:"cyls,omitempty" json:"cyls,omitempty"`                             // Force the drive's physical geometry to have a specific cylinder count.
+	DetectZeroes    *util.PVEBool `url:"detect_zeroes,omitempty" json:"detect_zeroes,omitempty"`           // Controls whether to detect and try to optimize writes of zeroes.
+	Discard         *ScsiDiscard  `url:"discard,omitempty" json:"discard,omitempty"`                       // Controls whether to pass discard/trim requests to the underlying storage.
+	Format          *ScsiFormat   `url:"format,omitempty" json:"format,omitempty"`                         // The drive's backing file's data format.
 	Heads           *int          `url:"heads,omitempty" json:"heads,omitempty"`                           // Force the drive's physical geometry to have a specific head count.
 	Iops            *int          `url:"iops,omitempty" json:"iops,omitempty"`                             // Maximum r/w I/O in operations per second.
 	IopsMax         *int          `url:"iops_max,omitempty" json:"iops_max,omitempty"`                     // Maximum unthrottled r/w I/O pool in operations per second.
@@ -840,10 +2040,10 @@ type SubScsi struct {
 	MbpsRdMax       *float64      `url:"mbps_rd_max,omitempty" json:"mbps_rd_max,omitempty"`               // Maximum unthrottled read pool in megabytes per second.
 	MbpsWr          *float64      `url:"mbps_wr,omitempty" json:"mbps_wr,omitempty"`                       // Maximum write speed in megabytes per second.
 	MbpsWrMax       *float64      `url:"mbps_wr_max,omitempty" json:"mbps_wr_max,omitempty"`               // Maximum unthrottled write pool in megabytes per second.
-	Media           *string       `url:"media,omitempty" json:"media,omitempty"`                           // The drive's media type.
+	Media           *ScsiMedia    `url:"media,omitempty" json:"media,omitempty"`                           // The drive's media type.
 	Queues          *int          `url:"queues,omitempty" json:"queues,omitempty"`                         // Number of queues.
 	Replicate       *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`                   // Whether the drive should considered for replication jobs.
-	Rerror          *string       `url:"rerror,omitempty" json:"rerror,omitempty"`                         // Read error action.
+	Rerror          *ScsiRerror   `url:"rerror,omitempty" json:"rerror,omitempty"`                         // Read error action.
 	Ro              *util.PVEBool `url:"ro,omitempty" json:"ro,omitempty"`                                 // Whether the drive is read-only.
 	Scsiblock       *util.PVEBool `url:"scsiblock,omitempty" json:"scsiblock,omitempty"`                   // whether to use scsi-block for full passthrough of host block device WARNING: can lead to I/O errors in combination with low memory or high memory fragmentation on host
 	Secs            *int          `url:"secs,omitempty" json:"secs,omitempty"`                             // Force the drive's physical geometry to have a specific sector count.
@@ -852,20 +2052,9 @@ type SubScsi struct {
 	Size            *string       `url:"size,omitempty" json:"size,omitempty"`                             // Disk size. This is purely informational and has no effect.
 	Snapshot        *util.PVEBool `url:"snapshot,omitempty" json:"snapshot,omitempty"`                     // Controls qemu's snapshot mode feature. If activated, changes made to the disk are temporary and will be discarded when the VM is shutdown.
 	Ssd             *util.PVEBool `url:"ssd,omitempty" json:"ssd,omitempty"`                               // Whether to expose this drive as an SSD, rather than a rotational hard disk.
-	Trans           *string       `url:"trans,omitempty" json:"trans,omitempty"`                           // Force disk geometry bios translation mode.
-	Werror          *string       `url:"werror,omitempty" json:"werror,omitempty"`                         // Write error action.
+	Trans           *ScsiTrans    `url:"trans,omitempty" json:"trans,omitempty"`                           // Force disk geometry bios translation mode.
+	Werror          *ScsiWerror   `url:"werror,omitempty" json:"werror,omitempty"`                         // Write error action.
 	Wwn             *string       `url:"wwn,omitempty" json:"wwn,omitempty"`                               // The drive's worldwide name, encoded as 16 bytes hex string, prefixed by '0x'.
-}
-
-// Configure a Disk for storing EFI vars.
-type SubEfidisk0 struct {
-	File string `url:"file" json:"file"` // The drive's backing volume.
-
-	// The following parameters are optional
-	Efitype         *string       `url:"efitype,omitempty" json:"efitype,omitempty"`                     // Size and type of the OVMF EFI vars. '4m' is newer and recommended, and required for Secure Boot. For backwards compatibility, '2m' is used if not otherwise specified.
-	Format          *string       `url:"format,omitempty" json:"format,omitempty"`                       // The drive's backing file's data format.
-	PreEnrolledKeys *util.PVEBool `url:"pre-enrolled-keys,omitempty" json:"pre-enrolled-keys,omitempty"` // Use am EFI vars template with distribution-specific and Microsoft Standard keys enrolled, if used with 'efitype=4m'. Note that this will enable Secure Boot by default, though it can still be turned off from within the VM.
-	Size            *string       `url:"size,omitempty" json:"size,omitempty"`                           // Disk size. This is purely informational and has no effect.
 }
 
 // The VM configuration.
@@ -876,18 +2065,18 @@ type VmConfigResponse struct {
 	Acpi              *util.PVEBool      `url:"acpi,omitempty" json:"acpi,omitempty"`                             // Enable/disable ACPI.
 	Affinity          *string            `url:"affinity,omitempty" json:"affinity,omitempty"`                     // List of host cores used to execute guest processes, for example: 0,5,8-11
 	Agent             *Agent             `url:"agent,omitempty" json:"agent,omitempty"`                           // Enable/disable communication with the Qemu Guest Agent and its properties.
-	Arch              *string            `url:"arch,omitempty" json:"arch,omitempty"`                             // Virtual processor architecture. Defaults to the host.
+	Arch              *Arch              `url:"arch,omitempty" json:"arch,omitempty"`                             // Virtual processor architecture. Defaults to the host.
 	Args              *string            `url:"args,omitempty" json:"args,omitempty"`                             // Arbitrary arguments passed to kvm.
 	Audio0            *Audio0            `url:"audio0,omitempty" json:"audio0,omitempty"`                         // Configure a audio device, useful in combination with QXL/Spice.
 	Autostart         *util.PVEBool      `url:"autostart,omitempty" json:"autostart,omitempty"`                   // Automatic restart after crash (currently ignored).
 	Balloon           *int               `url:"balloon,omitempty" json:"balloon,omitempty"`                       // Amount of target RAM for the VM in MB. Using zero disables the ballon driver.
-	Bios              *string            `url:"bios,omitempty" json:"bios,omitempty"`                             // Select BIOS implementation.
+	Bios              *Bios              `url:"bios,omitempty" json:"bios,omitempty"`                             // Select BIOS implementation.
 	Boot              *string            `url:"boot,omitempty" json:"boot,omitempty"`                             // Specify guest boot order. Use the 'order=' sub-property as usage with no key or 'legacy=' is deprecated.
 	Bootdisk          *string            `url:"bootdisk,omitempty" json:"bootdisk,omitempty"`                     // Enable booting from specified disk. Deprecated: Use 'boot: order=foo;bar' instead.
 	Cdrom             *string            `url:"cdrom,omitempty" json:"cdrom,omitempty"`                           // This is an alias for option -ide2
 	Cicustom          *string            `url:"cicustom,omitempty" json:"cicustom,omitempty"`                     // cloud-init: Specify custom files to replace the automatically generated ones at start.
 	Cipassword        *string            `url:"cipassword,omitempty" json:"cipassword,omitempty"`                 // cloud-init: Password to assign the user. Using this is generally not recommended. Use ssh keys instead. Also note that older cloud-init versions do not support hashed passwords.
-	Citype            *string            `url:"citype,omitempty" json:"citype,omitempty"`                         // Specifies the cloud-init configuration format. The default depends on the configured operating system type (`ostype`. We use the `nocloud` format for Linux, and `configdrive2` for windows.
+	Citype            *Citype            `url:"citype,omitempty" json:"citype,omitempty"`                         // Specifies the cloud-init configuration format. The default depends on the configured operating system type (`ostype`. We use the `nocloud` format for Linux, and `configdrive2` for windows.
 	Ciuser            *string            `url:"ciuser,omitempty" json:"ciuser,omitempty"`                         // cloud-init: User name to change ssh keys and password for instead of the image's configured default user.
 	Cores             *int               `url:"cores,omitempty" json:"cores,omitempty"`                           // The number of cores per socket.
 	Cpu               *string            `url:"cpu,omitempty" json:"cpu,omitempty"`                               // Emulated CPU type.
@@ -899,15 +2088,15 @@ type VmConfigResponse struct {
 	Hookscript        *string            `url:"hookscript,omitempty" json:"hookscript,omitempty"`                 // Script that will be executed during various steps in the vms lifetime.
 	Hostpcis          *Hostpcis          `url:"hostpci[n],omitempty" json:"hostpci[n],omitempty"`                 // Map host PCI devices into guest.
 	Hotplug           *string            `url:"hotplug,omitempty" json:"hotplug,omitempty"`                       // Selectively enable hotplug features. This is a comma separated list of hotplug features: 'network', 'disk', 'cpu', 'memory', 'usb' and 'cloudinit'. Use '0' to disable hotplug completely. Using '1' as value is an alias for the default `network,disk,usb`. USB hotplugging is possible for guests with machine version >= 7.1 and ostype l26 or windows > 7.
-	Hugepages         *string            `url:"hugepages,omitempty" json:"hugepages,omitempty"`                   // Enable/disable hugepages memory.
+	Hugepages         *Hugepages         `url:"hugepages,omitempty" json:"hugepages,omitempty"`                   // Enable/disable hugepages memory.
 	Ides              *Ides              `url:"ide[n],omitempty" json:"ide[n],omitempty"`                         // Use volume as IDE hard disk or CD-ROM (n is 0 to 3).
 	Ipconfigs         *Ipconfigs         `url:"ipconfig[n],omitempty" json:"ipconfig[n],omitempty"`               // cloud-init: Specify IP addresses and gateways for the corresponding interface. IP addresses use CIDR notation, gateways are optional but need an IP of the same type specified. The special string 'dhcp' can be used for IP addresses to use DHCP, in which case no explicit gateway should be provided. For IPv6 the special string 'auto' can be used to use stateless autoconfiguration. This requires cloud-init 19.4 or newer. If cloud-init is enabled and neither an IPv4 nor an IPv6 address is specified, it defaults to using dhcp on IPv4.
 	Ivshmem           *Ivshmem           `url:"ivshmem,omitempty" json:"ivshmem,omitempty"`                       // Inter-VM shared memory. Useful for direct communication between VMs, or to the host.
 	Keephugepages     *util.PVEBool      `url:"keephugepages,omitempty" json:"keephugepages,omitempty"`           // Use together with hugepages. If enabled, hugepages will not not be deleted after VM shutdown and can be used for subsequent starts.
-	Keyboard          *string            `url:"keyboard,omitempty" json:"keyboard,omitempty"`                     // Keyboard layout for VNC server. This option is generally not required and is often better handled from within the guest OS.
+	Keyboard          *Keyboard          `url:"keyboard,omitempty" json:"keyboard,omitempty"`                     // Keyboard layout for VNC server. This option is generally not required and is often better handled from within the guest OS.
 	Kvm               *util.PVEBool      `url:"kvm,omitempty" json:"kvm,omitempty"`                               // Enable/disable KVM hardware virtualization.
 	Localtime         *util.PVEBool      `url:"localtime,omitempty" json:"localtime,omitempty"`                   // Set the real time clock (RTC) to local time. This is enabled by default if the `ostype` indicates a Microsoft Windows OS.
-	Lock              *string            `url:"lock,omitempty" json:"lock,omitempty"`                             // Lock/unlock the VM.
+	Lock              *Lock              `url:"lock,omitempty" json:"lock,omitempty"`                             // Lock/unlock the VM.
 	Machine           *string            `url:"machine,omitempty" json:"machine,omitempty"`                       // Specifies the Qemu machine type.
 	Memory            *int               `url:"memory,omitempty" json:"memory,omitempty"`                         // Amount of RAM for the VM in MB. This is the maximum available memory when you use the balloon device.
 	MigrateDowntime   *float64           `url:"migrate_downtime,omitempty" json:"migrate_downtime,omitempty"`     // Set maximum tolerated downtime (in seconds) for migrations.
@@ -918,13 +2107,13 @@ type VmConfigResponse struct {
 	Numa              *util.PVEBool      `url:"numa,omitempty" json:"numa,omitempty"`                             // Enable/disable NUMA.
 	Numas             *Numas             `url:"numa[n],omitempty" json:"numa[n],omitempty"`                       // NUMA topology.
 	Onboot            *util.PVEBool      `url:"onboot,omitempty" json:"onboot,omitempty"`                         // Specifies whether a VM will be started during system bootup.
-	Ostype            *string            `url:"ostype,omitempty" json:"ostype,omitempty"`                         // Specify guest operating system.
+	Ostype            *Ostype            `url:"ostype,omitempty" json:"ostype,omitempty"`                         // Specify guest operating system.
 	Parallels         *Parallels         `url:"parallel[n],omitempty" json:"parallel[n],omitempty"`               // Map host parallel devices (n is 0 to 2).
 	Protection        *util.PVEBool      `url:"protection,omitempty" json:"protection,omitempty"`                 // Sets the protection flag of the VM. This will disable the remove VM and remove disk operations.
 	Reboot            *util.PVEBool      `url:"reboot,omitempty" json:"reboot,omitempty"`                         // Allow reboot. If set to '0' the VM exit on reboot.
 	Rng0              *Rng0              `url:"rng0,omitempty" json:"rng0,omitempty"`                             // Configure a VirtIO-based Random Number Generator.
 	Satas             *Satas             `url:"sata[n],omitempty" json:"sata[n],omitempty"`                       // Use volume as SATA hard disk or CD-ROM (n is 0 to 5).
-	Scsihw            *string            `url:"scsihw,omitempty" json:"scsihw,omitempty"`                         // SCSI controller model
+	Scsihw            *Scsihw            `url:"scsihw,omitempty" json:"scsihw,omitempty"`                         // SCSI controller model
 	Scsis             *Scsis             `url:"scsi[n],omitempty" json:"scsi[n],omitempty"`                       // Use volume as SCSI hard disk or CD-ROM (n is 0 to 30).
 	Searchdomain      *string            `url:"searchdomain,omitempty" json:"searchdomain,omitempty"`             // cloud-init: Sets DNS search domains for a container. Create will automatically use the setting from the host if neither searchdomain nor nameserver are set.
 	Serials           *Serials           `url:"serial[n],omitempty" json:"serial[n],omitempty"`                   // Create a serial device inside the VM (n is 0 to 3)
@@ -959,19 +2148,19 @@ type UpdateVmAsyncConfigRequest struct {
 	Acpi              *util.PVEBool      `url:"acpi,omitempty" json:"acpi,omitempty"`                             // Enable/disable ACPI.
 	Affinity          *string            `url:"affinity,omitempty" json:"affinity,omitempty"`                     // List of host cores used to execute guest processes, for example: 0,5,8-11
 	Agent             *Agent             `url:"agent,omitempty" json:"agent,omitempty"`                           // Enable/disable communication with the Qemu Guest Agent and its properties.
-	Arch              *string            `url:"arch,omitempty" json:"arch,omitempty"`                             // Virtual processor architecture. Defaults to the host.
+	Arch              *Arch              `url:"arch,omitempty" json:"arch,omitempty"`                             // Virtual processor architecture. Defaults to the host.
 	Args              *string            `url:"args,omitempty" json:"args,omitempty"`                             // Arbitrary arguments passed to kvm.
 	Audio0            *Audio0            `url:"audio0,omitempty" json:"audio0,omitempty"`                         // Configure a audio device, useful in combination with QXL/Spice.
 	Autostart         *util.PVEBool      `url:"autostart,omitempty" json:"autostart,omitempty"`                   // Automatic restart after crash (currently ignored).
 	BackgroundDelay   *int               `url:"background_delay,omitempty" json:"background_delay,omitempty"`     // Time to wait for the task to finish. We return 'null' if the task finish within that time.
 	Balloon           *int               `url:"balloon,omitempty" json:"balloon,omitempty"`                       // Amount of target RAM for the VM in MB. Using zero disables the ballon driver.
-	Bios              *string            `url:"bios,omitempty" json:"bios,omitempty"`                             // Select BIOS implementation.
+	Bios              *Bios              `url:"bios,omitempty" json:"bios,omitempty"`                             // Select BIOS implementation.
 	Boot              *string            `url:"boot,omitempty" json:"boot,omitempty"`                             // Specify guest boot order. Use the 'order=' sub-property as usage with no key or 'legacy=' is deprecated.
 	Bootdisk          *string            `url:"bootdisk,omitempty" json:"bootdisk,omitempty"`                     // Enable booting from specified disk. Deprecated: Use 'boot: order=foo;bar' instead.
 	Cdrom             *string            `url:"cdrom,omitempty" json:"cdrom,omitempty"`                           // This is an alias for option -ide2
 	Cicustom          *string            `url:"cicustom,omitempty" json:"cicustom,omitempty"`                     // cloud-init: Specify custom files to replace the automatically generated ones at start.
 	Cipassword        *string            `url:"cipassword,omitempty" json:"cipassword,omitempty"`                 // cloud-init: Password to assign the user. Using this is generally not recommended. Use ssh keys instead. Also note that older cloud-init versions do not support hashed passwords.
-	Citype            *string            `url:"citype,omitempty" json:"citype,omitempty"`                         // Specifies the cloud-init configuration format. The default depends on the configured operating system type (`ostype`. We use the `nocloud` format for Linux, and `configdrive2` for windows.
+	Citype            *Citype            `url:"citype,omitempty" json:"citype,omitempty"`                         // Specifies the cloud-init configuration format. The default depends on the configured operating system type (`ostype`. We use the `nocloud` format for Linux, and `configdrive2` for windows.
 	Ciuser            *string            `url:"ciuser,omitempty" json:"ciuser,omitempty"`                         // cloud-init: User name to change ssh keys and password for instead of the image's configured default user.
 	Cores             *int               `url:"cores,omitempty" json:"cores,omitempty"`                           // The number of cores per socket.
 	Cpu               *string            `url:"cpu,omitempty" json:"cpu,omitempty"`                               // Emulated CPU type.
@@ -986,15 +2175,15 @@ type UpdateVmAsyncConfigRequest struct {
 	Hookscript        *string            `url:"hookscript,omitempty" json:"hookscript,omitempty"`                 // Script that will be executed during various steps in the vms lifetime.
 	Hostpcis          *Hostpcis          `url:"hostpci[n],omitempty" json:"hostpci[n],omitempty"`                 // Map host PCI devices into guest.
 	Hotplug           *string            `url:"hotplug,omitempty" json:"hotplug,omitempty"`                       // Selectively enable hotplug features. This is a comma separated list of hotplug features: 'network', 'disk', 'cpu', 'memory', 'usb' and 'cloudinit'. Use '0' to disable hotplug completely. Using '1' as value is an alias for the default `network,disk,usb`. USB hotplugging is possible for guests with machine version >= 7.1 and ostype l26 or windows > 7.
-	Hugepages         *string            `url:"hugepages,omitempty" json:"hugepages,omitempty"`                   // Enable/disable hugepages memory.
+	Hugepages         *Hugepages         `url:"hugepages,omitempty" json:"hugepages,omitempty"`                   // Enable/disable hugepages memory.
 	Ides              *Ides              `url:"ide[n],omitempty" json:"ide[n],omitempty"`                         // Use volume as IDE hard disk or CD-ROM (n is 0 to 3). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
 	Ipconfigs         *Ipconfigs         `url:"ipconfig[n],omitempty" json:"ipconfig[n],omitempty"`               // cloud-init: Specify IP addresses and gateways for the corresponding interface. IP addresses use CIDR notation, gateways are optional but need an IP of the same type specified. The special string 'dhcp' can be used for IP addresses to use DHCP, in which case no explicit gateway should be provided. For IPv6 the special string 'auto' can be used to use stateless autoconfiguration. This requires cloud-init 19.4 or newer. If cloud-init is enabled and neither an IPv4 nor an IPv6 address is specified, it defaults to using dhcp on IPv4.
 	Ivshmem           *Ivshmem           `url:"ivshmem,omitempty" json:"ivshmem,omitempty"`                       // Inter-VM shared memory. Useful for direct communication between VMs, or to the host.
 	Keephugepages     *util.PVEBool      `url:"keephugepages,omitempty" json:"keephugepages,omitempty"`           // Use together with hugepages. If enabled, hugepages will not not be deleted after VM shutdown and can be used for subsequent starts.
-	Keyboard          *string            `url:"keyboard,omitempty" json:"keyboard,omitempty"`                     // Keyboard layout for VNC server. This option is generally not required and is often better handled from within the guest OS.
+	Keyboard          *Keyboard          `url:"keyboard,omitempty" json:"keyboard,omitempty"`                     // Keyboard layout for VNC server. This option is generally not required and is often better handled from within the guest OS.
 	Kvm               *util.PVEBool      `url:"kvm,omitempty" json:"kvm,omitempty"`                               // Enable/disable KVM hardware virtualization.
 	Localtime         *util.PVEBool      `url:"localtime,omitempty" json:"localtime,omitempty"`                   // Set the real time clock (RTC) to local time. This is enabled by default if the `ostype` indicates a Microsoft Windows OS.
-	Lock              *string            `url:"lock,omitempty" json:"lock,omitempty"`                             // Lock/unlock the VM.
+	Lock              *Lock              `url:"lock,omitempty" json:"lock,omitempty"`                             // Lock/unlock the VM.
 	Machine           *string            `url:"machine,omitempty" json:"machine,omitempty"`                       // Specifies the Qemu machine type.
 	Memory            *int               `url:"memory,omitempty" json:"memory,omitempty"`                         // Amount of RAM for the VM in MB. This is the maximum available memory when you use the balloon device.
 	MigrateDowntime   *float64           `url:"migrate_downtime,omitempty" json:"migrate_downtime,omitempty"`     // Set maximum tolerated downtime (in seconds) for migrations.
@@ -1005,14 +2194,14 @@ type UpdateVmAsyncConfigRequest struct {
 	Numa              *util.PVEBool      `url:"numa,omitempty" json:"numa,omitempty"`                             // Enable/disable NUMA.
 	Numas             *Numas             `url:"numa[n],omitempty" json:"numa[n],omitempty"`                       // NUMA topology.
 	Onboot            *util.PVEBool      `url:"onboot,omitempty" json:"onboot,omitempty"`                         // Specifies whether a VM will be started during system bootup.
-	Ostype            *string            `url:"ostype,omitempty" json:"ostype,omitempty"`                         // Specify guest operating system.
+	Ostype            *Ostype            `url:"ostype,omitempty" json:"ostype,omitempty"`                         // Specify guest operating system.
 	Parallels         *Parallels         `url:"parallel[n],omitempty" json:"parallel[n],omitempty"`               // Map host parallel devices (n is 0 to 2).
 	Protection        *util.PVEBool      `url:"protection,omitempty" json:"protection,omitempty"`                 // Sets the protection flag of the VM. This will disable the remove VM and remove disk operations.
 	Reboot            *util.PVEBool      `url:"reboot,omitempty" json:"reboot,omitempty"`                         // Allow reboot. If set to '0' the VM exit on reboot.
 	Revert            *string            `url:"revert,omitempty" json:"revert,omitempty"`                         // Revert a pending change.
 	Rng0              *Rng0              `url:"rng0,omitempty" json:"rng0,omitempty"`                             // Configure a VirtIO-based Random Number Generator.
 	Satas             *Satas             `url:"sata[n],omitempty" json:"sata[n],omitempty"`                       // Use volume as SATA hard disk or CD-ROM (n is 0 to 5). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
-	Scsihw            *string            `url:"scsihw,omitempty" json:"scsihw,omitempty"`                         // SCSI controller model
+	Scsihw            *Scsihw            `url:"scsihw,omitempty" json:"scsihw,omitempty"`                         // SCSI controller model
 	Scsis             *Scsis             `url:"scsi[n],omitempty" json:"scsi[n],omitempty"`                       // Use volume as SCSI hard disk or CD-ROM (n is 0 to 30). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
 	Searchdomain      *string            `url:"searchdomain,omitempty" json:"searchdomain,omitempty"`             // cloud-init: Sets DNS search domains for a container. Create will automatically use the setting from the host if neither searchdomain nor nameserver are set.
 	Serials           *Serials           `url:"serial[n],omitempty" json:"serial[n],omitempty"`                   // Create a serial device inside the VM (n is 0 to 3)
@@ -1048,18 +2237,18 @@ type UpdateVmConfigRequest struct {
 	Acpi              *util.PVEBool      `url:"acpi,omitempty" json:"acpi,omitempty"`                             // Enable/disable ACPI.
 	Affinity          *string            `url:"affinity,omitempty" json:"affinity,omitempty"`                     // List of host cores used to execute guest processes, for example: 0,5,8-11
 	Agent             *Agent             `url:"agent,omitempty" json:"agent,omitempty"`                           // Enable/disable communication with the Qemu Guest Agent and its properties.
-	Arch              *string            `url:"arch,omitempty" json:"arch,omitempty"`                             // Virtual processor architecture. Defaults to the host.
+	Arch              *Arch              `url:"arch,omitempty" json:"arch,omitempty"`                             // Virtual processor architecture. Defaults to the host.
 	Args              *string            `url:"args,omitempty" json:"args,omitempty"`                             // Arbitrary arguments passed to kvm.
 	Audio0            *Audio0            `url:"audio0,omitempty" json:"audio0,omitempty"`                         // Configure a audio device, useful in combination with QXL/Spice.
 	Autostart         *util.PVEBool      `url:"autostart,omitempty" json:"autostart,omitempty"`                   // Automatic restart after crash (currently ignored).
 	Balloon           *int               `url:"balloon,omitempty" json:"balloon,omitempty"`                       // Amount of target RAM for the VM in MB. Using zero disables the ballon driver.
-	Bios              *string            `url:"bios,omitempty" json:"bios,omitempty"`                             // Select BIOS implementation.
+	Bios              *Bios              `url:"bios,omitempty" json:"bios,omitempty"`                             // Select BIOS implementation.
 	Boot              *string            `url:"boot,omitempty" json:"boot,omitempty"`                             // Specify guest boot order. Use the 'order=' sub-property as usage with no key or 'legacy=' is deprecated.
 	Bootdisk          *string            `url:"bootdisk,omitempty" json:"bootdisk,omitempty"`                     // Enable booting from specified disk. Deprecated: Use 'boot: order=foo;bar' instead.
 	Cdrom             *string            `url:"cdrom,omitempty" json:"cdrom,omitempty"`                           // This is an alias for option -ide2
 	Cicustom          *string            `url:"cicustom,omitempty" json:"cicustom,omitempty"`                     // cloud-init: Specify custom files to replace the automatically generated ones at start.
 	Cipassword        *string            `url:"cipassword,omitempty" json:"cipassword,omitempty"`                 // cloud-init: Password to assign the user. Using this is generally not recommended. Use ssh keys instead. Also note that older cloud-init versions do not support hashed passwords.
-	Citype            *string            `url:"citype,omitempty" json:"citype,omitempty"`                         // Specifies the cloud-init configuration format. The default depends on the configured operating system type (`ostype`. We use the `nocloud` format for Linux, and `configdrive2` for windows.
+	Citype            *Citype            `url:"citype,omitempty" json:"citype,omitempty"`                         // Specifies the cloud-init configuration format. The default depends on the configured operating system type (`ostype`. We use the `nocloud` format for Linux, and `configdrive2` for windows.
 	Ciuser            *string            `url:"ciuser,omitempty" json:"ciuser,omitempty"`                         // cloud-init: User name to change ssh keys and password for instead of the image's configured default user.
 	Cores             *int               `url:"cores,omitempty" json:"cores,omitempty"`                           // The number of cores per socket.
 	Cpu               *string            `url:"cpu,omitempty" json:"cpu,omitempty"`                               // Emulated CPU type.
@@ -1074,15 +2263,15 @@ type UpdateVmConfigRequest struct {
 	Hookscript        *string            `url:"hookscript,omitempty" json:"hookscript,omitempty"`                 // Script that will be executed during various steps in the vms lifetime.
 	Hostpcis          *Hostpcis          `url:"hostpci[n],omitempty" json:"hostpci[n],omitempty"`                 // Map host PCI devices into guest.
 	Hotplug           *string            `url:"hotplug,omitempty" json:"hotplug,omitempty"`                       // Selectively enable hotplug features. This is a comma separated list of hotplug features: 'network', 'disk', 'cpu', 'memory', 'usb' and 'cloudinit'. Use '0' to disable hotplug completely. Using '1' as value is an alias for the default `network,disk,usb`. USB hotplugging is possible for guests with machine version >= 7.1 and ostype l26 or windows > 7.
-	Hugepages         *string            `url:"hugepages,omitempty" json:"hugepages,omitempty"`                   // Enable/disable hugepages memory.
+	Hugepages         *Hugepages         `url:"hugepages,omitempty" json:"hugepages,omitempty"`                   // Enable/disable hugepages memory.
 	Ides              *Ides              `url:"ide[n],omitempty" json:"ide[n],omitempty"`                         // Use volume as IDE hard disk or CD-ROM (n is 0 to 3). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
 	Ipconfigs         *Ipconfigs         `url:"ipconfig[n],omitempty" json:"ipconfig[n],omitempty"`               // cloud-init: Specify IP addresses and gateways for the corresponding interface. IP addresses use CIDR notation, gateways are optional but need an IP of the same type specified. The special string 'dhcp' can be used for IP addresses to use DHCP, in which case no explicit gateway should be provided. For IPv6 the special string 'auto' can be used to use stateless autoconfiguration. This requires cloud-init 19.4 or newer. If cloud-init is enabled and neither an IPv4 nor an IPv6 address is specified, it defaults to using dhcp on IPv4.
 	Ivshmem           *Ivshmem           `url:"ivshmem,omitempty" json:"ivshmem,omitempty"`                       // Inter-VM shared memory. Useful for direct communication between VMs, or to the host.
 	Keephugepages     *util.PVEBool      `url:"keephugepages,omitempty" json:"keephugepages,omitempty"`           // Use together with hugepages. If enabled, hugepages will not not be deleted after VM shutdown and can be used for subsequent starts.
-	Keyboard          *string            `url:"keyboard,omitempty" json:"keyboard,omitempty"`                     // Keyboard layout for VNC server. This option is generally not required and is often better handled from within the guest OS.
+	Keyboard          *Keyboard          `url:"keyboard,omitempty" json:"keyboard,omitempty"`                     // Keyboard layout for VNC server. This option is generally not required and is often better handled from within the guest OS.
 	Kvm               *util.PVEBool      `url:"kvm,omitempty" json:"kvm,omitempty"`                               // Enable/disable KVM hardware virtualization.
 	Localtime         *util.PVEBool      `url:"localtime,omitempty" json:"localtime,omitempty"`                   // Set the real time clock (RTC) to local time. This is enabled by default if the `ostype` indicates a Microsoft Windows OS.
-	Lock              *string            `url:"lock,omitempty" json:"lock,omitempty"`                             // Lock/unlock the VM.
+	Lock              *Lock              `url:"lock,omitempty" json:"lock,omitempty"`                             // Lock/unlock the VM.
 	Machine           *string            `url:"machine,omitempty" json:"machine,omitempty"`                       // Specifies the Qemu machine type.
 	Memory            *int               `url:"memory,omitempty" json:"memory,omitempty"`                         // Amount of RAM for the VM in MB. This is the maximum available memory when you use the balloon device.
 	MigrateDowntime   *float64           `url:"migrate_downtime,omitempty" json:"migrate_downtime,omitempty"`     // Set maximum tolerated downtime (in seconds) for migrations.
@@ -1093,14 +2282,14 @@ type UpdateVmConfigRequest struct {
 	Numa              *util.PVEBool      `url:"numa,omitempty" json:"numa,omitempty"`                             // Enable/disable NUMA.
 	Numas             *Numas             `url:"numa[n],omitempty" json:"numa[n],omitempty"`                       // NUMA topology.
 	Onboot            *util.PVEBool      `url:"onboot,omitempty" json:"onboot,omitempty"`                         // Specifies whether a VM will be started during system bootup.
-	Ostype            *string            `url:"ostype,omitempty" json:"ostype,omitempty"`                         // Specify guest operating system.
+	Ostype            *Ostype            `url:"ostype,omitempty" json:"ostype,omitempty"`                         // Specify guest operating system.
 	Parallels         *Parallels         `url:"parallel[n],omitempty" json:"parallel[n],omitempty"`               // Map host parallel devices (n is 0 to 2).
 	Protection        *util.PVEBool      `url:"protection,omitempty" json:"protection,omitempty"`                 // Sets the protection flag of the VM. This will disable the remove VM and remove disk operations.
 	Reboot            *util.PVEBool      `url:"reboot,omitempty" json:"reboot,omitempty"`                         // Allow reboot. If set to '0' the VM exit on reboot.
 	Revert            *string            `url:"revert,omitempty" json:"revert,omitempty"`                         // Revert a pending change.
 	Rng0              *Rng0              `url:"rng0,omitempty" json:"rng0,omitempty"`                             // Configure a VirtIO-based Random Number Generator.
 	Satas             *Satas             `url:"sata[n],omitempty" json:"sata[n],omitempty"`                       // Use volume as SATA hard disk or CD-ROM (n is 0 to 5). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
-	Scsihw            *string            `url:"scsihw,omitempty" json:"scsihw,omitempty"`                         // SCSI controller model
+	Scsihw            *Scsihw            `url:"scsihw,omitempty" json:"scsihw,omitempty"`                         // SCSI controller model
 	Scsis             *Scsis             `url:"scsi[n],omitempty" json:"scsi[n],omitempty"`                       // Use volume as SCSI hard disk or CD-ROM (n is 0 to 30). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
 	Searchdomain      *string            `url:"searchdomain,omitempty" json:"searchdomain,omitempty"`             // cloud-init: Sets DNS search domains for a container. Create will automatically use the setting from the host if neither searchdomain nor nameserver are set.
 	Serials           *Serials           `url:"serial[n],omitempty" json:"serial[n],omitempty"`                   // Create a serial device inside the VM (n is 0 to 3)
@@ -1177,7 +2366,7 @@ type TermproxyRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Serial *string `url:"serial,omitempty" json:"serial,omitempty"` // opens a serial terminal (defaults to display)
+	Serial *Serial `url:"serial,omitempty" json:"serial,omitempty"` // opens a serial terminal (defaults to display)
 }
 
 type TermproxyResponse struct {
@@ -1226,9 +2415,9 @@ type VmSendkeyRequest struct {
 }
 
 type VmFeatureRequest struct {
-	Feature string `url:"feature" json:"feature"` // Feature to check.
-	Node    string `url:"node" json:"node"`       // The cluster node name.
-	Vmid    int    `url:"vmid" json:"vmid"`       // The (unique) ID of the VM.
+	Feature Feature `url:"feature" json:"feature"` // Feature to check.
+	Node    string  `url:"node" json:"node"`       // The cluster node name.
+	Vmid    int     `url:"vmid" json:"vmid"`       // The (unique) ID of the VM.
 
 	// The following parameters are optional
 	Snapname *string `url:"snapname,omitempty" json:"snapname,omitempty"` // The name of the snapshot.
@@ -1247,7 +2436,7 @@ type CloneVmRequest struct {
 	// The following parameters are optional
 	Bwlimit     *int          `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`         // Override I/O bandwidth limit (in KiB/s).
 	Description *string       `url:"description,omitempty" json:"description,omitempty"` // Description for the new VM.
-	Format      *string       `url:"format,omitempty" json:"format,omitempty"`           // Target format for file storage. Only valid for full clone.
+	Format      *Format       `url:"format,omitempty" json:"format,omitempty"`           // Target format for file storage. Only valid for full clone.
 	Full        *util.PVEBool `url:"full,omitempty" json:"full,omitempty"`               // Create a full copy of all disks. This is always done when you clone a normal VM. For VM templates, we try to create a linked clone by default.
 	Name        *string       `url:"name,omitempty" json:"name,omitempty"`               // Set a name for the new VM.
 	Pool        *string       `url:"pool,omitempty" json:"pool,omitempty"`               // Add the new VM to the specified pool.
@@ -1257,7 +2446,7 @@ type CloneVmRequest struct {
 }
 
 type MoveVmDiskMoveDiskRequest struct {
-	Disk string `url:"disk" json:"disk"` // The disk you want to move.
+	Disk Disk   `url:"disk" json:"disk"` // The disk you want to move.
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
@@ -1265,10 +2454,10 @@ type MoveVmDiskMoveDiskRequest struct {
 	Bwlimit      *int          `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`             // Override I/O bandwidth limit (in KiB/s).
 	Delete       *util.PVEBool `url:"delete,omitempty" json:"delete,omitempty"`               // Delete the original disk after successful copy. By default the original disk is kept as unused disk.
 	Digest       *string       `url:"digest,omitempty" json:"digest,omitempty"`               // Prevent changes if current configuration file has different SHA1" 		  ." digest. This can be used to prevent concurrent modifications.
-	Format       *string       `url:"format,omitempty" json:"format,omitempty"`               // Target Format.
+	Format       *Format       `url:"format,omitempty" json:"format,omitempty"`               // Target Format.
 	Storage      *string       `url:"storage,omitempty" json:"storage,omitempty"`             // Target storage.
 	TargetDigest *string       `url:"target-digest,omitempty" json:"target-digest,omitempty"` // Prevent changes if the current config file of the target VM has a" 		  ." different SHA1 digest. This can be used to detect concurrent modifications.
-	TargetDisk   *string       `url:"target-disk,omitempty" json:"target-disk,omitempty"`     // The config key the disk will be moved to on the target VM (for example, ide0 or scsi1). Default is the source disk key.
+	TargetDisk   *TargetDisk   `url:"target-disk,omitempty" json:"target-disk,omitempty"`     // The config key the disk will be moved to on the target VM (for example, ide0 or scsi1). Default is the source disk key.
 	TargetVmid   *int          `url:"target-vmid,omitempty" json:"target-vmid,omitempty"`     // The (unique) ID of the VM.
 }
 
@@ -1296,13 +2485,13 @@ type MigrateVmRequest struct {
 	Vmid   int    `url:"vmid" json:"vmid"`     // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Bwlimit          *int          `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`                     // Override I/O bandwidth limit (in KiB/s).
-	Force            *util.PVEBool `url:"force,omitempty" json:"force,omitempty"`                         // Allow to migrate VMs which use local devices. Only root may use this option.
-	MigrationNetwork *string       `url:"migration_network,omitempty" json:"migration_network,omitempty"` // CIDR of the (sub) network that is used for migration.
-	MigrationType    *string       `url:"migration_type,omitempty" json:"migration_type,omitempty"`       // Migration traffic is encrypted using an SSH tunnel by default. On secure, completely private networks this can be disabled to increase performance.
-	Online           *util.PVEBool `url:"online,omitempty" json:"online,omitempty"`                       // Use online/live migration if VM is running. Ignored if VM is stopped.
-	Targetstorage    *string       `url:"targetstorage,omitempty" json:"targetstorage,omitempty"`         // Mapping from source to target storages. Providing only a single storage ID maps all source storages to that storage. Providing the special value '1' will map each source storage to itself.
-	WithLocalDisks   *util.PVEBool `url:"with-local-disks,omitempty" json:"with-local-disks,omitempty"`   // Enable live storage migration for local disk
+	Bwlimit          *int           `url:"bwlimit,omitempty" json:"bwlimit,omitempty"`                     // Override I/O bandwidth limit (in KiB/s).
+	Force            *util.PVEBool  `url:"force,omitempty" json:"force,omitempty"`                         // Allow to migrate VMs which use local devices. Only root may use this option.
+	MigrationNetwork *string        `url:"migration_network,omitempty" json:"migration_network,omitempty"` // CIDR of the (sub) network that is used for migration.
+	MigrationType    *MigrationType `url:"migration_type,omitempty" json:"migration_type,omitempty"`       // Migration traffic is encrypted using an SSH tunnel by default. On secure, completely private networks this can be disabled to increase performance.
+	Online           *util.PVEBool  `url:"online,omitempty" json:"online,omitempty"`                       // Use online/live migration if VM is running. Ignored if VM is stopped.
+	Targetstorage    *string        `url:"targetstorage,omitempty" json:"targetstorage,omitempty"`         // Mapping from source to target storages. Providing only a single storage ID maps all source storages to that storage. Providing the special value '1' will map each source storage to itself.
+	WithLocalDisks   *util.PVEBool  `url:"with-local-disks,omitempty" json:"with-local-disks,omitempty"`   // Enable live storage migration for local disk
 }
 
 type RemoteMigrateVmRequest struct {
@@ -1327,7 +2516,7 @@ type MonitorRequest struct {
 }
 
 type ResizeVmRequest struct {
-	Disk string `url:"disk" json:"disk"` // The disk you want to resize.
+	Disk Disk   `url:"disk" json:"disk"` // The disk you want to resize.
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Size string `url:"size" json:"size"` // The new size. With the `+` sign the value is added to the actual size of the volume and without it, the value is taken as an absolute one. Shrinking disk size is not supported.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
@@ -1342,7 +2531,7 @@ type TemplateRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Disk *string `url:"disk,omitempty" json:"disk,omitempty"` // If you want to convert only 1 disk to base image.
+	Disk *Disk `url:"disk,omitempty" json:"disk,omitempty"` // If you want to convert only 1 disk to base image.
 }
 
 type MtunnelRequest struct {

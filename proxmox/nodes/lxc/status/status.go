@@ -7,6 +7,17 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	Status_STOPPED Status = "stopped"
+	Status_RUNNING Status = "running"
+)
+
+type Status string
+
+func PtrStatus(i Status) *Status {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -39,7 +50,7 @@ type VmStatusCurrentRequest struct {
 
 type VmStatusCurrentResponse struct {
 	Ha     map[string]interface{} `url:"ha" json:"ha"`         // HA manager service status.
-	Status string                 `url:"status" json:"status"` // LXC Container status.
+	Status Status                 `url:"status" json:"status"` // LXC Container status.
 	Vmid   int                    `url:"vmid" json:"vmid"`     // The (unique) ID of the VM.
 
 	// The following parameters are optional
