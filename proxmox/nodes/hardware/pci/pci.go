@@ -28,6 +28,7 @@ type IndexRequest struct {
 	PciClassBlacklist *string       `url:"pci-class-blacklist,omitempty" json:"pci-class-blacklist,omitempty"` // A list of blacklisted PCI classes, which will not be returned. Following are filtered by default: Memory Controller (05), Bridge (06) and Processor (0b).
 	Verbose           *util.PVEBool `url:"verbose,omitempty" json:"verbose,omitempty"`                         // If disabled, does only print the PCI IDs. Otherwise, additional information like vendor and device will be returned.
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Class      string `url:"class" json:"class"`           // The PCI Class of the device.
@@ -45,21 +46,25 @@ type IndexResponse struct {
 	SubsystemVendorName *string       `url:"subsystem_vendor_name,omitempty" json:"subsystem_vendor_name,omitempty"`
 	VendorName          *string       `url:"vendor_name,omitempty" json:"vendor_name,omitempty"`
 }
+type _IndexResponse IndexResponse
 
 type FindRequest struct {
 	Node  string `url:"node" json:"node"` // The cluster node name.
 	Pciid string `url:"pciid" json:"pciid"`
 }
+type _FindRequest FindRequest
 
 type FindResponse struct {
 	Method string `url:"method" json:"method"`
 }
+type _FindResponse FindResponse
 
 type MdevscanRequest struct {
 	Node  string `url:"node" json:"node"`   // The cluster node name.
 	Pciid string `url:"pciid" json:"pciid"` // The PCI ID to list the mdev types for.
 
 }
+type _MdevscanRequest MdevscanRequest
 
 type MdevscanResponse struct {
 	Available   int    `url:"available" json:"available"` // The number of still available instances of this type.
@@ -67,6 +72,7 @@ type MdevscanResponse struct {
 	Type        string `url:"type" json:"type"` // The name of the mdev type.
 
 }
+type _MdevscanResponse MdevscanResponse
 
 // Index List local PCI devices.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

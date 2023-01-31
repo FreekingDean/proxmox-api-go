@@ -34,6 +34,7 @@ func New(c HTTPClient) *Client {
 type IndexResponse struct {
 	Group string `url:"group" json:"group"`
 }
+type _IndexResponse IndexResponse
 
 type CreateRequest struct {
 	Group string `url:"group" json:"group"` // The HA group identifier.
@@ -45,11 +46,13 @@ type CreateRequest struct {
 	Restricted *util.PVEBool `url:"restricted,omitempty" json:"restricted,omitempty"` // Resources bound to restricted groups may only run on nodes defined by the group.
 	Type       *Type         `url:"type,omitempty" json:"type,omitempty"`             // Group type.
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Group string `url:"group" json:"group"` // The HA group identifier.
 
 }
+type _FindRequest FindRequest
 
 type UpdateRequest struct {
 	Group string `url:"group" json:"group"` // The HA group identifier.
@@ -62,11 +65,13 @@ type UpdateRequest struct {
 	Nofailback *util.PVEBool `url:"nofailback,omitempty" json:"nofailback,omitempty"` // The CRM tries to run services on the node with the highest priority. If a node with higher priority comes online, the CRM migrates the service to that node. Enabling nofailback prevents that behavior.
 	Restricted *util.PVEBool `url:"restricted,omitempty" json:"restricted,omitempty"` // Resources bound to restricted groups may only run on nodes defined by the group.
 }
+type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
 	Group string `url:"group" json:"group"` // The HA group identifier.
 
 }
+type _DeleteRequest DeleteRequest
 
 // Index Get HA groups.
 func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {

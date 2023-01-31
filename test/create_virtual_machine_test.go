@@ -41,7 +41,7 @@ func TestCreateVirtualMachine(t *testing.T) {
 	req := qemu.CreateRequest{
 		Node: "some-node",
 		Ides: &qemu.Ides{
-			qemu.Ide{
+			&qemu.Ide{
 				File:         "test-file",
 				Bps:          proxmox.Int(1),
 				Media:        qemu.PtrIdeMedia(qemu.IdeMedia_DISK),

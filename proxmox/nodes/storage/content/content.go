@@ -41,6 +41,7 @@ type IndexRequest struct {
 	Content *string `url:"content,omitempty" json:"content,omitempty"` // Only list content of this type.
 	Vmid    *int    `url:"vmid,omitempty" json:"vmid,omitempty"`       // Only list images for this VM
 }
+type _IndexRequest IndexRequest
 
 // Last backup verification result, only useful for PBS storages.
 type Verification struct {
@@ -48,6 +49,7 @@ type Verification struct {
 	Upid  string `url:"upid" json:"upid"`   // Last backup verification UPID.
 
 }
+type _Verification Verification
 
 type IndexResponse struct {
 	Format string `url:"format" json:"format"` // Format identifier ('raw', 'qcow2', 'subvol', 'iso', 'tgz' ...)
@@ -64,6 +66,7 @@ type IndexResponse struct {
 	Verification *Verification `url:"verification,omitempty" json:"verification,omitempty"` // Last backup verification result, only useful for PBS storages.
 	Vmid         *int          `url:"vmid,omitempty" json:"vmid,omitempty"`                 // Associated Owner VMID.
 }
+type _IndexResponse IndexResponse
 
 type CreateRequest struct {
 	Filename string `url:"filename" json:"filename"` // The name of the file to create.
@@ -75,6 +78,7 @@ type CreateRequest struct {
 	// The following parameters are optional
 	Format *Format `url:"format,omitempty" json:"format,omitempty"`
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
@@ -83,6 +87,7 @@ type FindRequest struct {
 	// The following parameters are optional
 	Storage *string `url:"storage,omitempty" json:"storage,omitempty"` // The storage identifier.
 }
+type _FindRequest FindRequest
 
 type FindResponse struct {
 	Format string `url:"format" json:"format"` // Format identifier ('raw', 'qcow2', 'subvol', 'iso', 'tgz' ...)
@@ -94,6 +99,7 @@ type FindResponse struct {
 	Notes     *string       `url:"notes,omitempty" json:"notes,omitempty"`         // Optional notes.
 	Protected *util.PVEBool `url:"protected,omitempty" json:"protected,omitempty"` // Protection status. Currently only supported for backups.
 }
+type _FindResponse FindResponse
 
 type ChildCreateRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
@@ -104,6 +110,7 @@ type ChildCreateRequest struct {
 	Storage    *string `url:"storage,omitempty" json:"storage,omitempty"`         // The storage identifier.
 	TargetNode *string `url:"target_node,omitempty" json:"target_node,omitempty"` // Target node. Default is local node.
 }
+type _ChildCreateRequest ChildCreateRequest
 
 type UpdateRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
@@ -114,6 +121,7 @@ type UpdateRequest struct {
 	Protected *util.PVEBool `url:"protected,omitempty" json:"protected,omitempty"` // Protection status. Currently only supported for backups.
 	Storage   *string       `url:"storage,omitempty" json:"storage,omitempty"`     // The storage identifier.
 }
+type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
@@ -123,6 +131,7 @@ type DeleteRequest struct {
 	Delay   *int    `url:"delay,omitempty" json:"delay,omitempty"`     // Time to wait for the task to finish. We return 'null' if the task finish within that time.
 	Storage *string `url:"storage,omitempty" json:"storage,omitempty"` // The storage identifier.
 }
+type _DeleteRequest DeleteRequest
 
 // Index List storage content.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

@@ -25,6 +25,7 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	DataPool     string `url:"data_pool" json:"data_pool"`         // The name of the data pool.
@@ -32,6 +33,7 @@ type IndexResponse struct {
 	Name         string `url:"name" json:"name"`                   // The ceph filesystem name.
 
 }
+type _IndexResponse IndexResponse
 
 type ChildCreateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -41,6 +43,7 @@ type ChildCreateRequest struct {
 	Name       *string       `url:"name,omitempty" json:"name,omitempty"`               // The ceph filesystem name.
 	PgNum      *int          `url:"pg_num,omitempty" json:"pg_num,omitempty"`           // Number of placement groups for the backing data pool. The metadata pool will use a quarter of this.
 }
+type _ChildCreateRequest ChildCreateRequest
 
 // Index Directory index.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

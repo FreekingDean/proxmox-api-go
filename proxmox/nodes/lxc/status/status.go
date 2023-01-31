@@ -37,16 +37,19 @@ type IndexRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Subdir string `url:"subdir" json:"subdir"`
 }
+type _IndexResponse IndexResponse
 
 type VmStatusCurrentRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _VmStatusCurrentRequest VmStatusCurrentRequest
 
 type VmStatusCurrentResponse struct {
 	Ha     map[string]interface{} `url:"ha" json:"ha"`         // HA manager service status.
@@ -63,6 +66,7 @@ type VmStatusCurrentResponse struct {
 	Tags    *string  `url:"tags,omitempty" json:"tags,omitempty"`       // The current configured tags, if any.
 	Uptime  *int     `url:"uptime,omitempty" json:"uptime,omitempty"`   // Uptime.
 }
+type _VmStatusCurrentResponse VmStatusCurrentResponse
 
 type VmStartRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -72,6 +76,7 @@ type VmStartRequest struct {
 	Debug    *util.PVEBool `url:"debug,omitempty" json:"debug,omitempty"`       // If set, enables very verbose debug log-level on start.
 	Skiplock *util.PVEBool `url:"skiplock,omitempty" json:"skiplock,omitempty"` // Ignore locks - only root is allowed to use this option.
 }
+type _VmStartRequest VmStartRequest
 
 type VmStopRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -80,6 +85,7 @@ type VmStopRequest struct {
 	// The following parameters are optional
 	Skiplock *util.PVEBool `url:"skiplock,omitempty" json:"skiplock,omitempty"` // Ignore locks - only root is allowed to use this option.
 }
+type _VmStopRequest VmStopRequest
 
 type VmShutdownRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -89,18 +95,21 @@ type VmShutdownRequest struct {
 	Forcestop *util.PVEBool `url:"forceStop,omitempty" json:"forceStop,omitempty"` // Make sure the Container stops.
 	Timeout   *int          `url:"timeout,omitempty" json:"timeout,omitempty"`     // Wait maximal timeout seconds.
 }
+type _VmShutdownRequest VmShutdownRequest
 
 type VmSuspendRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _VmSuspendRequest VmSuspendRequest
 
 type VmResumeRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _VmResumeRequest VmResumeRequest
 
 type VmRebootRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -109,6 +118,7 @@ type VmRebootRequest struct {
 	// The following parameters are optional
 	Timeout *int `url:"timeout,omitempty" json:"timeout,omitempty"` // Wait maximal timeout seconds for the shutdown.
 }
+type _VmRebootRequest VmRebootRequest
 
 // Index Directory index
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

@@ -70,6 +70,7 @@ type IndexRequest struct {
 	// The following parameters are optional
 	Type *Type `url:"type,omitempty" json:"type,omitempty"` // Only list specific interface types.
 }
+type _IndexRequest IndexRequest
 
 type CreateRequest struct {
 	Iface string `url:"iface" json:"iface"` // Network interface name.
@@ -103,27 +104,32 @@ type CreateRequest struct {
 	VlanId             *int                `url:"vlan-id,omitempty" json:"vlan-id,omitempty"`                             // vlan-id for a custom named vlan interface (ifupdown2 only).
 	VlanRawDevice      *string             `url:"vlan-raw-device,omitempty" json:"vlan-raw-device,omitempty"`             // Specify the raw interface for the vlan interface.
 }
+type _CreateRequest CreateRequest
 
 type MassUpdateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _MassUpdateRequest MassUpdateRequest
 
 type MassDeleteRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _MassDeleteRequest MassDeleteRequest
 
 type FindRequest struct {
 	Iface string `url:"iface" json:"iface"` // Network interface name.
 	Node  string `url:"node" json:"node"`   // The cluster node name.
 
 }
+type _FindRequest FindRequest
 
 type FindResponse struct {
 	Method string `url:"method" json:"method"`
 	Type   string `url:"type" json:"type"`
 }
+type _FindResponse FindResponse
 
 type UpdateRequest struct {
 	Iface string `url:"iface" json:"iface"` // Network interface name.
@@ -158,12 +164,14 @@ type UpdateRequest struct {
 	VlanId             *int                `url:"vlan-id,omitempty" json:"vlan-id,omitempty"`                             // vlan-id for a custom named vlan interface (ifupdown2 only).
 	VlanRawDevice      *string             `url:"vlan-raw-device,omitempty" json:"vlan-raw-device,omitempty"`             // Specify the raw interface for the vlan interface.
 }
+type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
 	Iface string `url:"iface" json:"iface"` // Network interface name.
 	Node  string `url:"node" json:"node"`   // The cluster node name.
 
 }
+type _DeleteRequest DeleteRequest
 
 // Index List available networks
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]interface{}, error) {

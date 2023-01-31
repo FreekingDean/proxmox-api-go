@@ -25,6 +25,7 @@ type IndexRequest struct {
 	Userid string `url:"userid" json:"userid"` // User ID
 
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Tokenid string `url:"tokenid" json:"tokenid"` // User-specific token identifier.
@@ -34,12 +35,14 @@ type IndexResponse struct {
 	Expire  *int          `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
 	Privsep *util.PVEBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
+type _IndexResponse IndexResponse
 
 type FindRequest struct {
 	Tokenid string `url:"tokenid" json:"tokenid"` // User-specific token identifier.
 	Userid  string `url:"userid" json:"userid"`   // User ID
 
 }
+type _FindRequest FindRequest
 
 type FindResponse struct {
 
@@ -48,6 +51,7 @@ type FindResponse struct {
 	Expire  *int          `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
 	Privsep *util.PVEBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
+type _FindResponse FindResponse
 
 type ChildCreateRequest struct {
 	Tokenid string `url:"tokenid" json:"tokenid"` // User-specific token identifier.
@@ -58,6 +62,7 @@ type ChildCreateRequest struct {
 	Expire  *int          `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
 	Privsep *util.PVEBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
+type _ChildCreateRequest ChildCreateRequest
 
 type Info struct {
 
@@ -66,6 +71,7 @@ type Info struct {
 	Expire  *int          `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
 	Privsep *util.PVEBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
+type _Info Info
 
 type ChildCreateResponse struct {
 	FullTokenid string `url:"full-tokenid" json:"full-tokenid"` // The full token id.
@@ -73,6 +79,7 @@ type ChildCreateResponse struct {
 	Value       string `url:"value" json:"value"` // API token value used for authentication.
 
 }
+type _ChildCreateResponse ChildCreateResponse
 
 type UpdateRequest struct {
 	Tokenid string `url:"tokenid" json:"tokenid"` // User-specific token identifier.
@@ -83,6 +90,7 @@ type UpdateRequest struct {
 	Expire  *int          `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
 	Privsep *util.PVEBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
+type _UpdateRequest UpdateRequest
 
 // Updated token information.
 type UpdateResponse struct {
@@ -92,12 +100,14 @@ type UpdateResponse struct {
 	Expire  *int          `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
 	Privsep *util.PVEBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
+type _UpdateResponse UpdateResponse
 
 type DeleteRequest struct {
 	Tokenid string `url:"tokenid" json:"tokenid"` // User-specific token identifier.
 	Userid  string `url:"userid" json:"userid"`   // User ID
 
 }
+type _DeleteRequest DeleteRequest
 
 // Index Get user API tokens.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

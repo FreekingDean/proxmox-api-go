@@ -55,10 +55,12 @@ type IndexResponse struct {
 	Type    string       `url:"type" json:"type"`       // Plugin type.
 
 }
+type _IndexResponse IndexResponse
 
 type FindRequest struct {
 	Id string `url:"id" json:"id"`
 }
+type _FindRequest FindRequest
 
 type ChildCreateRequest struct {
 	Id     string `url:"id" json:"id"`         // The ID of the entry.
@@ -80,6 +82,7 @@ type ChildCreateRequest struct {
 	Token             *string        `url:"token,omitempty" json:"token,omitempty"`                           // The InfluxDB access token. Only necessary when using the http v2 api. If the v2 compatibility api is used, use 'user:password' instead.
 	VerifyCertificate *util.PVEBool  `url:"verify-certificate,omitempty" json:"verify-certificate,omitempty"` // Set to 0 to disable certificate verification for https endpoints.
 }
+type _ChildCreateRequest ChildCreateRequest
 
 type UpdateRequest struct {
 	Id     string `url:"id" json:"id"`         // The ID of the entry.
@@ -102,10 +105,12 @@ type UpdateRequest struct {
 	Token             *string        `url:"token,omitempty" json:"token,omitempty"`                           // The InfluxDB access token. Only necessary when using the http v2 api. If the v2 compatibility api is used, use 'user:password' instead.
 	VerifyCertificate *util.PVEBool  `url:"verify-certificate,omitempty" json:"verify-certificate,omitempty"` // Set to 0 to disable certificate verification for https endpoints.
 }
+type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
 	Id string `url:"id" json:"id"`
 }
+type _DeleteRequest DeleteRequest
 
 // Index List configured metric servers.
 func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {

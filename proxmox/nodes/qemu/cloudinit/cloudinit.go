@@ -37,6 +37,7 @@ type IndexRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Key string `url:"key" json:"key"` // Configuration option name.
@@ -45,12 +46,14 @@ type IndexResponse struct {
 	New *string `url:"new,omitempty" json:"new,omitempty"` // The new pending value.
 	Old *string `url:"old,omitempty" json:"old,omitempty"` // Value as it was used to generate the current cloudinit image.
 }
+type _IndexResponse IndexResponse
 
 type MassUpdateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _MassUpdateRequest MassUpdateRequest
 
 type CloudinitGeneratedConfigDumpRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -58,6 +61,7 @@ type CloudinitGeneratedConfigDumpRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _CloudinitGeneratedConfigDumpRequest CloudinitGeneratedConfigDumpRequest
 
 // Index Get the cloudinit configuration with both current and pending values.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

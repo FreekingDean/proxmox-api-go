@@ -44,16 +44,19 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexRequest IndexRequest
 
 type ConfigRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _ConfigRequest ConfigRequest
 
 type ConfigdbRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _ConfigdbRequest ConfigdbRequest
 
 type ConfigdbResponse struct {
 	CanUpdateAtRuntime util.PVEBool `url:"can_update_at_runtime" json:"can_update_at_runtime"`
@@ -63,6 +66,7 @@ type ConfigdbResponse struct {
 	Section            string       `url:"section" json:"section"`
 	Value              string       `url:"value" json:"value"`
 }
+type _ConfigdbResponse ConfigdbResponse
 
 type InitRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -75,6 +79,7 @@ type InitRequest struct {
 	PgBits         *int          `url:"pg_bits,omitempty" json:"pg_bits,omitempty"`                 // Placement group bits, used to specify the default number of placement groups. NOTE: 'osd pool default pg num' does not work for default pools.
 	Size           *int          `url:"size,omitempty" json:"size,omitempty"`                       // Targeted number of replicas per object
 }
+type _InitRequest InitRequest
 
 type StopRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -82,6 +87,7 @@ type StopRequest struct {
 	// The following parameters are optional
 	Service *string `url:"service,omitempty" json:"service,omitempty"` // Ceph service name.
 }
+type _StopRequest StopRequest
 
 type StartRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -89,6 +95,7 @@ type StartRequest struct {
 	// The following parameters are optional
 	Service *string `url:"service,omitempty" json:"service,omitempty"` // Ceph service name.
 }
+type _StartRequest StartRequest
 
 type RestartRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -96,16 +103,19 @@ type RestartRequest struct {
 	// The following parameters are optional
 	Service *string `url:"service,omitempty" json:"service,omitempty"` // Ceph service name.
 }
+type _RestartRequest RestartRequest
 
 type StatusRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _StatusRequest StatusRequest
 
 type CrushRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _CrushRequest CrushRequest
 
 type LogRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -114,17 +124,20 @@ type LogRequest struct {
 	Limit *int `url:"limit,omitempty" json:"limit,omitempty"`
 	Start *int `url:"start,omitempty" json:"start,omitempty"`
 }
+type _LogRequest LogRequest
 
 type LogResponse struct {
 	N int    `url:"n" json:"n"` // Line number
 	T string `url:"t" json:"t"` // Line text
 
 }
+type _LogResponse LogResponse
 
 type RulesRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _RulesRequest RulesRequest
 
 type CmdSafetyRequest struct {
 	Action  Action  `url:"action" json:"action"`   // Action to check
@@ -133,6 +146,7 @@ type CmdSafetyRequest struct {
 	Service Service `url:"service" json:"service"` // Service type
 
 }
+type _CmdSafetyRequest CmdSafetyRequest
 
 type CmdSafetyResponse struct {
 	Safe util.PVEBool `url:"safe" json:"safe"` // If it is safe to run the command.
@@ -140,6 +154,7 @@ type CmdSafetyResponse struct {
 	// The following parameters are optional
 	Status *string `url:"status,omitempty" json:"status,omitempty"` // Status message given by Ceph.
 }
+type _CmdSafetyResponse CmdSafetyResponse
 
 // Index Directory index.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]interface{}, error) {

@@ -25,6 +25,7 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexRequest IndexRequest
 
 type CreateRequest struct {
 	Dev  string `url:"dev" json:"dev"`   // Block device name.
@@ -38,6 +39,7 @@ type CreateRequest struct {
 	WalDev           *string       `url:"wal_dev,omitempty" json:"wal_dev,omitempty"`                       // Block device name for block.wal.
 	WalDevSize       *float64      `url:"wal_dev_size,omitempty" json:"wal_dev_size,omitempty"`             // Size in GiB for block.wal.
 }
+type _CreateRequest CreateRequest
 
 type DeleteRequest struct {
 	Node  string `url:"node" json:"node"`   // The cluster node name.
@@ -46,18 +48,21 @@ type DeleteRequest struct {
 	// The following parameters are optional
 	Cleanup *util.PVEBool `url:"cleanup,omitempty" json:"cleanup,omitempty"` // If set, we remove partition table entries.
 }
+type _DeleteRequest DeleteRequest
 
 type InRequest struct {
 	Node  string `url:"node" json:"node"`   // The cluster node name.
 	Osdid int    `url:"osdid" json:"osdid"` // OSD ID
 
 }
+type _InRequest InRequest
 
 type OutRequest struct {
 	Node  string `url:"node" json:"node"`   // The cluster node name.
 	Osdid int    `url:"osdid" json:"osdid"` // OSD ID
 
 }
+type _OutRequest OutRequest
 
 type ScrubRequest struct {
 	Node  string `url:"node" json:"node"`   // The cluster node name.
@@ -66,6 +71,7 @@ type ScrubRequest struct {
 	// The following parameters are optional
 	Deep *util.PVEBool `url:"deep,omitempty" json:"deep,omitempty"` // If set, instructs a deep scrub instead of a normal one.
 }
+type _ScrubRequest ScrubRequest
 
 // Index Get Ceph osd list/tree.
 func (c *Client) Index(ctx context.Context, req IndexRequest) (map[string]interface{}, error) {

@@ -25,12 +25,14 @@ type GetTosRequest struct {
 	// The following parameters are optional
 	Directory *string `url:"directory,omitempty" json:"directory,omitempty"` // URL of ACME CA directory endpoint.
 }
+type _GetTosRequest GetTosRequest
 
 type GetDirectoriesResponse struct {
 	Name string `url:"name" json:"name"`
 	Url  string `url:"url" json:"url"` // URL of ACME CA directory endpoint.
 
 }
+type _GetDirectoriesResponse GetDirectoriesResponse
 
 type ChallengeschemaChallengeSchemaResponse struct {
 	Id     string                 `url:"id" json:"id"`
@@ -38,6 +40,7 @@ type ChallengeschemaChallengeSchemaResponse struct {
 	Schema map[string]interface{} `url:"schema" json:"schema"`
 	Type   string                 `url:"type" json:"type"`
 }
+type _ChallengeschemaChallengeSchemaResponse ChallengeschemaChallengeSchemaResponse
 
 // Index ACMEAccount index.
 func (c *Client) Index(ctx context.Context) ([]map[string]interface{}, error) {

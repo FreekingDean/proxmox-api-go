@@ -25,6 +25,7 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Lv           string `url:"lv" json:"lv"`                       // The name of the thinpool.
@@ -35,6 +36,7 @@ type IndexResponse struct {
 	Vg           string `url:"vg" json:"vg"`                       // The associated volume group.
 
 }
+type _IndexResponse IndexResponse
 
 type CreateRequest struct {
 	Device string `url:"device" json:"device"` // The block device you want to create the thinpool on.
@@ -44,6 +46,7 @@ type CreateRequest struct {
 	// The following parameters are optional
 	AddStorage *util.PVEBool `url:"add_storage,omitempty" json:"add_storage,omitempty"` // Configure storage using the thinpool.
 }
+type _CreateRequest CreateRequest
 
 type DeleteRequest struct {
 	Name        string `url:"name" json:"name"`                 // The storage identifier.
@@ -54,6 +57,7 @@ type DeleteRequest struct {
 	CleanupConfig *util.PVEBool `url:"cleanup-config,omitempty" json:"cleanup-config,omitempty"` // Marks associated storage(s) as not available on this node anymore or removes them from the configuration (if configured for this node only).
 	CleanupDisks  *util.PVEBool `url:"cleanup-disks,omitempty" json:"cleanup-disks,omitempty"`   // Also wipe disks so they can be repurposed afterwards.
 }
+type _DeleteRequest DeleteRequest
 
 // Index List LVM thinpools
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

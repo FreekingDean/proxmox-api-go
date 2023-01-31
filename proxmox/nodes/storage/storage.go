@@ -86,6 +86,7 @@ type IndexRequest struct {
 	Storage *string       `url:"storage,omitempty" json:"storage,omitempty"` // Only list status for specified storage
 	Target  *string       `url:"target,omitempty" json:"target,omitempty"`   // If target is different to 'node', we only lists shared storages which content is accessible on this 'node' and the specified 'target' node.
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Content string `url:"content" json:"content"` // Allowed storage content types.
@@ -101,16 +102,19 @@ type IndexResponse struct {
 	Used         *int          `url:"used,omitempty" json:"used,omitempty"`                   // Used storage space in bytes.
 	UsedFraction *float64      `url:"used_fraction,omitempty" json:"used_fraction,omitempty"` // Used fraction (used/total).
 }
+type _IndexResponse IndexResponse
 
 type FindRequest struct {
 	Node    string `url:"node" json:"node"`       // The cluster node name.
 	Storage string `url:"storage" json:"storage"` // The storage identifier.
 
 }
+type _FindRequest FindRequest
 
 type FindResponse struct {
 	Subdir string `url:"subdir" json:"subdir"`
 }
+type _FindResponse FindResponse
 
 type DryrunPrunebackupsRequest struct {
 	Node    string `url:"node" json:"node"`       // The cluster node name.
@@ -121,6 +125,7 @@ type DryrunPrunebackupsRequest struct {
 	Type         *Type   `url:"type,omitempty" json:"type,omitempty"`                   // Either 'qemu' or 'lxc'. Only consider backups for guests of this type.
 	Vmid         *int    `url:"vmid,omitempty" json:"vmid,omitempty"`                   // Only consider backups for this guest.
 }
+type _DryrunPrunebackupsRequest DryrunPrunebackupsRequest
 
 type DryrunPrunebackupsResponse struct {
 	Ctime int    `url:"ctime" json:"ctime"` // Creation time of the backup (seconds since the UNIX epoch).
@@ -131,6 +136,7 @@ type DryrunPrunebackupsResponse struct {
 	// The following parameters are optional
 	Vmid *int `url:"vmid,omitempty" json:"vmid,omitempty"` // The VM the backup belongs to.
 }
+type _DryrunPrunebackupsResponse DryrunPrunebackupsResponse
 
 type DeletePrunebackupsRequest struct {
 	Node    string `url:"node" json:"node"`       // The cluster node name.
@@ -141,12 +147,14 @@ type DeletePrunebackupsRequest struct {
 	Type         *Type   `url:"type,omitempty" json:"type,omitempty"`                   // Either 'qemu' or 'lxc'. Only consider backups for guests of this type.
 	Vmid         *int    `url:"vmid,omitempty" json:"vmid,omitempty"`                   // Only prune backups for this VM.
 }
+type _DeletePrunebackupsRequest DeletePrunebackupsRequest
 
 type ReadStatusRequest struct {
 	Node    string `url:"node" json:"node"`       // The cluster node name.
 	Storage string `url:"storage" json:"storage"` // The storage identifier.
 
 }
+type _ReadStatusRequest ReadStatusRequest
 
 type RrdRequest struct {
 	Ds        string    `url:"ds" json:"ds"`               // The list of datasources you want to display.
@@ -157,10 +165,12 @@ type RrdRequest struct {
 	// The following parameters are optional
 	Cf *Cf `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
 }
+type _RrdRequest RrdRequest
 
 type RrdResponse struct {
 	Filename string `url:"filename" json:"filename"`
 }
+type _RrdResponse RrdResponse
 
 type RrddataRequest struct {
 	Node      string    `url:"node" json:"node"`           // The cluster node name.
@@ -170,6 +180,7 @@ type RrddataRequest struct {
 	// The following parameters are optional
 	Cf *Cf `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
 }
+type _RrddataRequest RrddataRequest
 
 type UploadRequest struct {
 	Content  Content `url:"content" json:"content"`   // Content type.
@@ -182,6 +193,7 @@ type UploadRequest struct {
 	ChecksumAlgorithm *ChecksumAlgorithm `url:"checksum-algorithm,omitempty" json:"checksum-algorithm,omitempty"` // The algorithm to calculate the checksum of the file.
 	Tmpfilename       *string            `url:"tmpfilename,omitempty" json:"tmpfilename,omitempty"`               // The source file name. This parameter is usually set by the REST handler. You can only overwrite it when connecting to the trusted port on localhost.
 }
+type _UploadRequest UploadRequest
 
 type DownloadUrlRequest struct {
 	Content  Content `url:"content" json:"content"`   // Content type.
@@ -195,6 +207,7 @@ type DownloadUrlRequest struct {
 	ChecksumAlgorithm  *ChecksumAlgorithm `url:"checksum-algorithm,omitempty" json:"checksum-algorithm,omitempty"`   // The algorithm to calculate the checksum of the file.
 	VerifyCertificates *util.PVEBool      `url:"verify-certificates,omitempty" json:"verify-certificates,omitempty"` // If false, no SSL/TLS certificates will be verified.
 }
+type _DownloadUrlRequest DownloadUrlRequest
 
 // Index Get status for all datastores.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

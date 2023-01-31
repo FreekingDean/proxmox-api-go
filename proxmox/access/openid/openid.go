@@ -23,12 +23,14 @@ func New(c HTTPClient) *Client {
 type IndexResponse struct {
 	Subdir string `url:"subdir" json:"subdir"`
 }
+type _IndexResponse IndexResponse
 
 type AuthUrlRequest struct {
 	Realm       string `url:"realm" json:"realm"`               // Authentication domain ID
 	RedirectUrl string `url:"redirect-url" json:"redirect-url"` // Redirection Url. The client should set this to the used server url (location.origin).
 
 }
+type _AuthUrlRequest AuthUrlRequest
 
 type LoginRequest struct {
 	Code        string `url:"code" json:"code"`                 // OpenId authorization code.
@@ -36,6 +38,7 @@ type LoginRequest struct {
 	State       string `url:"state" json:"state"`               // OpenId state.
 
 }
+type _LoginRequest LoginRequest
 
 type LoginResponse struct {
 	Cap                 map[string]interface{} `url:"cap" json:"cap"`
@@ -46,6 +49,7 @@ type LoginResponse struct {
 	// The following parameters are optional
 	Clustername *string `url:"clustername,omitempty" json:"clustername,omitempty"`
 }
+type _LoginResponse LoginResponse
 
 // Index Directory index.
 func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {

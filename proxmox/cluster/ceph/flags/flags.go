@@ -61,6 +61,7 @@ type IndexResponse struct {
 	Name Name `url:"name" json:"name"` // Flag name.
 
 }
+type _IndexResponse IndexResponse
 
 type MassUpdateRequest struct {
 
@@ -77,17 +78,20 @@ type MassUpdateRequest struct {
 	Noup        *util.PVEBool `url:"noup,omitempty" json:"noup,omitempty"`                 // OSDs are not allowed to start.
 	Pause       *util.PVEBool `url:"pause,omitempty" json:"pause,omitempty"`               // Pauses read and writes.
 }
+type _MassUpdateRequest MassUpdateRequest
 
 type FindRequest struct {
 	Flag Flag `url:"flag" json:"flag"` // The name of the flag name to get.
 
 }
+type _FindRequest FindRequest
 
 type UpdateRequest struct {
 	Flag  Flag         `url:"flag" json:"flag"`   // The ceph flag to update
 	Value util.PVEBool `url:"value" json:"value"` // The new value of the flag
 
 }
+type _UpdateRequest UpdateRequest
 
 // Index get the status of all ceph flags
 func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {

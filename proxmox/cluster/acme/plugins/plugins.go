@@ -167,11 +167,13 @@ type IndexRequest struct {
 	// The following parameters are optional
 	Type *Type `url:"type,omitempty" json:"type,omitempty"` // Only list ACME plugins of a specific type
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Plugin string `url:"plugin" json:"plugin"` // Unique identifier for ACME plugin instance.
 
 }
+type _IndexResponse IndexResponse
 
 type CreateRequest struct {
 	Id   string `url:"id" json:"id"`     // ACME Plugin ID name
@@ -184,11 +186,13 @@ type CreateRequest struct {
 	Nodes           *string       `url:"nodes,omitempty" json:"nodes,omitempty"`                       // List of cluster node names.
 	ValidationDelay *int          `url:"validation-delay,omitempty" json:"validation-delay,omitempty"` // Extra delay in seconds to wait before requesting validation. Allows to cope with a long TTL of DNS records.
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Id string `url:"id" json:"id"` // Unique identifier for ACME plugin instance.
 
 }
+type _FindRequest FindRequest
 
 type UpdateRequest struct {
 	Id string `url:"id" json:"id"` // ACME Plugin ID name
@@ -202,11 +206,13 @@ type UpdateRequest struct {
 	Nodes           *string       `url:"nodes,omitempty" json:"nodes,omitempty"`                       // List of cluster node names.
 	ValidationDelay *int          `url:"validation-delay,omitempty" json:"validation-delay,omitempty"` // Extra delay in seconds to wait before requesting validation. Allows to cope with a long TTL of DNS records.
 }
+type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
 	Id string `url:"id" json:"id"` // Unique identifier for ACME plugin instance.
 
 }
+type _DeleteRequest DeleteRequest
 
 // Index ACME plugin index.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

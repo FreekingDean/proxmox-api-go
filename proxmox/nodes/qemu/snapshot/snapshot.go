@@ -26,6 +26,7 @@ type IndexRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Description string `url:"description" json:"description"` // Snapshot description.
@@ -36,6 +37,7 @@ type IndexResponse struct {
 	Snaptime *int          `url:"snaptime,omitempty" json:"snaptime,omitempty"` // Snapshot creation time
 	Vmstate  *util.PVEBool `url:"vmstate,omitempty" json:"vmstate,omitempty"`   // Snapshot includes RAM.
 }
+type _IndexResponse IndexResponse
 
 type CreateRequest struct {
 	Node     string `url:"node" json:"node"`         // The cluster node name.
@@ -46,6 +48,7 @@ type CreateRequest struct {
 	Description *string       `url:"description,omitempty" json:"description,omitempty"` // A textual description or comment.
 	Vmstate     *util.PVEBool `url:"vmstate,omitempty" json:"vmstate,omitempty"`         // Save the vmstate
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Node     string `url:"node" json:"node"`         // The cluster node name.
@@ -53,6 +56,7 @@ type FindRequest struct {
 	Vmid     int    `url:"vmid" json:"vmid"`         // The (unique) ID of the VM.
 
 }
+type _FindRequest FindRequest
 
 type DeleteRequest struct {
 	Node     string `url:"node" json:"node"`         // The cluster node name.
@@ -62,6 +66,7 @@ type DeleteRequest struct {
 	// The following parameters are optional
 	Force *util.PVEBool `url:"force,omitempty" json:"force,omitempty"` // For removal from config file, even if removing disk snapshots fails.
 }
+type _DeleteRequest DeleteRequest
 
 type GetSnapshotConfigRequest struct {
 	Node     string `url:"node" json:"node"`         // The cluster node name.
@@ -69,6 +74,7 @@ type GetSnapshotConfigRequest struct {
 	Vmid     int    `url:"vmid" json:"vmid"`         // The (unique) ID of the VM.
 
 }
+type _GetSnapshotConfigRequest GetSnapshotConfigRequest
 
 type UpdateSnapshotConfigRequest struct {
 	Node     string `url:"node" json:"node"`         // The cluster node name.
@@ -78,6 +84,7 @@ type UpdateSnapshotConfigRequest struct {
 	// The following parameters are optional
 	Description *string `url:"description,omitempty" json:"description,omitempty"` // A textual description or comment.
 }
+type _UpdateSnapshotConfigRequest UpdateSnapshotConfigRequest
 
 type RollbackRequest struct {
 	Node     string `url:"node" json:"node"`         // The cluster node name.
@@ -87,6 +94,7 @@ type RollbackRequest struct {
 	// The following parameters are optional
 	Start *util.PVEBool `url:"start,omitempty" json:"start,omitempty"` // Whether the VM should get started after rolling back successfully
 }
+type _RollbackRequest RollbackRequest
 
 // Index List all snapshots.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

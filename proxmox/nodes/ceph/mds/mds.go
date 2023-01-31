@@ -25,6 +25,7 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	State string `url:"state" json:"state"` // State of the MDS
@@ -35,6 +36,7 @@ type IndexResponse struct {
 	Rank          *int          `url:"rank,omitempty" json:"rank,omitempty"`
 	StandbyReplay *util.PVEBool `url:"standby_replay,omitempty" json:"standby_replay,omitempty"` // If true, the standby MDS is polling the active MDS for faster recovery (hot standby).
 }
+type _IndexResponse IndexResponse
 
 type ChildCreateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -43,12 +45,14 @@ type ChildCreateRequest struct {
 	Hotstandby *util.PVEBool `url:"hotstandby,omitempty" json:"hotstandby,omitempty"` // Determines whether a ceph-mds daemon should poll and replay the log of an active MDS. Faster switch on MDS failure, but needs more idle resources.
 	Name       *string       `url:"name,omitempty" json:"name,omitempty"`             // The ID for the mds, when omitted the same as the nodename
 }
+type _ChildCreateRequest ChildCreateRequest
 
 type DeleteRequest struct {
 	Name string `url:"name" json:"name"` // The name (ID) of the mds
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _DeleteRequest DeleteRequest
 
 // Index MDS directory index.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

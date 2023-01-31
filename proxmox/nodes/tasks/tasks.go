@@ -55,6 +55,7 @@ type IndexRequest struct {
 	Userfilter   *string       `url:"userfilter,omitempty" json:"userfilter,omitempty"`     // Only list tasks from this user.
 	Vmid         *int          `url:"vmid,omitempty" json:"vmid,omitempty"`                 // Only list tasks for this VM.
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Id        string `url:"id" json:"id"`
@@ -70,16 +71,19 @@ type IndexResponse struct {
 	Endtime *int    `url:"endtime,omitempty" json:"endtime,omitempty"`
 	Status  *string `url:"status,omitempty" json:"status,omitempty"`
 }
+type _IndexResponse IndexResponse
 
 type FindRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Upid string `url:"upid" json:"upid"`
 }
+type _FindRequest FindRequest
 
 type DeleteRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Upid string `url:"upid" json:"upid"`
 }
+type _DeleteRequest DeleteRequest
 
 type ReadTaskLogRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -89,18 +93,21 @@ type ReadTaskLogRequest struct {
 	Limit *int `url:"limit,omitempty" json:"limit,omitempty"` // The maximum amount of lines that should be printed.
 	Start *int `url:"start,omitempty" json:"start,omitempty"` // The line number to start printing at.
 }
+type _ReadTaskLogRequest ReadTaskLogRequest
 
 type ReadTaskLogResponse struct {
 	N int    `url:"n" json:"n"` // Line number
 	T string `url:"t" json:"t"` // Line text
 
 }
+type _ReadTaskLogResponse ReadTaskLogResponse
 
 type ReadTaskStatusRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Upid string `url:"upid" json:"upid"` // The task's unique ID.
 
 }
+type _ReadTaskStatusRequest ReadTaskStatusRequest
 
 type ReadTaskStatusResponse struct {
 	Id        string  `url:"id" json:"id"`
@@ -115,6 +122,7 @@ type ReadTaskStatusResponse struct {
 	// The following parameters are optional
 	Exitstatus *string `url:"exitstatus,omitempty" json:"exitstatus,omitempty"`
 }
+type _ReadTaskStatusResponse ReadTaskStatusResponse
 
 // Index Read task list for one node (finished tasks).
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

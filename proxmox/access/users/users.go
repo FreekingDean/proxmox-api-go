@@ -45,6 +45,7 @@ type IndexRequest struct {
 	Enabled *util.PVEBool `url:"enabled,omitempty" json:"enabled,omitempty"` // Optional filter for enable property.
 	Full    *util.PVEBool `url:"full,omitempty" json:"full,omitempty"`       // Include group and token information.
 }
+type _IndexRequest IndexRequest
 
 type Tokens struct {
 	Tokenid string `url:"tokenid" json:"tokenid"` // User-specific token identifier.
@@ -54,6 +55,7 @@ type Tokens struct {
 	Expire  *int          `url:"expire,omitempty" json:"expire,omitempty"`   // API token expiration date (seconds since epoch). '0' means no expiration date.
 	Privsep *util.PVEBool `url:"privsep,omitempty" json:"privsep,omitempty"` // Restrict API token privileges with separate ACLs (default), or give full privileges of corresponding user.
 }
+type _Tokens Tokens
 
 type IndexResponse struct {
 	Userid string `url:"userid" json:"userid"` // User ID
@@ -70,6 +72,7 @@ type IndexResponse struct {
 	RealmType *string       `url:"realm-type,omitempty" json:"realm-type,omitempty"` // The type of the users realm
 	Tokens    *[]Tokens     `url:"tokens,omitempty" json:"tokens,omitempty"`
 }
+type _IndexResponse IndexResponse
 
 type CreateRequest struct {
 	Userid string `url:"userid" json:"userid"` // User ID
@@ -85,11 +88,13 @@ type CreateRequest struct {
 	Lastname  *string       `url:"lastname,omitempty" json:"lastname,omitempty"`
 	Password  *string       `url:"password,omitempty" json:"password,omitempty"` // Initial password.
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Userid string `url:"userid" json:"userid"` // User ID
 
 }
+type _FindRequest FindRequest
 
 type FindResponse struct {
 
@@ -104,6 +109,7 @@ type FindResponse struct {
 	Lastname  *string                 `url:"lastname,omitempty" json:"lastname,omitempty"`
 	Tokens    *map[string]interface{} `url:"tokens,omitempty" json:"tokens,omitempty"`
 }
+type _FindResponse FindResponse
 
 type UpdateRequest struct {
 	Userid string `url:"userid" json:"userid"` // User ID
@@ -119,11 +125,13 @@ type UpdateRequest struct {
 	Keys      *string       `url:"keys,omitempty" json:"keys,omitempty"` // Keys for two factor auth (yubico).
 	Lastname  *string       `url:"lastname,omitempty" json:"lastname,omitempty"`
 }
+type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
 	Userid string `url:"userid" json:"userid"` // User ID
 
 }
+type _DeleteRequest DeleteRequest
 
 type ReadUserTfaTypeTfaRequest struct {
 	Userid string `url:"userid" json:"userid"` // User ID
@@ -131,6 +139,7 @@ type ReadUserTfaTypeTfaRequest struct {
 	// The following parameters are optional
 	Multiple *util.PVEBool `url:"multiple,omitempty" json:"multiple,omitempty"` // Request all entries as an array.
 }
+type _ReadUserTfaTypeTfaRequest ReadUserTfaTypeTfaRequest
 
 type ReadUserTfaTypeTfaResponse struct {
 
@@ -139,6 +148,7 @@ type ReadUserTfaTypeTfaResponse struct {
 	Types *[]string `url:"types,omitempty" json:"types,omitempty"` // Array of the user configured TFA types, if any. Only available if 'multiple' was not passed.
 	User  *User     `url:"user,omitempty" json:"user,omitempty"`   // The type of TFA the user has set, if any. Only set if 'multiple' was not passed.
 }
+type _ReadUserTfaTypeTfaResponse ReadUserTfaTypeTfaResponse
 
 // Index User index.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

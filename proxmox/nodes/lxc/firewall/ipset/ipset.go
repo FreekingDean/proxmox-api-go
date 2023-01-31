@@ -26,6 +26,7 @@ type IndexRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Digest string `url:"digest" json:"digest"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
@@ -34,6 +35,7 @@ type IndexResponse struct {
 	// The following parameters are optional
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
 }
+type _IndexResponse IndexResponse
 
 type CreateRequest struct {
 	Name string `url:"name" json:"name"` // IP set name.
@@ -45,6 +47,7 @@ type CreateRequest struct {
 	Digest  *string `url:"digest,omitempty" json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 	Rename  *string `url:"rename,omitempty" json:"rename,omitempty"` // Rename an existing IPSet. You can set 'rename' to the same value as 'name' to update the 'comment' of an existing IPSet.
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Name string `url:"name" json:"name"` // IP set name.
@@ -52,6 +55,7 @@ type FindRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _FindRequest FindRequest
 
 type FindResponse struct {
 	Cidr   string `url:"cidr" json:"cidr"`
@@ -61,6 +65,7 @@ type FindResponse struct {
 	Comment *string       `url:"comment,omitempty" json:"comment,omitempty"`
 	Nomatch *util.PVEBool `url:"nomatch,omitempty" json:"nomatch,omitempty"`
 }
+type _FindResponse FindResponse
 
 type ChildCreateRequest struct {
 	Cidr string `url:"cidr" json:"cidr"` // Network/IP specification in CIDR format.
@@ -72,6 +77,7 @@ type ChildCreateRequest struct {
 	Comment *string       `url:"comment,omitempty" json:"comment,omitempty"`
 	Nomatch *util.PVEBool `url:"nomatch,omitempty" json:"nomatch,omitempty"`
 }
+type _ChildCreateRequest ChildCreateRequest
 
 type DeleteRequest struct {
 	Name string `url:"name" json:"name"` // IP set name.
@@ -81,6 +87,7 @@ type DeleteRequest struct {
 	// The following parameters are optional
 	Force *util.PVEBool `url:"force,omitempty" json:"force,omitempty"` // Delete all members of the IPSet, if there are any.
 }
+type _DeleteRequest DeleteRequest
 
 type ReadIpCidrRequest struct {
 	Cidr string `url:"cidr" json:"cidr"` // Network/IP specification in CIDR format.
@@ -89,6 +96,7 @@ type ReadIpCidrRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _ReadIpCidrRequest ReadIpCidrRequest
 
 type UpdateIpCidrRequest struct {
 	Cidr string `url:"cidr" json:"cidr"` // Network/IP specification in CIDR format.
@@ -101,6 +109,7 @@ type UpdateIpCidrRequest struct {
 	Digest  *string       `url:"digest,omitempty" json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 	Nomatch *util.PVEBool `url:"nomatch,omitempty" json:"nomatch,omitempty"`
 }
+type _UpdateIpCidrRequest UpdateIpCidrRequest
 
 type RemoveIpCidrRequest struct {
 	Cidr string `url:"cidr" json:"cidr"` // Network/IP specification in CIDR format.
@@ -111,6 +120,7 @@ type RemoveIpCidrRequest struct {
 	// The following parameters are optional
 	Digest *string `url:"digest,omitempty" json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 }
+type _RemoveIpCidrRequest RemoveIpCidrRequest
 
 // Index List IPSets
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

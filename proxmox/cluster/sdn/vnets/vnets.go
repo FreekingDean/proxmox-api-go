@@ -37,6 +37,7 @@ type IndexRequest struct {
 	Pending *util.PVEBool `url:"pending,omitempty" json:"pending,omitempty"` // Display pending config.
 	Running *util.PVEBool `url:"running,omitempty" json:"running,omitempty"` // Display running config.
 }
+type _IndexRequest IndexRequest
 
 type CreateRequest struct {
 	Vnet string `url:"vnet" json:"vnet"` // The SDN vnet object identifier.
@@ -48,6 +49,7 @@ type CreateRequest struct {
 	Type      *Type         `url:"type,omitempty" json:"type,omitempty"`           // Type
 	Vlanaware *util.PVEBool `url:"vlanaware,omitempty" json:"vlanaware,omitempty"` // Allow vm VLANs to pass through this vnet.
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Vnet string `url:"vnet" json:"vnet"` // The SDN vnet object identifier.
@@ -56,6 +58,7 @@ type FindRequest struct {
 	Pending *util.PVEBool `url:"pending,omitempty" json:"pending,omitempty"` // Display pending config.
 	Running *util.PVEBool `url:"running,omitempty" json:"running,omitempty"` // Display running config.
 }
+type _FindRequest FindRequest
 
 type UpdateRequest struct {
 	Vnet string `url:"vnet" json:"vnet"` // The SDN vnet object identifier.
@@ -68,11 +71,13 @@ type UpdateRequest struct {
 	Vlanaware *util.PVEBool `url:"vlanaware,omitempty" json:"vlanaware,omitempty"` // Allow vm VLANs to pass through this vnet.
 	Zone      *string       `url:"zone,omitempty" json:"zone,omitempty"`           // zone id
 }
+type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
 	Vnet string `url:"vnet" json:"vnet"` // The SDN vnet object identifier.
 
 }
+type _DeleteRequest DeleteRequest
 
 // Index SDN vnets index.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]interface{}, error) {

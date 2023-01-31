@@ -28,12 +28,14 @@ type CreateRequest struct {
 	Name      *string `url:"name,omitempty" json:"name,omitempty"`           // ACME account config file name.
 	TosUrl    *string `url:"tos_url,omitempty" json:"tos_url,omitempty"`     // URL of CA TermsOfService - setting this indicates agreement.
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 
 	// The following parameters are optional
 	Name *string `url:"name,omitempty" json:"name,omitempty"` // ACME account config file name.
 }
+type _FindRequest FindRequest
 
 type FindResponse struct {
 
@@ -43,6 +45,7 @@ type FindResponse struct {
 	Location  *string                 `url:"location,omitempty" json:"location,omitempty"`
 	Tos       *string                 `url:"tos,omitempty" json:"tos,omitempty"`
 }
+type _FindResponse FindResponse
 
 type UpdateRequest struct {
 
@@ -50,12 +53,14 @@ type UpdateRequest struct {
 	Contact *string `url:"contact,omitempty" json:"contact,omitempty"` // Contact email addresses.
 	Name    *string `url:"name,omitempty" json:"name,omitempty"`       // ACME account config file name.
 }
+type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
 
 	// The following parameters are optional
 	Name *string `url:"name,omitempty" json:"name,omitempty"` // ACME account config file name.
 }
+type _DeleteRequest DeleteRequest
 
 // Index ACMEAccount index.
 func (c *Client) Index(ctx context.Context) ([]map[string]interface{}, error) {

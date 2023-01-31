@@ -35,6 +35,7 @@ type IndexResponse struct {
 	Subdir string `url:"subdir" json:"subdir"` // API sub-directory endpoint
 
 }
+type _IndexResponse IndexResponse
 
 type GetGuestsNotInBackupNotBackedUpResponse struct {
 	Type Type `url:"type" json:"type"` // Type of the guest.
@@ -43,6 +44,7 @@ type GetGuestsNotInBackupNotBackedUpResponse struct {
 	// The following parameters are optional
 	Name *string `url:"name,omitempty" json:"name,omitempty"` // Name of the guest
 }
+type _GetGuestsNotInBackupNotBackedUpResponse GetGuestsNotInBackupNotBackedUpResponse
 
 // Index Index for backup info related endpoints
 func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {

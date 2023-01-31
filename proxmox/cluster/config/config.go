@@ -4,8 +4,12 @@ package config
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 	"net/url"
+	"strconv"
+	"strings"
 )
 
 type HTTPClient interface {
@@ -29,13 +33,57 @@ type Link struct {
 	// The following parameters are optional
 	Priority *int `url:"priority,omitempty" json:"priority,omitempty"` // The priority for the link when knet is used in 'passive' mode (default). Lower value means higher priority. Only valid for cluster create, ignored on node add.
 }
+type _Link Link
 
 func (t Link) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `[address=]<IP> [,priority=<integer>]`)
 }
 
+func (t *Link) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["address"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["address"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Address)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["priority"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Priority)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // Array of Link
-type Links []Link
+type Links []*Link
+type _Links Links
 
 func (t Links) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeArray(key, v, t)
@@ -49,12 +97,52 @@ type CreateRequest struct {
 	Nodeid *int   `url:"nodeid,omitempty" json:"nodeid,omitempty"`   // Node id for this node.
 	Votes  *int   `url:"votes,omitempty" json:"votes,omitempty"`     // Number of votes for this node.
 }
+type _CreateRequest CreateRequest
+
+func (t *CreateRequest) UnmarshalJSON(d []byte) error {
+	tmp := _CreateRequest{}
+	err := json.Unmarshal(d, &tmp)
+	if err != nil {
+		return err
+	}
+	rest := map[string]json.RawMessage{}
+	err = json.Unmarshal(d, &rest)
+	if err != nil {
+		return err
+	}
+	for k, v := range rest {
+
+		if strings.HasPrefix(k, "link") {
+			idxStr := strings.TrimPrefix(k, "link")
+			idx, err := strconv.Atoi(idxStr)
+			if err != nil {
+				return err
+			}
+			if t.Links == nil {
+				arr := make(Links, 0)
+				t.Links = &arr
+			}
+			for len(*t.Links) < idx+1 {
+				*t.Links = append(*t.Links, nil)
+			}
+			var newVal Link
+			err = json.Unmarshal(v, &newVal)
+			if err != nil {
+				return err
+			}
+			(*t.Links)[idx] = &newVal
+		}
+
+	}
+	return nil
+}
 
 type JoinInfoRequest struct {
 
 	// The following parameters are optional
 	Node *string `url:"node,omitempty" json:"node,omitempty"` // The node for which the joinee gets the nodeinfo.
 }
+type _JoinInfoRequest JoinInfoRequest
 
 // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
 type Ring0Addr struct {
@@ -63,6 +151,7 @@ type Ring0Addr struct {
 	// The following parameters are optional
 	Priority *int `url:"priority,omitempty" json:"priority,omitempty"` // The priority for the link when knet is used in 'passive' mode (default). Lower value means higher priority. Only valid for cluster create, ignored on node add.
 }
+type _Ring0Addr Ring0Addr
 
 type Nodelist struct {
 	Name        string `url:"name" json:"name"` // The cluster node name.
@@ -74,6 +163,7 @@ type Nodelist struct {
 	Nodeid    *int       `url:"nodeid,omitempty" json:"nodeid,omitempty"`         // Node id for this node.
 	Ring0Addr *Ring0Addr `url:"ring0_addr,omitempty" json:"ring0_addr,omitempty"` // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
 }
+type _Nodelist Nodelist
 
 type JoinInfoResponse struct {
 	ConfigDigest  string                 `url:"config_digest" json:"config_digest"`
@@ -81,6 +171,7 @@ type JoinInfoResponse struct {
 	PreferredNode string                 `url:"preferred_node" json:"preferred_node"` // The cluster node name.
 	Totem         map[string]interface{} `url:"totem" json:"totem"`
 }
+type _JoinInfoResponse JoinInfoResponse
 
 type JoinRequest struct {
 	Fingerprint string `url:"fingerprint" json:"fingerprint"` // Certificate SHA 256 fingerprint.
@@ -92,6 +183,45 @@ type JoinRequest struct {
 	Links  *Links        `url:"link[n],omitempty" json:"link[n],omitempty"` // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
 	Nodeid *int          `url:"nodeid,omitempty" json:"nodeid,omitempty"`   // Node id for this node.
 	Votes  *int          `url:"votes,omitempty" json:"votes,omitempty"`     // Number of votes for this node
+}
+type _JoinRequest JoinRequest
+
+func (t *JoinRequest) UnmarshalJSON(d []byte) error {
+	tmp := _JoinRequest{}
+	err := json.Unmarshal(d, &tmp)
+	if err != nil {
+		return err
+	}
+	rest := map[string]json.RawMessage{}
+	err = json.Unmarshal(d, &rest)
+	if err != nil {
+		return err
+	}
+	for k, v := range rest {
+
+		if strings.HasPrefix(k, "link") {
+			idxStr := strings.TrimPrefix(k, "link")
+			idx, err := strconv.Atoi(idxStr)
+			if err != nil {
+				return err
+			}
+			if t.Links == nil {
+				arr := make(Links, 0)
+				t.Links = &arr
+			}
+			for len(*t.Links) < idx+1 {
+				*t.Links = append(*t.Links, nil)
+			}
+			var newVal Link
+			err = json.Unmarshal(v, &newVal)
+			if err != nil {
+				return err
+			}
+			(*t.Links)[idx] = &newVal
+		}
+
+	}
+	return nil
 }
 
 // Index Directory index.

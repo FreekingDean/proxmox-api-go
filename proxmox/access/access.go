@@ -36,6 +36,7 @@ func New(c HTTPClient) *Client {
 type IndexResponse struct {
 	Subdir string `url:"subdir" json:"subdir"`
 }
+type _IndexResponse IndexResponse
 
 type ReadAclResponse struct {
 	Path   string `url:"path" json:"path"` // Access control path
@@ -46,6 +47,7 @@ type ReadAclResponse struct {
 	// The following parameters are optional
 	Propagate *util.PVEBool `url:"propagate,omitempty" json:"propagate,omitempty"` // Allow to propagate (inherit) permissions.
 }
+type _ReadAclResponse ReadAclResponse
 
 type UpdateAclRequest struct {
 	Path  string `url:"path" json:"path"`   // Access control path
@@ -58,6 +60,7 @@ type UpdateAclRequest struct {
 	Tokens    *string       `url:"tokens,omitempty" json:"tokens,omitempty"`       // List of API tokens.
 	Users     *string       `url:"users,omitempty" json:"users,omitempty"`         // List of users.
 }
+type _UpdateAclRequest UpdateAclRequest
 
 type CreateTicketRequest struct {
 	Password string `url:"password" json:"password"` // The secret password. This can also be a valid ticket.
@@ -71,6 +74,7 @@ type CreateTicketRequest struct {
 	Realm        *string       `url:"realm,omitempty" json:"realm,omitempty"`                 // You can optionally pass the realm using this parameter. Normally the realm is simply added to the username <username>@<relam>.
 	TfaChallenge *string       `url:"tfa-challenge,omitempty" json:"tfa-challenge,omitempty"` // The signed TFA challenge string the user wants to respond to.
 }
+type _CreateTicketRequest CreateTicketRequest
 
 type CreateTicketResponse struct {
 	Username string `url:"username" json:"username"`
@@ -80,12 +84,14 @@ type CreateTicketResponse struct {
 	Csrfpreventiontoken *string `url:"CSRFPreventionToken,omitempty" json:"CSRFPreventionToken,omitempty"`
 	Ticket              *string `url:"ticket,omitempty" json:"ticket,omitempty"`
 }
+type _CreateTicketResponse CreateTicketResponse
 
 type ChangePasswordRequest struct {
 	Password string `url:"password" json:"password"` // The new password.
 	Userid   string `url:"userid" json:"userid"`     // User ID
 
 }
+type _ChangePasswordRequest ChangePasswordRequest
 
 type PermissionsRequest struct {
 
@@ -93,6 +99,7 @@ type PermissionsRequest struct {
 	Path   *string `url:"path,omitempty" json:"path,omitempty"`     // Only dump this specific path, not the whole tree.
 	Userid *string `url:"userid,omitempty" json:"userid,omitempty"` // User ID or full API token ID
 }
+type _PermissionsRequest PermissionsRequest
 
 // Index Directory index.
 func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {

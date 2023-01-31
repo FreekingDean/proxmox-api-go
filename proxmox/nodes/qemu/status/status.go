@@ -44,16 +44,19 @@ type IndexRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Subdir string `url:"subdir" json:"subdir"`
 }
+type _IndexResponse IndexResponse
 
 type VmStatusCurrentRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _VmStatusCurrentRequest VmStatusCurrentRequest
 
 type VmStatusCurrentResponse struct {
 	Ha     map[string]interface{} `url:"ha" json:"ha"`         // HA manager service status.
@@ -75,6 +78,7 @@ type VmStatusCurrentResponse struct {
 	Tags           *string       `url:"tags,omitempty" json:"tags,omitempty"`                       // The current configured tags, if any
 	Uptime         *int          `url:"uptime,omitempty" json:"uptime,omitempty"`                   // Uptime.
 }
+type _VmStatusCurrentResponse VmStatusCurrentResponse
 
 type VmStartRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -91,6 +95,7 @@ type VmStartRequest struct {
 	Targetstorage    *string        `url:"targetstorage,omitempty" json:"targetstorage,omitempty"`         // Mapping from source to target storages. Providing only a single storage ID maps all source storages to that storage. Providing the special value '1' will map each source storage to itself.
 	Timeout          *int           `url:"timeout,omitempty" json:"timeout,omitempty"`                     // Wait maximal timeout seconds.
 }
+type _VmStartRequest VmStartRequest
 
 type VmStopRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -102,6 +107,7 @@ type VmStopRequest struct {
 	Skiplock     *util.PVEBool `url:"skiplock,omitempty" json:"skiplock,omitempty"`         // Ignore locks - only root is allowed to use this option.
 	Timeout      *int          `url:"timeout,omitempty" json:"timeout,omitempty"`           // Wait maximal timeout seconds.
 }
+type _VmStopRequest VmStopRequest
 
 type VmResetRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -110,6 +116,7 @@ type VmResetRequest struct {
 	// The following parameters are optional
 	Skiplock *util.PVEBool `url:"skiplock,omitempty" json:"skiplock,omitempty"` // Ignore locks - only root is allowed to use this option.
 }
+type _VmResetRequest VmResetRequest
 
 type VmShutdownRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -121,6 +128,7 @@ type VmShutdownRequest struct {
 	Skiplock   *util.PVEBool `url:"skiplock,omitempty" json:"skiplock,omitempty"`     // Ignore locks - only root is allowed to use this option.
 	Timeout    *int          `url:"timeout,omitempty" json:"timeout,omitempty"`       // Wait maximal timeout seconds.
 }
+type _VmShutdownRequest VmShutdownRequest
 
 type VmRebootRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -129,6 +137,7 @@ type VmRebootRequest struct {
 	// The following parameters are optional
 	Timeout *int `url:"timeout,omitempty" json:"timeout,omitempty"` // Wait maximal timeout seconds for the shutdown.
 }
+type _VmRebootRequest VmRebootRequest
 
 type VmSuspendRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -139,6 +148,7 @@ type VmSuspendRequest struct {
 	Statestorage *string       `url:"statestorage,omitempty" json:"statestorage,omitempty"` // The storage for the VM state
 	Todisk       *util.PVEBool `url:"todisk,omitempty" json:"todisk,omitempty"`             // If set, suspends the VM to disk. Will be resumed on next VM start.
 }
+type _VmSuspendRequest VmSuspendRequest
 
 type VmResumeRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -148,6 +158,7 @@ type VmResumeRequest struct {
 	Nocheck  *util.PVEBool `url:"nocheck,omitempty" json:"nocheck,omitempty"`
 	Skiplock *util.PVEBool `url:"skiplock,omitempty" json:"skiplock,omitempty"` // Ignore locks - only root is allowed to use this option.
 }
+type _VmResumeRequest VmResumeRequest
 
 // Index Directory index
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

@@ -51,11 +51,13 @@ type CreateRequest struct {
 	Schedule  *string       `url:"schedule,omitempty" json:"schedule,omitempty"`     // Storage replication schedule. The format is a subset of `systemd` calendar events.
 	Source    *string       `url:"source,omitempty" json:"source,omitempty"`         // For internal use, to detect if the guest was stolen.
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Id string `url:"id" json:"id"` // Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. '<GUEST>-<JOBNUM>'.
 
 }
+type _FindRequest FindRequest
 
 type UpdateRequest struct {
 	Id string `url:"id" json:"id"` // Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. '<GUEST>-<JOBNUM>'.
@@ -70,6 +72,7 @@ type UpdateRequest struct {
 	Schedule  *string       `url:"schedule,omitempty" json:"schedule,omitempty"`     // Storage replication schedule. The format is a subset of `systemd` calendar events.
 	Source    *string       `url:"source,omitempty" json:"source,omitempty"`         // For internal use, to detect if the guest was stolen.
 }
+type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
 	Id string `url:"id" json:"id"` // Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. '<GUEST>-<JOBNUM>'.
@@ -78,6 +81,7 @@ type DeleteRequest struct {
 	Force *util.PVEBool `url:"force,omitempty" json:"force,omitempty"` // Will remove the jobconfig entry, but will not cleanup.
 	Keep  *util.PVEBool `url:"keep,omitempty" json:"keep,omitempty"`   // Keep replicated data at target (do not remove).
 }
+type _DeleteRequest DeleteRequest
 
 // Index List replication jobs.
 func (c *Client) Index(ctx context.Context) ([]map[string]interface{}, error) {

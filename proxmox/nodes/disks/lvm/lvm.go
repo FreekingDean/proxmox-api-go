@@ -25,6 +25,7 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexRequest IndexRequest
 
 type Children struct {
 	Free int          `url:"free" json:"free"` // The free bytes in the physical volume
@@ -33,6 +34,7 @@ type Children struct {
 	Size int          `url:"size" json:"size"` // The size of the physical volume in bytes
 
 }
+type _Children Children
 
 type SubChildren struct {
 	Free int          `url:"free" json:"free"` // The free bytes in the volume group
@@ -43,11 +45,13 @@ type SubChildren struct {
 	// The following parameters are optional
 	Children *[]Children `url:"children,omitempty" json:"children,omitempty"` // The underlying physical volumes
 }
+type _SubChildren SubChildren
 
 type IndexResponse struct {
 	Children []Children   `url:"children" json:"children"`
 	Leaf     util.PVEBool `url:"leaf" json:"leaf"`
 }
+type _IndexResponse IndexResponse
 
 type CreateRequest struct {
 	Device string `url:"device" json:"device"` // The block device you want to create the volume group on
@@ -57,6 +61,7 @@ type CreateRequest struct {
 	// The following parameters are optional
 	AddStorage *util.PVEBool `url:"add_storage,omitempty" json:"add_storage,omitempty"` // Configure storage using the Volume Group
 }
+type _CreateRequest CreateRequest
 
 type DeleteRequest struct {
 	Name string `url:"name" json:"name"` // The storage identifier.
@@ -66,6 +71,7 @@ type DeleteRequest struct {
 	CleanupConfig *util.PVEBool `url:"cleanup-config,omitempty" json:"cleanup-config,omitempty"` // Marks associated storage(s) as not available on this node anymore or removes them from the configuration (if configured for this node only).
 	CleanupDisks  *util.PVEBool `url:"cleanup-disks,omitempty" json:"cleanup-disks,omitempty"`   // Also wipe disks so they can be repurposed afterwards.
 }
+type _DeleteRequest DeleteRequest
 
 // Index List LVM Volume Groups
 func (c *Client) Index(ctx context.Context, req IndexRequest) (IndexResponse, error) {

@@ -85,11 +85,13 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexRequest IndexRequest
 
 type GetOptionsRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _GetOptionsRequest GetOptionsRequest
 
 type GetOptionsResponse struct {
 
@@ -111,6 +113,7 @@ type GetOptionsResponse struct {
 	TcpFlagsLogLevel                 *TcpFlagsLogLevel `url:"tcp_flags_log_level,omitempty" json:"tcp_flags_log_level,omitempty"`                                   // Log level for illegal tcp flags filter.
 	Tcpflags                         *util.PVEBool     `url:"tcpflags,omitempty" json:"tcpflags,omitempty"`                                                         // Filter illegal combinations of TCP flags.
 }
+type _GetOptionsResponse GetOptionsResponse
 
 type SetOptionsRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -135,6 +138,7 @@ type SetOptionsRequest struct {
 	TcpFlagsLogLevel                 *TcpFlagsLogLevel `url:"tcp_flags_log_level,omitempty" json:"tcp_flags_log_level,omitempty"`                                   // Log level for illegal tcp flags filter.
 	Tcpflags                         *util.PVEBool     `url:"tcpflags,omitempty" json:"tcpflags,omitempty"`                                                         // Filter illegal combinations of TCP flags.
 }
+type _SetOptionsRequest SetOptionsRequest
 
 type LogRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -143,12 +147,14 @@ type LogRequest struct {
 	Limit *int `url:"limit,omitempty" json:"limit,omitempty"`
 	Start *int `url:"start,omitempty" json:"start,omitempty"`
 }
+type _LogRequest LogRequest
 
 type LogResponse struct {
 	N int    `url:"n" json:"n"` // Line number
 	T string `url:"t" json:"t"` // Line text
 
 }
+type _LogResponse LogResponse
 
 // Index Directory index.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]interface{}, error) {

@@ -23,6 +23,7 @@ func New(c HTTPClient) *Client {
 type IndexResponse struct {
 	Id string `url:"id" json:"id"`
 }
+type _IndexResponse IndexResponse
 
 // Index Directory index.
 func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {

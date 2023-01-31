@@ -25,6 +25,7 @@ type IndexRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Cidr   string `url:"cidr" json:"cidr"`
@@ -34,6 +35,7 @@ type IndexResponse struct {
 	// The following parameters are optional
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
 }
+type _IndexResponse IndexResponse
 
 type CreateRequest struct {
 	Cidr string `url:"cidr" json:"cidr"` // Network/IP specification in CIDR format.
@@ -44,6 +46,7 @@ type CreateRequest struct {
 	// The following parameters are optional
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Name string `url:"name" json:"name"` // Alias name.
@@ -51,6 +54,7 @@ type FindRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _FindRequest FindRequest
 
 type UpdateRequest struct {
 	Cidr string `url:"cidr" json:"cidr"` // Network/IP specification in CIDR format.
@@ -63,6 +67,7 @@ type UpdateRequest struct {
 	Digest  *string `url:"digest,omitempty" json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 	Rename  *string `url:"rename,omitempty" json:"rename,omitempty"` // Rename an existing alias.
 }
+type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
 	Name string `url:"name" json:"name"` // Alias name.
@@ -72,6 +77,7 @@ type DeleteRequest struct {
 	// The following parameters are optional
 	Digest *string `url:"digest,omitempty" json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 }
+type _DeleteRequest DeleteRequest
 
 // Index List aliases
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

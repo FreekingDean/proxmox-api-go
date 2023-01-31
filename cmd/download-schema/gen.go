@@ -150,7 +150,9 @@ func LoadPackage(curdir string, s *jsonschema.Schema) error {
 		}
 	}
 	t, err := template.New("package.go.tmpl").Funcs(template.FuncMap{
-		"Enumify": Enumify,
+		"Enumify":     Enumify,
+		"TrimN":       TrimN,
+		"TrimPrefArr": TrimPrefArr,
 	}).ParseFiles("cmd/download-schema/templates/package.go.tmpl")
 	if err != nil {
 		return err
@@ -216,18 +218,6 @@ type OperationTempl struct {
 	Path        string
 	Request     *Type
 	Response    *Type
-}
-
-type Type struct {
-	Properties         []*Type
-	OptionalProperties []*Type
-	Optional           bool
-	Name               string
-	JSONName           string
-	Type               string
-	Description        string
-	Format             string
-	Enum               []string
 }
 
 func (p *Package) AddType(t *Type) {
@@ -401,4 +391,12 @@ func Enumify(s string) string {
 	s = strings.Replace(s, "/", "_", -1)
 	s = strings.Replace(s, "+", "_AND_", -1)
 	return s
+}
+
+func TrimN(s string) string {
+	return strings.TrimSuffix(s, "[n]")
+}
+
+func TrimPrefArr(s string) string {
+	return strings.TrimPrefix(s, "[]*")
 }

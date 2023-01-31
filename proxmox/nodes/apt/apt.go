@@ -43,15 +43,18 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Id string `url:"id" json:"id"`
 }
+type _IndexResponse IndexResponse
 
 type ListUpdatesUpdateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _ListUpdatesUpdateRequest ListUpdatesUpdateRequest
 
 type UpdateDatabaseRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -60,6 +63,7 @@ type UpdateDatabaseRequest struct {
 	Notify *util.PVEBool `url:"notify,omitempty" json:"notify,omitempty"` // Send notification mail about new packages (to email address specified for user 'root@pam').
 	Quiet  *util.PVEBool `url:"quiet,omitempty" json:"quiet,omitempty"`   // Only produces output suitable for logging, omitting progress indicators.
 }
+type _UpdateDatabaseRequest UpdateDatabaseRequest
 
 type ChangelogRequest struct {
 	Name string `url:"name" json:"name"` // Package name.
@@ -68,16 +72,46 @@ type ChangelogRequest struct {
 	// The following parameters are optional
 	Version *string `url:"version,omitempty" json:"version,omitempty"` // Package version.
 }
+type _ChangelogRequest ChangelogRequest
 
 type RepositoriesRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _RepositoriesRequest RepositoriesRequest
+
+type Infos struct {
+	Index   string `url:"index" json:"index"`     // Index of the associated repository within the file.
+	Kind    string `url:"kind" json:"kind"`       // Kind of the information (e.g. warning).
+	Message string `url:"message" json:"message"` // Information message.
+	Path    string `url:"path" json:"path"`       // Path to the associated file.
+
+	// The following parameters are optional
+	Property *string `url:"property,omitempty" json:"property,omitempty"` // Property from which the info originates.
+}
+type _Infos Infos
+
+type StandardRepos struct {
+	Handle string `url:"handle" json:"handle"` // Handle to identify the repository.
+	Name   string `url:"name" json:"name"`     // Full name of the repository.
+
+	// The following parameters are optional
+	Status *util.PVEBool `url:"status,omitempty" json:"status,omitempty"` // Indicating enabled/disabled status, if the repository is configured.
+}
+type _StandardRepos StandardRepos
+
+type Errors struct {
+	Error string `url:"error" json:"error"` // The error message
+	Path  string `url:"path" json:"path"`   // Path to the problematic file.
+
+}
+type _Errors Errors
 
 type Options struct {
 	Key    string   `url:"Key" json:"Key"`
 	Values []string `url:"Values" json:"Values"`
 }
+type _Options Options
 
 type Repositories struct {
 	Enabled  util.PVEBool         `url:"Enabled" json:"Enabled"`   // Whether the repository is enabled or not
@@ -91,6 +125,7 @@ type Repositories struct {
 	Components *[]string  `url:"Components,omitempty" json:"Components,omitempty"` // List of repository components
 	Options    *[]Options `url:"Options,omitempty" json:"Options,omitempty"`       // Additional options
 }
+type _Repositories Repositories
 
 type Files struct {
 	Digest       []int          `url:"digest" json:"digest"`             // Digest of the file as bytes.
@@ -99,30 +134,7 @@ type Files struct {
 	Repositories []Repositories `url:"repositories" json:"repositories"` // The parsed repositories.
 
 }
-
-type Infos struct {
-	Index   string `url:"index" json:"index"`     // Index of the associated repository within the file.
-	Kind    string `url:"kind" json:"kind"`       // Kind of the information (e.g. warning).
-	Message string `url:"message" json:"message"` // Information message.
-	Path    string `url:"path" json:"path"`       // Path to the associated file.
-
-	// The following parameters are optional
-	Property *string `url:"property,omitempty" json:"property,omitempty"` // Property from which the info originates.
-}
-
-type StandardRepos struct {
-	Handle string `url:"handle" json:"handle"` // Handle to identify the repository.
-	Name   string `url:"name" json:"name"`     // Full name of the repository.
-
-	// The following parameters are optional
-	Status *util.PVEBool `url:"status,omitempty" json:"status,omitempty"` // Indicating enabled/disabled status, if the repository is configured.
-}
-
-type Errors struct {
-	Error string `url:"error" json:"error"` // The error message
-	Path  string `url:"path" json:"path"`   // Path to the problematic file.
-
-}
+type _Files Files
 
 // Result from parsing the APT repository files in /etc/apt/.
 type RepositoriesResponse struct {
@@ -133,6 +145,7 @@ type RepositoriesResponse struct {
 	StandardRepos []StandardRepos `url:"standard-repos" json:"standard-repos"` // List of standard repositories and their configuration status
 
 }
+type _RepositoriesResponse RepositoriesResponse
 
 type ChangeRepositoryRepositoriesRequest struct {
 	Index int    `url:"index" json:"index"` // Index within the file (starting from 0).
@@ -143,6 +156,7 @@ type ChangeRepositoryRepositoriesRequest struct {
 	Digest  *string       `url:"digest,omitempty" json:"digest,omitempty"`   // Digest to detect modifications.
 	Enabled *util.PVEBool `url:"enabled,omitempty" json:"enabled,omitempty"` // Whether the repository should be enabled or not.
 }
+type _ChangeRepositoryRepositoriesRequest ChangeRepositoryRepositoriesRequest
 
 type AddRepositoryRepositoriesRequest struct {
 	Handle string `url:"handle" json:"handle"` // Handle that identifies a repository.
@@ -151,11 +165,13 @@ type AddRepositoryRepositoriesRequest struct {
 	// The following parameters are optional
 	Digest *string `url:"digest,omitempty" json:"digest,omitempty"` // Digest to detect modifications.
 }
+type _AddRepositoryRepositoriesRequest AddRepositoryRepositoriesRequest
 
 type VersionsRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _VersionsRequest VersionsRequest
 
 // Index Directory index for apt (Advanced Package Tool).
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

@@ -28,6 +28,7 @@ type ListRequest struct {
 	Volume   string `url:"volume" json:"volume"`     // Backup volume ID or name. Currently only PBS snapshots are supported.
 
 }
+type _ListRequest ListRequest
 
 type ListResponse struct {
 	Filepath string       `url:"filepath" json:"filepath"` // base64 path of the current entry
@@ -39,6 +40,7 @@ type ListResponse struct {
 	Mtime *int `url:"mtime,omitempty" json:"mtime,omitempty"` // Entry last-modified time (unix timestamp).
 	Size  *int `url:"size,omitempty" json:"size,omitempty"`   // Entry file size.
 }
+type _ListResponse ListResponse
 
 type DownloadRequest struct {
 	Filepath string `url:"filepath" json:"filepath"` // base64-path to the directory or file to download.
@@ -47,6 +49,7 @@ type DownloadRequest struct {
 	Volume   string `url:"volume" json:"volume"`     // Backup volume ID or name. Currently only PBS snapshots are supported.
 
 }
+type _DownloadRequest DownloadRequest
 
 // List List files and directories for single file restore under the given path.
 func (c *Client) List(ctx context.Context, req ListRequest) ([]ListResponse, error) {

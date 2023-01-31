@@ -37,11 +37,13 @@ type IndexRequest struct {
 	// The following parameters are optional
 	Type *Type `url:"type,omitempty" json:"type,omitempty"` // Only list sdn ipams of specific type
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Ipam string `url:"ipam" json:"ipam"`
 	Type string `url:"type" json:"type"`
 }
+type _IndexResponse IndexResponse
 
 type CreateRequest struct {
 	Ipam string `url:"ipam" json:"ipam"` // The SDN ipam object identifier.
@@ -52,11 +54,13 @@ type CreateRequest struct {
 	Token   *string `url:"token,omitempty" json:"token,omitempty"`
 	Url     *string `url:"url,omitempty" json:"url,omitempty"`
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Ipam string `url:"ipam" json:"ipam"` // The SDN ipam object identifier.
 
 }
+type _FindRequest FindRequest
 
 type UpdateRequest struct {
 	Ipam string `url:"ipam" json:"ipam"` // The SDN ipam object identifier.
@@ -68,11 +72,13 @@ type UpdateRequest struct {
 	Token   *string `url:"token,omitempty" json:"token,omitempty"`
 	Url     *string `url:"url,omitempty" json:"url,omitempty"`
 }
+type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
 	Ipam string `url:"ipam" json:"ipam"` // The SDN ipam object identifier.
 
 }
+type _DeleteRequest DeleteRequest
 
 // Index SDN ipams index.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

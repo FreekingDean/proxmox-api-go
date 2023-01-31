@@ -4,8 +4,12 @@ package firewall
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 	"net/url"
+	"strconv"
+	"strings"
 )
 
 const (
@@ -57,9 +61,60 @@ type LogRatelimit struct {
 	Burst *int    `url:"burst,omitempty" json:"burst,omitempty"` // Initial burst of packages which will always get logged before the rate is applied
 	Rate  *string `url:"rate,omitempty" json:"rate,omitempty"`   // Frequency with which the burst bucket gets refilled
 }
+type _LogRatelimit LogRatelimit
 
 func (t LogRatelimit) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `[enable=]<1|0> [,burst=<integer>] [,rate=<rate>]`)
+}
+
+func (t *LogRatelimit) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["enable"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["enable"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Enable)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["burst"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Burst)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["rate"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Rate)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 type GetOptionsResponse struct {
@@ -71,6 +126,7 @@ type GetOptionsResponse struct {
 	PolicyIn     *PolicyIn     `url:"policy_in,omitempty" json:"policy_in,omitempty"`         // Input policy.
 	PolicyOut    *PolicyOut    `url:"policy_out,omitempty" json:"policy_out,omitempty"`       // Output policy.
 }
+type _GetOptionsResponse GetOptionsResponse
 
 type SetOptionsRequest struct {
 
@@ -83,18 +139,21 @@ type SetOptionsRequest struct {
 	PolicyIn     *PolicyIn     `url:"policy_in,omitempty" json:"policy_in,omitempty"`         // Input policy.
 	PolicyOut    *PolicyOut    `url:"policy_out,omitempty" json:"policy_out,omitempty"`       // Output policy.
 }
+type _SetOptionsRequest SetOptionsRequest
 
 type GetMacrosResponse struct {
 	Descr string `url:"descr" json:"descr"` // More verbose description (if available).
 	Macro string `url:"macro" json:"macro"` // Macro name.
 
 }
+type _GetMacrosResponse GetMacrosResponse
 
 type RefsRequest struct {
 
 	// The following parameters are optional
 	Type *Type `url:"type,omitempty" json:"type,omitempty"` // Only list references of specified type.
 }
+type _RefsRequest RefsRequest
 
 type RefsResponse struct {
 	Name string `url:"name" json:"name"`
@@ -104,6 +163,7 @@ type RefsResponse struct {
 	// The following parameters are optional
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
 }
+type _RefsResponse RefsResponse
 
 // Index Directory index.
 func (c *Client) Index(ctx context.Context) ([]map[string]interface{}, error) {

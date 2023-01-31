@@ -5,7 +5,11 @@ package {{.Name}}
 import (
   "context"
 	{{- if .ImportURL }}
+	"fmt"
+	"encoding/json"
 	"net/url"
+	"strconv"
+	"strings"
 
 	{{- end -}}
   {{- if .Util }}
@@ -85,6 +89,46 @@ func (c *Client) {{.Operation}}(ctx context.Context
 // {{ $t.Description }}
 {{ end -}}
 type {{ $t.Name }} {{ template "type" $t }}
+type _{{ $t.Name }} {{ $t.Name }}
+{{ if $t.FormatArrayTypes  }}
+func (t *{{ $t.Name }}) UnmarshalJSON(d []byte) error {
+	tmp := _{{ $t.Name }}{}
+	err := json.Unmarshal(d, &tmp)
+	if err != nil {
+		return err
+	}
+	rest := map[string]json.RawMessage{}
+	err = json.Unmarshal(d, &rest)
+	if err != nil {
+		return err
+	}
+	for k, v := range rest {
+		{{ range $_, $ft := $t.FormatArrayTypes }}
+		if strings.HasPrefix(k, "{{ $ft.JSONName | TrimN }}") {
+			idxStr := strings.TrimPrefix(k, "{{ $ft.JSONName | TrimN }}")
+			idx, err := strconv.Atoi(idxStr)
+			if err != nil {
+				return err
+			}
+			if t.{{ $ft.Name }} == nil {
+				arr := make({{ $ft.Type }}, 0)
+				t.{{ $ft.Name }} = {{ if $ft.Optional }}&{{ end }}arr
+			}
+			for len({{ if $ft.Optional }}*{{ end }}t.{{ $ft.Name }}) < idx+1 {
+				{{ if $ft.Optional }}*{{end}}t.{{ $ft.Name }} = append({{ if $ft.Optional }}*{{ end }}t.{{ $ft.Name }}, nil)
+			}
+			var newVal {{ $ft.ElemType.Type | TrimPrefArr }}
+			err = json.Unmarshal(v, &newVal)
+			if err != nil {
+				return err
+			}
+			({{ if $ft.Optional }}*{{ end }}t.{{ $ft.Name }})[idx] = &newVal
+		}
+		{{ end }}
+	}
+	return nil
+}
+{{ end }}
 {{ if ne $t.Format ""}}
 {{ if eq $t.Format "array" }}
 func (t {{ $t.Name }}) EncodeValues(key string, v *url.Values) error {
@@ -93,6 +137,53 @@ func (t {{ $t.Name }}) EncodeValues(key string, v *url.Values) error {
 {{ else }}
 func (t {{ $t.Name }}) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `{{ $t.Format }}`)
+}
+
+func (t *{{ $t.Name }}) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1:len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+		{{ if $t.Properties }}
+			values["{{(index $t.Properties 0).JSONName}}"] = kv[0]
+		{{ else }}
+			values["{{(index $t.OptionalProperties 0).JSONName}}"] = kv[0]
+		{{ end }}
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+	{{ range $_, $p := $t.Properties }}
+	if v, ok := values["{{$p.JSONName}}"]; ok {
+		{{ if eq $p.Type "string" }}
+		v = fmt.Sprintf("\"%s\"", v)
+		{{ end }}
+		err := json.Unmarshal([]byte(v), &t.{{ $p.Name }})
+		if err != nil {
+			return err
+		}
+	}
+	{{ end }}
+	{{ range $_, $p := $t.OptionalProperties }}
+	if v, ok := values["{{$p.JSONName}}"]; ok {
+		{{ if or (eq $p.Type "string") $p.Enum}}
+		v = fmt.Sprintf("\"%s\"", v)
+		{{ end }}
+		err := json.Unmarshal([]byte(v), &t.{{ $p.Name }})
+		if err != nil {
+			return err
+		}
+	}
+	{{ end }}
+	return nil
 }
 {{ end }}
 {{ end }}

@@ -35,11 +35,13 @@ type IndexRequest struct {
 	// The following parameters are optional
 	Type *Type `url:"type,omitempty" json:"type,omitempty"` // Only list sdn dns of specific type
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Dns  string `url:"dns" json:"dns"`
 	Type string `url:"type" json:"type"`
 }
+type _IndexResponse IndexResponse
 
 type CreateRequest struct {
 	Dns  string `url:"dns" json:"dns"` // The SDN dns object identifier.
@@ -52,11 +54,13 @@ type CreateRequest struct {
 	Reversev6mask *int `url:"reversev6mask,omitempty" json:"reversev6mask,omitempty"`
 	Ttl           *int `url:"ttl,omitempty" json:"ttl,omitempty"`
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Dns string `url:"dns" json:"dns"` // The SDN dns object identifier.
 
 }
+type _FindRequest FindRequest
 
 type UpdateRequest struct {
 	Dns string `url:"dns" json:"dns"` // The SDN dns object identifier.
@@ -69,11 +73,13 @@ type UpdateRequest struct {
 	Ttl           *int    `url:"ttl,omitempty" json:"ttl,omitempty"`
 	Url           *string `url:"url,omitempty" json:"url,omitempty"`
 }
+type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
 	Dns string `url:"dns" json:"dns"` // The SDN dns object identifier.
 
 }
+type _DeleteRequest DeleteRequest
 
 // Index SDN dns index.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

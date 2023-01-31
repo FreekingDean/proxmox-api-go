@@ -84,6 +84,7 @@ type CreateRequest struct {
 	Vmid             *string           `url:"vmid,omitempty" json:"vmid,omitempty"`                         // The ID of the guest system you want to backup.
 	Zstd             *int              `url:"zstd,omitempty" json:"zstd,omitempty"`                         // Zstd threads. N=0 uses half of the available cores, N>0 uses N as thread count.
 }
+type _CreateRequest CreateRequest
 
 type DefaultsRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -91,6 +92,7 @@ type DefaultsRequest struct {
 	// The following parameters are optional
 	Storage *string `url:"storage,omitempty" json:"storage,omitempty"` // The storage identifier.
 }
+type _DefaultsRequest DefaultsRequest
 
 type DefaultsResponse struct {
 
@@ -125,12 +127,14 @@ type DefaultsResponse struct {
 	Vmid             *string           `url:"vmid,omitempty" json:"vmid,omitempty"`                         // The ID of the guest system you want to backup.
 	Zstd             *int              `url:"zstd,omitempty" json:"zstd,omitempty"`                         // Zstd threads. N=0 uses half of the available cores, N>0 uses N as thread count.
 }
+type _DefaultsResponse DefaultsResponse
 
 type ExtractconfigRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
 	Volume string `url:"volume" json:"volume"` // Volume identifier
 
 }
+type _ExtractconfigRequest ExtractconfigRequest
 
 // Create Create backup.
 func (c *Client) Create(ctx context.Context, req CreateRequest) (string, error) {

@@ -36,11 +36,13 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexRequest IndexRequest
 
 type IndexCpuRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexCpuRequest IndexCpuRequest
 
 type IndexCpuResponse struct {
 	Custom util.PVEBool `url:"custom" json:"custom"` // True if this is a custom CPU model.
@@ -48,11 +50,13 @@ type IndexCpuResponse struct {
 	Vendor string       `url:"vendor" json:"vendor"` // CPU vendor visible to the guest when this model is selected. Vendor of 'reported-model' in case of custom models.
 
 }
+type _IndexCpuResponse IndexCpuResponse
 
 type TypesMachinesRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _TypesMachinesRequest TypesMachinesRequest
 
 type TypesMachinesResponse struct {
 	Id      string `url:"id" json:"id"`           // Full name of machine type and version.
@@ -60,6 +64,7 @@ type TypesMachinesResponse struct {
 	Version string `url:"version" json:"version"` // The machine version.
 
 }
+type _TypesMachinesResponse TypesMachinesResponse
 
 // Index QEMU capabilities index.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]interface{}, error) {

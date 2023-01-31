@@ -25,6 +25,7 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexRequest IndexRequest
 
 type NewCertificateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -32,6 +33,7 @@ type NewCertificateRequest struct {
 	// The following parameters are optional
 	Force *util.PVEBool `url:"force,omitempty" json:"force,omitempty"` // Overwrite existing custom certificate.
 }
+type _NewCertificateRequest NewCertificateRequest
 
 type RenewCertificateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -39,11 +41,13 @@ type RenewCertificateRequest struct {
 	// The following parameters are optional
 	Force *util.PVEBool `url:"force,omitempty" json:"force,omitempty"` // Force renewal even if expiry is more than 30 days away.
 }
+type _RenewCertificateRequest RenewCertificateRequest
 
 type RevokeCertificateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _RevokeCertificateRequest RevokeCertificateRequest
 
 // Index ACME index.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]interface{}, error) {

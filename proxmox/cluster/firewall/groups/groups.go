@@ -53,6 +53,7 @@ type IndexResponse struct {
 	// The following parameters are optional
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
 }
+type _IndexResponse IndexResponse
 
 type CreateRequest struct {
 	Group string `url:"group" json:"group"` // Security Group name.
@@ -62,15 +63,18 @@ type CreateRequest struct {
 	Digest  *string `url:"digest,omitempty" json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 	Rename  *string `url:"rename,omitempty" json:"rename,omitempty"` // Rename/update an existing security group. You can set 'rename' to the same value as 'name' to update the 'comment' of an existing group.
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Group string `url:"group" json:"group"` // Security Group name.
 
 }
+type _FindRequest FindRequest
 
 type FindResponse struct {
 	Pos int `url:"pos" json:"pos"`
 }
+type _FindResponse FindResponse
 
 type ChildCreateRequest struct {
 	Action string `url:"action" json:"action"` // Rule action ('ACCEPT', 'DROP', 'REJECT') or security group name.
@@ -92,11 +96,13 @@ type ChildCreateRequest struct {
 	Source   *string `url:"source,omitempty" json:"source,omitempty"`       // Restrict packet source address. This can refer to a single IP address, an IP set ('+ipsetname') or an IP alias definition. You can also specify an address range like '20.34.101.207-201.3.9.99', or a list of IP addresses and networks (entries are separated by comma). Please do not mix IPv4 and IPv6 addresses inside such lists.
 	Sport    *string `url:"sport,omitempty" json:"sport,omitempty"`         // Restrict TCP/UDP source port. You can use service names or simple numbers (0-65535), as defined in '/etc/services'. Port ranges can be specified with '\d+:\d+', for example '80:85', and you can use comma separated list to match several ports or ranges.
 }
+type _ChildCreateRequest ChildCreateRequest
 
 type DeleteRequest struct {
 	Group string `url:"group" json:"group"` // Security Group name.
 
 }
+type _DeleteRequest DeleteRequest
 
 type GetRulePosRequest struct {
 	Group string `url:"group" json:"group"` // Security Group name.
@@ -104,6 +110,7 @@ type GetRulePosRequest struct {
 	// The following parameters are optional
 	Pos *int `url:"pos,omitempty" json:"pos,omitempty"` // Update rule at position <pos>.
 }
+type _GetRulePosRequest GetRulePosRequest
 
 type GetRulePosResponse struct {
 	Action string `url:"action" json:"action"`
@@ -124,6 +131,7 @@ type GetRulePosResponse struct {
 	Source    *string `url:"source,omitempty" json:"source,omitempty"`
 	Sport     *string `url:"sport,omitempty" json:"sport,omitempty"`
 }
+type _GetRulePosResponse GetRulePosResponse
 
 type UpdateRulePosRequest struct {
 	Group string `url:"group" json:"group"` // Security Group name.
@@ -147,6 +155,7 @@ type UpdateRulePosRequest struct {
 	Sport    *string `url:"sport,omitempty" json:"sport,omitempty"`         // Restrict TCP/UDP source port. You can use service names or simple numbers (0-65535), as defined in '/etc/services'. Port ranges can be specified with '\d+:\d+', for example '80:85', and you can use comma separated list to match several ports or ranges.
 	Type     *Type   `url:"type,omitempty" json:"type,omitempty"`           // Rule type.
 }
+type _UpdateRulePosRequest UpdateRulePosRequest
 
 type DeleteRulePosRequest struct {
 	Group string `url:"group" json:"group"` // Security Group name.
@@ -155,6 +164,7 @@ type DeleteRulePosRequest struct {
 	Digest *string `url:"digest,omitempty" json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 	Pos    *int    `url:"pos,omitempty" json:"pos,omitempty"`       // Update rule at position <pos>.
 }
+type _DeleteRulePosRequest DeleteRulePosRequest
 
 // Index List security groups.
 func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {

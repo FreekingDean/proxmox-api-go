@@ -24,15 +24,18 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Type string `url:"type" json:"type"`
 }
+type _IndexResponse IndexResponse
 
 type UsbscanRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _UsbscanRequest UsbscanRequest
 
 type UsbscanResponse struct {
 	Busnum int    `url:"busnum" json:"busnum"`
@@ -50,6 +53,7 @@ type UsbscanResponse struct {
 	Serial       *string `url:"serial,omitempty" json:"serial,omitempty"`
 	Usbpath      *string `url:"usbpath,omitempty" json:"usbpath,omitempty"`
 }
+type _UsbscanResponse UsbscanResponse
 
 // Index Index of hardware types
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

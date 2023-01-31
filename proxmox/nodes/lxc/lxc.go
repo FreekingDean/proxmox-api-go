@@ -4,8 +4,12 @@ package lxc
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 	"net/url"
+	"strconv"
+	"strings"
 )
 
 const (
@@ -1414,6 +1418,7 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Status Status `url:"status" json:"status"` // LXC Container status.
@@ -1429,33 +1434,7 @@ type IndexResponse struct {
 	Tags    *string  `url:"tags,omitempty" json:"tags,omitempty"`       // The current configured tags, if any.
 	Uptime  *int     `url:"uptime,omitempty" json:"uptime,omitempty"`   // Uptime.
 }
-
-// Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
-type Mp struct {
-	Mp     string `url:"mp" json:"mp"`         // Path to the mount point as seen from inside the container (must not contain symlinks).
-	Volume string `url:"volume" json:"volume"` // Volume, device or directory to mount into the container.
-
-	// The following parameters are optional
-	Acl          *util.PVEBool `url:"acl,omitempty" json:"acl,omitempty"`                   // Explicitly enable or disable ACL support.
-	Backup       *util.PVEBool `url:"backup,omitempty" json:"backup,omitempty"`             // Whether to include the mount point in backups.
-	Mountoptions *string       `url:"mountoptions,omitempty" json:"mountoptions,omitempty"` // Extra mount options for rootfs/mps.
-	Quota        *util.PVEBool `url:"quota,omitempty" json:"quota,omitempty"`               // Enable user quotas inside the container (not supported with zfs subvolumes)
-	Replicate    *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`       // Will include this volume to a storage replica job.
-	Ro           *util.PVEBool `url:"ro,omitempty" json:"ro,omitempty"`                     // Read-only mount point
-	Shared       *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`             // Mark this non-volume mount point as available on multiple nodes (see 'nodes')
-	Size         *string       `url:"size,omitempty" json:"size,omitempty"`                 // Volume size (read only value).
-}
-
-func (t Mp) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[volume=]<volume> ,mp=<Path> [,acl=<1|0>] [,backup=<1|0>] [,mountoptions=<opt[;opt...]>] [,quota=<1|0>] [,replicate=<1|0>] [,ro=<1|0>] [,shared=<1|0>] [,size=<DiskSize>]`)
-}
-
-// Array of Mp
-type Mps []Mp
-
-func (t Mps) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
+type _IndexResponse IndexResponse
 
 // Specifies network interfaces for the container.
 type Net struct {
@@ -1475,16 +1454,255 @@ type Net struct {
 	Trunks   *string       `url:"trunks,omitempty" json:"trunks,omitempty"`     // VLAN ids to pass through the interface
 	Type     *NetType      `url:"type,omitempty" json:"type,omitempty"`         // Network interface type.
 }
+type _Net Net
 
 func (t Net) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `name=<string> [,bridge=<bridge>] [,firewall=<1|0>] [,gw=<GatewayIPv4>] [,gw6=<GatewayIPv6>] [,hwaddr=<XX:XX:XX:XX:XX:XX>] [,ip=<(IPv4/CIDR|dhcp|manual)>] [,ip6=<(IPv6/CIDR|auto|dhcp|manual)>] [,mtu=<integer>] [,rate=<mbps>] [,tag=<integer>] [,trunks=<vlanid[;vlanid...]>] [,type=<veth>]`)
 }
 
+func (t *Net) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["name"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["name"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Name)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["bridge"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Bridge)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["firewall"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Firewall)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["gw"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Gw)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["gw6"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Gw6)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["hwaddr"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Hwaddr)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["ip"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Ip)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["ip6"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Ip6)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mtu"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Mtu)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["rate"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Rate)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["tag"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Tag)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["trunks"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Trunks)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["type"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Type)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // Array of Net
-type Nets []Net
+type Nets []*Net
+type _Nets Nets
 
 func (t Nets) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeArray(key, v, t)
+}
+
+// Allow containers access to advanced features.
+type Features struct {
+
+	// The following parameters are optional
+	ForceRwSys *util.PVEBool `url:"force_rw_sys,omitempty" json:"force_rw_sys,omitempty"` // Mount /sys in unprivileged containers as `rw` instead of `mixed`. This can break networking under newer (>= v245) systemd-network use.
+	Fuse       *util.PVEBool `url:"fuse,omitempty" json:"fuse,omitempty"`                 // Allow using 'fuse' file systems in a container. Note that interactions between fuse and the freezer cgroup can potentially cause I/O deadlocks.
+	Keyctl     *util.PVEBool `url:"keyctl,omitempty" json:"keyctl,omitempty"`             // For unprivileged containers only: Allow the use of the keyctl() system call. This is required to use docker inside a container. By default unprivileged containers will see this system call as non-existent. This is mostly a workaround for systemd-networkd, as it will treat it as a fatal error when some keyctl() operations are denied by the kernel due to lacking permissions. Essentially, you can choose between running systemd-networkd or docker.
+	Mknod      *util.PVEBool `url:"mknod,omitempty" json:"mknod,omitempty"`               // Allow unprivileged containers to use mknod() to add certain device nodes. This requires a kernel with seccomp trap to user space support (5.3 or newer). This is experimental.
+	Mount      *string       `url:"mount,omitempty" json:"mount,omitempty"`               // Allow mounting file systems of specific types. This should be a list of file system types as used with the mount command. Note that this can have negative effects on the container's security. With access to a loop device, mounting a file can circumvent the mknod permission of the devices cgroup, mounting an NFS file system can block the host's I/O completely and prevent it from rebooting, etc.
+	Nesting    *util.PVEBool `url:"nesting,omitempty" json:"nesting,omitempty"`           // Allow nesting. Best used with unprivileged containers with additional id mapping. Note that this will expose procfs and sysfs contents of the host to the guest.
+}
+type _Features Features
+
+func (t Features) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[force_rw_sys=<1|0>] [,fuse=<1|0>] [,keyctl=<1|0>] [,mknod=<1|0>] [,mount=<fstype;fstype;...>] [,nesting=<1|0>]`)
+}
+
+func (t *Features) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["force_rw_sys"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["force_rw_sys"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.ForceRwSys)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["fuse"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Fuse)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["keyctl"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Keyctl)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mknod"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Mknod)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mount"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Mount)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["nesting"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Nesting)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // Reference to unused volumes. This is used internally, and should not be modified manually.
@@ -1492,15 +1710,192 @@ type Unused struct {
 	Volume string `url:"volume" json:"volume"` // The volume that is not used currently.
 
 }
+type _Unused Unused
 
 func (t Unused) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `[volume=]<volume>`)
 }
 
+func (t *Unused) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["volume"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["volume"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Volume)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // Array of Unused
-type Unuseds []Unused
+type Unuseds []*Unused
+type _Unuseds Unuseds
 
 func (t Unuseds) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
+type Mp struct {
+	Mp     string `url:"mp" json:"mp"`         // Path to the mount point as seen from inside the container (must not contain symlinks).
+	Volume string `url:"volume" json:"volume"` // Volume, device or directory to mount into the container.
+
+	// The following parameters are optional
+	Acl          *util.PVEBool `url:"acl,omitempty" json:"acl,omitempty"`                   // Explicitly enable or disable ACL support.
+	Backup       *util.PVEBool `url:"backup,omitempty" json:"backup,omitempty"`             // Whether to include the mount point in backups.
+	Mountoptions *string       `url:"mountoptions,omitempty" json:"mountoptions,omitempty"` // Extra mount options for rootfs/mps.
+	Quota        *util.PVEBool `url:"quota,omitempty" json:"quota,omitempty"`               // Enable user quotas inside the container (not supported with zfs subvolumes)
+	Replicate    *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`       // Will include this volume to a storage replica job.
+	Ro           *util.PVEBool `url:"ro,omitempty" json:"ro,omitempty"`                     // Read-only mount point
+	Shared       *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`             // Mark this non-volume mount point as available on multiple nodes (see 'nodes')
+	Size         *string       `url:"size,omitempty" json:"size,omitempty"`                 // Volume size (read only value).
+}
+type _Mp Mp
+
+func (t Mp) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[volume=]<volume> ,mp=<Path> [,acl=<1|0>] [,backup=<1|0>] [,mountoptions=<opt[;opt...]>] [,quota=<1|0>] [,replicate=<1|0>] [,ro=<1|0>] [,shared=<1|0>] [,size=<DiskSize>]`)
+}
+
+func (t *Mp) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["mp"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["mp"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Mp)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["volume"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Volume)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["acl"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Acl)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["backup"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Backup)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mountoptions"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Mountoptions)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["quota"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Quota)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["replicate"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Replicate)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["ro"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Ro)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["shared"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Shared)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["size"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Size)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Array of Mp
+type Mps []*Mp
+type _Mps Mps
+
+func (t Mps) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeArray(key, v, t)
 }
 
@@ -1517,25 +1912,104 @@ type Rootfs struct {
 	Shared       *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`             // Mark this non-volume mount point as available on multiple nodes (see 'nodes')
 	Size         *string       `url:"size,omitempty" json:"size,omitempty"`                 // Volume size (read only value).
 }
+type _Rootfs Rootfs
 
 func (t Rootfs) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `[volume=]<volume> [,acl=<1|0>] [,mountoptions=<opt[;opt...]>] [,quota=<1|0>] [,replicate=<1|0>] [,ro=<1|0>] [,shared=<1|0>] [,size=<DiskSize>]`)
 }
 
-// Allow containers access to advanced features.
-type Features struct {
+func (t *Rootfs) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
 
-	// The following parameters are optional
-	ForceRwSys *util.PVEBool `url:"force_rw_sys,omitempty" json:"force_rw_sys,omitempty"` // Mount /sys in unprivileged containers as `rw` instead of `mixed`. This can break networking under newer (>= v245) systemd-network use.
-	Fuse       *util.PVEBool `url:"fuse,omitempty" json:"fuse,omitempty"`                 // Allow using 'fuse' file systems in a container. Note that interactions between fuse and the freezer cgroup can potentially cause I/O deadlocks.
-	Keyctl     *util.PVEBool `url:"keyctl,omitempty" json:"keyctl,omitempty"`             // For unprivileged containers only: Allow the use of the keyctl() system call. This is required to use docker inside a container. By default unprivileged containers will see this system call as non-existent. This is mostly a workaround for systemd-networkd, as it will treat it as a fatal error when some keyctl() operations are denied by the kernel due to lacking permissions. Essentially, you can choose between running systemd-networkd or docker.
-	Mknod      *util.PVEBool `url:"mknod,omitempty" json:"mknod,omitempty"`               // Allow unprivileged containers to use mknod() to add certain device nodes. This requires a kernel with seccomp trap to user space support (5.3 or newer). This is experimental.
-	Mount      *string       `url:"mount,omitempty" json:"mount,omitempty"`               // Allow mounting file systems of specific types. This should be a list of file system types as used with the mount command. Note that this can have negative effects on the container's security. With access to a loop device, mounting a file can circumvent the mknod permission of the devices cgroup, mounting an NFS file system can block the host's I/O completely and prevent it from rebooting, etc.
-	Nesting    *util.PVEBool `url:"nesting,omitempty" json:"nesting,omitempty"`           // Allow nesting. Best used with unprivileged containers with additional id mapping. Note that this will expose procfs and sysfs contents of the host to the guest.
-}
+			values["volume"] = kv[0]
 
-func (t Features) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[force_rw_sys=<1|0>] [,fuse=<1|0>] [,keyctl=<1|0>] [,mknod=<1|0>] [,mount=<fstype;fstype;...>] [,nesting=<1|0>]`)
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["volume"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Volume)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["acl"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Acl)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mountoptions"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Mountoptions)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["quota"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Quota)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["replicate"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Replicate)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["ro"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Ro)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["shared"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Shared)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["size"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Size)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 type CreateRequest struct {
@@ -1584,16 +2058,99 @@ type CreateRequest struct {
 	Unprivileged       *util.PVEBool `url:"unprivileged,omitempty" json:"unprivileged,omitempty"`                 // Makes the container run as unprivileged user. (Should not be modified manually.)
 	Unuseds            *Unuseds      `url:"unused[n],omitempty" json:"unused[n],omitempty"`                       // Reference to unused volumes. This is used internally, and should not be modified manually.
 }
+type _CreateRequest CreateRequest
+
+func (t *CreateRequest) UnmarshalJSON(d []byte) error {
+	tmp := _CreateRequest{}
+	err := json.Unmarshal(d, &tmp)
+	if err != nil {
+		return err
+	}
+	rest := map[string]json.RawMessage{}
+	err = json.Unmarshal(d, &rest)
+	if err != nil {
+		return err
+	}
+	for k, v := range rest {
+
+		if strings.HasPrefix(k, "mp") {
+			idxStr := strings.TrimPrefix(k, "mp")
+			idx, err := strconv.Atoi(idxStr)
+			if err != nil {
+				return err
+			}
+			if t.Mps == nil {
+				arr := make(Mps, 0)
+				t.Mps = &arr
+			}
+			for len(*t.Mps) < idx+1 {
+				*t.Mps = append(*t.Mps, nil)
+			}
+			var newVal Mp
+			err = json.Unmarshal(v, &newVal)
+			if err != nil {
+				return err
+			}
+			(*t.Mps)[idx] = &newVal
+		}
+
+		if strings.HasPrefix(k, "net") {
+			idxStr := strings.TrimPrefix(k, "net")
+			idx, err := strconv.Atoi(idxStr)
+			if err != nil {
+				return err
+			}
+			if t.Nets == nil {
+				arr := make(Nets, 0)
+				t.Nets = &arr
+			}
+			for len(*t.Nets) < idx+1 {
+				*t.Nets = append(*t.Nets, nil)
+			}
+			var newVal Net
+			err = json.Unmarshal(v, &newVal)
+			if err != nil {
+				return err
+			}
+			(*t.Nets)[idx] = &newVal
+		}
+
+		if strings.HasPrefix(k, "unused") {
+			idxStr := strings.TrimPrefix(k, "unused")
+			idx, err := strconv.Atoi(idxStr)
+			if err != nil {
+				return err
+			}
+			if t.Unuseds == nil {
+				arr := make(Unuseds, 0)
+				t.Unuseds = &arr
+			}
+			for len(*t.Unuseds) < idx+1 {
+				*t.Unuseds = append(*t.Unuseds, nil)
+			}
+			var newVal Unused
+			err = json.Unmarshal(v, &newVal)
+			if err != nil {
+				return err
+			}
+			(*t.Unuseds)[idx] = &newVal
+		}
+
+	}
+	return nil
+}
 
 type FindRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _FindRequest FindRequest
 
 type FindResponse struct {
 	Subdir string `url:"subdir" json:"subdir"`
 }
+type _FindResponse FindResponse
 
 type DeleteRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -1604,6 +2161,7 @@ type DeleteRequest struct {
 	Force                    *util.PVEBool `url:"force,omitempty" json:"force,omitempty"`                                           // Force destroy, even if running.
 	Purge                    *util.PVEBool `url:"purge,omitempty" json:"purge,omitempty"`                                           // Remove container from all related configurations. For example, backup jobs, replication jobs or HA. Related ACLs and Firewall entries will *always* be removed.
 }
+type _DeleteRequest DeleteRequest
 
 type VmConfigRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -1613,6 +2171,7 @@ type VmConfigRequest struct {
 	Current  *util.PVEBool `url:"current,omitempty" json:"current,omitempty"`   // Get current values (instead of pending values).
 	Snapshot *string       `url:"snapshot,omitempty" json:"snapshot,omitempty"` // Fetch config values from given snapshot.
 }
+type _VmConfigRequest VmConfigRequest
 
 type VmConfigResponse struct {
 	Digest string `url:"digest" json:"digest"` // SHA1 digest of configuration file. This can be used to prevent concurrent modifications.
@@ -1648,6 +2207,87 @@ type VmConfigResponse struct {
 	Tty          *int          `url:"tty,omitempty" json:"tty,omitempty"`                   // Specify the number of tty available to the container
 	Unprivileged *util.PVEBool `url:"unprivileged,omitempty" json:"unprivileged,omitempty"` // Makes the container run as unprivileged user. (Should not be modified manually.)
 	Unuseds      *Unuseds      `url:"unused[n],omitempty" json:"unused[n],omitempty"`       // Reference to unused volumes. This is used internally, and should not be modified manually.
+}
+type _VmConfigResponse VmConfigResponse
+
+func (t *VmConfigResponse) UnmarshalJSON(d []byte) error {
+	tmp := _VmConfigResponse{}
+	err := json.Unmarshal(d, &tmp)
+	if err != nil {
+		return err
+	}
+	rest := map[string]json.RawMessage{}
+	err = json.Unmarshal(d, &rest)
+	if err != nil {
+		return err
+	}
+	for k, v := range rest {
+
+		if strings.HasPrefix(k, "mp") {
+			idxStr := strings.TrimPrefix(k, "mp")
+			idx, err := strconv.Atoi(idxStr)
+			if err != nil {
+				return err
+			}
+			if t.Mps == nil {
+				arr := make(Mps, 0)
+				t.Mps = &arr
+			}
+			for len(*t.Mps) < idx+1 {
+				*t.Mps = append(*t.Mps, nil)
+			}
+			var newVal Mp
+			err = json.Unmarshal(v, &newVal)
+			if err != nil {
+				return err
+			}
+			(*t.Mps)[idx] = &newVal
+		}
+
+		if strings.HasPrefix(k, "net") {
+			idxStr := strings.TrimPrefix(k, "net")
+			idx, err := strconv.Atoi(idxStr)
+			if err != nil {
+				return err
+			}
+			if t.Nets == nil {
+				arr := make(Nets, 0)
+				t.Nets = &arr
+			}
+			for len(*t.Nets) < idx+1 {
+				*t.Nets = append(*t.Nets, nil)
+			}
+			var newVal Net
+			err = json.Unmarshal(v, &newVal)
+			if err != nil {
+				return err
+			}
+			(*t.Nets)[idx] = &newVal
+		}
+
+		if strings.HasPrefix(k, "unused") {
+			idxStr := strings.TrimPrefix(k, "unused")
+			idx, err := strconv.Atoi(idxStr)
+			if err != nil {
+				return err
+			}
+			if t.Unuseds == nil {
+				arr := make(Unuseds, 0)
+				t.Unuseds = &arr
+			}
+			for len(*t.Unuseds) < idx+1 {
+				*t.Unuseds = append(*t.Unuseds, nil)
+			}
+			var newVal Unused
+			err = json.Unmarshal(v, &newVal)
+			if err != nil {
+				return err
+			}
+			(*t.Unuseds)[idx] = &newVal
+		}
+
+	}
+	return nil
 }
 
 type UpdateVmConfigRequest struct {
@@ -1688,6 +2328,87 @@ type UpdateVmConfigRequest struct {
 	Unprivileged *util.PVEBool `url:"unprivileged,omitempty" json:"unprivileged,omitempty"` // Makes the container run as unprivileged user. (Should not be modified manually.)
 	Unuseds      *Unuseds      `url:"unused[n],omitempty" json:"unused[n],omitempty"`       // Reference to unused volumes. This is used internally, and should not be modified manually.
 }
+type _UpdateVmConfigRequest UpdateVmConfigRequest
+
+func (t *UpdateVmConfigRequest) UnmarshalJSON(d []byte) error {
+	tmp := _UpdateVmConfigRequest{}
+	err := json.Unmarshal(d, &tmp)
+	if err != nil {
+		return err
+	}
+	rest := map[string]json.RawMessage{}
+	err = json.Unmarshal(d, &rest)
+	if err != nil {
+		return err
+	}
+	for k, v := range rest {
+
+		if strings.HasPrefix(k, "mp") {
+			idxStr := strings.TrimPrefix(k, "mp")
+			idx, err := strconv.Atoi(idxStr)
+			if err != nil {
+				return err
+			}
+			if t.Mps == nil {
+				arr := make(Mps, 0)
+				t.Mps = &arr
+			}
+			for len(*t.Mps) < idx+1 {
+				*t.Mps = append(*t.Mps, nil)
+			}
+			var newVal Mp
+			err = json.Unmarshal(v, &newVal)
+			if err != nil {
+				return err
+			}
+			(*t.Mps)[idx] = &newVal
+		}
+
+		if strings.HasPrefix(k, "net") {
+			idxStr := strings.TrimPrefix(k, "net")
+			idx, err := strconv.Atoi(idxStr)
+			if err != nil {
+				return err
+			}
+			if t.Nets == nil {
+				arr := make(Nets, 0)
+				t.Nets = &arr
+			}
+			for len(*t.Nets) < idx+1 {
+				*t.Nets = append(*t.Nets, nil)
+			}
+			var newVal Net
+			err = json.Unmarshal(v, &newVal)
+			if err != nil {
+				return err
+			}
+			(*t.Nets)[idx] = &newVal
+		}
+
+		if strings.HasPrefix(k, "unused") {
+			idxStr := strings.TrimPrefix(k, "unused")
+			idx, err := strconv.Atoi(idxStr)
+			if err != nil {
+				return err
+			}
+			if t.Unuseds == nil {
+				arr := make(Unuseds, 0)
+				t.Unuseds = &arr
+			}
+			for len(*t.Unuseds) < idx+1 {
+				*t.Unuseds = append(*t.Unuseds, nil)
+			}
+			var newVal Unused
+			err = json.Unmarshal(v, &newVal)
+			if err != nil {
+				return err
+			}
+			(*t.Unuseds)[idx] = &newVal
+		}
+
+	}
+	return nil
+}
 
 type RrdRequest struct {
 	Ds        string    `url:"ds" json:"ds"`               // The list of datasources you want to display.
@@ -1698,10 +2419,12 @@ type RrdRequest struct {
 	// The following parameters are optional
 	Cf *Cf `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
 }
+type _RrdRequest RrdRequest
 
 type RrdResponse struct {
 	Filename string `url:"filename" json:"filename"`
 }
+type _RrdResponse RrdResponse
 
 type RrddataRequest struct {
 	Node      string    `url:"node" json:"node"`           // The cluster node name.
@@ -1711,6 +2434,7 @@ type RrddataRequest struct {
 	// The following parameters are optional
 	Cf *Cf `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
 }
+type _RrddataRequest RrddataRequest
 
 type VncproxyRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -1721,6 +2445,7 @@ type VncproxyRequest struct {
 	Websocket *util.PVEBool `url:"websocket,omitempty" json:"websocket,omitempty"` // use websocket instead of standard VNC.
 	Width     *int          `url:"width,omitempty" json:"width,omitempty"`         // sets the width of the console in pixels.
 }
+type _VncproxyRequest VncproxyRequest
 
 type VncproxyResponse struct {
 	Cert   string `url:"cert" json:"cert"`
@@ -1729,12 +2454,14 @@ type VncproxyResponse struct {
 	Upid   string `url:"upid" json:"upid"`
 	User   string `url:"user" json:"user"`
 }
+type _VncproxyResponse VncproxyResponse
 
 type TermproxyRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _TermproxyRequest TermproxyRequest
 
 type TermproxyResponse struct {
 	Port   int    `url:"port" json:"port"`
@@ -1742,6 +2469,7 @@ type TermproxyResponse struct {
 	Upid   string `url:"upid" json:"upid"`
 	User   string `url:"user" json:"user"`
 }
+type _TermproxyResponse TermproxyResponse
 
 type VncwebsocketRequest struct {
 	Node      string `url:"node" json:"node"`           // The cluster node name.
@@ -1750,10 +2478,12 @@ type VncwebsocketRequest struct {
 	Vncticket string `url:"vncticket" json:"vncticket"` // Ticket from previous call to vncproxy.
 
 }
+type _VncwebsocketRequest VncwebsocketRequest
 
 type VncwebsocketResponse struct {
 	Port string `url:"port" json:"port"`
 }
+type _VncwebsocketResponse VncwebsocketResponse
 
 type SpiceproxyRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -1762,6 +2492,7 @@ type SpiceproxyRequest struct {
 	// The following parameters are optional
 	Proxy *string `url:"proxy,omitempty" json:"proxy,omitempty"` // SPICE proxy server. This can be used by the client to specify the proxy server. All nodes in a cluster runs 'spiceproxy', so it is up to the client to choose one. By default, we return the node where the VM is currently running. As reasonable setting is to use same node you use to connect to the API (This is window.location.hostname for the JS GUI).
 }
+type _SpiceproxyRequest SpiceproxyRequest
 
 // Returned values can be directly passed to the 'remote-viewer' application.
 type SpiceproxyResponse struct {
@@ -1771,6 +2502,7 @@ type SpiceproxyResponse struct {
 	TlsPort  int    `url:"tls-port" json:"tls-port"`
 	Type     string `url:"type" json:"type"`
 }
+type _SpiceproxyResponse SpiceproxyResponse
 
 type RemoteMigrateVmRequest struct {
 	Node           string `url:"node" json:"node"`                       // The cluster node name.
@@ -1787,6 +2519,7 @@ type RemoteMigrateVmRequest struct {
 	TargetVmid *int          `url:"target-vmid,omitempty" json:"target-vmid,omitempty"` // The (unique) ID of the VM.
 	Timeout    *int          `url:"timeout,omitempty" json:"timeout,omitempty"`         // Timeout in seconds for shutdown for restart migration
 }
+type _RemoteMigrateVmRequest RemoteMigrateVmRequest
 
 type MigrateVmRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
@@ -1800,6 +2533,7 @@ type MigrateVmRequest struct {
 	TargetStorage *string       `url:"target-storage,omitempty" json:"target-storage,omitempty"` // Mapping from source to target storages. Providing only a single storage ID maps all source storages to that storage. Providing the special value '1' will map each source storage to itself.
 	Timeout       *int          `url:"timeout,omitempty" json:"timeout,omitempty"`               // Timeout in seconds for shutdown for restart migration
 }
+type _MigrateVmRequest MigrateVmRequest
 
 type VmFeatureRequest struct {
 	Feature Feature `url:"feature" json:"feature"` // Feature to check.
@@ -1809,16 +2543,19 @@ type VmFeatureRequest struct {
 	// The following parameters are optional
 	Snapname *string `url:"snapname,omitempty" json:"snapname,omitempty"` // The name of the snapshot.
 }
+type _VmFeatureRequest VmFeatureRequest
 
 type VmFeatureResponse struct {
 	Hasfeature util.PVEBool `url:"hasFeature" json:"hasFeature"`
 }
+type _VmFeatureResponse VmFeatureResponse
 
 type TemplateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _TemplateRequest TemplateRequest
 
 type CloneVmRequest struct {
 	Newid int    `url:"newid" json:"newid"` // VMID for the clone.
@@ -1835,6 +2572,7 @@ type CloneVmRequest struct {
 	Storage     *string       `url:"storage,omitempty" json:"storage,omitempty"`         // Target storage for full clone.
 	Target      *string       `url:"target,omitempty" json:"target,omitempty"`           // Target node. Only allowed if the original VM is on shared storage.
 }
+type _CloneVmRequest CloneVmRequest
 
 type ResizeVmRequest struct {
 	Disk Disk   `url:"disk" json:"disk"` // The disk you want to resize.
@@ -1845,6 +2583,7 @@ type ResizeVmRequest struct {
 	// The following parameters are optional
 	Digest *string `url:"digest,omitempty" json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 }
+type _ResizeVmRequest ResizeVmRequest
 
 type MoveVolumeRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
@@ -1860,12 +2599,14 @@ type MoveVolumeRequest struct {
 	TargetVmid   *int          `url:"target-vmid,omitempty" json:"target-vmid,omitempty"`     // The (unique) ID of the VM.
 	TargetVolume *TargetVolume `url:"target-volume,omitempty" json:"target-volume,omitempty"` // The config key the volume will be moved to. Default is the source volume key.
 }
+type _MoveVolumeRequest MoveVolumeRequest
 
 type VmPendingRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _VmPendingRequest VmPendingRequest
 
 type VmPendingResponse struct {
 	Key string `url:"key" json:"key"` // Configuration option name.
@@ -1875,6 +2616,7 @@ type VmPendingResponse struct {
 	Pending *string `url:"pending,omitempty" json:"pending,omitempty"` // Pending value.
 	Value   *string `url:"value,omitempty" json:"value,omitempty"`     // Current value.
 }
+type _VmPendingResponse VmPendingResponse
 
 type MtunnelRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -1884,12 +2626,14 @@ type MtunnelRequest struct {
 	Bridges  *string `url:"bridges,omitempty" json:"bridges,omitempty"`   // List of network bridges to check availability. Will be checked again for actually used bridges during migration.
 	Storages *string `url:"storages,omitempty" json:"storages,omitempty"` // List of storages to check permission and availability. Will be checked again for all actually used storages during migration.
 }
+type _MtunnelRequest MtunnelRequest
 
 type MtunnelResponse struct {
 	Socket string `url:"socket" json:"socket"`
 	Ticket string `url:"ticket" json:"ticket"`
 	Upid   string `url:"upid" json:"upid"`
 }
+type _MtunnelResponse MtunnelResponse
 
 type MtunnelwebsocketRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
@@ -1898,6 +2642,7 @@ type MtunnelwebsocketRequest struct {
 	Vmid   int    `url:"vmid" json:"vmid"`     // The (unique) ID of the VM.
 
 }
+type _MtunnelwebsocketRequest MtunnelwebsocketRequest
 
 type MtunnelwebsocketResponse struct {
 
@@ -1905,6 +2650,7 @@ type MtunnelwebsocketResponse struct {
 	Port   *string `url:"port,omitempty" json:"port,omitempty"`
 	Socket *string `url:"socket,omitempty" json:"socket,omitempty"`
 }
+type _MtunnelwebsocketResponse MtunnelwebsocketResponse
 
 // Index LXC container index (per node).
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

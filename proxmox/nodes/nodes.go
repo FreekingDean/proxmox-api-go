@@ -4,8 +4,12 @@ package nodes
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 	"net/url"
+	"strconv"
+	"strings"
 )
 
 const (
@@ -94,16 +98,19 @@ type IndexResponse struct {
 	SslFingerprint *string  `url:"ssl_fingerprint,omitempty" json:"ssl_fingerprint,omitempty"` // The SSL fingerprint for the node certificate.
 	Uptime         *int     `url:"uptime,omitempty" json:"uptime,omitempty"`                   // Node uptime in seconds.
 }
+type _IndexResponse IndexResponse
 
 type FindRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _FindRequest FindRequest
 
 type GetSubscriptionRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _GetSubscriptionRequest GetSubscriptionRequest
 
 type UpdateSubscriptionRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -111,17 +118,20 @@ type UpdateSubscriptionRequest struct {
 	// The following parameters are optional
 	Force *util.PVEBool `url:"force,omitempty" json:"force,omitempty"` // Always connect to server, even if we have up to date info inside local cache.
 }
+type _UpdateSubscriptionRequest UpdateSubscriptionRequest
 
 type SetSubscriptionRequest struct {
 	Key  string `url:"key" json:"key"`   // Proxmox VE subscription key
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _SetSubscriptionRequest SetSubscriptionRequest
 
 type DeleteSubscriptionRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _DeleteSubscriptionRequest DeleteSubscriptionRequest
 
 type GetConfigRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -129,6 +139,7 @@ type GetConfigRequest struct {
 	// The following parameters are optional
 	Property *Property `url:"property,omitempty" json:"property,omitempty"` // Return only a specific property from the node configuration.
 }
+type _GetConfigRequest GetConfigRequest
 
 // Node specific ACME settings.
 type Acme struct {
@@ -137,9 +148,54 @@ type Acme struct {
 	Account *string `url:"account,omitempty" json:"account,omitempty"` // ACME account config file name.
 	Domains *string `url:"domains,omitempty" json:"domains,omitempty"` // List of domains for this node's ACME certificate
 }
+type _Acme Acme
 
 func (t Acme) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `[account=<name>] [,domains=<domain[;domain;...]>]`)
+}
+
+func (t *Acme) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["account"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["account"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Account)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["domains"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Domains)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // ACME domain and validation plugin
@@ -150,13 +206,69 @@ type Acmedomain struct {
 	Alias  *string `url:"alias,omitempty" json:"alias,omitempty"`   // Alias for the Domain to verify ACME Challenge over DNS
 	Plugin *string `url:"plugin,omitempty" json:"plugin,omitempty"` // The ACME plugin ID
 }
+type _Acmedomain Acmedomain
 
 func (t Acmedomain) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `[domain=]<domain> [,alias=<domain>] [,plugin=<name of the plugin configuration>]`)
 }
 
+func (t *Acmedomain) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["domain"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["domain"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Domain)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["alias"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Alias)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["plugin"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Plugin)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // Array of Acmedomain
-type Acmedomains []Acmedomain
+type Acmedomains []*Acmedomain
+type _Acmedomains Acmedomains
 
 func (t Acmedomains) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeArray(key, v, t)
@@ -172,6 +284,45 @@ type GetConfigResponse struct {
 	StartallOnbootDelay *int         `url:"startall-onboot-delay,omitempty" json:"startall-onboot-delay,omitempty"` // Initial delay in seconds, before starting all the Virtual Guests with on-boot enabled.
 	Wakeonlan           *string      `url:"wakeonlan,omitempty" json:"wakeonlan,omitempty"`                         // MAC address for wake on LAN
 }
+type _GetConfigResponse GetConfigResponse
+
+func (t *GetConfigResponse) UnmarshalJSON(d []byte) error {
+	tmp := _GetConfigResponse{}
+	err := json.Unmarshal(d, &tmp)
+	if err != nil {
+		return err
+	}
+	rest := map[string]json.RawMessage{}
+	err = json.Unmarshal(d, &rest)
+	if err != nil {
+		return err
+	}
+	for k, v := range rest {
+
+		if strings.HasPrefix(k, "acmedomain") {
+			idxStr := strings.TrimPrefix(k, "acmedomain")
+			idx, err := strconv.Atoi(idxStr)
+			if err != nil {
+				return err
+			}
+			if t.Acmedomains == nil {
+				arr := make(Acmedomains, 0)
+				t.Acmedomains = &arr
+			}
+			for len(*t.Acmedomains) < idx+1 {
+				*t.Acmedomains = append(*t.Acmedomains, nil)
+			}
+			var newVal Acmedomain
+			err = json.Unmarshal(v, &newVal)
+			if err != nil {
+				return err
+			}
+			(*t.Acmedomains)[idx] = &newVal
+		}
+
+	}
+	return nil
+}
 
 type SetOptionsConfigRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -185,11 +336,51 @@ type SetOptionsConfigRequest struct {
 	StartallOnbootDelay *int         `url:"startall-onboot-delay,omitempty" json:"startall-onboot-delay,omitempty"` // Initial delay in seconds, before starting all the Virtual Guests with on-boot enabled.
 	Wakeonlan           *string      `url:"wakeonlan,omitempty" json:"wakeonlan,omitempty"`                         // MAC address for wake on LAN
 }
+type _SetOptionsConfigRequest SetOptionsConfigRequest
+
+func (t *SetOptionsConfigRequest) UnmarshalJSON(d []byte) error {
+	tmp := _SetOptionsConfigRequest{}
+	err := json.Unmarshal(d, &tmp)
+	if err != nil {
+		return err
+	}
+	rest := map[string]json.RawMessage{}
+	err = json.Unmarshal(d, &rest)
+	if err != nil {
+		return err
+	}
+	for k, v := range rest {
+
+		if strings.HasPrefix(k, "acmedomain") {
+			idxStr := strings.TrimPrefix(k, "acmedomain")
+			idx, err := strconv.Atoi(idxStr)
+			if err != nil {
+				return err
+			}
+			if t.Acmedomains == nil {
+				arr := make(Acmedomains, 0)
+				t.Acmedomains = &arr
+			}
+			for len(*t.Acmedomains) < idx+1 {
+				*t.Acmedomains = append(*t.Acmedomains, nil)
+			}
+			var newVal Acmedomain
+			err = json.Unmarshal(v, &newVal)
+			if err != nil {
+				return err
+			}
+			(*t.Acmedomains)[idx] = &newVal
+		}
+
+	}
+	return nil
+}
 
 type VersionRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _VersionRequest VersionRequest
 
 type VersionResponse struct {
 	Release string `url:"release" json:"release"` // The current installed Proxmox VE Release
@@ -197,33 +388,39 @@ type VersionResponse struct {
 	Version string `url:"version" json:"version"` // The current installed pve-manager package version
 
 }
+type _VersionResponse VersionResponse
 
 type StatusRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _StatusRequest StatusRequest
 
 type NodeCmdStatusRequest struct {
 	Command Command `url:"command" json:"command"` // Specify the command.
 	Node    string  `url:"node" json:"node"`       // The cluster node name.
 
 }
+type _NodeCmdStatusRequest NodeCmdStatusRequest
 
 type NetstatRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _NetstatRequest NetstatRequest
 
 type ExecuteRequest struct {
 	Commands string `url:"commands" json:"commands"` // JSON encoded array of commands.
 	Node     string `url:"node" json:"node"`         // The cluster node name.
 
 }
+type _ExecuteRequest ExecuteRequest
 
 type WakeonlanRequest struct {
 	Node string `url:"node" json:"node"` // target node for wake on LAN packet
 
 }
+type _WakeonlanRequest WakeonlanRequest
 
 type RrdRequest struct {
 	Ds        string    `url:"ds" json:"ds"`               // The list of datasources you want to display.
@@ -233,10 +430,12 @@ type RrdRequest struct {
 	// The following parameters are optional
 	Cf *Cf `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
 }
+type _RrdRequest RrdRequest
 
 type RrdResponse struct {
 	Filename string `url:"filename" json:"filename"`
 }
+type _RrdResponse RrdResponse
 
 type RrddataRequest struct {
 	Node      string    `url:"node" json:"node"`           // The cluster node name.
@@ -245,6 +444,7 @@ type RrddataRequest struct {
 	// The following parameters are optional
 	Cf *Cf `url:"cf,omitempty" json:"cf,omitempty"` // The RRD consolidation function
 }
+type _RrddataRequest RrddataRequest
 
 type SyslogRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -256,12 +456,14 @@ type SyslogRequest struct {
 	Start   *int    `url:"start,omitempty" json:"start,omitempty"`
 	Until   *string `url:"until,omitempty" json:"until,omitempty"` // Display all log until this date-time string.
 }
+type _SyslogRequest SyslogRequest
 
 type SyslogResponse struct {
 	N int    `url:"n" json:"n"` // Line number
 	T string `url:"t" json:"t"` // Line text
 
 }
+type _SyslogResponse SyslogResponse
 
 type JournalRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -273,6 +475,7 @@ type JournalRequest struct {
 	Startcursor *string `url:"startcursor,omitempty" json:"startcursor,omitempty"` // Start after the given Cursor. Conflicts with 'since'
 	Until       *int    `url:"until,omitempty" json:"until,omitempty"`             // Display all log until this UNIX epoch. Conflicts with 'endcursor'.
 }
+type _JournalRequest JournalRequest
 
 type VncshellRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -284,6 +487,7 @@ type VncshellRequest struct {
 	Websocket *util.PVEBool `url:"websocket,omitempty" json:"websocket,omitempty"` // use websocket instead of standard vnc.
 	Width     *int          `url:"width,omitempty" json:"width,omitempty"`         // sets the width of the console in pixels.
 }
+type _VncshellRequest VncshellRequest
 
 type VncshellResponse struct {
 	Cert   string `url:"cert" json:"cert"`
@@ -292,6 +496,7 @@ type VncshellResponse struct {
 	Upid   string `url:"upid" json:"upid"`
 	User   string `url:"user" json:"user"`
 }
+type _VncshellResponse VncshellResponse
 
 type TermproxyRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -300,6 +505,7 @@ type TermproxyRequest struct {
 	Cmd     *Cmd    `url:"cmd,omitempty" json:"cmd,omitempty"`           // Run specific command or default to login.
 	CmdOpts *string `url:"cmd-opts,omitempty" json:"cmd-opts,omitempty"` // Add parameters to a command. Encoded as null terminated strings.
 }
+type _TermproxyRequest TermproxyRequest
 
 type TermproxyResponse struct {
 	Port   int    `url:"port" json:"port"`
@@ -307,6 +513,7 @@ type TermproxyResponse struct {
 	Upid   string `url:"upid" json:"upid"`
 	User   string `url:"user" json:"user"`
 }
+type _TermproxyResponse TermproxyResponse
 
 type VncwebsocketRequest struct {
 	Node      string `url:"node" json:"node"`           // The cluster node name.
@@ -314,10 +521,12 @@ type VncwebsocketRequest struct {
 	Vncticket string `url:"vncticket" json:"vncticket"` // Ticket from previous call to vncproxy.
 
 }
+type _VncwebsocketRequest VncwebsocketRequest
 
 type VncwebsocketResponse struct {
 	Port string `url:"port" json:"port"`
 }
+type _VncwebsocketResponse VncwebsocketResponse
 
 type SpiceshellRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -327,6 +536,7 @@ type SpiceshellRequest struct {
 	CmdOpts *string `url:"cmd-opts,omitempty" json:"cmd-opts,omitempty"` // Add parameters to a command. Encoded as null terminated strings.
 	Proxy   *string `url:"proxy,omitempty" json:"proxy,omitempty"`       // SPICE proxy server. This can be used by the client to specify the proxy server. All nodes in a cluster runs 'spiceproxy', so it is up to the client to choose one. By default, we return the node where the VM is currently running. As reasonable setting is to use same node you use to connect to the API (This is window.location.hostname for the JS GUI).
 }
+type _SpiceshellRequest SpiceshellRequest
 
 // Returned values can be directly passed to the 'remote-viewer' application.
 type SpiceshellResponse struct {
@@ -336,11 +546,13 @@ type SpiceshellResponse struct {
 	TlsPort  int    `url:"tls-port" json:"tls-port"`
 	Type     string `url:"type" json:"type"`
 }
+type _SpiceshellResponse SpiceshellResponse
 
 type DnsRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _DnsRequest DnsRequest
 
 type DnsResponse struct {
 
@@ -350,6 +562,7 @@ type DnsResponse struct {
 	Dns3   *string `url:"dns3,omitempty" json:"dns3,omitempty"`     // Third name server IP address.
 	Search *string `url:"search,omitempty" json:"search,omitempty"` // Search domain for host-name lookup.
 }
+type _DnsResponse DnsResponse
 
 type UpdateDnsRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
@@ -360,11 +573,13 @@ type UpdateDnsRequest struct {
 	Dns2 *string `url:"dns2,omitempty" json:"dns2,omitempty"` // Second name server IP address.
 	Dns3 *string `url:"dns3,omitempty" json:"dns3,omitempty"` // Third name server IP address.
 }
+type _UpdateDnsRequest UpdateDnsRequest
 
 type TimeRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _TimeRequest TimeRequest
 
 type TimeResponse struct {
 	Localtime int    `url:"localtime" json:"localtime"` // Seconds since 1970-01-01 00:00:00 (local time)
@@ -372,17 +587,20 @@ type TimeResponse struct {
 	Timezone  string `url:"timezone" json:"timezone"`   // Time zone
 
 }
+type _TimeResponse TimeResponse
 
 type SetTimezoneTimeRequest struct {
 	Node     string `url:"node" json:"node"`         // The cluster node name.
 	Timezone string `url:"timezone" json:"timezone"` // Time zone. The file '/usr/share/zoneinfo/zone.tab' contains the list of valid names.
 
 }
+type _SetTimezoneTimeRequest SetTimezoneTimeRequest
 
 type AplinfoRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _AplinfoRequest AplinfoRequest
 
 type AplDownloadAplinfoRequest struct {
 	Node     string `url:"node" json:"node"`         // The cluster node name.
@@ -390,6 +608,7 @@ type AplDownloadAplinfoRequest struct {
 	Template string `url:"template" json:"template"` // The template which will downloaded
 
 }
+type _AplDownloadAplinfoRequest AplDownloadAplinfoRequest
 
 type QueryUrlMetadataRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -398,6 +617,7 @@ type QueryUrlMetadataRequest struct {
 	// The following parameters are optional
 	VerifyCertificates *util.PVEBool `url:"verify-certificates,omitempty" json:"verify-certificates,omitempty"` // If false, no SSL/TLS certificates will be verified.
 }
+type _QueryUrlMetadataRequest QueryUrlMetadataRequest
 
 type QueryUrlMetadataResponse struct {
 
@@ -406,11 +626,13 @@ type QueryUrlMetadataResponse struct {
 	Mimetype *string `url:"mimetype,omitempty" json:"mimetype,omitempty"`
 	Size     *int    `url:"size,omitempty" json:"size,omitempty"`
 }
+type _QueryUrlMetadataResponse QueryUrlMetadataResponse
 
 type ReportRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _ReportRequest ReportRequest
 
 type StartallRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -419,6 +641,7 @@ type StartallRequest struct {
 	Force *util.PVEBool `url:"force,omitempty" json:"force,omitempty"` // Issue start command even if virtual guest have 'onboot' not set or set to off.
 	Vms   *string       `url:"vms,omitempty" json:"vms,omitempty"`     // Only consider guests from this comma separated list of VMIDs.
 }
+type _StartallRequest StartallRequest
 
 type StopallRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -426,6 +649,7 @@ type StopallRequest struct {
 	// The following parameters are optional
 	Vms *string `url:"vms,omitempty" json:"vms,omitempty"` // Only consider Guests with these IDs.
 }
+type _StopallRequest StopallRequest
 
 type MigrateallRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
@@ -436,11 +660,13 @@ type MigrateallRequest struct {
 	Vms            *string       `url:"vms,omitempty" json:"vms,omitempty"`                           // Only consider Guests with these IDs.
 	WithLocalDisks *util.PVEBool `url:"with-local-disks,omitempty" json:"with-local-disks,omitempty"` // Enable live storage migration for local disk
 }
+type _MigrateallRequest MigrateallRequest
 
 type GetEtcHostsRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _GetEtcHostsRequest GetEtcHostsRequest
 
 type GetEtcHostsResponse struct {
 	Data string `url:"data" json:"data"` // The content of /etc/hosts.
@@ -448,6 +674,7 @@ type GetEtcHostsResponse struct {
 	// The following parameters are optional
 	Digest *string `url:"digest,omitempty" json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 }
+type _GetEtcHostsResponse GetEtcHostsResponse
 
 type WriteEtcHostsRequest struct {
 	Data string `url:"data" json:"data"` // The target content of /etc/hosts.
@@ -456,6 +683,7 @@ type WriteEtcHostsRequest struct {
 	// The following parameters are optional
 	Digest *string `url:"digest,omitempty" json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 }
+type _WriteEtcHostsRequest WriteEtcHostsRequest
 
 // Index Cluster node index.
 func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {

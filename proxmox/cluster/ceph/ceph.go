@@ -36,6 +36,7 @@ type MetadataRequest struct {
 	// The following parameters are optional
 	Scope *Scope `url:"scope,omitempty" json:"scope,omitempty"`
 }
+type _MetadataRequest MetadataRequest
 
 // Index Cluster ceph index.
 func (c *Client) Index(ctx context.Context) ([]map[string]interface{}, error) {

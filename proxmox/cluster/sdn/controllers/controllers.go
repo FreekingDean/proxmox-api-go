@@ -40,6 +40,7 @@ type IndexRequest struct {
 	Running *util.PVEBool `url:"running,omitempty" json:"running,omitempty"` // Display running config.
 	Type    *Type         `url:"type,omitempty" json:"type,omitempty"`       // Only list sdn controllers of specific type
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Controller string `url:"controller" json:"controller"`
@@ -48,6 +49,7 @@ type IndexResponse struct {
 	// The following parameters are optional
 	State *string `url:"state,omitempty" json:"state,omitempty"`
 }
+type _IndexResponse IndexResponse
 
 type CreateRequest struct {
 	Controller string `url:"controller" json:"controller"` // The SDN controller object identifier.
@@ -62,6 +64,7 @@ type CreateRequest struct {
 	Node                    *string       `url:"node,omitempty" json:"node,omitempty"`         // The cluster node name.
 	Peers                   *string       `url:"peers,omitempty" json:"peers,omitempty"`       // peers address list.
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Controller string `url:"controller" json:"controller"` // The SDN controller object identifier.
@@ -70,6 +73,7 @@ type FindRequest struct {
 	Pending *util.PVEBool `url:"pending,omitempty" json:"pending,omitempty"` // Display pending config.
 	Running *util.PVEBool `url:"running,omitempty" json:"running,omitempty"` // Display running config.
 }
+type _FindRequest FindRequest
 
 type UpdateRequest struct {
 	Controller string `url:"controller" json:"controller"` // The SDN controller object identifier.
@@ -85,11 +89,13 @@ type UpdateRequest struct {
 	Node                    *string       `url:"node,omitempty" json:"node,omitempty"`         // The cluster node name.
 	Peers                   *string       `url:"peers,omitempty" json:"peers,omitempty"`       // peers address list.
 }
+type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
 	Controller string `url:"controller" json:"controller"` // The SDN controller object identifier.
 
 }
+type _DeleteRequest DeleteRequest
 
 // Index SDN controllers index.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

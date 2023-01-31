@@ -24,6 +24,7 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	State string `url:"state" json:"state"` // State of the MGR
@@ -32,6 +33,7 @@ type IndexResponse struct {
 	Addr *string `url:"addr,omitempty" json:"addr,omitempty"`
 	Host *string `url:"host,omitempty" json:"host,omitempty"`
 }
+type _IndexResponse IndexResponse
 
 type ChildCreateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -39,12 +41,14 @@ type ChildCreateRequest struct {
 	// The following parameters are optional
 	Id *string `url:"id,omitempty" json:"id,omitempty"` // The ID for the manager, when omitted the same as the nodename
 }
+type _ChildCreateRequest ChildCreateRequest
 
 type DeleteRequest struct {
 	Id   string `url:"id" json:"id"`     // The ID of the manager
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _DeleteRequest DeleteRequest
 
 // Index MGR directory index.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

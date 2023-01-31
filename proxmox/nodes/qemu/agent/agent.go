@@ -55,6 +55,7 @@ type IndexRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _IndexRequest IndexRequest
 
 type CreateRequest struct {
 	Command Command `url:"command" json:"command"` // The QGA command.
@@ -62,126 +63,147 @@ type CreateRequest struct {
 	Vmid    int     `url:"vmid" json:"vmid"`       // The (unique) ID of the VM.
 
 }
+type _CreateRequest CreateRequest
 
 type FsfreezeFreezeRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _FsfreezeFreezeRequest FsfreezeFreezeRequest
 
 type FsfreezeStatusRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _FsfreezeStatusRequest FsfreezeStatusRequest
 
 type FsfreezeThawRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _FsfreezeThawRequest FsfreezeThawRequest
 
 type FstrimRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _FstrimRequest FstrimRequest
 
 type GetFsinfoRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _GetFsinfoRequest GetFsinfoRequest
 
 type GetHostNameRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _GetHostNameRequest GetHostNameRequest
 
 type GetMemoryBlockInfoRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _GetMemoryBlockInfoRequest GetMemoryBlockInfoRequest
 
 type GetMemoryBlocksRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _GetMemoryBlocksRequest GetMemoryBlocksRequest
 
 type GetOsinfoRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _GetOsinfoRequest GetOsinfoRequest
 
 type GetTimeRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _GetTimeRequest GetTimeRequest
 
 type GetTimezoneRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _GetTimezoneRequest GetTimezoneRequest
 
 type GetUsersRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _GetUsersRequest GetUsersRequest
 
 type GetVcpusRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _GetVcpusRequest GetVcpusRequest
 
 type InfoRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _InfoRequest InfoRequest
 
 type NetworkGetInterfacesRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _NetworkGetInterfacesRequest NetworkGetInterfacesRequest
 
 type PingRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _PingRequest PingRequest
 
 type ShutdownRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _ShutdownRequest ShutdownRequest
 
 type SuspendDiskRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _SuspendDiskRequest SuspendDiskRequest
 
 type SuspendHybridRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _SuspendHybridRequest SuspendHybridRequest
 
 type SuspendRamRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _SuspendRamRequest SuspendRamRequest
 
 type SetUserPasswordRequest struct {
 	Node     string `url:"node" json:"node"`         // The cluster node name.
@@ -192,6 +214,7 @@ type SetUserPasswordRequest struct {
 	// The following parameters are optional
 	Crypted *util.PVEBool `url:"crypted,omitempty" json:"crypted,omitempty"` // set to 1 if the password has already been passed through crypt()
 }
+type _SetUserPasswordRequest SetUserPasswordRequest
 
 type ExecRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -201,11 +224,13 @@ type ExecRequest struct {
 	Command   *string `url:"command,omitempty" json:"command,omitempty"`       // The command as a list of program + arguments
 	InputData *string `url:"input-data,omitempty" json:"input-data,omitempty"` // Data to pass as 'input-data' to the guest. Usually treated as STDIN to 'command'.
 }
+type _ExecRequest ExecRequest
 
 type ExecResponse struct {
 	Pid int `url:"pid" json:"pid"` // The PID of the process started by the guest-agent.
 
 }
+type _ExecResponse ExecResponse
 
 type ExecStatusRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -213,6 +238,7 @@ type ExecStatusRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _ExecStatusRequest ExecStatusRequest
 
 type ExecStatusResponse struct {
 	Exited util.PVEBool `url:"exited" json:"exited"` // Tells if the given command has exited yet.
@@ -225,6 +251,7 @@ type ExecStatusResponse struct {
 	OutTruncated *util.PVEBool `url:"out-truncated,omitempty" json:"out-truncated,omitempty"` // true if stdout was not fully captured
 	Signal       *int          `url:"signal,omitempty" json:"signal,omitempty"`               // signal number or exception code if the process was abnormally terminated.
 }
+type _ExecStatusResponse ExecStatusResponse
 
 type FileReadRequest struct {
 	File string `url:"file" json:"file"` // The path to the file
@@ -232,6 +259,7 @@ type FileReadRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _FileReadRequest FileReadRequest
 
 // Returns an object with a `content` property.
 type FileReadResponse struct {
@@ -240,6 +268,7 @@ type FileReadResponse struct {
 	// The following parameters are optional
 	Truncated *util.PVEBool `url:"truncated,omitempty" json:"truncated,omitempty"` // If set to 1, the output is truncated and not complete
 }
+type _FileReadResponse FileReadResponse
 
 type FileWriteRequest struct {
 	Content string `url:"content" json:"content"` // The content to write into the file.
@@ -250,6 +279,7 @@ type FileWriteRequest struct {
 	// The following parameters are optional
 	Encode *util.PVEBool `url:"encode,omitempty" json:"encode,omitempty"` // If set, the content will be encoded as base64 (required by QEMU).Otherwise the content needs to be encoded beforehand - defaults to true.
 }
+type _FileWriteRequest FileWriteRequest
 
 // Index Qemu Agent command index.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]interface{}, error) {

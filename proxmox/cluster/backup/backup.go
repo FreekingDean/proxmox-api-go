@@ -62,6 +62,7 @@ type IndexResponse struct {
 	Id string `url:"id" json:"id"` // The job ID.
 
 }
+type _IndexResponse IndexResponse
 
 type CreateRequest struct {
 
@@ -103,11 +104,13 @@ type CreateRequest struct {
 	Vmid             *string           `url:"vmid,omitempty" json:"vmid,omitempty"`                         // The ID of the guest system you want to backup.
 	Zstd             *int              `url:"zstd,omitempty" json:"zstd,omitempty"`                         // Zstd threads. N=0 uses half of the available cores, N>0 uses N as thread count.
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Id string `url:"id" json:"id"` // The job ID.
 
 }
+type _FindRequest FindRequest
 
 type UpdateRequest struct {
 	Id string `url:"id" json:"id"` // The job ID.
@@ -150,16 +153,19 @@ type UpdateRequest struct {
 	Vmid             *string           `url:"vmid,omitempty" json:"vmid,omitempty"`                         // The ID of the guest system you want to backup.
 	Zstd             *int              `url:"zstd,omitempty" json:"zstd,omitempty"`                         // Zstd threads. N=0 uses half of the available cores, N>0 uses N as thread count.
 }
+type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
 	Id string `url:"id" json:"id"` // The job ID.
 
 }
+type _DeleteRequest DeleteRequest
 
 type GetVolumeBackupIncludedIncludedVolumesRequest struct {
 	Id string `url:"id" json:"id"` // The job ID.
 
 }
+type _GetVolumeBackupIncludedIncludedVolumesRequest GetVolumeBackupIncludedIncludedVolumesRequest
 
 type Children struct {
 	Id       string       `url:"id" json:"id"`             // Configuration key of the volume.
@@ -168,6 +174,7 @@ type Children struct {
 	Reason   string       `url:"reason" json:"reason"`     // The reason why the volume is included (or excluded).
 
 }
+type _Children Children
 
 type SubChildren struct {
 	Id   int          `url:"id" json:"id"`     // VMID of the guest.
@@ -177,11 +184,13 @@ type SubChildren struct {
 	Children *[]Children `url:"children,omitempty" json:"children,omitempty"` // The volumes of the guest with the information if they will be included in backups.
 	Name     *string     `url:"name,omitempty" json:"name,omitempty"`         // Name of the guest
 }
+type _SubChildren SubChildren
 
 // Root node of the tree object. Children represent guests, grandchildren represent volumes of that guest.
 type GetVolumeBackupIncludedIncludedVolumesResponse struct {
 	Children []Children `url:"children" json:"children"`
 }
+type _GetVolumeBackupIncludedIncludedVolumesResponse GetVolumeBackupIncludedIncludedVolumesResponse
 
 // Index List vzdump backup schedule.
 func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {

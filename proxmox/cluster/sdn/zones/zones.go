@@ -50,6 +50,7 @@ type IndexRequest struct {
 	Running *util.PVEBool `url:"running,omitempty" json:"running,omitempty"` // Display running config.
 	Type    *Type         `url:"type,omitempty" json:"type,omitempty"`       // Only list SDN zones of specific type
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Type string `url:"type" json:"type"`
@@ -64,6 +65,7 @@ type IndexResponse struct {
 	Reversedns *string `url:"reversedns,omitempty" json:"reversedns,omitempty"`
 	State      *string `url:"state,omitempty" json:"state,omitempty"`
 }
+type _IndexResponse IndexResponse
 
 type CreateRequest struct {
 	Type Type   `url:"type" json:"type"` // Plugin type.
@@ -92,6 +94,7 @@ type CreateRequest struct {
 	VlanProtocol             *VlanProtocol `url:"vlan-protocol,omitempty" json:"vlan-protocol,omitempty"`
 	VrfVxlan                 *int          `url:"vrf-vxlan,omitempty" json:"vrf-vxlan,omitempty"` // l3vni.
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Zone string `url:"zone" json:"zone"` // The SDN zone object identifier.
@@ -100,6 +103,7 @@ type FindRequest struct {
 	Pending *util.PVEBool `url:"pending,omitempty" json:"pending,omitempty"` // Display pending config.
 	Running *util.PVEBool `url:"running,omitempty" json:"running,omitempty"` // Display running config.
 }
+type _FindRequest FindRequest
 
 type UpdateRequest struct {
 	Zone string `url:"zone" json:"zone"` // The SDN zone object identifier.
@@ -129,11 +133,13 @@ type UpdateRequest struct {
 	VlanProtocol             *VlanProtocol `url:"vlan-protocol,omitempty" json:"vlan-protocol,omitempty"`
 	VrfVxlan                 *int          `url:"vrf-vxlan,omitempty" json:"vrf-vxlan,omitempty"` // l3vni.
 }
+type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
 	Zone string `url:"zone" json:"zone"` // The SDN zone object identifier.
 
 }
+type _DeleteRequest DeleteRequest
 
 // Index SDN zones index.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

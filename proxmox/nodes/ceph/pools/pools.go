@@ -4,8 +4,12 @@ package pools
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 	"net/url"
+	"strconv"
+	"strings"
 )
 
 const (
@@ -54,6 +58,7 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	BytesUsed     int     `url:"bytes_used" json:"bytes_used"`
@@ -76,6 +81,7 @@ type IndexResponse struct {
 	TargetSize          *int                    `url:"target_size,omitempty" json:"target_size,omitempty"`
 	TargetSizeRatio     *float64                `url:"target_size_ratio,omitempty" json:"target_size_ratio,omitempty"`
 }
+type _IndexResponse IndexResponse
 
 // Create an erasure coded pool for RBD with an accompaning replicated pool for metadata storage. With EC, the common ceph options 'size', 'min_size' and 'crush_rule' parameters will be applied to the metadata pool.
 type ErasureCoding struct {
@@ -87,9 +93,80 @@ type ErasureCoding struct {
 	FailureDomain *string `url:"failure-domain,omitempty" json:"failure-domain,omitempty"` // CRUSH failure domain. Default is 'host'. Will create an erasure coded pool plus a replicated pool for metadata.
 	Profile       *string `url:"profile,omitempty" json:"profile,omitempty"`               // Override the erasure code (EC) profile to use. Will create an erasure coded pool plus a replicated pool for metadata.
 }
+type _ErasureCoding ErasureCoding
 
 func (t ErasureCoding) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `k=<integer> ,m=<integer> [,device-class=<class>] [,failure-domain=<domain>] [,profile=<profile>]`)
+}
+
+func (t *ErasureCoding) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["k"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["k"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.K)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["m"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.M)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["device-class"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.DeviceClass)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["failure-domain"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.FailureDomain)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["profile"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Profile)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 type CreateRequest struct {
@@ -109,6 +186,7 @@ type CreateRequest struct {
 	TargetSize      *string          `url:"target_size,omitempty" json:"target_size,omitempty"`             // The estimated target size of the pool for the PG autoscaler.
 	TargetSizeRatio *float64         `url:"target_size_ratio,omitempty" json:"target_size_ratio,omitempty"` // The estimated target ratio of the pool for the PG autoscaler.
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Name string `url:"name" json:"name"` // The name of the pool. It must be unique.
@@ -117,6 +195,7 @@ type FindRequest struct {
 	// The following parameters are optional
 	Verbose *util.PVEBool `url:"verbose,omitempty" json:"verbose,omitempty"` // If enabled, will display additional data(eg. statistics).
 }
+type _FindRequest FindRequest
 
 type FindResponse struct {
 	FastRead             util.PVEBool `url:"fast_read" json:"fast_read"`
@@ -146,6 +225,7 @@ type FindResponse struct {
 	TargetSize      *string                   `url:"target_size,omitempty" json:"target_size,omitempty"`             // The estimated target size of the pool for the PG autoscaler.
 	TargetSizeRatio *float64                  `url:"target_size_ratio,omitempty" json:"target_size_ratio,omitempty"` // The estimated target ratio of the pool for the PG autoscaler.
 }
+type _FindResponse FindResponse
 
 type UpdateRequest struct {
 	Name string `url:"name" json:"name"` // The name of the pool. It must be unique.
@@ -162,6 +242,7 @@ type UpdateRequest struct {
 	TargetSize      *string          `url:"target_size,omitempty" json:"target_size,omitempty"`             // The estimated target size of the pool for the PG autoscaler.
 	TargetSizeRatio *float64         `url:"target_size_ratio,omitempty" json:"target_size_ratio,omitempty"` // The estimated target ratio of the pool for the PG autoscaler.
 }
+type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
 	Name string `url:"name" json:"name"` // The name of the pool. It must be unique.
@@ -172,6 +253,7 @@ type DeleteRequest struct {
 	RemoveEcprofile *util.PVEBool `url:"remove_ecprofile,omitempty" json:"remove_ecprofile,omitempty"` // Remove the erasure code profile. Defaults to true, if applicable.
 	RemoveStorages  *util.PVEBool `url:"remove_storages,omitempty" json:"remove_storages,omitempty"`   // Remove all pveceph-managed storages configured for this pool
 }
+type _DeleteRequest DeleteRequest
 
 // Index List all pools.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

@@ -25,11 +25,13 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexRequest IndexRequest
 
 type InfoRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _InfoRequest InfoRequest
 
 type InfoResponse struct {
 
@@ -45,6 +47,7 @@ type InfoResponse struct {
 	San           *[]string `url:"san,omitempty" json:"san,omitempty"`                         // List of Certificate's SubjectAlternativeName entries.
 	Subject       *string   `url:"subject,omitempty" json:"subject,omitempty"`                 // Certificate subject name.
 }
+type _InfoResponse InfoResponse
 
 type UploadCustomCertCustomRequest struct {
 	Certificates string `url:"certificates" json:"certificates"` // PEM encoded certificate (chain).
@@ -55,6 +58,7 @@ type UploadCustomCertCustomRequest struct {
 	Key     *string       `url:"key,omitempty" json:"key,omitempty"`         // PEM encoded private key.
 	Restart *util.PVEBool `url:"restart,omitempty" json:"restart,omitempty"` // Restart pveproxy.
 }
+type _UploadCustomCertCustomRequest UploadCustomCertCustomRequest
 
 type UploadCustomCertCustomResponse struct {
 
@@ -70,6 +74,7 @@ type UploadCustomCertCustomResponse struct {
 	San           *[]string `url:"san,omitempty" json:"san,omitempty"`                         // List of Certificate's SubjectAlternativeName entries.
 	Subject       *string   `url:"subject,omitempty" json:"subject,omitempty"`                 // Certificate subject name.
 }
+type _UploadCustomCertCustomResponse UploadCustomCertCustomResponse
 
 type RemoveCustomCertCustomRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -77,6 +82,7 @@ type RemoveCustomCertCustomRequest struct {
 	// The following parameters are optional
 	Restart *util.PVEBool `url:"restart,omitempty" json:"restart,omitempty"` // Restart pveproxy.
 }
+type _RemoveCustomCertCustomRequest RemoveCustomCertCustomRequest
 
 // Index Node index.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]interface{}, error) {

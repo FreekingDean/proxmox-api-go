@@ -27,6 +27,7 @@ type IndexResponse struct {
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
 	Users   *string `url:"users,omitempty" json:"users,omitempty"` // list of users which form this group
 }
+type _IndexResponse IndexResponse
 
 type CreateRequest struct {
 	Groupid string `url:"groupid" json:"groupid"`
@@ -34,10 +35,12 @@ type CreateRequest struct {
 	// The following parameters are optional
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Groupid string `url:"groupid" json:"groupid"`
 }
+type _FindRequest FindRequest
 
 type FindResponse struct {
 	Members []string `url:"members" json:"members"`
@@ -45,6 +48,7 @@ type FindResponse struct {
 	// The following parameters are optional
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
 }
+type _FindResponse FindResponse
 
 type UpdateRequest struct {
 	Groupid string `url:"groupid" json:"groupid"`
@@ -52,10 +56,12 @@ type UpdateRequest struct {
 	// The following parameters are optional
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
 }
+type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
 	Groupid string `url:"groupid" json:"groupid"`
 }
+type _DeleteRequest DeleteRequest
 
 // Index Group index.
 func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {

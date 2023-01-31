@@ -4,8 +4,12 @@ package zfs
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 	"net/url"
+	"strconv"
+	"strings"
 )
 
 const (
@@ -56,6 +60,7 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Alloc  int     `url:"alloc" json:"alloc"`
@@ -66,15 +71,57 @@ type IndexResponse struct {
 	Name   string  `url:"name" json:"name"`
 	Size   int     `url:"size" json:"size"`
 }
+type _IndexResponse IndexResponse
 
 type DraidConfig struct {
 	Data   int `url:"data" json:"data"`     // The number of data devices per redundancy group. (dRAID)
 	Spares int `url:"spares" json:"spares"` // Number of dRAID spares.
 
 }
+type _DraidConfig DraidConfig
 
 func (t DraidConfig) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `data=<integer> ,spares=<integer>`)
+}
+
+func (t *DraidConfig) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["data"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["data"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Data)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["spares"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Spares)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 type CreateRequest struct {
@@ -89,12 +136,14 @@ type CreateRequest struct {
 	Compression *Compression  `url:"compression,omitempty" json:"compression,omitempty"` // The compression algorithm to use.
 	DraidConfig *DraidConfig  `url:"draid-config,omitempty" json:"draid-config,omitempty"`
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Name string `url:"name" json:"name"` // The storage identifier.
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _FindRequest FindRequest
 
 type Children struct {
 	Msg  string `url:"msg" json:"msg"`   // An optional message about the vdev.
@@ -106,6 +155,7 @@ type Children struct {
 	State *string  `url:"state,omitempty" json:"state,omitempty"` // The state of the vdev.
 	Write *float64 `url:"write,omitempty" json:"write,omitempty"`
 }
+type _Children Children
 
 type FindResponse struct {
 	Children []Children `url:"children" json:"children"` // The pool configuration information, including the vdevs for each section (e.g. spares, cache), may be nested.
@@ -118,6 +168,7 @@ type FindResponse struct {
 	Scan   *string `url:"scan,omitempty" json:"scan,omitempty"`     // Information about the last/current scrub.
 	Status *string `url:"status,omitempty" json:"status,omitempty"` // Information about the state of the zpool.
 }
+type _FindResponse FindResponse
 
 type DeleteRequest struct {
 	Name string `url:"name" json:"name"` // The storage identifier.
@@ -127,6 +178,7 @@ type DeleteRequest struct {
 	CleanupConfig *util.PVEBool `url:"cleanup-config,omitempty" json:"cleanup-config,omitempty"` // Marks associated storage(s) as not available on this node anymore or removes them from the configuration (if configured for this node only).
 	CleanupDisks  *util.PVEBool `url:"cleanup-disks,omitempty" json:"cleanup-disks,omitempty"`   // Also wipe disks so they can be repurposed afterwards.
 }
+type _DeleteRequest DeleteRequest
 
 // Index List Zpools.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

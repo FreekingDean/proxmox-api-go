@@ -4,8 +4,12 @@ package storage
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 	"net/url"
+	"strconv"
+	"strings"
 )
 
 const (
@@ -78,10 +82,12 @@ type IndexRequest struct {
 	// The following parameters are optional
 	Type *Type `url:"type,omitempty" json:"type,omitempty"` // Only list storage of specific type
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Storage string `url:"storage" json:"storage"`
 }
+type _IndexResponse IndexResponse
 
 // Set bandwidth/io limits various operations.
 type Bwlimit struct {
@@ -93,9 +99,74 @@ type Bwlimit struct {
 	Move      *float64 `url:"move,omitempty" json:"move,omitempty"`           // bandwidth limit in KiB/s for moving disks
 	Restore   *float64 `url:"restore,omitempty" json:"restore,omitempty"`     // bandwidth limit in KiB/s for restoring guests from backups
 }
+type _Bwlimit Bwlimit
 
 func (t Bwlimit) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `[clone=<LIMIT>] [,default=<LIMIT>] [,migration=<LIMIT>] [,move=<LIMIT>] [,restore=<LIMIT>]`)
+}
+
+func (t *Bwlimit) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["clone"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["clone"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Clone)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["default"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Default)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["migration"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Migration)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["move"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Move)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["restore"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Restore)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 type CreateRequest struct {
@@ -160,6 +231,7 @@ type CreateRequest struct {
 	Vgname               *string        `url:"vgname,omitempty" json:"vgname,omitempty"`                               // Volume group name.
 	Volume               *string        `url:"volume,omitempty" json:"volume,omitempty"`                               // Glusterfs Volume.
 }
+type _CreateRequest CreateRequest
 
 // Partial, possible server generated, configuration properties.
 type Config struct {
@@ -167,6 +239,7 @@ type Config struct {
 	// The following parameters are optional
 	EncryptionKey *string `url:"encryption-key,omitempty" json:"encryption-key,omitempty"` // The, possible auto-generated, encryption-key.
 }
+type _Config Config
 
 type CreateResponse struct {
 	Storage string `url:"storage" json:"storage"` // The ID of the created storage.
@@ -175,11 +248,13 @@ type CreateResponse struct {
 	// The following parameters are optional
 	Config *Config `url:"config,omitempty" json:"config,omitempty"` // Partial, possible server generated, configuration properties.
 }
+type _CreateResponse CreateResponse
 
 type FindRequest struct {
 	Storage string `url:"storage" json:"storage"` // The storage identifier.
 
 }
+type _FindRequest FindRequest
 
 type UpdateRequest struct {
 	Storage string `url:"storage" json:"storage"` // The storage identifier.
@@ -232,6 +307,7 @@ type UpdateRequest struct {
 	Transport            *Transport     `url:"transport,omitempty" json:"transport,omitempty"`                         // Gluster transport: tcp or rdma
 	Username             *string        `url:"username,omitempty" json:"username,omitempty"`                           // RBD Id.
 }
+type _UpdateRequest UpdateRequest
 
 type UpdateResponse struct {
 	Storage string `url:"storage" json:"storage"` // The ID of the created storage.
@@ -240,11 +316,13 @@ type UpdateResponse struct {
 	// The following parameters are optional
 	Config *Config `url:"config,omitempty" json:"config,omitempty"` // Partial, possible server generated, configuration properties.
 }
+type _UpdateResponse UpdateResponse
 
 type DeleteRequest struct {
 	Storage string `url:"storage" json:"storage"` // The storage identifier.
 
 }
+type _DeleteRequest DeleteRequest
 
 // Index Storage index.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

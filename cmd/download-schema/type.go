@@ -9,6 +9,20 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/pkg/jsonschema"
 )
 
+type Type struct {
+	Properties         []*Type
+	OptionalProperties []*Type
+	FormatArrayTypes   []*Type
+	ElemType           *Type
+	Optional           bool
+	Name               string
+	JSONName           string
+	Type               string
+	Description        string
+	Format             string
+	Enum               []string
+}
+
 func (p *Package) defineType(name string, jsonName string, schema *jsonschema.JSONSchema) *Type {
 	if schema.Type == nil {
 		if schema.Properties != nil {
@@ -68,7 +82,7 @@ func (p *Package) defineType(name string, jsonName string, schema *jsonschema.JS
 	if strings.HasSuffix(t.Name, "[N]") {
 		t.Name = strings.TrimSuffix(t.Name, "[N]")
 		arrType := &Type{
-			Type:               "[]" + strings.TrimSuffix(t.Type, "[N]"),
+			Type:               "[]*" + strings.TrimSuffix(t.Type, "[N]"),
 			Name:               t.Name + "s",
 			Properties:         make([]*Type, 0),
 			OptionalProperties: make([]*Type, 0),
@@ -76,6 +90,7 @@ func (p *Package) defineType(name string, jsonName string, schema *jsonschema.JS
 			Format:             "array",
 		}
 		t.Type = t.Name + "s"
+		t.ElemType = arrType
 		t.Name = t.Name + "s"
 		p.AddType(arrType)
 	}
@@ -102,11 +117,18 @@ func (p *Package) defineStruct(name, description string, properties map[string]*
 		Properties:         make([]*Type, 0),
 		OptionalProperties: make([]*Type, 0),
 		Description:        removeNewline(description),
+		FormatArrayTypes:   make([]*Type, 0),
 	}
 	for name, param := range properties {
 		pt := p.defineType(Nameify(name), name, param)
 		if pt == nil {
 			continue
+		}
+		if strings.HasSuffix(name, "[n]") {
+			t.FormatArrayTypes = append(
+				t.FormatArrayTypes,
+				pt,
+			)
 		}
 		if param.Optional {
 			t.OptionalProperties = append(t.OptionalProperties, pt)
@@ -125,6 +147,7 @@ func (p *Package) defineStruct(name, description string, properties map[string]*
 	}
 	sort.Sort(&TypeSorter{t.Properties})
 	sort.Sort(&TypeSorter{t.OptionalProperties})
+	sort.Sort(&TypeSorter{t.FormatArrayTypes})
 	t.Name = strings.TrimSuffix(t.Name, "[N]")
 	return t
 }

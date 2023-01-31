@@ -28,6 +28,7 @@ type IndexResponse struct {
 	Privs   *string       `url:"privs,omitempty" json:"privs,omitempty"`
 	Special *util.PVEBool `url:"special,omitempty" json:"special,omitempty"`
 }
+type _IndexResponse IndexResponse
 
 type CreateRequest struct {
 	Roleid string `url:"roleid" json:"roleid"`
@@ -35,10 +36,12 @@ type CreateRequest struct {
 	// The following parameters are optional
 	Privs *string `url:"privs,omitempty" json:"privs,omitempty"`
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Roleid string `url:"roleid" json:"roleid"`
 }
+type _FindRequest FindRequest
 
 type FindResponse struct {
 
@@ -81,6 +84,7 @@ type FindResponse struct {
 	VmSnapshot                *util.PVEBool `url:"VM.Snapshot,omitempty" json:"VM.Snapshot,omitempty"`
 	VmSnapshotRollback        *util.PVEBool `url:"VM.Snapshot.Rollback,omitempty" json:"VM.Snapshot.Rollback,omitempty"`
 }
+type _FindResponse FindResponse
 
 type UpdateRequest struct {
 	Roleid string `url:"roleid" json:"roleid"`
@@ -89,10 +93,12 @@ type UpdateRequest struct {
 	Append *util.PVEBool `url:"append,omitempty" json:"append,omitempty"`
 	Privs  *string       `url:"privs,omitempty" json:"privs,omitempty"`
 }
+type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
 	Roleid string `url:"roleid" json:"roleid"`
 }
+type _DeleteRequest DeleteRequest
 
 // Index Role index.
 func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {

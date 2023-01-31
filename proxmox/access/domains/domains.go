@@ -75,6 +75,7 @@ type IndexResponse struct {
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"` // A comment. The GUI use this text when you select a domain (Realm) on the login window.
 	Tfa     *Tfa    `url:"tfa,omitempty" json:"tfa,omitempty"`         // Two-factor authentication provider.
 }
+type _IndexResponse IndexResponse
 
 type CreateRequest struct {
 	Realm string `url:"realm" json:"realm"` // Authentication domain ID
@@ -117,11 +118,13 @@ type CreateRequest struct {
 	UsernameClaim       *string       `url:"username-claim,omitempty" json:"username-claim,omitempty"`               // OpenID claim used to generate the unique username.
 	Verify              *util.PVEBool `url:"verify,omitempty" json:"verify,omitempty"`                               // Verify the server's SSL certificate
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Realm string `url:"realm" json:"realm"` // Authentication domain ID
 
 }
+type _FindRequest FindRequest
 
 type UpdateRequest struct {
 	Realm string `url:"realm" json:"realm"` // Authentication domain ID
@@ -164,11 +167,13 @@ type UpdateRequest struct {
 	UserClasses         *string       `url:"user_classes,omitempty" json:"user_classes,omitempty"`                   // The objectclasses for users.
 	Verify              *util.PVEBool `url:"verify,omitempty" json:"verify,omitempty"`                               // Verify the server's SSL certificate
 }
+type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
 	Realm string `url:"realm" json:"realm"` // Authentication domain ID
 
 }
+type _DeleteRequest DeleteRequest
 
 type SyncRequest struct {
 	Realm string `url:"realm" json:"realm"` // Authentication domain ID
@@ -181,6 +186,7 @@ type SyncRequest struct {
 	RemoveVanished *string       `url:"remove-vanished,omitempty" json:"remove-vanished,omitempty"` // A semicolon-seperated list of things to remove when they or the user vanishes during a sync. The following values are possible: 'entry' removes the user/group when not returned from the sync. 'properties' removes the set properties on existing user/group that do not appear in the source (even custom ones). 'acl' removes acls when the user/group is not returned from the sync.
 	Scope          *Scope        `url:"scope,omitempty" json:"scope,omitempty"`                     // Select what to sync.
 }
+type _SyncRequest SyncRequest
 
 // Index Authentication domain index.
 func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {

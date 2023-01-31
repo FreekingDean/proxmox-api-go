@@ -55,26 +55,31 @@ type Entries struct {
 	// The following parameters are optional
 	Enable *util.PVEBool `url:"enable,omitempty" json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
 }
+type _Entries Entries
 
 type IndexResponse struct {
 	Entries []Entries `url:"entries" json:"entries"`
 	Userid  string    `url:"userid" json:"userid"` // User this entry belongs to.
 
 }
+type _IndexResponse IndexResponse
 
 type CreateRequest struct {
 	Response string `url:"response" json:"response"` // The response to the current authentication challenge.
 
 }
+type _CreateRequest CreateRequest
 
 type CreateResponse struct {
 	Ticket string `url:"ticket" json:"ticket"`
 }
+type _CreateResponse CreateResponse
 
 type FindRequest struct {
 	Userid string `url:"userid" json:"userid"` // User ID
 
 }
+type _FindRequest FindRequest
 
 // TFA Entry.
 type FindResponse struct {
@@ -86,6 +91,7 @@ type FindResponse struct {
 	// The following parameters are optional
 	Enable *util.PVEBool `url:"enable,omitempty" json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
 }
+type _FindResponse FindResponse
 
 type ChildCreateRequest struct {
 	Type   Type   `url:"type" json:"type"`     // TFA Entry Type.
@@ -98,6 +104,7 @@ type ChildCreateRequest struct {
 	Totp        *string `url:"totp,omitempty" json:"totp,omitempty"`               // A totp URI.
 	Value       *string `url:"value,omitempty" json:"value,omitempty"`             // The current value for the provided totp URI, or a Webauthn/U2F challenge response
 }
+type _ChildCreateRequest ChildCreateRequest
 
 type ChildCreateResponse struct {
 	Id string `url:"id" json:"id"` // The id of a newly added TFA entry.
@@ -106,12 +113,14 @@ type ChildCreateResponse struct {
 	Challenge *string   `url:"challenge,omitempty" json:"challenge,omitempty"` // When adding u2f entries, this contains a challenge the user must respond to in order to finish the registration.
 	Recovery  *[]string `url:"recovery,omitempty" json:"recovery,omitempty"`   // When adding recovery codes, this contains the list of codes to be displayed to the user
 }
+type _ChildCreateResponse ChildCreateResponse
 
 type GetTfaEntryIdRequest struct {
 	Id     string `url:"id" json:"id"`         // A TFA entry id.
 	Userid string `url:"userid" json:"userid"` // User ID
 
 }
+type _GetTfaEntryIdRequest GetTfaEntryIdRequest
 
 // TFA Entry.
 type GetTfaEntryIdResponse struct {
@@ -123,6 +132,7 @@ type GetTfaEntryIdResponse struct {
 	// The following parameters are optional
 	Enable *util.PVEBool `url:"enable,omitempty" json:"enable,omitempty"` // Whether this TFA entry is currently enabled.
 }
+type _GetTfaEntryIdResponse GetTfaEntryIdResponse
 
 type UpdateTfaEntryIdRequest struct {
 	Id     string `url:"id" json:"id"`         // A TFA entry id.
@@ -133,6 +143,7 @@ type UpdateTfaEntryIdRequest struct {
 	Enable      *util.PVEBool `url:"enable,omitempty" json:"enable,omitempty"`           // Whether the entry should be enabled for login.
 	Password    *string       `url:"password,omitempty" json:"password,omitempty"`       // The current password.
 }
+type _UpdateTfaEntryIdRequest UpdateTfaEntryIdRequest
 
 type DeleteTfaIdRequest struct {
 	Id     string `url:"id" json:"id"`         // A TFA entry id.
@@ -141,6 +152,7 @@ type DeleteTfaIdRequest struct {
 	// The following parameters are optional
 	Password *string `url:"password,omitempty" json:"password,omitempty"` // The current password.
 }
+type _DeleteTfaIdRequest DeleteTfaIdRequest
 
 // Index List TFA configurations of users.
 func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {

@@ -41,6 +41,7 @@ type IndexResponse struct {
 	// The following parameters are optional
 	Console *Console `url:"console,omitempty" json:"console,omitempty"` // The default console viewer to use.
 }
+type _IndexResponse IndexResponse
 
 // Index API version details, including some parts of the global datacenter config.
 func (c *Client) Index(ctx context.Context) (IndexResponse, error) {

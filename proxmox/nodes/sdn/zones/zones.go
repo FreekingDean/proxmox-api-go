@@ -36,28 +36,33 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Status Status `url:"status" json:"status"` // Status of zone
 	Zone   string `url:"zone" json:"zone"`     // The SDN zone object identifier.
 
 }
+type _IndexResponse IndexResponse
 
 type FindRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Zone string `url:"zone" json:"zone"` // The SDN zone object identifier.
 
 }
+type _FindRequest FindRequest
 
 type FindResponse struct {
 	Subdir string `url:"subdir" json:"subdir"`
 }
+type _FindResponse FindResponse
 
 type IndexContentRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Zone string `url:"zone" json:"zone"` // The SDN zone object identifier.
 
 }
+type _IndexContentRequest IndexContentRequest
 
 type IndexContentResponse struct {
 	Vnet string `url:"vnet" json:"vnet"` // Vnet identifier.
@@ -66,6 +71,7 @@ type IndexContentResponse struct {
 	Status    *string `url:"status,omitempty" json:"status,omitempty"`       // Status.
 	Statusmsg *string `url:"statusmsg,omitempty" json:"statusmsg,omitempty"` // Status details
 }
+type _IndexContentResponse IndexContentResponse
 
 // Index Get status for all zones.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

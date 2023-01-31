@@ -81,12 +81,14 @@ type IndexRequest struct {
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _IndexRequest IndexRequest
 
 type GetOptionsRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
 
 }
+type _GetOptionsRequest GetOptionsRequest
 
 type GetOptionsResponse struct {
 
@@ -102,6 +104,7 @@ type GetOptionsResponse struct {
 	PolicyOut   *PolicyOut    `url:"policy_out,omitempty" json:"policy_out,omitempty"`       // Output policy.
 	Radv        *util.PVEBool `url:"radv,omitempty" json:"radv,omitempty"`                   // Allow sending Router Advertisement.
 }
+type _GetOptionsResponse GetOptionsResponse
 
 type SetOptionsRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -121,6 +124,7 @@ type SetOptionsRequest struct {
 	PolicyOut   *PolicyOut    `url:"policy_out,omitempty" json:"policy_out,omitempty"`       // Output policy.
 	Radv        *util.PVEBool `url:"radv,omitempty" json:"radv,omitempty"`                   // Allow sending Router Advertisement.
 }
+type _SetOptionsRequest SetOptionsRequest
 
 type LogRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -130,12 +134,14 @@ type LogRequest struct {
 	Limit *int `url:"limit,omitempty" json:"limit,omitempty"`
 	Start *int `url:"start,omitempty" json:"start,omitempty"`
 }
+type _LogRequest LogRequest
 
 type LogResponse struct {
 	N int    `url:"n" json:"n"` // Line number
 	T string `url:"t" json:"t"` // Line text
 
 }
+type _LogResponse LogResponse
 
 type RefsRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -144,6 +150,7 @@ type RefsRequest struct {
 	// The following parameters are optional
 	Type *Type `url:"type,omitempty" json:"type,omitempty"` // Only list references of specified type.
 }
+type _RefsRequest RefsRequest
 
 type RefsResponse struct {
 	Name string `url:"name" json:"name"`
@@ -152,6 +159,7 @@ type RefsResponse struct {
 	// The following parameters are optional
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
 }
+type _RefsResponse RefsResponse
 
 // Index Directory index.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]interface{}, error) {

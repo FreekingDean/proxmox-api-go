@@ -4,8 +4,12 @@ package nodes
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 	"net/url"
+	"strconv"
+	"strings"
 )
 
 type HTTPClient interface {
@@ -25,6 +29,7 @@ func New(c HTTPClient) *Client {
 type IndexResponse struct {
 	Node string `url:"node" json:"node"`
 }
+type _IndexResponse IndexResponse
 
 // Address and priority information of a single corosync link. (up to 8 links supported; link0..link7)
 type Link struct {
@@ -33,13 +38,57 @@ type Link struct {
 	// The following parameters are optional
 	Priority *int `url:"priority,omitempty" json:"priority,omitempty"` // The priority for the link when knet is used in 'passive' mode (default). Lower value means higher priority. Only valid for cluster create, ignored on node add.
 }
+type _Link Link
 
 func (t Link) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeString(key, v, t, `[address=]<IP> [,priority=<integer>]`)
 }
 
+func (t *Link) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["address"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["address"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Address)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["priority"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Priority)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // Array of Link
-type Links []Link
+type Links []*Link
+type _Links Links
 
 func (t Links) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeArray(key, v, t)
@@ -56,17 +105,58 @@ type ChildCreateRequest struct {
 	Nodeid     *int          `url:"nodeid,omitempty" json:"nodeid,omitempty"`           // Node id for this node.
 	Votes      *int          `url:"votes,omitempty" json:"votes,omitempty"`             // Number of votes for this node
 }
+type _ChildCreateRequest ChildCreateRequest
+
+func (t *ChildCreateRequest) UnmarshalJSON(d []byte) error {
+	tmp := _ChildCreateRequest{}
+	err := json.Unmarshal(d, &tmp)
+	if err != nil {
+		return err
+	}
+	rest := map[string]json.RawMessage{}
+	err = json.Unmarshal(d, &rest)
+	if err != nil {
+		return err
+	}
+	for k, v := range rest {
+
+		if strings.HasPrefix(k, "link") {
+			idxStr := strings.TrimPrefix(k, "link")
+			idx, err := strconv.Atoi(idxStr)
+			if err != nil {
+				return err
+			}
+			if t.Links == nil {
+				arr := make(Links, 0)
+				t.Links = &arr
+			}
+			for len(*t.Links) < idx+1 {
+				*t.Links = append(*t.Links, nil)
+			}
+			var newVal Link
+			err = json.Unmarshal(v, &newVal)
+			if err != nil {
+				return err
+			}
+			(*t.Links)[idx] = &newVal
+		}
+
+	}
+	return nil
+}
 
 type ChildCreateResponse struct {
 	CorosyncAuthkey string   `url:"corosync_authkey" json:"corosync_authkey"`
 	CorosyncConf    string   `url:"corosync_conf" json:"corosync_conf"`
 	Warnings        []string `url:"warnings" json:"warnings"`
 }
+type _ChildCreateResponse ChildCreateResponse
 
 type DeleteRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _DeleteRequest DeleteRequest
 
 // Index Corosync node list.
 func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {

@@ -24,6 +24,7 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Name string `url:"name" json:"name"`
@@ -32,6 +33,7 @@ type IndexResponse struct {
 	Addr *string `url:"addr,omitempty" json:"addr,omitempty"`
 	Host *string `url:"host,omitempty" json:"host,omitempty"`
 }
+type _IndexResponse IndexResponse
 
 type ChildCreateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -40,12 +42,14 @@ type ChildCreateRequest struct {
 	MonAddress *string `url:"mon-address,omitempty" json:"mon-address,omitempty"` // Overwrites autodetected monitor IP address(es). Must be in the public network(s) of Ceph.
 	Monid      *string `url:"monid,omitempty" json:"monid,omitempty"`             // The ID for the monitor, when omitted the same as the nodename
 }
+type _ChildCreateRequest ChildCreateRequest
 
 type DeleteRequest struct {
 	Monid string `url:"monid" json:"monid"` // Monitor ID
 	Node  string `url:"node" json:"node"`   // The cluster node name.
 
 }
+type _DeleteRequest DeleteRequest
 
 // Index Get Ceph monitor list.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

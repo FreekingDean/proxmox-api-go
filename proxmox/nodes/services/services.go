@@ -52,46 +52,54 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexRequest IndexRequest
 
 type FindRequest struct {
 	Node    string  `url:"node" json:"node"`       // The cluster node name.
 	Service Service `url:"service" json:"service"` // Service ID
 
 }
+type _FindRequest FindRequest
 
 type FindResponse struct {
 	Subdir string `url:"subdir" json:"subdir"`
 }
+type _FindResponse FindResponse
 
 type ServiceStateRequest struct {
 	Node    string  `url:"node" json:"node"`       // The cluster node name.
 	Service Service `url:"service" json:"service"` // Service ID
 
 }
+type _ServiceStateRequest ServiceStateRequest
 
 type ServiceStartRequest struct {
 	Node    string  `url:"node" json:"node"`       // The cluster node name.
 	Service Service `url:"service" json:"service"` // Service ID
 
 }
+type _ServiceStartRequest ServiceStartRequest
 
 type ServiceStopRequest struct {
 	Node    string  `url:"node" json:"node"`       // The cluster node name.
 	Service Service `url:"service" json:"service"` // Service ID
 
 }
+type _ServiceStopRequest ServiceStopRequest
 
 type ServiceRestartRequest struct {
 	Node    string  `url:"node" json:"node"`       // The cluster node name.
 	Service Service `url:"service" json:"service"` // Service ID
 
 }
+type _ServiceRestartRequest ServiceRestartRequest
 
 type ServiceReloadRequest struct {
 	Node    string  `url:"node" json:"node"`       // The cluster node name.
 	Service Service `url:"service" json:"service"` // Service ID
 
 }
+type _ServiceReloadRequest ServiceReloadRequest
 
 // Index Service list.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]interface{}, error) {

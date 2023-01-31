@@ -46,10 +46,12 @@ type IndexRequest struct {
 	// The following parameters are optional
 	Type *Type `url:"type,omitempty" json:"type,omitempty"` // Only list resources of specific type
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Sid string `url:"sid" json:"sid"`
 }
+type _IndexResponse IndexResponse
 
 type CreateRequest struct {
 	Sid string `url:"sid" json:"sid"` // HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
@@ -62,11 +64,13 @@ type CreateRequest struct {
 	State       *State  `url:"state,omitempty" json:"state,omitempty"`               // Requested resource state.
 	Type        *Type   `url:"type,omitempty" json:"type,omitempty"`                 // Resource type.
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Sid string `url:"sid" json:"sid"` // HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
 
 }
+type _FindRequest FindRequest
 
 type FindResponse struct {
 	Digest string `url:"digest" json:"digest"` // Can be used to prevent concurrent modifications.
@@ -80,6 +84,7 @@ type FindResponse struct {
 	MaxRestart  *int    `url:"max_restart,omitempty" json:"max_restart,omitempty"`   // Maximal number of tries to restart the service on a node after its start failed.
 	State       *State  `url:"state,omitempty" json:"state,omitempty"`               // Requested resource state.
 }
+type _FindResponse FindResponse
 
 type UpdateRequest struct {
 	Sid string `url:"sid" json:"sid"` // HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
@@ -93,23 +98,27 @@ type UpdateRequest struct {
 	MaxRestart  *int    `url:"max_restart,omitempty" json:"max_restart,omitempty"`   // Maximal number of tries to restart the service on a node after its start failed.
 	State       *State  `url:"state,omitempty" json:"state,omitempty"`               // Requested resource state.
 }
+type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
 	Sid string `url:"sid" json:"sid"` // HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
 
 }
+type _DeleteRequest DeleteRequest
 
 type MigrateRequest struct {
 	Node string `url:"node" json:"node"` // Target node.
 	Sid  string `url:"sid" json:"sid"`   // HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
 
 }
+type _MigrateRequest MigrateRequest
 
 type RelocateRequest struct {
 	Node string `url:"node" json:"node"` // Target node.
 	Sid  string `url:"sid" json:"sid"`   // HA resource ID. This consists of a resource type followed by a resource specific name, separated with colon (example: vm:100 / ct:100). For virtual machines and containers, you can simply use the VM or CT id as a shortcut (example: 100).
 
 }
+type _RelocateRequest RelocateRequest
 
 // Index List HA resources.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

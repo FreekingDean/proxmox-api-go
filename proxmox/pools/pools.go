@@ -45,6 +45,7 @@ func New(c HTTPClient) *Client {
 type IndexResponse struct {
 	Poolid string `url:"poolid" json:"poolid"`
 }
+type _IndexResponse IndexResponse
 
 type CreateRequest struct {
 	Poolid string `url:"poolid" json:"poolid"`
@@ -52,6 +53,7 @@ type CreateRequest struct {
 	// The following parameters are optional
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Poolid string `url:"poolid" json:"poolid"`
@@ -59,6 +61,7 @@ type FindRequest struct {
 	// The following parameters are optional
 	Type *Type `url:"type,omitempty" json:"type,omitempty"`
 }
+type _FindRequest FindRequest
 
 type Members struct {
 	Id   string      `url:"id" json:"id"`
@@ -69,6 +72,7 @@ type Members struct {
 	Storage *string `url:"storage,omitempty" json:"storage,omitempty"`
 	Vmid    *int    `url:"vmid,omitempty" json:"vmid,omitempty"`
 }
+type _Members Members
 
 type FindResponse struct {
 	Members []Members `url:"members" json:"members"`
@@ -76,6 +80,7 @@ type FindResponse struct {
 	// The following parameters are optional
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"`
 }
+type _FindResponse FindResponse
 
 type UpdateRequest struct {
 	Poolid string `url:"poolid" json:"poolid"`
@@ -86,10 +91,12 @@ type UpdateRequest struct {
 	Storage *string       `url:"storage,omitempty" json:"storage,omitempty"` // List of storage IDs.
 	Vms     *string       `url:"vms,omitempty" json:"vms,omitempty"`         // List of virtual machines.
 }
+type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
 	Poolid string `url:"poolid" json:"poolid"`
 }
+type _DeleteRequest DeleteRequest
 
 // Index Pool index.
 func (c *Client) Index(ctx context.Context) ([]IndexResponse, error) {

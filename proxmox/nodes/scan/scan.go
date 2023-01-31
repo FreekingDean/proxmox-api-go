@@ -24,22 +24,26 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Method string `url:"method" json:"method"`
 }
+type _IndexResponse IndexResponse
 
 type NfsscanRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
 	Server string `url:"server" json:"server"` // The server address (name or IP).
 
 }
+type _NfsscanRequest NfsscanRequest
 
 type NfsscanResponse struct {
 	Options string `url:"options" json:"options"` // NFS export options.
 	Path    string `url:"path" json:"path"`       // The exported path.
 
 }
+type _NfsscanResponse NfsscanResponse
 
 type CifsscanRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
@@ -50,12 +54,14 @@ type CifsscanRequest struct {
 	Password *string `url:"password,omitempty" json:"password,omitempty"` // User password.
 	Username *string `url:"username,omitempty" json:"username,omitempty"` // User name.
 }
+type _CifsscanRequest CifsscanRequest
 
 type CifsscanResponse struct {
 	Description string `url:"description" json:"description"` // Descriptive text from server.
 	Share       string `url:"share" json:"share"`             // The cifs share name.
 
 }
+type _CifsscanResponse CifsscanResponse
 
 type PbsscanRequest struct {
 	Node     string `url:"node" json:"node"`         // The cluster node name.
@@ -67,6 +73,7 @@ type PbsscanRequest struct {
 	Fingerprint *string `url:"fingerprint,omitempty" json:"fingerprint,omitempty"` // Certificate SHA 256 fingerprint.
 	Port        *int    `url:"port,omitempty" json:"port,omitempty"`               // Optional port.
 }
+type _PbsscanRequest PbsscanRequest
 
 type PbsscanResponse struct {
 	Store string `url:"store" json:"store"` // The datastore name.
@@ -74,59 +81,70 @@ type PbsscanResponse struct {
 	// The following parameters are optional
 	Comment *string `url:"comment,omitempty" json:"comment,omitempty"` // Comment from server.
 }
+type _PbsscanResponse PbsscanResponse
 
 type GlusterfsscanRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
 	Server string `url:"server" json:"server"` // The server address (name or IP).
 
 }
+type _GlusterfsscanRequest GlusterfsscanRequest
 
 type GlusterfsscanResponse struct {
 	Volname string `url:"volname" json:"volname"` // The volume name.
 
 }
+type _GlusterfsscanResponse GlusterfsscanResponse
 
 type IscsiscanRequest struct {
 	Node   string `url:"node" json:"node"`     // The cluster node name.
 	Portal string `url:"portal" json:"portal"` // The iSCSI portal (IP or DNS name with optional port).
 
 }
+type _IscsiscanRequest IscsiscanRequest
 
 type IscsiscanResponse struct {
 	Portal string `url:"portal" json:"portal"` // The iSCSI portal name.
 	Target string `url:"target" json:"target"` // The iSCSI target name.
 
 }
+type _IscsiscanResponse IscsiscanResponse
 
 type LvmscanRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _LvmscanRequest LvmscanRequest
 
 type LvmscanResponse struct {
 	Vg string `url:"vg" json:"vg"` // The LVM logical volume group name.
 
 }
+type _LvmscanResponse LvmscanResponse
 
 type LvmthinscanRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vg   string `url:"vg" json:"vg"`
 }
+type _LvmthinscanRequest LvmthinscanRequest
 
 type LvmthinscanResponse struct {
 	Lv string `url:"lv" json:"lv"` // The LVM Thin Pool name (LVM logical volume).
 
 }
+type _LvmthinscanResponse LvmthinscanResponse
 
 type ZfsscanRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _ZfsscanRequest ZfsscanRequest
 
 type ZfsscanResponse struct {
 	Pool string `url:"pool" json:"pool"` // ZFS pool name.
 
 }
+type _ZfsscanResponse ZfsscanResponse
 
 // Index Index of available scan methods
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

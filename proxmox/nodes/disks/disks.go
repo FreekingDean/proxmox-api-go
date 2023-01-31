@@ -36,6 +36,7 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexRequest IndexRequest
 
 type ListRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -45,6 +46,7 @@ type ListRequest struct {
 	Skipsmart         *util.PVEBool `url:"skipsmart,omitempty" json:"skipsmart,omitempty"`                   // Skip smart checks.
 	Type              *Type         `url:"type,omitempty" json:"type,omitempty"`                             // Only list specific types of disks.
 }
+type _ListRequest ListRequest
 
 type ListResponse struct {
 	Devpath string       `url:"devpath" json:"devpath"` // The device path
@@ -62,6 +64,7 @@ type ListResponse struct {
 	Vendor *string `url:"vendor,omitempty" json:"vendor,omitempty"`
 	Wwn    *string `url:"wwn,omitempty" json:"wwn,omitempty"`
 }
+type _ListResponse ListResponse
 
 type SmartRequest struct {
 	Disk string `url:"disk" json:"disk"` // Block device name
@@ -70,6 +73,7 @@ type SmartRequest struct {
 	// The following parameters are optional
 	Healthonly *util.PVEBool `url:"healthonly,omitempty" json:"healthonly,omitempty"` // If true returns only the health status
 }
+type _SmartRequest SmartRequest
 
 type SmartResponse struct {
 	Health string `url:"health" json:"health"`
@@ -79,6 +83,7 @@ type SmartResponse struct {
 	Text       *string                   `url:"text,omitempty" json:"text,omitempty"`
 	Type       *string                   `url:"type,omitempty" json:"type,omitempty"`
 }
+type _SmartResponse SmartResponse
 
 type InitgptRequest struct {
 	Disk string `url:"disk" json:"disk"` // Block device name
@@ -87,12 +92,14 @@ type InitgptRequest struct {
 	// The following parameters are optional
 	Uuid *string `url:"uuid,omitempty" json:"uuid,omitempty"` // UUID for the GPT table
 }
+type _InitgptRequest InitgptRequest
 
 type WipeDiskWipediskRequest struct {
 	Disk string `url:"disk" json:"disk"` // Block device name
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _WipeDiskWipediskRequest WipeDiskWipediskRequest
 
 // Index Node index.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]interface{}, error) {

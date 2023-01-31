@@ -36,6 +36,7 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Device   string `url:"device" json:"device"`     // The mounted device.
@@ -45,6 +46,7 @@ type IndexResponse struct {
 	Unitfile string `url:"unitfile" json:"unitfile"` // The path of the mount unit.
 
 }
+type _IndexResponse IndexResponse
 
 type CreateRequest struct {
 	Device string `url:"device" json:"device"` // The block device you want to create the filesystem on.
@@ -55,6 +57,7 @@ type CreateRequest struct {
 	AddStorage *util.PVEBool `url:"add_storage,omitempty" json:"add_storage,omitempty"` // Configure storage using the directory.
 	Filesystem *Filesystem   `url:"filesystem,omitempty" json:"filesystem,omitempty"`   // The desired filesystem.
 }
+type _CreateRequest CreateRequest
 
 type DeleteRequest struct {
 	Name string `url:"name" json:"name"` // The storage identifier.
@@ -64,6 +67,7 @@ type DeleteRequest struct {
 	CleanupConfig *util.PVEBool `url:"cleanup-config,omitempty" json:"cleanup-config,omitempty"` // Marks associated storage(s) as not available on this node anymore or removes them from the configuration (if configured for this node only).
 	CleanupDisks  *util.PVEBool `url:"cleanup-disks,omitempty" json:"cleanup-disks,omitempty"`   // Also wipe disk so it can be repurposed afterwards.
 }
+type _DeleteRequest DeleteRequest
 
 // Index PVE Managed Directory storages.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

@@ -50,10 +50,12 @@ type IndexRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 }
+type _IndexRequest IndexRequest
 
 type IndexResponse struct {
 	Pos int `url:"pos" json:"pos"`
 }
+type _IndexResponse IndexResponse
 
 type CreateRequest struct {
 	Action string `url:"action" json:"action"` // Rule action ('ACCEPT', 'DROP', 'REJECT') or security group name.
@@ -75,6 +77,7 @@ type CreateRequest struct {
 	Source   *string `url:"source,omitempty" json:"source,omitempty"`       // Restrict packet source address. This can refer to a single IP address, an IP set ('+ipsetname') or an IP alias definition. You can also specify an address range like '20.34.101.207-201.3.9.99', or a list of IP addresses and networks (entries are separated by comma). Please do not mix IPv4 and IPv6 addresses inside such lists.
 	Sport    *string `url:"sport,omitempty" json:"sport,omitempty"`         // Restrict TCP/UDP source port. You can use service names or simple numbers (0-65535), as defined in '/etc/services'. Port ranges can be specified with '\d+:\d+', for example '80:85', and you can use comma separated list to match several ports or ranges.
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -82,6 +85,7 @@ type FindRequest struct {
 	// The following parameters are optional
 	Pos *int `url:"pos,omitempty" json:"pos,omitempty"` // Update rule at position <pos>.
 }
+type _FindRequest FindRequest
 
 type FindResponse struct {
 	Action string `url:"action" json:"action"`
@@ -102,6 +106,7 @@ type FindResponse struct {
 	Source    *string `url:"source,omitempty" json:"source,omitempty"`
 	Sport     *string `url:"sport,omitempty" json:"sport,omitempty"`
 }
+type _FindResponse FindResponse
 
 type UpdateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -125,6 +130,7 @@ type UpdateRequest struct {
 	Sport    *string `url:"sport,omitempty" json:"sport,omitempty"`         // Restrict TCP/UDP source port. You can use service names or simple numbers (0-65535), as defined in '/etc/services'. Port ranges can be specified with '\d+:\d+', for example '80:85', and you can use comma separated list to match several ports or ranges.
 	Type     *Type   `url:"type,omitempty" json:"type,omitempty"`           // Rule type.
 }
+type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
@@ -133,6 +139,7 @@ type DeleteRequest struct {
 	Digest *string `url:"digest,omitempty" json:"digest,omitempty"` // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.
 	Pos    *int    `url:"pos,omitempty" json:"pos,omitempty"`       // Update rule at position <pos>.
 }
+type _DeleteRequest DeleteRequest
 
 // Index List rules.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]IndexResponse, error) {

@@ -38,6 +38,7 @@ type IndexRequest struct {
 	Pending *util.PVEBool `url:"pending,omitempty" json:"pending,omitempty"` // Display pending config.
 	Running *util.PVEBool `url:"running,omitempty" json:"running,omitempty"` // Display running config.
 }
+type _IndexRequest IndexRequest
 
 type CreateRequest struct {
 	Subnet string `url:"subnet" json:"subnet"` // The SDN subnet object identifier.
@@ -49,6 +50,7 @@ type CreateRequest struct {
 	Gateway       *string       `url:"gateway,omitempty" json:"gateway,omitempty"`             // Subnet Gateway: Will be assign on vnet for layer3 zones
 	Snat          *util.PVEBool `url:"snat,omitempty" json:"snat,omitempty"`                   // enable masquerade for this subnet if pve-firewall
 }
+type _CreateRequest CreateRequest
 
 type FindRequest struct {
 	Subnet string `url:"subnet" json:"subnet"` // The SDN subnet object identifier.
@@ -58,6 +60,7 @@ type FindRequest struct {
 	Pending *util.PVEBool `url:"pending,omitempty" json:"pending,omitempty"` // Display pending config.
 	Running *util.PVEBool `url:"running,omitempty" json:"running,omitempty"` // Display running config.
 }
+type _FindRequest FindRequest
 
 type UpdateRequest struct {
 	Subnet string `url:"subnet" json:"subnet"` // The SDN subnet object identifier.
@@ -70,12 +73,14 @@ type UpdateRequest struct {
 	Snat          *util.PVEBool `url:"snat,omitempty" json:"snat,omitempty"`                   // enable masquerade for this subnet if pve-firewall
 	Vnet          *string       `url:"vnet,omitempty" json:"vnet,omitempty"`                   // associated vnet
 }
+type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
 	Subnet string `url:"subnet" json:"subnet"` // The SDN subnet object identifier.
 	Vnet   string `url:"vnet" json:"vnet"`     // The SDN vnet object identifier.
 
 }
+type _DeleteRequest DeleteRequest
 
 // Index SDN subnets index.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]interface{}, error) {
