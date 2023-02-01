@@ -114,6 +114,7 @@ func (t *ChildCreateRequest) UnmarshalJSON(d []byte) error {
 	if err != nil {
 		return err
 	}
+	*t = ChildCreateRequest(tmp)
 	rest := map[string]json.RawMessage{}
 	err = json.Unmarshal(d, &rest)
 	if err != nil {

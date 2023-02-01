@@ -1,6 +1,6 @@
 # Proxmox API Go
 
-[![Hippocratic License HL2.1-CL](https://img.shields.io/static/v1?label=Hippocratic%20License&message=HL2.1-CL&labelColor=5e2751&color=bc8c3d)](https://firstdonoharm.dev/version/2/1/license.html)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 This work is thanks to all of the base set by
 https://github.com/Telmate/proxmox-api-go .

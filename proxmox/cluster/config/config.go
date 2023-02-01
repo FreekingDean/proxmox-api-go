@@ -106,6 +106,7 @@ func (t *CreateRequest) UnmarshalJSON(d []byte) error {
 	if err != nil {
 		return err
 	}
+	*t = CreateRequest(tmp)
 	rest := map[string]json.RawMessage{}
 	err = json.Unmarshal(d, &rest)
 	if err != nil {
@@ -193,6 +194,7 @@ func (t *JoinRequest) UnmarshalJSON(d []byte) error {
 	if err != nil {
 		return err
 	}
+	*t = JoinRequest(tmp)
 	rest := map[string]json.RawMessage{}
 	err = json.Unmarshal(d, &rest)
 	if err != nil {
