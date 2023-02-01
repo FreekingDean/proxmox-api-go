@@ -76,11 +76,11 @@ func (c *Client) Do(ctx context.Context, route string, method string, response i
 	if err != nil {
 		return err
 	}
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("non 200: %s", resp.Status)
-	}
 	if resp.StatusCode == 400 {
 		return fmt.Errorf("parameter error: %s", v.Encode())
+	}
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("non 200: %s", resp.Status)
 	}
 	dec := json.NewDecoder(resp.Body)
 	respObj := Response{
