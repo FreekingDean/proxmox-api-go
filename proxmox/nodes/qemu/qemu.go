@@ -1293,6 +1293,11 @@ func (t *Net) UnmarshalJSON(d []byte) error {
 		values[kv[0]] = kv[1]
 	}
 
+	if v, ok := values["virtio"]; ok {
+		t.Model = "virtio"
+		t.Macaddr = &v
+	}
+
 	if v, ok := values["model"]; ok {
 
 		err := json.Unmarshal([]byte(v), &t.Model)
