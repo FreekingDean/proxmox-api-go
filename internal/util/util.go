@@ -37,10 +37,16 @@ func EncodeArray(key string, v *url.Values, array interface{}) error {
 		s := reflect.ValueOf(array)
 
 		for i := 0; i < s.Len(); i++ {
+			derefed := s.Index(i).Interface()
+			if derefed != nil {
+				if s.Index(i).Type().Kind() == reflect.Ptr {
+					derefed = s.Index(i).Elem().Interface()
+				}
+			}
 			elem := struct {
 				Item interface{} `url:"item"`
 			}{
-				Item: s.Index(i).Interface(),
+				Item: derefed,
 			}
 			d := url.Values{}
 			var err error

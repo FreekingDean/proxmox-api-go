@@ -28,6 +28,16 @@ func TestEncodeArray(t *testing.T) {
 			},
 		},
 		{
+			"ptr of slice of string ptrs",
+			map[string]string{"somekey0": "1", "somekey1": "2"},
+			func() interface{} {
+				one := "1"
+				two := "2"
+				arr := []*string{&one, &two}
+				return &arr
+			},
+		},
+		{
 			"struct",
 			map[string]string{"somekey0": "{foo1 1}", "somekey1": "{foo2 2}"},
 			func() interface{} {
