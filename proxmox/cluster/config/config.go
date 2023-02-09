@@ -116,7 +116,7 @@ func (t *CreateRequest) UnmarshalJSON(d []byte) error {
 
 		if strings.HasPrefix(k, "link") {
 			idxStr := strings.TrimPrefix(k, "link")
-			idx, err := strconv.Atoi(idxStr)
+			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
 			if err != nil {
 				return err
 			}
@@ -204,7 +204,7 @@ func (t *JoinRequest) UnmarshalJSON(d []byte) error {
 
 		if strings.HasPrefix(k, "link") {
 			idxStr := strings.TrimPrefix(k, "link")
-			idx, err := strconv.Atoi(idxStr)
+			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
 			if err != nil {
 				return err
 			}

@@ -124,7 +124,7 @@ func (t *ChildCreateRequest) UnmarshalJSON(d []byte) error {
 
 		if strings.HasPrefix(k, "link") {
 			idxStr := strings.TrimPrefix(k, "link")
-			idx, err := strconv.Atoi(idxStr)
+			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
 			if err != nil {
 				return err
 			}

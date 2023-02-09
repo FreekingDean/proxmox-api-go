@@ -303,7 +303,7 @@ func (t *GetConfigResponse) UnmarshalJSON(d []byte) error {
 
 		if strings.HasPrefix(k, "acmedomain") {
 			idxStr := strings.TrimPrefix(k, "acmedomain")
-			idx, err := strconv.Atoi(idxStr)
+			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
 			if err != nil {
 				return err
 			}
@@ -356,7 +356,7 @@ func (t *SetOptionsConfigRequest) UnmarshalJSON(d []byte) error {
 
 		if strings.HasPrefix(k, "acmedomain") {
 			idxStr := strings.TrimPrefix(k, "acmedomain")
-			idx, err := strconv.Atoi(idxStr)
+			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
 			if err != nil {
 				return err
 			}

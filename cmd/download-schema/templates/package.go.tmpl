@@ -109,7 +109,7 @@ func (t *{{ $t.Name }}) UnmarshalJSON(d []byte) error {
 		{{ range $_, $ft := $t.FormatArrayTypes }}
 		if strings.HasPrefix(k, "{{ $ft.JSONName | TrimN }}") {
 			idxStr := strings.TrimPrefix(k, "{{ $ft.JSONName | TrimN }}")
-			idx, err := strconv.Atoi(idxStr)
+			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
 			if err != nil {
 				return err
 			}

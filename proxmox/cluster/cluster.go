@@ -209,140 +209,6 @@ type TasksResponse struct {
 }
 type _TasksResponse TasksResponse
 
-// Privilege options for user-settable tags
-type UserTagAccess struct {
-
-	// The following parameters are optional
-	UserAllow     *UserTagAccessUserAllow `url:"user-allow,omitempty" json:"user-allow,omitempty"`           // Controls tag usage for users without `Sys.Modify` on `/` by either allowing `none`, a `list`, already `existing` or anything (`free`).
-	UserAllowList *string                 `url:"user-allow-list,omitempty" json:"user-allow-list,omitempty"` // List of tags users are allowed to set and delete (semicolon separated) for 'user-allow' values 'list' and 'existing'.
-}
-type _UserTagAccess UserTagAccess
-
-func (t UserTagAccess) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[user-allow=<enum>] [,user-allow-list=<tag>[;<tag>...]]`)
-}
-
-func (t *UserTagAccess) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["user-allow"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["user-allow"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.UserAllow)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["user-allow-list"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.UserAllowList)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// webauthn configuration
-type Webauthn struct {
-
-	// The following parameters are optional
-	AllowSubdomains *util.PVEBool `url:"allow-subdomains,omitempty" json:"allow-subdomains,omitempty"` // Whether to allow the origin to be a subdomain, rather than the exact URL.
-	Id              *string       `url:"id,omitempty" json:"id,omitempty"`                             // Relying party ID. Must be the domain name without protocol, port or location. Changing this *will* break existing credentials.
-	Origin          *string       `url:"origin,omitempty" json:"origin,omitempty"`                     // Site origin. Must be a `https://` URL (or `http://localhost`). Should contain the address users type in their browsers to access the web interface. Changing this *may* break existing credentials.
-	Rp              *string       `url:"rp,omitempty" json:"rp,omitempty"`                             // Relying party name. Any text identifier. Changing this *may* break existing credentials.
-}
-type _Webauthn Webauthn
-
-func (t Webauthn) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[allow-subdomains=<1|0>] [,id=<DOMAINNAME>] [,origin=<URL>] [,rp=<RELYING_PARTY>]`)
-}
-
-func (t *Webauthn) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["allow-subdomains"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["allow-subdomains"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.AllowSubdomains)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["id"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Id)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["origin"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Origin)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["rp"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Rp)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 // Set bandwidth/io limits various operations.
 type Bwlimit struct {
 
@@ -415,6 +281,138 @@ func (t *Bwlimit) UnmarshalJSON(d []byte) error {
 	if v, ok := values["restore"]; ok {
 
 		err := json.Unmarshal([]byte(v), &t.Restore)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Tag style options.
+type TagStyle struct {
+
+	// The following parameters are optional
+	CaseSensitive *util.PVEBool     `url:"case-sensitive,omitempty" json:"case-sensitive,omitempty"` // Controls if filtering for unique tags on update should check case-sensitive.
+	ColorMap      *string           `url:"color-map,omitempty" json:"color-map,omitempty"`           // Manual color mapping for tags (semicolon separated).
+	Ordering      *TagStyleOrdering `url:"ordering,omitempty" json:"ordering,omitempty"`             // Controls the sorting of the tags in the web-interface and the API update.
+	Shape         *TagStyleShape    `url:"shape,omitempty" json:"shape,omitempty"`                   // Tag shape for the web ui tree. 'full' draws the full tag. 'circle' draws only a circle with the background color. 'dense' only draws a small rectancle (useful when many tags are assigned to each guest).'none' disables showing the tags.
+}
+type _TagStyle TagStyle
+
+func (t TagStyle) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[case-sensitive=<1|0>] [,color-map=<tag>:<hex-color>[:<hex-color-for-text>][;<tag>=...]] [,ordering=<config|alphabetical>] [,shape=<enum>]`)
+}
+
+func (t *TagStyle) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["case-sensitive"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["case-sensitive"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.CaseSensitive)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["color-map"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.ColorMap)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["ordering"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Ordering)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["shape"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Shape)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// For cluster wide migration settings.
+type Migration struct {
+	Type MigrationType `url:"type" json:"type"` // Migration traffic is encrypted using an SSH tunnel by default. On secure, completely private networks this can be disabled to increase performance.
+
+	// The following parameters are optional
+	Network *string `url:"network,omitempty" json:"network,omitempty"` // CIDR of the (sub) network that is used for migration.
+}
+type _Migration Migration
+
+func (t Migration) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[type=]<secure|insecure> [,network=<CIDR>]`)
+}
+
+func (t *Migration) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["type"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["type"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Type)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["network"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Network)
 		if err != nil {
 			return err
 		}
@@ -533,63 +531,20 @@ func (t *U2f) UnmarshalJSON(d []byte) error {
 	return nil
 }
 
-// Cluster resource scheduling settings.
-type Crs struct {
-	Ha CrsHa `url:"ha" json:"ha"` // Use this resource scheduler mode for HA.
-
-}
-type _Crs Crs
-
-func (t Crs) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `ha=<basic|static>`)
-}
-
-func (t *Crs) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["ha"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["ha"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Ha)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// For cluster wide migration settings.
-type Migration struct {
-	Type MigrationType `url:"type" json:"type"` // Migration traffic is encrypted using an SSH tunnel by default. On secure, completely private networks this can be disabled to increase performance.
+// Privilege options for user-settable tags
+type UserTagAccess struct {
 
 	// The following parameters are optional
-	Network *string `url:"network,omitempty" json:"network,omitempty"` // CIDR of the (sub) network that is used for migration.
+	UserAllow     *UserTagAccessUserAllow `url:"user-allow,omitempty" json:"user-allow,omitempty"`           // Controls tag usage for users without `Sys.Modify` on `/` by either allowing `none`, a `list`, already `existing` or anything (`free`).
+	UserAllowList *string                 `url:"user-allow-list,omitempty" json:"user-allow-list,omitempty"` // List of tags users are allowed to set and delete (semicolon separated) for 'user-allow' values 'list' and 'existing'.
 }
-type _Migration Migration
+type _UserTagAccess UserTagAccess
 
-func (t Migration) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[type=]<secure|insecure> [,network=<CIDR>]`)
+func (t UserTagAccess) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[user-allow=<enum>] [,user-allow-list=<tag>[;<tag>...]]`)
 }
 
-func (t *Migration) UnmarshalJSON(d []byte) error {
+func (t *UserTagAccess) UnmarshalJSON(d []byte) error {
 	if len(d) == 0 || string(d) == `""` {
 		return nil
 	}
@@ -603,26 +558,28 @@ func (t *Migration) UnmarshalJSON(d []byte) error {
 		}
 		if len(kv) == 1 {
 
-			values["type"] = kv[0]
+			values["user-allow"] = kv[0]
 
 			continue
 		}
 		values[kv[0]] = kv[1]
 	}
 
-	if v, ok := values["type"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Type)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["network"]; ok {
+	if v, ok := values["user-allow"]; ok {
 
 		v = fmt.Sprintf("\"%s\"", v)
 
-		err := json.Unmarshal([]byte(v), &t.Network)
+		err := json.Unmarshal([]byte(v), &t.UserAllow)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["user-allow-list"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.UserAllowList)
 		if err != nil {
 			return err
 		}
@@ -674,22 +631,18 @@ func (t *Ha) UnmarshalJSON(d []byte) error {
 	return nil
 }
 
-// Tag style options.
-type TagStyle struct {
+// Cluster resource scheduling settings.
+type Crs struct {
+	Ha CrsHa `url:"ha" json:"ha"` // Use this resource scheduler mode for HA.
 
-	// The following parameters are optional
-	CaseSensitive *util.PVEBool     `url:"case-sensitive,omitempty" json:"case-sensitive,omitempty"` // Controls if filtering for unique tags on update should check case-sensitive.
-	ColorMap      *string           `url:"color-map,omitempty" json:"color-map,omitempty"`           // Manual color mapping for tags (semicolon separated).
-	Ordering      *TagStyleOrdering `url:"ordering,omitempty" json:"ordering,omitempty"`             // Controls the sorting of the tags in the web-interface and the API update.
-	Shape         *TagStyleShape    `url:"shape,omitempty" json:"shape,omitempty"`                   // Tag shape for the web ui tree. 'full' draws the full tag. 'circle' draws only a circle with the background color. 'dense' only draws a small rectancle (useful when many tags are assigned to each guest).'none' disables showing the tags.
 }
-type _TagStyle TagStyle
+type _Crs Crs
 
-func (t TagStyle) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[case-sensitive=<1|0>] [,color-map=<tag>:<hex-color>[:<hex-color-for-text>][;<tag>=...]] [,ordering=<config|alphabetical>] [,shape=<enum>]`)
+func (t Crs) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `ha=<basic|static>`)
 }
 
-func (t *TagStyle) UnmarshalJSON(d []byte) error {
+func (t *Crs) UnmarshalJSON(d []byte) error {
 	if len(d) == 0 || string(d) == `""` {
 		return nil
 	}
@@ -703,46 +656,93 @@ func (t *TagStyle) UnmarshalJSON(d []byte) error {
 		}
 		if len(kv) == 1 {
 
-			values["case-sensitive"] = kv[0]
+			values["ha"] = kv[0]
 
 			continue
 		}
 		values[kv[0]] = kv[1]
 	}
 
-	if v, ok := values["case-sensitive"]; ok {
+	if v, ok := values["ha"]; ok {
 
-		err := json.Unmarshal([]byte(v), &t.CaseSensitive)
+		err := json.Unmarshal([]byte(v), &t.Ha)
 		if err != nil {
 			return err
 		}
 	}
 
-	if v, ok := values["color-map"]; ok {
+	return nil
+}
 
-		v = fmt.Sprintf("\"%s\"", v)
+// webauthn configuration
+type Webauthn struct {
 
-		err := json.Unmarshal([]byte(v), &t.ColorMap)
+	// The following parameters are optional
+	AllowSubdomains *util.PVEBool `url:"allow-subdomains,omitempty" json:"allow-subdomains,omitempty"` // Whether to allow the origin to be a subdomain, rather than the exact URL.
+	Id              *string       `url:"id,omitempty" json:"id,omitempty"`                             // Relying party ID. Must be the domain name without protocol, port or location. Changing this *will* break existing credentials.
+	Origin          *string       `url:"origin,omitempty" json:"origin,omitempty"`                     // Site origin. Must be a `https://` URL (or `http://localhost`). Should contain the address users type in their browsers to access the web interface. Changing this *may* break existing credentials.
+	Rp              *string       `url:"rp,omitempty" json:"rp,omitempty"`                             // Relying party name. Any text identifier. Changing this *may* break existing credentials.
+}
+type _Webauthn Webauthn
+
+func (t Webauthn) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[allow-subdomains=<1|0>] [,id=<DOMAINNAME>] [,origin=<URL>] [,rp=<RELYING_PARTY>]`)
+}
+
+func (t *Webauthn) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["allow-subdomains"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["allow-subdomains"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.AllowSubdomains)
 		if err != nil {
 			return err
 		}
 	}
 
-	if v, ok := values["ordering"]; ok {
+	if v, ok := values["id"]; ok {
 
 		v = fmt.Sprintf("\"%s\"", v)
 
-		err := json.Unmarshal([]byte(v), &t.Ordering)
+		err := json.Unmarshal([]byte(v), &t.Id)
 		if err != nil {
 			return err
 		}
 	}
 
-	if v, ok := values["shape"]; ok {
+	if v, ok := values["origin"]; ok {
 
 		v = fmt.Sprintf("\"%s\"", v)
 
-		err := json.Unmarshal([]byte(v), &t.Shape)
+		err := json.Unmarshal([]byte(v), &t.Origin)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["rp"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Rp)
 		if err != nil {
 			return err
 		}
