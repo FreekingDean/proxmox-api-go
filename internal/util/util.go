@@ -40,7 +40,7 @@ func EncodeArray(key string, v *url.Values, array interface{}) error {
 			derefed := s.Index(i).Interface()
 			if derefed != nil {
 				if s.Index(i).Type().Kind() == reflect.Ptr {
-					if !s.Index(i).Elem().IsNil() {
+					if !s.Index(i).IsNil() {
 						derefed = s.Index(i).Elem().Interface()
 					} else {
 						continue
