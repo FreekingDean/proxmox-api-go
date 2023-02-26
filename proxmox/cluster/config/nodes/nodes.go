@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -122,7 +123,7 @@ func (t *ChildCreateRequest) UnmarshalJSON(d []byte) error {
 	}
 	for k, v := range rest {
 
-		if strings.HasPrefix(k, "link") {
+		if ok, err := regexp.MatchString("^link[0-9]+$", k); ok {
 			idxStrKey := "link"
 			idxStr := strings.TrimPrefix(k, idxStrKey)
 			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
@@ -142,6 +143,8 @@ func (t *ChildCreateRequest) UnmarshalJSON(d []byte) error {
 				return err
 			}
 			(*t.Links)[idx] = &newVal
+		} else if err != nil {
+			return err
 		}
 
 	}

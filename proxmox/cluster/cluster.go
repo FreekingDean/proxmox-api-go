@@ -209,20 +209,20 @@ type TasksResponse struct {
 }
 type _TasksResponse TasksResponse
 
-// For cluster wide migration settings.
-type Migration struct {
-	Type MigrationType `url:"type" json:"type"` // Migration traffic is encrypted using an SSH tunnel by default. On secure, completely private networks this can be disabled to increase performance.
+// u2f
+type U2f struct {
 
 	// The following parameters are optional
-	Network *string `url:"network,omitempty" json:"network,omitempty"` // CIDR of the (sub) network that is used for migration.
+	Appid  *string `url:"appid,omitempty" json:"appid,omitempty"`   // U2F AppId URL override. Defaults to the origin.
+	Origin *string `url:"origin,omitempty" json:"origin,omitempty"` // U2F Origin override. Mostly useful for single nodes with a single URL.
 }
-type _Migration Migration
+type _U2f U2f
 
-func (t Migration) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[type=]<secure|insecure> [,network=<CIDR>]`)
+func (t U2f) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[appid=<APPID>] [,origin=<URL>]`)
 }
 
-func (t *Migration) UnmarshalJSON(d []byte) error {
+func (t *U2f) UnmarshalJSON(d []byte) error {
 	if len(d) == 0 || string(d) == `""` {
 		return nil
 	}
@@ -236,26 +236,105 @@ func (t *Migration) UnmarshalJSON(d []byte) error {
 		}
 		if len(kv) == 1 {
 
-			values["type"] = kv[0]
+			values["appid"] = kv[0]
 
 			continue
 		}
 		values[kv[0]] = kv[1]
 	}
 
-	if v, ok := values["type"]; ok {
+	if v, ok := values["appid"]; ok {
 
-		err := json.Unmarshal([]byte(v), &t.Type)
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Appid)
 		if err != nil {
 			return err
 		}
 	}
 
-	if v, ok := values["network"]; ok {
+	if v, ok := values["origin"]; ok {
 
 		v = fmt.Sprintf("\"%s\"", v)
 
-		err := json.Unmarshal([]byte(v), &t.Network)
+		err := json.Unmarshal([]byte(v), &t.Origin)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Tag style options.
+type TagStyle struct {
+
+	// The following parameters are optional
+	CaseSensitive *util.PVEBool     `url:"case-sensitive,omitempty" json:"case-sensitive,omitempty"` // Controls if filtering for unique tags on update should check case-sensitive.
+	ColorMap      *string           `url:"color-map,omitempty" json:"color-map,omitempty"`           // Manual color mapping for tags (semicolon separated).
+	Ordering      *TagStyleOrdering `url:"ordering,omitempty" json:"ordering,omitempty"`             // Controls the sorting of the tags in the web-interface and the API update.
+	Shape         *TagStyleShape    `url:"shape,omitempty" json:"shape,omitempty"`                   // Tag shape for the web ui tree. 'full' draws the full tag. 'circle' draws only a circle with the background color. 'dense' only draws a small rectancle (useful when many tags are assigned to each guest).'none' disables showing the tags.
+}
+type _TagStyle TagStyle
+
+func (t TagStyle) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[case-sensitive=<1|0>] [,color-map=<tag>:<hex-color>[:<hex-color-for-text>][;<tag>=...]] [,ordering=<config|alphabetical>] [,shape=<enum>]`)
+}
+
+func (t *TagStyle) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["case-sensitive"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["case-sensitive"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.CaseSensitive)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["color-map"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.ColorMap)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["ordering"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Ordering)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["shape"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Shape)
 		if err != nil {
 			return err
 		}
@@ -333,6 +412,157 @@ func (t *Webauthn) UnmarshalJSON(d []byte) error {
 		v = fmt.Sprintf("\"%s\"", v)
 
 		err := json.Unmarshal([]byte(v), &t.Rp)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// For cluster wide migration settings.
+type Migration struct {
+	Type MigrationType `url:"type" json:"type"` // Migration traffic is encrypted using an SSH tunnel by default. On secure, completely private networks this can be disabled to increase performance.
+
+	// The following parameters are optional
+	Network *string `url:"network,omitempty" json:"network,omitempty"` // CIDR of the (sub) network that is used for migration.
+}
+type _Migration Migration
+
+func (t Migration) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[type=]<secure|insecure> [,network=<CIDR>]`)
+}
+
+func (t *Migration) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["type"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["type"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Type)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["network"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Network)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Cluster wide HA settings.
+type Ha struct {
+	ShutdownPolicy HaShutdownPolicy `url:"shutdown_policy" json:"shutdown_policy"` // The policy for HA services on node shutdown. 'freeze' disables auto-recovery, 'failover' ensures recovery, 'conditional' recovers on poweroff and freezes on reboot. 'migrate' will migrate running services to other nodes, if possible. With 'freeze' or 'failover', HA Services will always get stopped first on shutdown.
+
+}
+type _Ha Ha
+
+func (t Ha) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `shutdown_policy=<enum>`)
+}
+
+func (t *Ha) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["shutdown_policy"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["shutdown_policy"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.ShutdownPolicy)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Control the range for the free VMID auto-selection pool.
+type NextId struct {
+
+	// The following parameters are optional
+	Lower *int `url:"lower,omitempty" json:"lower,omitempty"` // Lower, inclusive boundary for free next-id API range.
+	Upper *int `url:"upper,omitempty" json:"upper,omitempty"` // Upper, exclusive boundary for free next-id API range.
+}
+type _NextId NextId
+
+func (t NextId) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[lower=<integer>] [,upper=<integer>]`)
+}
+
+func (t *NextId) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["lower"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["lower"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Lower)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["upper"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Upper)
 		if err != nil {
 			return err
 		}
@@ -421,59 +651,6 @@ func (t *Bwlimit) UnmarshalJSON(d []byte) error {
 	return nil
 }
 
-// Control the range for the free VMID auto-selection pool.
-type NextId struct {
-
-	// The following parameters are optional
-	Lower *int `url:"lower,omitempty" json:"lower,omitempty"` // Lower, inclusive boundary for free next-id API range.
-	Upper *int `url:"upper,omitempty" json:"upper,omitempty"` // Upper, exclusive boundary for free next-id API range.
-}
-type _NextId NextId
-
-func (t NextId) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[lower=<integer>] [,upper=<integer>]`)
-}
-
-func (t *NextId) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["lower"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["lower"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Lower)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["upper"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Upper)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 // Cluster resource scheduling settings.
 type Crs struct {
 	Ha CrsHa `url:"ha" json:"ha"` // Use this resource scheduler mode for HA.
@@ -509,126 +686,6 @@ func (t *Crs) UnmarshalJSON(d []byte) error {
 	if v, ok := values["ha"]; ok {
 
 		err := json.Unmarshal([]byte(v), &t.Ha)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Cluster wide HA settings.
-type Ha struct {
-	ShutdownPolicy HaShutdownPolicy `url:"shutdown_policy" json:"shutdown_policy"` // The policy for HA services on node shutdown. 'freeze' disables auto-recovery, 'failover' ensures recovery, 'conditional' recovers on poweroff and freezes on reboot. 'migrate' will migrate running services to other nodes, if possible. With 'freeze' or 'failover', HA Services will always get stopped first on shutdown.
-
-}
-type _Ha Ha
-
-func (t Ha) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `shutdown_policy=<enum>`)
-}
-
-func (t *Ha) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["shutdown_policy"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["shutdown_policy"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.ShutdownPolicy)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Tag style options.
-type TagStyle struct {
-
-	// The following parameters are optional
-	CaseSensitive *util.PVEBool     `url:"case-sensitive,omitempty" json:"case-sensitive,omitempty"` // Controls if filtering for unique tags on update should check case-sensitive.
-	ColorMap      *string           `url:"color-map,omitempty" json:"color-map,omitempty"`           // Manual color mapping for tags (semicolon separated).
-	Ordering      *TagStyleOrdering `url:"ordering,omitempty" json:"ordering,omitempty"`             // Controls the sorting of the tags in the web-interface and the API update.
-	Shape         *TagStyleShape    `url:"shape,omitempty" json:"shape,omitempty"`                   // Tag shape for the web ui tree. 'full' draws the full tag. 'circle' draws only a circle with the background color. 'dense' only draws a small rectancle (useful when many tags are assigned to each guest).'none' disables showing the tags.
-}
-type _TagStyle TagStyle
-
-func (t TagStyle) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[case-sensitive=<1|0>] [,color-map=<tag>:<hex-color>[:<hex-color-for-text>][;<tag>=...]] [,ordering=<config|alphabetical>] [,shape=<enum>]`)
-}
-
-func (t *TagStyle) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["case-sensitive"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["case-sensitive"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.CaseSensitive)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["color-map"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.ColorMap)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["ordering"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Ordering)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["shape"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Shape)
 		if err != nil {
 			return err
 		}
@@ -686,63 +743,6 @@ func (t *UserTagAccess) UnmarshalJSON(d []byte) error {
 		v = fmt.Sprintf("\"%s\"", v)
 
 		err := json.Unmarshal([]byte(v), &t.UserAllowList)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// u2f
-type U2f struct {
-
-	// The following parameters are optional
-	Appid  *string `url:"appid,omitempty" json:"appid,omitempty"`   // U2F AppId URL override. Defaults to the origin.
-	Origin *string `url:"origin,omitempty" json:"origin,omitempty"` // U2F Origin override. Mostly useful for single nodes with a single URL.
-}
-type _U2f U2f
-
-func (t U2f) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[appid=<APPID>] [,origin=<URL>]`)
-}
-
-func (t *U2f) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["appid"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["appid"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Appid)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["origin"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Origin)
 		if err != nil {
 			return err
 		}

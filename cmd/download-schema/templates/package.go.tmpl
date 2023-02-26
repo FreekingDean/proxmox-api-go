@@ -11,6 +11,7 @@ import (
 	"strings"
   {{- if .Strconv }}
 	"strconv"
+	"regexp"
   {{ end }}
 
 	{{- end -}}
@@ -107,7 +108,7 @@ func (t *{{ $t.Name }}) UnmarshalJSON(d []byte) error {
 	}
 	for k, v := range rest {
 		{{ range $_, $ft := $t.FormatArrayTypes }}
-		if strings.HasPrefix(k, "{{ $ft.JSONName | TrimN }}") {
+		if ok, err := regexp.MatchString("^{{ $ft.JSONName | TrimN }}[0-9]+$", k); ok {
 			idxStrKey := "{{ $ft.JSONName | TrimN }}"
 			idxStr := strings.TrimPrefix(k, idxStrKey)
 			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
@@ -127,6 +128,8 @@ func (t *{{ $t.Name }}) UnmarshalJSON(d []byte) error {
 				return err
 			}
 			({{ if $ft.Optional }}*{{ end }}t.{{ $ft.Name }})[idx] = &newVal
+		} else if err != nil {
+			return err
 		}
 		{{ end }}
 	}

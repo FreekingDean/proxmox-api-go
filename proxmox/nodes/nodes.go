@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -301,7 +302,7 @@ func (t *GetConfigResponse) UnmarshalJSON(d []byte) error {
 	}
 	for k, v := range rest {
 
-		if strings.HasPrefix(k, "acmedomain") {
+		if ok, err := regexp.MatchString("^acmedomain[0-9]+$", k); ok {
 			idxStrKey := "acmedomain"
 			idxStr := strings.TrimPrefix(k, idxStrKey)
 			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
@@ -321,6 +322,8 @@ func (t *GetConfigResponse) UnmarshalJSON(d []byte) error {
 				return err
 			}
 			(*t.Acmedomains)[idx] = &newVal
+		} else if err != nil {
+			return err
 		}
 
 	}
@@ -355,7 +358,7 @@ func (t *SetOptionsConfigRequest) UnmarshalJSON(d []byte) error {
 	}
 	for k, v := range rest {
 
-		if strings.HasPrefix(k, "acmedomain") {
+		if ok, err := regexp.MatchString("^acmedomain[0-9]+$", k); ok {
 			idxStrKey := "acmedomain"
 			idxStr := strings.TrimPrefix(k, idxStrKey)
 			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
@@ -375,6 +378,8 @@ func (t *SetOptionsConfigRequest) UnmarshalJSON(d []byte) error {
 				return err
 			}
 			(*t.Acmedomains)[idx] = &newVal
+		} else if err != nil {
+			return err
 		}
 
 	}
