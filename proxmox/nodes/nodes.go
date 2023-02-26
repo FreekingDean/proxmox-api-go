@@ -302,10 +302,11 @@ func (t *GetConfigResponse) UnmarshalJSON(d []byte) error {
 	for k, v := range rest {
 
 		if strings.HasPrefix(k, "acmedomain") {
-			idxStr := strings.TrimPrefix(k, "acmedomain")
+			idxStrKey := "acmedomain"
+			idxStr := strings.TrimPrefix(k, idxStrKey)
 			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
 			if err != nil {
-				return err
+				return fmt.Errorf("Could not decode %s as (%s index): %w", k, idxStrKey, err)
 			}
 			if t.Acmedomains == nil {
 				arr := make(Acmedomains, 0)
@@ -355,10 +356,11 @@ func (t *SetOptionsConfigRequest) UnmarshalJSON(d []byte) error {
 	for k, v := range rest {
 
 		if strings.HasPrefix(k, "acmedomain") {
-			idxStr := strings.TrimPrefix(k, "acmedomain")
+			idxStrKey := "acmedomain"
+			idxStr := strings.TrimPrefix(k, idxStrKey)
 			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
 			if err != nil {
-				return err
+				return fmt.Errorf("Could not decode %s as (%s index): %w", k, idxStrKey, err)
 			}
 			if t.Acmedomains == nil {
 				arr := make(Acmedomains, 0)

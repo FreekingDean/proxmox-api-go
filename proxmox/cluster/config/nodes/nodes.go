@@ -123,10 +123,11 @@ func (t *ChildCreateRequest) UnmarshalJSON(d []byte) error {
 	for k, v := range rest {
 
 		if strings.HasPrefix(k, "link") {
-			idxStr := strings.TrimPrefix(k, "link")
+			idxStrKey := "link"
+			idxStr := strings.TrimPrefix(k, idxStrKey)
 			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
 			if err != nil {
-				return err
+				return fmt.Errorf("Could not decode %s as (%s index): %w", k, idxStrKey, err)
 			}
 			if t.Links == nil {
 				arr := make(Links, 0)
