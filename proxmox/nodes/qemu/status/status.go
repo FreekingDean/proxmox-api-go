@@ -60,21 +60,21 @@ type _VmStatusCurrentRequest VmStatusCurrentRequest
 
 type VmStatusCurrentResponse struct {
 	Ha     map[string]interface{} `url:"ha" json:"ha"`         // HA manager service status.
-	Status Status                 `url:"status" json:"status"` // Qemu process status.
+	Status Status                 `url:"status" json:"status"` // QEMU process status.
 	Vmid   int                    `url:"vmid" json:"vmid"`     // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Agent          *util.PVEBool `url:"agent,omitempty" json:"agent,omitempty"`                     // Qemu GuestAgent enabled in config.
+	Agent          *util.PVEBool `url:"agent,omitempty" json:"agent,omitempty"`                     // QEMU Guest Agent is enabled in config.
 	Cpus           *float64      `url:"cpus,omitempty" json:"cpus,omitempty"`                       // Maximum usable CPUs.
 	Lock           *string       `url:"lock,omitempty" json:"lock,omitempty"`                       // The current config lock, if any.
 	Maxdisk        *int          `url:"maxdisk,omitempty" json:"maxdisk,omitempty"`                 // Root disk size in bytes.
 	Maxmem         *int          `url:"maxmem,omitempty" json:"maxmem,omitempty"`                   // Maximum memory in bytes.
 	Name           *string       `url:"name,omitempty" json:"name,omitempty"`                       // VM name.
 	Pid            *int          `url:"pid,omitempty" json:"pid,omitempty"`                         // PID of running qemu process.
-	Qmpstatus      *string       `url:"qmpstatus,omitempty" json:"qmpstatus,omitempty"`             // Qemu QMP agent status.
+	Qmpstatus      *string       `url:"qmpstatus,omitempty" json:"qmpstatus,omitempty"`             // QEMU QMP agent status.
 	RunningMachine *string       `url:"running-machine,omitempty" json:"running-machine,omitempty"` // The currently running machine type (if running).
 	RunningQemu    *string       `url:"running-qemu,omitempty" json:"running-qemu,omitempty"`       // The currently running QEMU version (if running).
-	Spice          *util.PVEBool `url:"spice,omitempty" json:"spice,omitempty"`                     // Qemu VGA configuration supports spice.
+	Spice          *util.PVEBool `url:"spice,omitempty" json:"spice,omitempty"`                     // QEMU VGA configuration supports spice.
 	Tags           *string       `url:"tags,omitempty" json:"tags,omitempty"`                       // The current configured tags, if any
 	Uptime         *int          `url:"uptime,omitempty" json:"uptime,omitempty"`                   // Uptime.
 }
@@ -86,7 +86,7 @@ type VmStartRequest struct {
 
 	// The following parameters are optional
 	ForceCpu         *string        `url:"force-cpu,omitempty" json:"force-cpu,omitempty"`                 // Override QEMU's -cpu argument with the given string.
-	Machine          *string        `url:"machine,omitempty" json:"machine,omitempty"`                     // Specifies the Qemu machine type.
+	Machine          *string        `url:"machine,omitempty" json:"machine,omitempty"`                     // Specifies the QEMU machine type.
 	Migratedfrom     *string        `url:"migratedfrom,omitempty" json:"migratedfrom,omitempty"`           // The cluster node name.
 	MigrationNetwork *string        `url:"migration_network,omitempty" json:"migration_network,omitempty"` // CIDR of the (sub) network that is used for migration.
 	MigrationType    *MigrationType `url:"migration_type,omitempty" json:"migration_type,omitempty"`       // Migration traffic is encrypted using an SSH tunnel by default. On secure, completely private networks this can be disabled to increase performance.

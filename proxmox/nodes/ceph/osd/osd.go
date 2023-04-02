@@ -7,6 +7,26 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
+const (
+	DevicesDevice_BLOCK DevicesDevice = "block"
+	DevicesDevice_DB    DevicesDevice = "db"
+	DevicesDevice_WAL   DevicesDevice = "wal"
+
+	Type_BLOCK Type = "block"
+	Type_DB    Type = "db"
+	Type_WAL   Type = "wal"
+)
+
+type DevicesDevice string
+type Type string
+
+func PtrDevicesDevice(i DevicesDevice) *DevicesDevice {
+	return &i
+}
+func PtrType(i Type) *Type {
+	return &i
+}
+
 type HTTPClient interface {
 	Do(context.Context, string, string, interface{}, interface{}) error
 }
@@ -41,6 +61,13 @@ type CreateRequest struct {
 }
 type _CreateRequest CreateRequest
 
+type FindRequest struct {
+	Node  string `url:"node" json:"node"`   // The cluster node name.
+	Osdid int    `url:"osdid" json:"osdid"` // OSD ID
+
+}
+type _FindRequest FindRequest
+
 type DeleteRequest struct {
 	Node  string `url:"node" json:"node"`   // The cluster node name.
 	Osdid int    `url:"osdid" json:"osdid"` // OSD ID
@@ -49,6 +76,68 @@ type DeleteRequest struct {
 	Cleanup *util.PVEBool `url:"cleanup,omitempty" json:"cleanup,omitempty"` // If set, we remove partition table entries.
 }
 type _DeleteRequest DeleteRequest
+
+type OsddetailsMetadataRequest struct {
+	Node  string `url:"node" json:"node"`   // The cluster node name.
+	Osdid int    `url:"osdid" json:"osdid"` // OSD ID
+
+}
+type _OsddetailsMetadataRequest OsddetailsMetadataRequest
+
+type Devices struct {
+	DevNode        string        `url:"dev_node" json:"dev_node"`               // Device node
+	Device         DevicesDevice `url:"device" json:"device"`                   // Kind of OSD device
+	Devices        string        `url:"devices" json:"devices"`                 // Physical disks used
+	Size           int           `url:"size" json:"size"`                       // Size in bytes
+	SupportDiscard util.PVEBool  `url:"support_discard" json:"support_discard"` // Discard support of the physical device
+	Type           string        `url:"type" json:"type"`                       // Type of device. For example, hdd or ssd
+
+}
+type _Devices Devices
+
+// General information about the OSD
+type Osd struct {
+	BackAddr       string `url:"back_addr" json:"back_addr"`             // Address and port used to talk to other OSDs.
+	FrontAddr      string `url:"front_addr" json:"front_addr"`           // Address and port used to talk to clients and monitors.
+	HbBackAddr     string `url:"hb_back_addr" json:"hb_back_addr"`       // Heartbeat address and port for other OSDs.
+	HbFrontAddr    string `url:"hb_front_addr" json:"hb_front_addr"`     // Heartbeat address and port for clients and monitors.
+	Hostname       string `url:"hostname" json:"hostname"`               // Name of the host containing the OSD.
+	Id             int    `url:"id" json:"id"`                           // ID of the OSD.
+	MemUsage       int    `url:"mem_usage" json:"mem_usage"`             // Memory usage of the OSD service.
+	OsdData        string `url:"osd_data" json:"osd_data"`               // Path to the OSD's data directory.
+	OsdObjectstore string `url:"osd_objectstore" json:"osd_objectstore"` // The type of object store used.
+	Pid            int    `url:"pid" json:"pid"`                         // OSD process ID.
+	Version        string `url:"version" json:"version"`                 // Ceph version of the OSD service.
+
+}
+type _Osd Osd
+
+type OsddetailsMetadataResponse struct {
+	Devices []Devices `url:"devices" json:"devices"` // Array containing data about devices
+	Osd     Osd       `url:"osd" json:"osd"`         // General information about the OSD
+
+}
+type _OsddetailsMetadataResponse OsddetailsMetadataResponse
+
+type OsdvolumeLvInfoRequest struct {
+	Node  string `url:"node" json:"node"`   // The cluster node name.
+	Osdid int    `url:"osdid" json:"osdid"` // OSD ID
+
+	// The following parameters are optional
+	Type *Type `url:"type,omitempty" json:"type,omitempty"` // OSD device type
+}
+type _OsdvolumeLvInfoRequest OsdvolumeLvInfoRequest
+
+type OsdvolumeLvInfoResponse struct {
+	CreationTime string `url:"creation_time" json:"creation_time"` // Creation time as reported by `lvs`.
+	LvName       string `url:"lv_name" json:"lv_name"`             // Name of the logical volume (LV).
+	LvPath       string `url:"lv_path" json:"lv_path"`             // Path to the logical volume (LV).
+	LvSize       int    `url:"lv_size" json:"lv_size"`             // Size of the logical volume (LV).
+	LvUuid       string `url:"lv_uuid" json:"lv_uuid"`             // UUID of the logical volume (LV).
+	VgName       string `url:"vg_name" json:"vg_name"`             // Name of the volume group (VG).
+
+}
+type _OsdvolumeLvInfoResponse OsdvolumeLvInfoResponse
 
 type InRequest struct {
 	Node  string `url:"node" json:"node"`   // The cluster node name.
@@ -89,11 +178,35 @@ func (c *Client) Create(ctx context.Context, req CreateRequest) (string, error) 
 	return resp, err
 }
 
+// Find OSD index.
+func (c *Client) Find(ctx context.Context, req FindRequest) ([]map[string]interface{}, error) {
+	var resp []map[string]interface{}
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/osd/{osdid}", "GET", &resp, req)
+	return resp, err
+}
+
 // Delete Destroy OSD
 func (c *Client) Delete(ctx context.Context, req DeleteRequest) (string, error) {
 	var resp string
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/osd/{osdid}", "DELETE", &resp, req)
+	return resp, err
+}
+
+// OsddetailsMetadata Get OSD details
+func (c *Client) OsddetailsMetadata(ctx context.Context, req OsddetailsMetadataRequest) (OsddetailsMetadataResponse, error) {
+	var resp OsddetailsMetadataResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/osd/{osdid}/metadata", "GET", &resp, req)
+	return resp, err
+}
+
+// OsdvolumeLvInfo Get OSD volume details
+func (c *Client) OsdvolumeLvInfo(ctx context.Context, req OsdvolumeLvInfoRequest) (OsdvolumeLvInfoResponse, error) {
+	var resp OsdvolumeLvInfoResponse
+
+	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/osd/{osdid}/lv-info", "GET", &resp, req)
 	return resp, err
 }
 

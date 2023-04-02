@@ -58,7 +58,9 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexResponse struct {
-	Name Name `url:"name" json:"name"` // Flag name.
+	Description string       `url:"description" json:"description"` // Flag description.
+	Name        Name         `url:"name" json:"name"`               // Flag name.
+	Value       util.PVEBool `url:"value" json:"value"`             // Flag value.
 
 }
 type _IndexResponse IndexResponse

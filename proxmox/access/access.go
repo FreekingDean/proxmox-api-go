@@ -88,7 +88,7 @@ type _CreateTicketResponse CreateTicketResponse
 
 type ChangePasswordRequest struct {
 	Password string `url:"password" json:"password"` // The new password.
-	Userid   string `url:"userid" json:"userid"`     // User ID
+	Userid   string `url:"userid" json:"userid"`     // Full User ID, in the `name@realm` format.
 
 }
 type _ChangePasswordRequest ChangePasswordRequest

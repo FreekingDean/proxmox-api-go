@@ -92,7 +92,7 @@ type RollbackRequest struct {
 	Vmid     int    `url:"vmid" json:"vmid"`         // The (unique) ID of the VM.
 
 	// The following parameters are optional
-	Start *util.PVEBool `url:"start,omitempty" json:"start,omitempty"` // Whether the VM should get started after rolling back successfully
+	Start *util.PVEBool `url:"start,omitempty" json:"start,omitempty"` // Whether the VM should get started after rolling back successfully. (Note: VMs will be automatically started if the snapshot includes RAM.)
 }
 type _RollbackRequest RollbackRequest
 

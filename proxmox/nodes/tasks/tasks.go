@@ -90,8 +90,9 @@ type ReadTaskLogRequest struct {
 	Upid string `url:"upid" json:"upid"` // The task's unique ID.
 
 	// The following parameters are optional
-	Limit *int `url:"limit,omitempty" json:"limit,omitempty"` // The maximum amount of lines that should be printed.
-	Start *int `url:"start,omitempty" json:"start,omitempty"` // The line number to start printing at.
+	Download *util.PVEBool `url:"download,omitempty" json:"download,omitempty"` // Whether the tasklog file should be downloaded. This parameter can't be used in conjunction with other parameters
+	Limit    *int          `url:"limit,omitempty" json:"limit,omitempty"`       // The amount of lines to read from the tasklog.
+	Start    *int          `url:"start,omitempty" json:"start,omitempty"`       // Start at this line when reading the tasklog
 }
 type _ReadTaskLogRequest ReadTaskLogRequest
 

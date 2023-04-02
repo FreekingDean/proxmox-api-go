@@ -180,6 +180,7 @@ type CreateRequest struct {
 	ComstarHg            *string        `url:"comstar_hg,omitempty" json:"comstar_hg,omitempty"`                       // host group for comstar views
 	ComstarTg            *string        `url:"comstar_tg,omitempty" json:"comstar_tg,omitempty"`                       // target group for comstar views
 	Content              *string        `url:"content,omitempty" json:"content,omitempty"`                             // Allowed content types. NOTE: the value 'rootdir' is used for Containers, and value 'images' for VMs.
+	ContentDirs          *string        `url:"content-dirs,omitempty" json:"content-dirs,omitempty"`                   // Overrides for default content type directories.
 	DataPool             *string        `url:"data-pool,omitempty" json:"data-pool,omitempty"`                         // Data Pool (for erasure coding only)
 	Datastore            *string        `url:"datastore,omitempty" json:"datastore,omitempty"`                         // Proxmox Backup Server datastore name.
 	Disable              *util.PVEBool  `url:"disable,omitempty" json:"disable,omitempty"`                             // Flag to disable the storage.
@@ -264,6 +265,7 @@ type UpdateRequest struct {
 	ComstarHg            *string        `url:"comstar_hg,omitempty" json:"comstar_hg,omitempty"`                       // host group for comstar views
 	ComstarTg            *string        `url:"comstar_tg,omitempty" json:"comstar_tg,omitempty"`                       // target group for comstar views
 	Content              *string        `url:"content,omitempty" json:"content,omitempty"`                             // Allowed content types. NOTE: the value 'rootdir' is used for Containers, and value 'images' for VMs.
+	ContentDirs          *string        `url:"content-dirs,omitempty" json:"content-dirs,omitempty"`                   // Overrides for default content type directories.
 	DataPool             *string        `url:"data-pool,omitempty" json:"data-pool,omitempty"`                         // Data Pool (for erasure coding only)
 	Delete               *string        `url:"delete,omitempty" json:"delete,omitempty"`                               // A list of settings you want to delete.
 	Digest               *string        `url:"digest,omitempty" json:"digest,omitempty"`                               // Prevent changes if current configuration file has different SHA1 digest. This can be used to prevent concurrent modifications.

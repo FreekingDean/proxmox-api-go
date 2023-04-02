@@ -58,7 +58,7 @@ type Tokens struct {
 type _Tokens Tokens
 
 type IndexResponse struct {
-	Userid string `url:"userid" json:"userid"` // User ID
+	Userid string `url:"userid" json:"userid"` // Full User ID, in the `name@realm` format.
 
 	// The following parameters are optional
 	Comment   *string       `url:"comment,omitempty" json:"comment,omitempty"`
@@ -75,7 +75,7 @@ type IndexResponse struct {
 type _IndexResponse IndexResponse
 
 type CreateRequest struct {
-	Userid string `url:"userid" json:"userid"` // User ID
+	Userid string `url:"userid" json:"userid"` // Full User ID, in the `name@realm` format.
 
 	// The following parameters are optional
 	Comment   *string       `url:"comment,omitempty" json:"comment,omitempty"`
@@ -91,7 +91,7 @@ type CreateRequest struct {
 type _CreateRequest CreateRequest
 
 type FindRequest struct {
-	Userid string `url:"userid" json:"userid"` // User ID
+	Userid string `url:"userid" json:"userid"` // Full User ID, in the `name@realm` format.
 
 }
 type _FindRequest FindRequest
@@ -112,7 +112,7 @@ type FindResponse struct {
 type _FindResponse FindResponse
 
 type UpdateRequest struct {
-	Userid string `url:"userid" json:"userid"` // User ID
+	Userid string `url:"userid" json:"userid"` // Full User ID, in the `name@realm` format.
 
 	// The following parameters are optional
 	Append    *util.PVEBool `url:"append,omitempty" json:"append,omitempty"`
@@ -128,13 +128,13 @@ type UpdateRequest struct {
 type _UpdateRequest UpdateRequest
 
 type DeleteRequest struct {
-	Userid string `url:"userid" json:"userid"` // User ID
+	Userid string `url:"userid" json:"userid"` // Full User ID, in the `name@realm` format.
 
 }
 type _DeleteRequest DeleteRequest
 
 type ReadUserTfaTypeTfaRequest struct {
-	Userid string `url:"userid" json:"userid"` // User ID
+	Userid string `url:"userid" json:"userid"` // Full User ID, in the `name@realm` format.
 
 	// The following parameters are optional
 	Multiple *util.PVEBool `url:"multiple,omitempty" json:"multiple,omitempty"` // Request all entries as an array.

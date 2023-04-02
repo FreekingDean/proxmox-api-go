@@ -38,6 +38,101 @@ type MetadataRequest struct {
 }
 type _MetadataRequest MetadataRequest
 
+// Useful properties are listed, but not the full list.
+type Id struct {
+	Addr             string `url:"addr" json:"addr"`                             // Bind addresses and ports.
+	CephRelease      string `url:"ceph_release" json:"ceph_release"`             // Ceph release codename currently used.
+	CephVersion      string `url:"ceph_version" json:"ceph_version"`             // Version info currently used by the service.
+	CephVersionShort string `url:"ceph_version_short" json:"ceph_version_short"` // Short version (numerical) info currently used by the service.
+	Hostname         string `url:"hostname" json:"hostname"`                     // Hostname on which the service is running.
+	MemSwapKb        int    `url:"mem_swap_kb" json:"mem_swap_kb"`               // Memory of the service currently in swap.
+	MemTotalKb       int    `url:"mem_total_kb" json:"mem_total_kb"`             // Memory consumption of the service.
+	Name             string `url:"name" json:"name"`                             // Name of the service instance.
+
+}
+type _Id Id
+
+// Metadata servers configured in the cluster and their properties.
+type Mds struct {
+	Id Id `url:"{id}" json:"{id}"` // Useful properties are listed, but not the full list.
+
+}
+type _Mds Mds
+
+// Useful properties are listed, but not the full list.
+type SubId struct {
+	Addr             string `url:"addr" json:"addr"`                             // Bind address
+	CephRelease      string `url:"ceph_release" json:"ceph_release"`             // Ceph release codename currently used.
+	CephVersion      string `url:"ceph_version" json:"ceph_version"`             // Version info currently used by the service.
+	CephVersionShort string `url:"ceph_version_short" json:"ceph_version_short"` // Short version (numerical) info currently used by the service.
+	Hostname         string `url:"hostname" json:"hostname"`                     // Hostname on which the service is running.
+	MemSwapKb        int    `url:"mem_swap_kb" json:"mem_swap_kb"`               // Memory of the service currently in swap.
+	MemTotalKb       int    `url:"mem_total_kb" json:"mem_total_kb"`             // Memory consumption of the service.
+	Name             string `url:"name" json:"name"`                             // Name of the service instance.
+
+}
+type _SubId SubId
+
+// Managers configured in the cluster and their properties.
+type Mgr struct {
+	Id Id `url:"{id}" json:"{id}"` // Useful properties are listed, but not the full list.
+
+}
+type _Mgr Mgr
+
+// Useful properties are listed, but not the full list.
+type SubSubId struct {
+	Addrs            string `url:"addrs" json:"addrs"`                           // Bind addresses and ports.
+	CephRelease      string `url:"ceph_release" json:"ceph_release"`             // Ceph release codename currently used.
+	CephVersion      string `url:"ceph_version" json:"ceph_version"`             // Version info currently used by the service.
+	CephVersionShort string `url:"ceph_version_short" json:"ceph_version_short"` // Short version (numerical) info currently used by the service.
+	Hostname         string `url:"hostname" json:"hostname"`                     // Hostname on which the service is running.
+	MemSwapKb        int    `url:"mem_swap_kb" json:"mem_swap_kb"`               // Memory of the service currently in swap.
+	MemTotalKb       int    `url:"mem_total_kb" json:"mem_total_kb"`             // Memory consumption of the service.
+	Name             string `url:"name" json:"name"`                             // Name of the service instance.
+
+}
+type _SubSubId SubSubId
+
+// Monitors configured in the cluster and their properties.
+type Mon struct {
+	Id Id `url:"{id}" json:"{id}"` // Useful properties are listed, but not the full list.
+
+}
+type _Mon Mon
+
+// Version info.
+type Version struct {
+	Parts []map[string]interface{} `url:"parts" json:"parts"` // major, minor & patch
+	Str   string                   `url:"str" json:"str"`     // Version as single string.
+
+}
+type _Version Version
+
+type Node struct {
+	Buildcommit string  `url:"buildcommit" json:"buildcommit"` // GIT commit used for the build.
+	Version     Version `url:"version" json:"version"`         // Version info.
+
+}
+type _Node Node
+
+// Ceph version installed on the nodes.
+type SubNode struct {
+	Node Node `url:"{node}" json:"{node}"`
+}
+type _SubNode SubNode
+
+// Items for each type of service containing objects for each instance.
+type MetadataResponse struct {
+	Mds  Mds                      `url:"mds" json:"mds"`   // Metadata servers configured in the cluster and their properties.
+	Mgr  Mgr                      `url:"mgr" json:"mgr"`   // Managers configured in the cluster and their properties.
+	Mon  Mon                      `url:"mon" json:"mon"`   // Monitors configured in the cluster and their properties.
+	Node Node                     `url:"node" json:"node"` // Ceph version installed on the nodes.
+	Osd  []map[string]interface{} `url:"osd" json:"osd"`   // OSDs configured in the cluster and their properties.
+
+}
+type _MetadataResponse MetadataResponse
+
 // Index Cluster ceph index.
 func (c *Client) Index(ctx context.Context) ([]map[string]interface{}, error) {
 	var resp []map[string]interface{}
@@ -47,8 +142,8 @@ func (c *Client) Index(ctx context.Context) ([]map[string]interface{}, error) {
 }
 
 // Metadata Get ceph metadata.
-func (c *Client) Metadata(ctx context.Context, req MetadataRequest) (map[string]interface{}, error) {
-	var resp map[string]interface{}
+func (c *Client) Metadata(ctx context.Context, req MetadataRequest) (MetadataResponse, error) {
+	var resp MetadataResponse
 
 	err := c.httpClient.Do(ctx, "/cluster/ceph/metadata", "GET", &resp, req)
 	return resp, err

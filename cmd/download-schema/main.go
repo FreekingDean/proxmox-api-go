@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
 )
 
 const (
@@ -10,13 +9,13 @@ const (
 )
 
 func main() {
-	//data, err := download()
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
+	data, err := download()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	//json, err := parseJS(data)
-	json, err := os.ReadFile("scripts/schema.json")
+	json, err := parseJS(data)
+	//json, err := os.ReadFile("scripts/schema.json")
 	if err != nil {
 		log.Fatal(err)
 	}

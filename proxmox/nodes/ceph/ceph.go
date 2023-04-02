@@ -139,6 +139,12 @@ type RulesRequest struct {
 }
 type _RulesRequest RulesRequest
 
+type RulesResponse struct {
+	Name string `url:"name" json:"name"` // Name of the CRUSH rule.
+
+}
+type _RulesResponse RulesResponse
+
 type CmdSafetyRequest struct {
 	Action  Action  `url:"action" json:"action"`   // Action to check
 	Id      string  `url:"id" json:"id"`           // ID of the service
@@ -164,7 +170,7 @@ func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]inte
 	return resp, err
 }
 
-// Config Get Ceph configuration.
+// Config Get the Ceph configuration file. Deprecated, please use `/nodes/{node}/ceph/cfg/raw.
 func (c *Client) Config(ctx context.Context, req ConfigRequest) (string, error) {
 	var resp string
 
@@ -172,7 +178,7 @@ func (c *Client) Config(ctx context.Context, req ConfigRequest) (string, error) 
 	return resp, err
 }
 
-// Configdb Get Ceph configuration database.
+// Configdb Get the Ceph configuration database. Deprecated, please use `/nodes/{node}/ceph/cfg/db.
 func (c *Client) Configdb(ctx context.Context, req ConfigdbRequest) ([]ConfigdbResponse, error) {
 	var resp []ConfigdbResponse
 
@@ -236,8 +242,8 @@ func (c *Client) Log(ctx context.Context, req LogRequest) ([]LogResponse, error)
 }
 
 // Rules List ceph rules.
-func (c *Client) Rules(ctx context.Context, req RulesRequest) ([]map[string]interface{}, error) {
-	var resp []map[string]interface{}
+func (c *Client) Rules(ctx context.Context, req RulesRequest) ([]RulesResponse, error) {
+	var resp []RulesResponse
 
 	err := c.httpClient.Do(ctx, "/nodes/{node}/ceph/rules", "GET", &resp, req)
 	return resp, err

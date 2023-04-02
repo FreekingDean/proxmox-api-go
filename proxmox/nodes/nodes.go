@@ -19,8 +19,8 @@ const (
 	Cf_MAX     Cf = "MAX"
 
 	Cmd_CEPH_INSTALL Cmd = "ceph_install"
-	Cmd_LOGIN        Cmd = "login"
 	Cmd_UPGRADE      Cmd = "upgrade"
+	Cmd_LOGIN        Cmd = "login"
 
 	Command_REBOOT   Command = "reboot"
 	Command_SHUTDOWN Command = "shutdown"
@@ -657,7 +657,9 @@ type StopallRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 
 	// The following parameters are optional
-	Vms *string `url:"vms,omitempty" json:"vms,omitempty"` // Only consider Guests with these IDs.
+	ForceStop *util.PVEBool `url:"force-stop,omitempty" json:"force-stop,omitempty"` // Force a hard-stop after the timeout.
+	Timeout   *int          `url:"timeout,omitempty" json:"timeout,omitempty"`       // Timeout for each guest shutdown task. Depending on `force-stop`, the shutdown gets then simply aborted or a hard-stop is forced.
+	Vms       *string       `url:"vms,omitempty" json:"vms,omitempty"`               // Only consider Guests with these IDs.
 }
 type _StopallRequest StopallRequest
 
@@ -666,7 +668,7 @@ type MigrateallRequest struct {
 	Target string `url:"target" json:"target"` // Target node.
 
 	// The following parameters are optional
-	Maxworkers     *int          `url:"maxworkers,omitempty" json:"maxworkers,omitempty"`             // Maximal number of parallel migration job. If not set use 'max_workers' from datacenter.cfg, one of both must be set!
+	Maxworkers     *int          `url:"maxworkers,omitempty" json:"maxworkers,omitempty"`             // Maximal number of parallel migration job. If not set, uses'max_workers' from datacenter.cfg. One of both must be set!
 	Vms            *string       `url:"vms,omitempty" json:"vms,omitempty"`                           // Only consider Guests with these IDs.
 	WithLocalDisks *util.PVEBool `url:"with-local-disks,omitempty" json:"with-local-disks,omitempty"` // Enable live storage migration for local disk
 }

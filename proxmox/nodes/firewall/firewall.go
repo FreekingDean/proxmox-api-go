@@ -102,6 +102,7 @@ type GetOptionsResponse struct {
 	LogNfConntrack                   *util.PVEBool     `url:"log_nf_conntrack,omitempty" json:"log_nf_conntrack,omitempty"`                                         // Enable logging of conntrack information.
 	Ndp                              *util.PVEBool     `url:"ndp,omitempty" json:"ndp,omitempty"`                                                                   // Enable NDP (Neighbor Discovery Protocol).
 	NfConntrackAllowInvalid          *util.PVEBool     `url:"nf_conntrack_allow_invalid,omitempty" json:"nf_conntrack_allow_invalid,omitempty"`                     // Allow invalid packets on connection tracking.
+	NfConntrackHelpers               *string           `url:"nf_conntrack_helpers,omitempty" json:"nf_conntrack_helpers,omitempty"`                                 // Enable conntrack helpers for specific protocols. Supported protocols: amanda, ftp, irc, netbios-ns, pptp, sane, sip, snmp, tftp
 	NfConntrackMax                   *int              `url:"nf_conntrack_max,omitempty" json:"nf_conntrack_max,omitempty"`                                         // Maximum number of tracked connections.
 	NfConntrackTcpTimeoutEstablished *int              `url:"nf_conntrack_tcp_timeout_established,omitempty" json:"nf_conntrack_tcp_timeout_established,omitempty"` // Conntrack established timeout.
 	NfConntrackTcpTimeoutSynRecv     *int              `url:"nf_conntrack_tcp_timeout_syn_recv,omitempty" json:"nf_conntrack_tcp_timeout_syn_recv,omitempty"`       // Conntrack syn recv timeout.
@@ -127,6 +128,7 @@ type SetOptionsRequest struct {
 	LogNfConntrack                   *util.PVEBool     `url:"log_nf_conntrack,omitempty" json:"log_nf_conntrack,omitempty"`                                         // Enable logging of conntrack information.
 	Ndp                              *util.PVEBool     `url:"ndp,omitempty" json:"ndp,omitempty"`                                                                   // Enable NDP (Neighbor Discovery Protocol).
 	NfConntrackAllowInvalid          *util.PVEBool     `url:"nf_conntrack_allow_invalid,omitempty" json:"nf_conntrack_allow_invalid,omitempty"`                     // Allow invalid packets on connection tracking.
+	NfConntrackHelpers               *string           `url:"nf_conntrack_helpers,omitempty" json:"nf_conntrack_helpers,omitempty"`                                 // Enable conntrack helpers for specific protocols. Supported protocols: amanda, ftp, irc, netbios-ns, pptp, sane, sip, snmp, tftp
 	NfConntrackMax                   *int              `url:"nf_conntrack_max,omitempty" json:"nf_conntrack_max,omitempty"`                                         // Maximum number of tracked connections.
 	NfConntrackTcpTimeoutEstablished *int              `url:"nf_conntrack_tcp_timeout_established,omitempty" json:"nf_conntrack_tcp_timeout_established,omitempty"` // Conntrack established timeout.
 	NfConntrackTcpTimeoutSynRecv     *int              `url:"nf_conntrack_tcp_timeout_syn_recv,omitempty" json:"nf_conntrack_tcp_timeout_syn_recv,omitempty"`       // Conntrack syn recv timeout.
@@ -145,7 +147,9 @@ type LogRequest struct {
 
 	// The following parameters are optional
 	Limit *int `url:"limit,omitempty" json:"limit,omitempty"`
+	Since *int `url:"since,omitempty" json:"since,omitempty"` // Display log since this UNIX epoch.
 	Start *int `url:"start,omitempty" json:"start,omitempty"`
+	Until *int `url:"until,omitempty" json:"until,omitempty"` // Display log until this UNIX epoch.
 }
 type _LogRequest LogRequest
 

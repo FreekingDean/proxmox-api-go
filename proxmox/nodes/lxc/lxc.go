@@ -15,10 +15,12 @@ import (
 )
 
 const (
-	Arch_AMD64 Arch = "amd64"
-	Arch_I386  Arch = "i386"
-	Arch_ARM64 Arch = "arm64"
-	Arch_ARMHF Arch = "armhf"
+	Arch_AMD64   Arch = "amd64"
+	Arch_I386    Arch = "i386"
+	Arch_ARM64   Arch = "arm64"
+	Arch_ARMHF   Arch = "armhf"
+	Arch_RISCV32 Arch = "riscv32"
+	Arch_RISCV64 Arch = "riscv64"
 
 	Cf_AVERAGE Cf = "AVERAGE"
 	Cf_MAX     Cf = "MAX"
@@ -1438,26 +1440,32 @@ type IndexResponse struct {
 }
 type _IndexResponse IndexResponse
 
-// Use volume as container root.
-type Rootfs struct {
-	Volume string `url:"volume" json:"volume"` // Volume, device or directory to mount into the container.
+// Specifies network interfaces for the container.
+type Net struct {
+	Name string `url:"name" json:"name"` // Name of the network device as seen from inside the container. (lxc.network.name)
 
 	// The following parameters are optional
-	Acl          *util.PVEBool `url:"acl,omitempty" json:"acl,omitempty"`                   // Explicitly enable or disable ACL support.
-	Mountoptions *string       `url:"mountoptions,omitempty" json:"mountoptions,omitempty"` // Extra mount options for rootfs/mps.
-	Quota        *util.PVEBool `url:"quota,omitempty" json:"quota,omitempty"`               // Enable user quotas inside the container (not supported with zfs subvolumes)
-	Replicate    *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`       // Will include this volume to a storage replica job.
-	Ro           *util.PVEBool `url:"ro,omitempty" json:"ro,omitempty"`                     // Read-only mount point
-	Shared       *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`             // Mark this non-volume mount point as available on multiple nodes (see 'nodes')
-	Size         *string       `url:"size,omitempty" json:"size,omitempty"`                 // Volume size (read only value).
+	Bridge   *string       `url:"bridge,omitempty" json:"bridge,omitempty"`       // Bridge to attach the network device to.
+	Firewall *util.PVEBool `url:"firewall,omitempty" json:"firewall,omitempty"`   // Controls whether this interface's firewall rules should be used.
+	Gw       *string       `url:"gw,omitempty" json:"gw,omitempty"`               // Default gateway for IPv4 traffic.
+	Gw6      *string       `url:"gw6,omitempty" json:"gw6,omitempty"`             // Default gateway for IPv6 traffic.
+	Hwaddr   *string       `url:"hwaddr,omitempty" json:"hwaddr,omitempty"`       // The interface MAC address. This is dynamically allocated by default, but you can set that statically if needed, for example to always have the same link-local IPv6 address. (lxc.network.hwaddr)
+	Ip       *string       `url:"ip,omitempty" json:"ip,omitempty"`               // IPv4 address in CIDR format.
+	Ip6      *string       `url:"ip6,omitempty" json:"ip6,omitempty"`             // IPv6 address in CIDR format.
+	LinkDown *util.PVEBool `url:"link_down,omitempty" json:"link_down,omitempty"` // Whether this interface should be disconnected (like pulling the plug).
+	Mtu      *int          `url:"mtu,omitempty" json:"mtu,omitempty"`             // Maximum transfer unit of the interface. (lxc.network.mtu)
+	Rate     *float64      `url:"rate,omitempty" json:"rate,omitempty"`           // Apply rate limiting to the interface
+	Tag      *int          `url:"tag,omitempty" json:"tag,omitempty"`             // VLAN tag for this interface.
+	Trunks   *string       `url:"trunks,omitempty" json:"trunks,omitempty"`       // VLAN ids to pass through the interface
+	Type     *NetType      `url:"type,omitempty" json:"type,omitempty"`           // Network interface type.
 }
-type _Rootfs Rootfs
+type _Net Net
 
-func (t Rootfs) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[volume=]<volume> [,acl=<1|0>] [,mountoptions=<opt[;opt...]>] [,quota=<1|0>] [,replicate=<1|0>] [,ro=<1|0>] [,shared=<1|0>] [,size=<DiskSize>]`)
+func (t Net) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `name=<string> [,bridge=<bridge>] [,firewall=<1|0>] [,gw=<GatewayIPv4>] [,gw6=<GatewayIPv6>] [,hwaddr=<XX:XX:XX:XX:XX:XX>] [,ip=<(IPv4/CIDR|dhcp|manual)>] [,ip6=<(IPv6/CIDR|auto|dhcp|manual)>] [,link_down=<1|0>] [,mtu=<integer>] [,rate=<mbps>] [,tag=<integer>] [,trunks=<vlanid[;vlanid...]>] [,type=<veth>]`)
 }
 
-func (t *Rootfs) UnmarshalJSON(d []byte) error {
+func (t *Net) UnmarshalJSON(d []byte) error {
 	if len(d) == 0 || string(d) == `""` {
 		return nil
 	}
@@ -1471,84 +1479,152 @@ func (t *Rootfs) UnmarshalJSON(d []byte) error {
 		}
 		if len(kv) == 1 {
 
-			values["volume"] = kv[0]
+			values["name"] = kv[0]
 
 			continue
 		}
 		values[kv[0]] = kv[1]
 	}
 
-	if v, ok := values["volume"]; ok {
+	if v, ok := values["name"]; ok {
 
 		v = fmt.Sprintf("\"%s\"", v)
 
-		err := json.Unmarshal([]byte(v), &t.Volume)
+		err := json.Unmarshal([]byte(v), &t.Name)
 		if err != nil {
 			return err
 		}
 	}
 
-	if v, ok := values["acl"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Acl)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["mountoptions"]; ok {
+	if v, ok := values["bridge"]; ok {
 
 		v = fmt.Sprintf("\"%s\"", v)
 
-		err := json.Unmarshal([]byte(v), &t.Mountoptions)
+		err := json.Unmarshal([]byte(v), &t.Bridge)
 		if err != nil {
 			return err
 		}
 	}
 
-	if v, ok := values["quota"]; ok {
+	if v, ok := values["firewall"]; ok {
 
-		err := json.Unmarshal([]byte(v), &t.Quota)
+		err := json.Unmarshal([]byte(v), &t.Firewall)
 		if err != nil {
 			return err
 		}
 	}
 
-	if v, ok := values["replicate"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Replicate)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["ro"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Ro)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["shared"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Shared)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["size"]; ok {
+	if v, ok := values["gw"]; ok {
 
 		v = fmt.Sprintf("\"%s\"", v)
 
-		err := json.Unmarshal([]byte(v), &t.Size)
+		err := json.Unmarshal([]byte(v), &t.Gw)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["gw6"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Gw6)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["hwaddr"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Hwaddr)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["ip"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Ip)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["ip6"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Ip6)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["link_down"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.LinkDown)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mtu"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Mtu)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["rate"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Rate)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["tag"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Tag)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["trunks"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Trunks)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["type"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Type)
 		if err != nil {
 			return err
 		}
 	}
 
 	return nil
+}
+
+// Array of Net
+type Nets []*Net
+type _Nets Nets
+
+func (t Nets) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
 }
 
 // Allow containers access to advanced features.
@@ -1640,6 +1716,59 @@ func (t *Features) UnmarshalJSON(d []byte) error {
 	}
 
 	return nil
+}
+
+// Reference to unused volumes. This is used internally, and should not be modified manually.
+type Unused struct {
+	Volume string `url:"volume" json:"volume"` // The volume that is not used currently.
+
+}
+type _Unused Unused
+
+func (t Unused) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[volume=]<volume>`)
+}
+
+func (t *Unused) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["volume"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["volume"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Volume)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Array of Unused
+type Unuseds []*Unused
+type _Unuseds Unuseds
+
+func (t Unuseds) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
 }
 
 // Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
@@ -1783,196 +1912,26 @@ func (t Mps) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeArray(key, v, t)
 }
 
-// Specifies network interfaces for the container.
-type Net struct {
-	Name string `url:"name" json:"name"` // Name of the network device as seen from inside the container. (lxc.network.name)
+// Use volume as container root.
+type Rootfs struct {
+	Volume string `url:"volume" json:"volume"` // Volume, device or directory to mount into the container.
 
 	// The following parameters are optional
-	Bridge   *string       `url:"bridge,omitempty" json:"bridge,omitempty"`     // Bridge to attach the network device to.
-	Firewall *util.PVEBool `url:"firewall,omitempty" json:"firewall,omitempty"` // Controls whether this interface's firewall rules should be used.
-	Gw       *string       `url:"gw,omitempty" json:"gw,omitempty"`             // Default gateway for IPv4 traffic.
-	Gw6      *string       `url:"gw6,omitempty" json:"gw6,omitempty"`           // Default gateway for IPv6 traffic.
-	Hwaddr   *string       `url:"hwaddr,omitempty" json:"hwaddr,omitempty"`     // The interface MAC address. This is dynamically allocated by default, but you can set that statically if needed, for example to always have the same link-local IPv6 address. (lxc.network.hwaddr)
-	Ip       *string       `url:"ip,omitempty" json:"ip,omitempty"`             // IPv4 address in CIDR format.
-	Ip6      *string       `url:"ip6,omitempty" json:"ip6,omitempty"`           // IPv6 address in CIDR format.
-	Mtu      *int          `url:"mtu,omitempty" json:"mtu,omitempty"`           // Maximum transfer unit of the interface. (lxc.network.mtu)
-	Rate     *float64      `url:"rate,omitempty" json:"rate,omitempty"`         // Apply rate limiting to the interface
-	Tag      *int          `url:"tag,omitempty" json:"tag,omitempty"`           // VLAN tag for this interface.
-	Trunks   *string       `url:"trunks,omitempty" json:"trunks,omitempty"`     // VLAN ids to pass through the interface
-	Type     *NetType      `url:"type,omitempty" json:"type,omitempty"`         // Network interface type.
+	Acl          *util.PVEBool `url:"acl,omitempty" json:"acl,omitempty"`                   // Explicitly enable or disable ACL support.
+	Mountoptions *string       `url:"mountoptions,omitempty" json:"mountoptions,omitempty"` // Extra mount options for rootfs/mps.
+	Quota        *util.PVEBool `url:"quota,omitempty" json:"quota,omitempty"`               // Enable user quotas inside the container (not supported with zfs subvolumes)
+	Replicate    *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`       // Will include this volume to a storage replica job.
+	Ro           *util.PVEBool `url:"ro,omitempty" json:"ro,omitempty"`                     // Read-only mount point
+	Shared       *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`             // Mark this non-volume mount point as available on multiple nodes (see 'nodes')
+	Size         *string       `url:"size,omitempty" json:"size,omitempty"`                 // Volume size (read only value).
 }
-type _Net Net
+type _Rootfs Rootfs
 
-func (t Net) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `name=<string> [,bridge=<bridge>] [,firewall=<1|0>] [,gw=<GatewayIPv4>] [,gw6=<GatewayIPv6>] [,hwaddr=<XX:XX:XX:XX:XX:XX>] [,ip=<(IPv4/CIDR|dhcp|manual)>] [,ip6=<(IPv6/CIDR|auto|dhcp|manual)>] [,mtu=<integer>] [,rate=<mbps>] [,tag=<integer>] [,trunks=<vlanid[;vlanid...]>] [,type=<veth>]`)
+func (t Rootfs) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[volume=]<volume> [,acl=<1|0>] [,mountoptions=<opt[;opt...]>] [,quota=<1|0>] [,replicate=<1|0>] [,ro=<1|0>] [,shared=<1|0>] [,size=<DiskSize>]`)
 }
 
-func (t *Net) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["name"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["name"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Name)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["bridge"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Bridge)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["firewall"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Firewall)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["gw"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Gw)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["gw6"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Gw6)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["hwaddr"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Hwaddr)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["ip"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Ip)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["ip6"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Ip6)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["mtu"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Mtu)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["rate"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Rate)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["tag"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Tag)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["trunks"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Trunks)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["type"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Type)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Array of Net
-type Nets []*Net
-type _Nets Nets
-
-func (t Nets) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Reference to unused volumes. This is used internally, and should not be modified manually.
-type Unused struct {
-	Volume string `url:"volume" json:"volume"` // The volume that is not used currently.
-
-}
-type _Unused Unused
-
-func (t Unused) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[volume=]<volume>`)
-}
-
-func (t *Unused) UnmarshalJSON(d []byte) error {
+func (t *Rootfs) UnmarshalJSON(d []byte) error {
 	if len(d) == 0 || string(d) == `""` {
 		return nil
 	}
@@ -2003,15 +1962,67 @@ func (t *Unused) UnmarshalJSON(d []byte) error {
 		}
 	}
 
+	if v, ok := values["acl"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Acl)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mountoptions"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Mountoptions)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["quota"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Quota)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["replicate"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Replicate)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["ro"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Ro)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["shared"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Shared)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["size"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Size)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
-}
-
-// Array of Unused
-type Unuseds []*Unused
-type _Unuseds Unuseds
-
-func (t Unuseds) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
 }
 
 type CreateRequest struct {

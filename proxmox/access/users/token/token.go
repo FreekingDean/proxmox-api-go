@@ -22,7 +22,7 @@ func New(c HTTPClient) *Client {
 }
 
 type IndexRequest struct {
-	Userid string `url:"userid" json:"userid"` // User ID
+	Userid string `url:"userid" json:"userid"` // Full User ID, in the `name@realm` format.
 
 }
 type _IndexRequest IndexRequest
@@ -39,7 +39,7 @@ type _IndexResponse IndexResponse
 
 type FindRequest struct {
 	Tokenid string `url:"tokenid" json:"tokenid"` // User-specific token identifier.
-	Userid  string `url:"userid" json:"userid"`   // User ID
+	Userid  string `url:"userid" json:"userid"`   // Full User ID, in the `name@realm` format.
 
 }
 type _FindRequest FindRequest
@@ -55,7 +55,7 @@ type _FindResponse FindResponse
 
 type ChildCreateRequest struct {
 	Tokenid string `url:"tokenid" json:"tokenid"` // User-specific token identifier.
-	Userid  string `url:"userid" json:"userid"`   // User ID
+	Userid  string `url:"userid" json:"userid"`   // Full User ID, in the `name@realm` format.
 
 	// The following parameters are optional
 	Comment *string       `url:"comment,omitempty" json:"comment,omitempty"`
@@ -83,7 +83,7 @@ type _ChildCreateResponse ChildCreateResponse
 
 type UpdateRequest struct {
 	Tokenid string `url:"tokenid" json:"tokenid"` // User-specific token identifier.
-	Userid  string `url:"userid" json:"userid"`   // User ID
+	Userid  string `url:"userid" json:"userid"`   // Full User ID, in the `name@realm` format.
 
 	// The following parameters are optional
 	Comment *string       `url:"comment,omitempty" json:"comment,omitempty"`
@@ -104,7 +104,7 @@ type _UpdateResponse UpdateResponse
 
 type DeleteRequest struct {
 	Tokenid string `url:"tokenid" json:"tokenid"` // User-specific token identifier.
-	Userid  string `url:"userid" json:"userid"`   // User ID
+	Userid  string `url:"userid" json:"userid"`   // Full User ID, in the `name@realm` format.
 
 }
 type _DeleteRequest DeleteRequest

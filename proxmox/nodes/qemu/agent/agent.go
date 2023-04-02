@@ -281,7 +281,7 @@ type FileWriteRequest struct {
 }
 type _FileWriteRequest FileWriteRequest
 
-// Index Qemu Agent command index.
+// Index QEMU Guest Agent command index.
 func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]interface{}, error) {
 	var resp []map[string]interface{}
 
@@ -289,7 +289,7 @@ func (c *Client) Index(ctx context.Context, req IndexRequest) ([]map[string]inte
 	return resp, err
 }
 
-// Create Execute Qemu Guest Agent commands.
+// Create Execute QEMU Guest Agent commands.
 func (c *Client) Create(ctx context.Context, req CreateRequest) (map[string]interface{}, error) {
 	var resp map[string]interface{}
 

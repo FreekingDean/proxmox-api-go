@@ -4,6 +4,7 @@ package mon
 
 import (
 	"context"
+	"github.com/FreekingDean/proxmox-api-go/internal/util"
 )
 
 type HTTPClient interface {
@@ -30,8 +31,15 @@ type IndexResponse struct {
 	Name string `url:"name" json:"name"`
 
 	// The following parameters are optional
-	Addr *string `url:"addr,omitempty" json:"addr,omitempty"`
-	Host *string `url:"host,omitempty" json:"host,omitempty"`
+	Addr             *string       `url:"addr,omitempty" json:"addr,omitempty"`
+	CephVersion      *string       `url:"ceph_version,omitempty" json:"ceph_version,omitempty"`
+	CephVersionShort *string       `url:"ceph_version_short,omitempty" json:"ceph_version_short,omitempty"`
+	Direxists        *string       `url:"direxists,omitempty" json:"direxists,omitempty"`
+	Host             *util.PVEBool `url:"host,omitempty" json:"host,omitempty"`
+	Quorum           *util.PVEBool `url:"quorum,omitempty" json:"quorum,omitempty"`
+	Rank             *int          `url:"rank,omitempty" json:"rank,omitempty"`
+	Service          *int          `url:"service,omitempty" json:"service,omitempty"`
+	State            *string       `url:"state,omitempty" json:"state,omitempty"`
 }
 type _IndexResponse IndexResponse
 

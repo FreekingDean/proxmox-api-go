@@ -76,7 +76,7 @@ type CreateResponse struct {
 type _CreateResponse CreateResponse
 
 type FindRequest struct {
-	Userid string `url:"userid" json:"userid"` // User ID
+	Userid string `url:"userid" json:"userid"` // Full User ID, in the `name@realm` format.
 
 }
 type _FindRequest FindRequest
@@ -95,7 +95,7 @@ type _FindResponse FindResponse
 
 type ChildCreateRequest struct {
 	Type   Type   `url:"type" json:"type"`     // TFA Entry Type.
-	Userid string `url:"userid" json:"userid"` // User ID
+	Userid string `url:"userid" json:"userid"` // Full User ID, in the `name@realm` format.
 
 	// The following parameters are optional
 	Challenge   *string `url:"challenge,omitempty" json:"challenge,omitempty"`     // When responding to a u2f challenge: the original challenge string
@@ -117,7 +117,7 @@ type _ChildCreateResponse ChildCreateResponse
 
 type GetTfaEntryIdRequest struct {
 	Id     string `url:"id" json:"id"`         // A TFA entry id.
-	Userid string `url:"userid" json:"userid"` // User ID
+	Userid string `url:"userid" json:"userid"` // Full User ID, in the `name@realm` format.
 
 }
 type _GetTfaEntryIdRequest GetTfaEntryIdRequest
@@ -136,7 +136,7 @@ type _GetTfaEntryIdResponse GetTfaEntryIdResponse
 
 type UpdateTfaEntryIdRequest struct {
 	Id     string `url:"id" json:"id"`         // A TFA entry id.
-	Userid string `url:"userid" json:"userid"` // User ID
+	Userid string `url:"userid" json:"userid"` // Full User ID, in the `name@realm` format.
 
 	// The following parameters are optional
 	Description *string       `url:"description,omitempty" json:"description,omitempty"` // A description to distinguish multiple entries from one another
@@ -147,7 +147,7 @@ type _UpdateTfaEntryIdRequest UpdateTfaEntryIdRequest
 
 type DeleteTfaIdRequest struct {
 	Id     string `url:"id" json:"id"`         // A TFA entry id.
-	Userid string `url:"userid" json:"userid"` // User ID
+	Userid string `url:"userid" json:"userid"` // Full User ID, in the `name@realm` format.
 
 	// The following parameters are optional
 	Password *string `url:"password,omitempty" json:"password,omitempty"` // The current password.

@@ -132,7 +132,9 @@ type LogRequest struct {
 
 	// The following parameters are optional
 	Limit *int `url:"limit,omitempty" json:"limit,omitempty"`
+	Since *int `url:"since,omitempty" json:"since,omitempty"` // Display log since this UNIX epoch.
 	Start *int `url:"start,omitempty" json:"start,omitempty"`
+	Until *int `url:"until,omitempty" json:"until,omitempty"` // Display log until this UNIX epoch.
 }
 type _LogRequest LogRequest
 
