@@ -9,6 +9,7 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 	"net/url"
 	"strings"
+	"strconv"
 )
 
 const (
@@ -923,8 +924,12 @@ func (c *Client) GetStatus(ctx context.Context) ([]GetStatusResponse, error) {
 
 // Nextid Get next free VMID. Pass a VMID to assert that its free (at time of check).
 func (c *Client) Nextid(ctx context.Context, req NextidRequest) (int, error) {
-	var resp int
+	var resp string
 
 	err := c.httpClient.Do(ctx, "/cluster/nextid", "GET", &resp, req)
-	return resp, err
+	if err != nil {
+		return 0, err
+	}
+	vmid, err := strconv.Atoi(resp)
+	return vmid, err
 }
