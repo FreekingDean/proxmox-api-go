@@ -39,15 +39,15 @@ func TestVmConfig(t *testing.T) {
 			assert.Equal(t, 1024, *resp.Memory)
 		}
 		if assert.NotNil(t, resp.Scsis) && assert.Equal(t, 1, len(*resp.Scsis)) {
-			assert.Equal(t, "testfile", (*resp.Scsis)[0].File)
-			if assert.NotNil(t, (*resp.Scsis)[0].Ssd) {
-				assert.Equal(t, true, bool(*(*resp.Scsis)[0].Ssd))
+			assert.Equal(t, "testfile", (*resp.Scsis)["scsi0"].File)
+			if assert.NotNil(t, (*resp.Scsis)["scsi0"].Ssd) {
+				assert.Equal(t, true, bool(*(*resp.Scsis)["scsi0"].Ssd))
 			}
-			if assert.NotNil(t, (*resp.Scsis)[0].Aio) {
-				assert.Equal(t, qemu.ScsiAio_NATIVE, *(*resp.Scsis)[0].Aio)
+			if assert.NotNil(t, (*resp.Scsis)["scsi0"].Aio) {
+				assert.Equal(t, qemu.ScsiAio_NATIVE, *(*resp.Scsis)["scsi0"].Aio)
 			}
-			if assert.NotNil(t, (*resp.Scsis)[0].Size) {
-				assert.Equal(t, "1024K", *(*resp.Scsis)[0].Size)
+			if assert.NotNil(t, (*resp.Scsis)["scsi0"].Size) {
+				assert.Equal(t, "1024K", *(*resp.Scsis)["scsi0"].Size)
 			}
 		}
 	}

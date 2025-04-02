@@ -89,11 +89,10 @@ func (c *Client) Create(ctx context.Context, req CreateRequest) error {
 }
 
 // Find Read ha group configuration.
-func (c *Client) Find(ctx context.Context, req FindRequest) (map[string]interface{}, error) {
-	var resp map[string]interface{}
+func (c *Client) Find(ctx context.Context, req FindRequest) error {
 
-	err := c.httpClient.Do(ctx, "/cluster/ha/groups/{group}", "GET", &resp, req)
-	return resp, err
+	err := c.httpClient.Do(ctx, "/cluster/ha/groups/{group}", "GET", nil, req)
+	return err
 }
 
 // Update Update ha group configuration.

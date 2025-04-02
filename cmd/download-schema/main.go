@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	apijs = "https://github.com/proxmox/pve-docs/raw/master/api-viewer/apidata.js"
+	apijs = "https://github.com/proxmox/pve-docs/raw/ab8ba11aa85c2a189a882338033ee288230cca93/api-viewer/apidata.js"
 )
 
 func main() {

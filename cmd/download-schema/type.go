@@ -82,11 +82,11 @@ func (p *Package) defineType(name string, jsonName string, schema *jsonschema.JS
 	if strings.HasSuffix(t.Name, "[N]") {
 		t.Name = strings.TrimSuffix(t.Name, "[N]")
 		arrType := &Type{
-			Type:               "[]*" + strings.TrimSuffix(t.Type, "[N]"),
+			Type:               "map[string]*" + strings.TrimSuffix(t.Type, "[N]"),
 			Name:               t.Name + "s",
 			Properties:         make([]*Type, 0),
 			OptionalProperties: make([]*Type, 0),
-			Description:        "Array of " + t.Name,
+			Description:        "Set of " + t.Name,
 			Format:             "array",
 		}
 		t.Type = t.Name + "s"

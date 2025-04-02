@@ -9,7 +9,6 @@ import (
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
 	"net/url"
 	"strings"
-	"strconv"
 )
 
 const (
@@ -218,468 +217,6 @@ type TasksResponse struct {
 }
 type _TasksResponse TasksResponse
 
-// Control the range for the free VMID auto-selection pool.
-type NextId struct {
-
-	// The following parameters are optional
-	Lower *int `url:"lower,omitempty" json:"lower,omitempty"` // Lower, inclusive boundary for free next-id API range.
-	Upper *int `url:"upper,omitempty" json:"upper,omitempty"` // Upper, exclusive boundary for free next-id API range.
-}
-type _NextId NextId
-
-func (t NextId) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[lower=<integer>] [,upper=<integer>]`)
-}
-
-func (t *NextId) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["lower"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["lower"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Lower)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["upper"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Upper)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Tag style options.
-type TagStyle struct {
-
-	// The following parameters are optional
-	CaseSensitive *util.PVEBool     `url:"case-sensitive,omitempty" json:"case-sensitive,omitempty"` // Controls if filtering for unique tags on update should check case-sensitive.
-	ColorMap      *string           `url:"color-map,omitempty" json:"color-map,omitempty"`           // Manual color mapping for tags (semicolon separated).
-	Ordering      *TagStyleOrdering `url:"ordering,omitempty" json:"ordering,omitempty"`             // Controls the sorting of the tags in the web-interface and the API update.
-	Shape         *TagStyleShape    `url:"shape,omitempty" json:"shape,omitempty"`                   // Tag shape for the web ui tree. 'full' draws the full tag. 'circle' draws only a circle with the background color. 'dense' only draws a small rectancle (useful when many tags are assigned to each guest).'none' disables showing the tags.
-}
-type _TagStyle TagStyle
-
-func (t TagStyle) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[case-sensitive=<1|0>] [,color-map=<tag>:<hex-color>[:<hex-color-for-text>][;<tag>=...]] [,ordering=<config|alphabetical>] [,shape=<enum>]`)
-}
-
-func (t *TagStyle) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["case-sensitive"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["case-sensitive"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.CaseSensitive)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["color-map"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.ColorMap)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["ordering"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Ordering)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["shape"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Shape)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// For cluster wide migration settings.
-type Migration struct {
-	Type MigrationType `url:"type" json:"type"` // Migration traffic is encrypted using an SSH tunnel by default. On secure, completely private networks this can be disabled to increase performance.
-
-	// The following parameters are optional
-	Network *string `url:"network,omitempty" json:"network,omitempty"` // CIDR of the (sub) network that is used for migration.
-}
-type _Migration Migration
-
-func (t Migration) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[type=]<secure|insecure> [,network=<CIDR>]`)
-}
-
-func (t *Migration) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["type"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["type"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Type)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["network"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Network)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Cluster-wide notification settings.
-type Notify struct {
-	PackageUpdates NotifyPackageUpdates `url:"package-updates" json:"package-updates"` // Control when the daily update job should send out notification mails.
-
-}
-type _Notify Notify
-
-func (t Notify) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `package-updates=<auto|always|never>`)
-}
-
-func (t *Notify) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["package-updates"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["package-updates"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.PackageUpdates)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Privilege options for user-settable tags
-type UserTagAccess struct {
-
-	// The following parameters are optional
-	UserAllow     *UserTagAccessUserAllow `url:"user-allow,omitempty" json:"user-allow,omitempty"`           // Controls tag usage for users without `Sys.Modify` on `/` by either allowing `none`, a `list`, already `existing` or anything (`free`).
-	UserAllowList *string                 `url:"user-allow-list,omitempty" json:"user-allow-list,omitempty"` // List of tags users are allowed to set and delete (semicolon separated) for 'user-allow' values 'list' and 'existing'.
-}
-type _UserTagAccess UserTagAccess
-
-func (t UserTagAccess) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[user-allow=<enum>] [,user-allow-list=<tag>[;<tag>...]]`)
-}
-
-func (t *UserTagAccess) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["user-allow"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["user-allow"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.UserAllow)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["user-allow-list"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.UserAllowList)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Cluster wide HA settings.
-type Ha struct {
-	ShutdownPolicy HaShutdownPolicy `url:"shutdown_policy" json:"shutdown_policy"` // The policy for HA services on node shutdown. 'freeze' disables auto-recovery, 'failover' ensures recovery, 'conditional' recovers on poweroff and freezes on reboot. 'migrate' will migrate running services to other nodes, if possible. With 'freeze' or 'failover', HA Services will always get stopped first on shutdown.
-
-}
-type _Ha Ha
-
-func (t Ha) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `shutdown_policy=<enum>`)
-}
-
-func (t *Ha) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["shutdown_policy"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["shutdown_policy"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.ShutdownPolicy)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// u2f
-type U2f struct {
-
-	// The following parameters are optional
-	Appid  *string `url:"appid,omitempty" json:"appid,omitempty"`   // U2F AppId URL override. Defaults to the origin.
-	Origin *string `url:"origin,omitempty" json:"origin,omitempty"` // U2F Origin override. Mostly useful for single nodes with a single URL.
-}
-type _U2f U2f
-
-func (t U2f) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[appid=<APPID>] [,origin=<URL>]`)
-}
-
-func (t *U2f) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["appid"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["appid"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Appid)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["origin"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Origin)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// webauthn configuration
-type Webauthn struct {
-
-	// The following parameters are optional
-	AllowSubdomains *util.PVEBool `url:"allow-subdomains,omitempty" json:"allow-subdomains,omitempty"` // Whether to allow the origin to be a subdomain, rather than the exact URL.
-	Id              *string       `url:"id,omitempty" json:"id,omitempty"`                             // Relying party ID. Must be the domain name without protocol, port or location. Changing this *will* break existing credentials.
-	Origin          *string       `url:"origin,omitempty" json:"origin,omitempty"`                     // Site origin. Must be a `https://` URL (or `http://localhost`). Should contain the address users type in their browsers to access the web interface. Changing this *may* break existing credentials.
-	Rp              *string       `url:"rp,omitempty" json:"rp,omitempty"`                             // Relying party name. Any text identifier. Changing this *may* break existing credentials.
-}
-type _Webauthn Webauthn
-
-func (t Webauthn) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[allow-subdomains=<1|0>] [,id=<DOMAINNAME>] [,origin=<URL>] [,rp=<RELYING_PARTY>]`)
-}
-
-func (t *Webauthn) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["allow-subdomains"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["allow-subdomains"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.AllowSubdomains)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["id"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Id)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["origin"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Origin)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["rp"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Rp)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 // Set bandwidth/io limits various operations.
 type Bwlimit struct {
 
@@ -815,6 +352,468 @@ func (t *Crs) UnmarshalJSON(d []byte) error {
 	return nil
 }
 
+// Cluster wide HA settings.
+type Ha struct {
+	ShutdownPolicy HaShutdownPolicy `url:"shutdown_policy" json:"shutdown_policy"` // The policy for HA services on node shutdown. 'freeze' disables auto-recovery, 'failover' ensures recovery, 'conditional' recovers on poweroff and freezes on reboot. 'migrate' will migrate running services to other nodes, if possible. With 'freeze' or 'failover', HA Services will always get stopped first on shutdown.
+
+}
+type _Ha Ha
+
+func (t Ha) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `shutdown_policy=<enum>`)
+}
+
+func (t *Ha) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["shutdown_policy"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["shutdown_policy"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.ShutdownPolicy)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Tag style options.
+type TagStyle struct {
+
+	// The following parameters are optional
+	CaseSensitive *util.PVEBool     `url:"case-sensitive,omitempty" json:"case-sensitive,omitempty"` // Controls if filtering for unique tags on update should check case-sensitive.
+	ColorMap      *string           `url:"color-map,omitempty" json:"color-map,omitempty"`           // Manual color mapping for tags (semicolon separated).
+	Ordering      *TagStyleOrdering `url:"ordering,omitempty" json:"ordering,omitempty"`             // Controls the sorting of the tags in the web-interface and the API update.
+	Shape         *TagStyleShape    `url:"shape,omitempty" json:"shape,omitempty"`                   // Tag shape for the web ui tree. 'full' draws the full tag. 'circle' draws only a circle with the background color. 'dense' only draws a small rectancle (useful when many tags are assigned to each guest).'none' disables showing the tags.
+}
+type _TagStyle TagStyle
+
+func (t TagStyle) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[case-sensitive=<1|0>] [,color-map=<tag>:<hex-color>[:<hex-color-for-text>][;<tag>=...]] [,ordering=<config|alphabetical>] [,shape=<enum>]`)
+}
+
+func (t *TagStyle) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["case-sensitive"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["case-sensitive"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.CaseSensitive)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["color-map"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.ColorMap)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["ordering"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Ordering)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["shape"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Shape)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// webauthn configuration
+type Webauthn struct {
+
+	// The following parameters are optional
+	AllowSubdomains *util.PVEBool `url:"allow-subdomains,omitempty" json:"allow-subdomains,omitempty"` // Whether to allow the origin to be a subdomain, rather than the exact URL.
+	Id              *string       `url:"id,omitempty" json:"id,omitempty"`                             // Relying party ID. Must be the domain name without protocol, port or location. Changing this *will* break existing credentials.
+	Origin          *string       `url:"origin,omitempty" json:"origin,omitempty"`                     // Site origin. Must be a `https://` URL (or `http://localhost`). Should contain the address users type in their browsers to access the web interface. Changing this *may* break existing credentials.
+	Rp              *string       `url:"rp,omitempty" json:"rp,omitempty"`                             // Relying party name. Any text identifier. Changing this *may* break existing credentials.
+}
+type _Webauthn Webauthn
+
+func (t Webauthn) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[allow-subdomains=<1|0>] [,id=<DOMAINNAME>] [,origin=<URL>] [,rp=<RELYING_PARTY>]`)
+}
+
+func (t *Webauthn) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["allow-subdomains"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["allow-subdomains"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.AllowSubdomains)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["id"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Id)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["origin"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Origin)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["rp"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Rp)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Control the range for the free VMID auto-selection pool.
+type NextId struct {
+
+	// The following parameters are optional
+	Lower *int `url:"lower,omitempty" json:"lower,omitempty"` // Lower, inclusive boundary for free next-id API range.
+	Upper *int `url:"upper,omitempty" json:"upper,omitempty"` // Upper, exclusive boundary for free next-id API range.
+}
+type _NextId NextId
+
+func (t NextId) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[lower=<integer>] [,upper=<integer>]`)
+}
+
+func (t *NextId) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["lower"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["lower"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Lower)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["upper"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Upper)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Cluster-wide notification settings.
+type Notify struct {
+	PackageUpdates NotifyPackageUpdates `url:"package-updates" json:"package-updates"` // Control when the daily update job should send out notification mails.
+
+}
+type _Notify Notify
+
+func (t Notify) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `package-updates=<auto|always|never>`)
+}
+
+func (t *Notify) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["package-updates"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["package-updates"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.PackageUpdates)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// For cluster wide migration settings.
+type Migration struct {
+	Type MigrationType `url:"type" json:"type"` // Migration traffic is encrypted using an SSH tunnel by default. On secure, completely private networks this can be disabled to increase performance.
+
+	// The following parameters are optional
+	Network *string `url:"network,omitempty" json:"network,omitempty"` // CIDR of the (sub) network that is used for migration.
+}
+type _Migration Migration
+
+func (t Migration) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[type=]<secure|insecure> [,network=<CIDR>]`)
+}
+
+func (t *Migration) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["type"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["type"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Type)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["network"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Network)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// u2f
+type U2f struct {
+
+	// The following parameters are optional
+	Appid  *string `url:"appid,omitempty" json:"appid,omitempty"`   // U2F AppId URL override. Defaults to the origin.
+	Origin *string `url:"origin,omitempty" json:"origin,omitempty"` // U2F Origin override. Mostly useful for single nodes with a single URL.
+}
+type _U2f U2f
+
+func (t U2f) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[appid=<APPID>] [,origin=<URL>]`)
+}
+
+func (t *U2f) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["appid"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["appid"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Appid)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["origin"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Origin)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Privilege options for user-settable tags
+type UserTagAccess struct {
+
+	// The following parameters are optional
+	UserAllow     *UserTagAccessUserAllow `url:"user-allow,omitempty" json:"user-allow,omitempty"`           // Controls tag usage for users without `Sys.Modify` on `/` by either allowing `none`, a `list`, already `existing` or anything (`free`).
+	UserAllowList *string                 `url:"user-allow-list,omitempty" json:"user-allow-list,omitempty"` // List of tags users are allowed to set and delete (semicolon separated) for 'user-allow' values 'list' and 'existing'.
+}
+type _UserTagAccess UserTagAccess
+
+func (t UserTagAccess) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[user-allow=<enum>] [,user-allow-list=<tag>[;<tag>...]]`)
+}
+
+func (t *UserTagAccess) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["user-allow"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["user-allow"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.UserAllow)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["user-allow-list"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.UserAllowList)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 type SetOptionsRequest struct {
 
 	// The following parameters are optional
@@ -924,12 +923,8 @@ func (c *Client) GetStatus(ctx context.Context) ([]GetStatusResponse, error) {
 
 // Nextid Get next free VMID. Pass a VMID to assert that its free (at time of check).
 func (c *Client) Nextid(ctx context.Context, req NextidRequest) (int, error) {
-	var resp string
+	var resp int
 
 	err := c.httpClient.Do(ctx, "/cluster/nextid", "GET", &resp, req)
-	if err != nil {
-		return 0, err
-	}
-	vmid, err := strconv.Atoi(resp)
-	return vmid, err
+	return resp, err
 }

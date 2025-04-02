@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"net/url"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
@@ -143,63 +142,6 @@ type GetConfigRequest struct {
 }
 type _GetConfigRequest GetConfigRequest
 
-// Node specific ACME settings.
-type Acme struct {
-
-	// The following parameters are optional
-	Account *string `url:"account,omitempty" json:"account,omitempty"` // ACME account config file name.
-	Domains *string `url:"domains,omitempty" json:"domains,omitempty"` // List of domains for this node's ACME certificate
-}
-type _Acme Acme
-
-func (t Acme) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[account=<name>] [,domains=<domain[;domain;...]>]`)
-}
-
-func (t *Acme) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["account"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["account"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Account)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["domains"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Domains)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 // ACME domain and validation plugin
 type Acmedomain struct {
 	Domain string `url:"domain" json:"domain"` // domain for this node's ACME certificate
@@ -268,12 +210,69 @@ func (t *Acmedomain) UnmarshalJSON(d []byte) error {
 	return nil
 }
 
-// Array of Acmedomain
-type Acmedomains []*Acmedomain
+// Set of Acmedomain
+type Acmedomains map[string]*Acmedomain
 type _Acmedomains Acmedomains
 
 func (t Acmedomains) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeArray(key, v, t)
+}
+
+// Node specific ACME settings.
+type Acme struct {
+
+	// The following parameters are optional
+	Account *string `url:"account,omitempty" json:"account,omitempty"` // ACME account config file name.
+	Domains *string `url:"domains,omitempty" json:"domains,omitempty"` // List of domains for this node's ACME certificate
+}
+type _Acme Acme
+
+func (t Acme) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[account=<name>] [,domains=<domain[;domain;...]>]`)
+}
+
+func (t *Acme) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["account"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["account"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Account)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["domains"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Domains)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 type GetConfigResponse struct {
@@ -303,25 +302,16 @@ func (t *GetConfigResponse) UnmarshalJSON(d []byte) error {
 	for k, v := range rest {
 
 		if ok, err := regexp.MatchString("^acmedomain[0-9]+$", k); ok {
-			idxStrKey := "acmedomain"
-			idxStr := strings.TrimPrefix(k, idxStrKey)
-			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
-			if err != nil {
-				return fmt.Errorf("Could not decode %s as (%s index): %w", k, idxStrKey, err)
-			}
 			if t.Acmedomains == nil {
-				arr := make(Acmedomains, 0)
-				t.Acmedomains = &arr
-			}
-			for len(*t.Acmedomains) < idx+1 {
-				*t.Acmedomains = append(*t.Acmedomains, nil)
+				set := make(Acmedomains)
+				t.Acmedomains = &set
 			}
 			var newVal Acmedomain
 			err = json.Unmarshal(v, &newVal)
 			if err != nil {
 				return err
 			}
-			(*t.Acmedomains)[idx] = &newVal
+			(*t.Acmedomains)[k] = &newVal
 		} else if err != nil {
 			return err
 		}
@@ -359,25 +349,16 @@ func (t *SetOptionsConfigRequest) UnmarshalJSON(d []byte) error {
 	for k, v := range rest {
 
 		if ok, err := regexp.MatchString("^acmedomain[0-9]+$", k); ok {
-			idxStrKey := "acmedomain"
-			idxStr := strings.TrimPrefix(k, idxStrKey)
-			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
-			if err != nil {
-				return fmt.Errorf("Could not decode %s as (%s index): %w", k, idxStrKey, err)
-			}
 			if t.Acmedomains == nil {
-				arr := make(Acmedomains, 0)
-				t.Acmedomains = &arr
-			}
-			for len(*t.Acmedomains) < idx+1 {
-				*t.Acmedomains = append(*t.Acmedomains, nil)
+				set := make(Acmedomains)
+				t.Acmedomains = &set
 			}
 			var newVal Acmedomain
 			err = json.Unmarshal(v, &newVal)
 			if err != nil {
 				return err
 			}
-			(*t.Acmedomains)[idx] = &newVal
+			(*t.Acmedomains)[k] = &newVal
 		} else if err != nil {
 			return err
 		}
