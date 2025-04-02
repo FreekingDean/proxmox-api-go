@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"net/url"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
@@ -88,8 +87,8 @@ func (t *Link) UnmarshalJSON(d []byte) error {
 	return nil
 }
 
-// Array of Link
-type Links []*Link
+// Set of Link
+type Links map[string]*Link
 type _Links Links
 
 func (t Links) EncodeValues(key string, v *url.Values) error {
@@ -124,25 +123,16 @@ func (t *ChildCreateRequest) UnmarshalJSON(d []byte) error {
 	for k, v := range rest {
 
 		if ok, err := regexp.MatchString("^link[0-9]+$", k); ok {
-			idxStrKey := "link"
-			idxStr := strings.TrimPrefix(k, idxStrKey)
-			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
-			if err != nil {
-				return fmt.Errorf("Could not decode %s as (%s index): %w", k, idxStrKey, err)
-			}
 			if t.Links == nil {
-				arr := make(Links, 0)
-				t.Links = &arr
-			}
-			for len(*t.Links) < idx+1 {
-				*t.Links = append(*t.Links, nil)
+				set := make(Links)
+				t.Links = &set
 			}
 			var newVal Link
 			err = json.Unmarshal(v, &newVal)
 			if err != nil {
 				return err
 			}
-			(*t.Links)[idx] = &newVal
+			(*t.Links)[k] = &newVal
 		} else if err != nil {
 			return err
 		}

@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"net/url"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/FreekingDean/proxmox-api-go/internal/util"
@@ -1440,6 +1439,404 @@ type IndexResponse struct {
 }
 type _IndexResponse IndexResponse
 
+// Reference to unused volumes. This is used internally, and should not be modified manually.
+type Unused struct {
+	Volume string `url:"volume" json:"volume"` // The volume that is not used currently.
+
+}
+type _Unused Unused
+
+func (t Unused) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[volume=]<volume>`)
+}
+
+func (t *Unused) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["volume"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["volume"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Volume)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Set of Unused
+type Unuseds map[string]*Unused
+type _Unuseds Unuseds
+
+func (t Unuseds) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
+type Mp struct {
+	Mp     string `url:"mp" json:"mp"`         // Path to the mount point as seen from inside the container (must not contain symlinks).
+	Volume string `url:"volume" json:"volume"` // Volume, device or directory to mount into the container.
+
+	// The following parameters are optional
+	Acl          *util.PVEBool `url:"acl,omitempty" json:"acl,omitempty"`                   // Explicitly enable or disable ACL support.
+	Backup       *util.PVEBool `url:"backup,omitempty" json:"backup,omitempty"`             // Whether to include the mount point in backups.
+	Mountoptions *string       `url:"mountoptions,omitempty" json:"mountoptions,omitempty"` // Extra mount options for rootfs/mps.
+	Quota        *util.PVEBool `url:"quota,omitempty" json:"quota,omitempty"`               // Enable user quotas inside the container (not supported with zfs subvolumes)
+	Replicate    *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`       // Will include this volume to a storage replica job.
+	Ro           *util.PVEBool `url:"ro,omitempty" json:"ro,omitempty"`                     // Read-only mount point
+	Shared       *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`             // Mark this non-volume mount point as available on multiple nodes (see 'nodes')
+	Size         *string       `url:"size,omitempty" json:"size,omitempty"`                 // Volume size (read only value).
+}
+type _Mp Mp
+
+func (t Mp) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[volume=]<volume> ,mp=<Path> [,acl=<1|0>] [,backup=<1|0>] [,mountoptions=<opt[;opt...]>] [,quota=<1|0>] [,replicate=<1|0>] [,ro=<1|0>] [,shared=<1|0>] [,size=<DiskSize>]`)
+}
+
+func (t *Mp) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["mp"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["mp"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Mp)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["volume"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Volume)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["acl"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Acl)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["backup"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Backup)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mountoptions"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Mountoptions)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["quota"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Quota)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["replicate"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Replicate)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["ro"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Ro)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["shared"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Shared)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["size"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Size)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Set of Mp
+type Mps map[string]*Mp
+type _Mps Mps
+
+func (t Mps) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// Use volume as container root.
+type Rootfs struct {
+	Volume string `url:"volume" json:"volume"` // Volume, device or directory to mount into the container.
+
+	// The following parameters are optional
+	Acl          *util.PVEBool `url:"acl,omitempty" json:"acl,omitempty"`                   // Explicitly enable or disable ACL support.
+	Mountoptions *string       `url:"mountoptions,omitempty" json:"mountoptions,omitempty"` // Extra mount options for rootfs/mps.
+	Quota        *util.PVEBool `url:"quota,omitempty" json:"quota,omitempty"`               // Enable user quotas inside the container (not supported with zfs subvolumes)
+	Replicate    *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`       // Will include this volume to a storage replica job.
+	Ro           *util.PVEBool `url:"ro,omitempty" json:"ro,omitempty"`                     // Read-only mount point
+	Shared       *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`             // Mark this non-volume mount point as available on multiple nodes (see 'nodes')
+	Size         *string       `url:"size,omitempty" json:"size,omitempty"`                 // Volume size (read only value).
+}
+type _Rootfs Rootfs
+
+func (t Rootfs) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[volume=]<volume> [,acl=<1|0>] [,mountoptions=<opt[;opt...]>] [,quota=<1|0>] [,replicate=<1|0>] [,ro=<1|0>] [,shared=<1|0>] [,size=<DiskSize>]`)
+}
+
+func (t *Rootfs) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["volume"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["volume"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Volume)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["acl"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Acl)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mountoptions"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Mountoptions)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["quota"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Quota)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["replicate"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Replicate)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["ro"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Ro)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["shared"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Shared)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["size"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Size)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Allow containers access to advanced features.
+type Features struct {
+
+	// The following parameters are optional
+	ForceRwSys *util.PVEBool `url:"force_rw_sys,omitempty" json:"force_rw_sys,omitempty"` // Mount /sys in unprivileged containers as `rw` instead of `mixed`. This can break networking under newer (>= v245) systemd-network use.
+	Fuse       *util.PVEBool `url:"fuse,omitempty" json:"fuse,omitempty"`                 // Allow using 'fuse' file systems in a container. Note that interactions between fuse and the freezer cgroup can potentially cause I/O deadlocks.
+	Keyctl     *util.PVEBool `url:"keyctl,omitempty" json:"keyctl,omitempty"`             // For unprivileged containers only: Allow the use of the keyctl() system call. This is required to use docker inside a container. By default unprivileged containers will see this system call as non-existent. This is mostly a workaround for systemd-networkd, as it will treat it as a fatal error when some keyctl() operations are denied by the kernel due to lacking permissions. Essentially, you can choose between running systemd-networkd or docker.
+	Mknod      *util.PVEBool `url:"mknod,omitempty" json:"mknod,omitempty"`               // Allow unprivileged containers to use mknod() to add certain device nodes. This requires a kernel with seccomp trap to user space support (5.3 or newer). This is experimental.
+	Mount      *string       `url:"mount,omitempty" json:"mount,omitempty"`               // Allow mounting file systems of specific types. This should be a list of file system types as used with the mount command. Note that this can have negative effects on the container's security. With access to a loop device, mounting a file can circumvent the mknod permission of the devices cgroup, mounting an NFS file system can block the host's I/O completely and prevent it from rebooting, etc.
+	Nesting    *util.PVEBool `url:"nesting,omitempty" json:"nesting,omitempty"`           // Allow nesting. Best used with unprivileged containers with additional id mapping. Note that this will expose procfs and sysfs contents of the host to the guest.
+}
+type _Features Features
+
+func (t Features) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[force_rw_sys=<1|0>] [,fuse=<1|0>] [,keyctl=<1|0>] [,mknod=<1|0>] [,mount=<fstype;fstype;...>] [,nesting=<1|0>]`)
+}
+
+func (t *Features) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+
+			values["force_rw_sys"] = kv[0]
+
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["force_rw_sys"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.ForceRwSys)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["fuse"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Fuse)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["keyctl"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Keyctl)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mknod"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Mknod)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mount"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Mount)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["nesting"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Nesting)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // Specifies network interfaces for the container.
 type Net struct {
 	Name string `url:"name" json:"name"` // Name of the network device as seen from inside the container. (lxc.network.name)
@@ -1619,410 +2016,12 @@ func (t *Net) UnmarshalJSON(d []byte) error {
 	return nil
 }
 
-// Array of Net
-type Nets []*Net
+// Set of Net
+type Nets map[string]*Net
 type _Nets Nets
 
 func (t Nets) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeArray(key, v, t)
-}
-
-// Allow containers access to advanced features.
-type Features struct {
-
-	// The following parameters are optional
-	ForceRwSys *util.PVEBool `url:"force_rw_sys,omitempty" json:"force_rw_sys,omitempty"` // Mount /sys in unprivileged containers as `rw` instead of `mixed`. This can break networking under newer (>= v245) systemd-network use.
-	Fuse       *util.PVEBool `url:"fuse,omitempty" json:"fuse,omitempty"`                 // Allow using 'fuse' file systems in a container. Note that interactions between fuse and the freezer cgroup can potentially cause I/O deadlocks.
-	Keyctl     *util.PVEBool `url:"keyctl,omitempty" json:"keyctl,omitempty"`             // For unprivileged containers only: Allow the use of the keyctl() system call. This is required to use docker inside a container. By default unprivileged containers will see this system call as non-existent. This is mostly a workaround for systemd-networkd, as it will treat it as a fatal error when some keyctl() operations are denied by the kernel due to lacking permissions. Essentially, you can choose between running systemd-networkd or docker.
-	Mknod      *util.PVEBool `url:"mknod,omitempty" json:"mknod,omitempty"`               // Allow unprivileged containers to use mknod() to add certain device nodes. This requires a kernel with seccomp trap to user space support (5.3 or newer). This is experimental.
-	Mount      *string       `url:"mount,omitempty" json:"mount,omitempty"`               // Allow mounting file systems of specific types. This should be a list of file system types as used with the mount command. Note that this can have negative effects on the container's security. With access to a loop device, mounting a file can circumvent the mknod permission of the devices cgroup, mounting an NFS file system can block the host's I/O completely and prevent it from rebooting, etc.
-	Nesting    *util.PVEBool `url:"nesting,omitempty" json:"nesting,omitempty"`           // Allow nesting. Best used with unprivileged containers with additional id mapping. Note that this will expose procfs and sysfs contents of the host to the guest.
-}
-type _Features Features
-
-func (t Features) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[force_rw_sys=<1|0>] [,fuse=<1|0>] [,keyctl=<1|0>] [,mknod=<1|0>] [,mount=<fstype;fstype;...>] [,nesting=<1|0>]`)
-}
-
-func (t *Features) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["force_rw_sys"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["force_rw_sys"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.ForceRwSys)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["fuse"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Fuse)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["keyctl"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Keyctl)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["mknod"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Mknod)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["mount"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Mount)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["nesting"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Nesting)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Reference to unused volumes. This is used internally, and should not be modified manually.
-type Unused struct {
-	Volume string `url:"volume" json:"volume"` // The volume that is not used currently.
-
-}
-type _Unused Unused
-
-func (t Unused) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[volume=]<volume>`)
-}
-
-func (t *Unused) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["volume"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["volume"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Volume)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Array of Unused
-type Unuseds []*Unused
-type _Unuseds Unuseds
-
-func (t Unuseds) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Use volume as container mount point. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume.
-type Mp struct {
-	Mp     string `url:"mp" json:"mp"`         // Path to the mount point as seen from inside the container (must not contain symlinks).
-	Volume string `url:"volume" json:"volume"` // Volume, device or directory to mount into the container.
-
-	// The following parameters are optional
-	Acl          *util.PVEBool `url:"acl,omitempty" json:"acl,omitempty"`                   // Explicitly enable or disable ACL support.
-	Backup       *util.PVEBool `url:"backup,omitempty" json:"backup,omitempty"`             // Whether to include the mount point in backups.
-	Mountoptions *string       `url:"mountoptions,omitempty" json:"mountoptions,omitempty"` // Extra mount options for rootfs/mps.
-	Quota        *util.PVEBool `url:"quota,omitempty" json:"quota,omitempty"`               // Enable user quotas inside the container (not supported with zfs subvolumes)
-	Replicate    *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`       // Will include this volume to a storage replica job.
-	Ro           *util.PVEBool `url:"ro,omitempty" json:"ro,omitempty"`                     // Read-only mount point
-	Shared       *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`             // Mark this non-volume mount point as available on multiple nodes (see 'nodes')
-	Size         *string       `url:"size,omitempty" json:"size,omitempty"`                 // Volume size (read only value).
-}
-type _Mp Mp
-
-func (t Mp) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[volume=]<volume> ,mp=<Path> [,acl=<1|0>] [,backup=<1|0>] [,mountoptions=<opt[;opt...]>] [,quota=<1|0>] [,replicate=<1|0>] [,ro=<1|0>] [,shared=<1|0>] [,size=<DiskSize>]`)
-}
-
-func (t *Mp) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["mp"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["mp"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Mp)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["volume"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Volume)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["acl"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Acl)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["backup"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Backup)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["mountoptions"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Mountoptions)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["quota"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Quota)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["replicate"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Replicate)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["ro"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Ro)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["shared"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Shared)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["size"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Size)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Array of Mp
-type Mps []*Mp
-type _Mps Mps
-
-func (t Mps) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Use volume as container root.
-type Rootfs struct {
-	Volume string `url:"volume" json:"volume"` // Volume, device or directory to mount into the container.
-
-	// The following parameters are optional
-	Acl          *util.PVEBool `url:"acl,omitempty" json:"acl,omitempty"`                   // Explicitly enable or disable ACL support.
-	Mountoptions *string       `url:"mountoptions,omitempty" json:"mountoptions,omitempty"` // Extra mount options for rootfs/mps.
-	Quota        *util.PVEBool `url:"quota,omitempty" json:"quota,omitempty"`               // Enable user quotas inside the container (not supported with zfs subvolumes)
-	Replicate    *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`       // Will include this volume to a storage replica job.
-	Ro           *util.PVEBool `url:"ro,omitempty" json:"ro,omitempty"`                     // Read-only mount point
-	Shared       *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`             // Mark this non-volume mount point as available on multiple nodes (see 'nodes')
-	Size         *string       `url:"size,omitempty" json:"size,omitempty"`                 // Volume size (read only value).
-}
-type _Rootfs Rootfs
-
-func (t Rootfs) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[volume=]<volume> [,acl=<1|0>] [,mountoptions=<opt[;opt...]>] [,quota=<1|0>] [,replicate=<1|0>] [,ro=<1|0>] [,shared=<1|0>] [,size=<DiskSize>]`)
-}
-
-func (t *Rootfs) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["volume"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["volume"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Volume)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["acl"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Acl)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["mountoptions"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Mountoptions)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["quota"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Quota)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["replicate"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Replicate)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["ro"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Ro)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["shared"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Shared)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["size"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Size)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 type CreateRequest struct {
@@ -2088,73 +2087,46 @@ func (t *CreateRequest) UnmarshalJSON(d []byte) error {
 	for k, v := range rest {
 
 		if ok, err := regexp.MatchString("^mp[0-9]+$", k); ok {
-			idxStrKey := "mp"
-			idxStr := strings.TrimPrefix(k, idxStrKey)
-			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
-			if err != nil {
-				return fmt.Errorf("Could not decode %s as (%s index): %w", k, idxStrKey, err)
-			}
 			if t.Mps == nil {
-				arr := make(Mps, 0)
-				t.Mps = &arr
-			}
-			for len(*t.Mps) < idx+1 {
-				*t.Mps = append(*t.Mps, nil)
+				set := make(Mps)
+				t.Mps = &set
 			}
 			var newVal Mp
 			err = json.Unmarshal(v, &newVal)
 			if err != nil {
 				return err
 			}
-			(*t.Mps)[idx] = &newVal
+			(*t.Mps)[k] = &newVal
 		} else if err != nil {
 			return err
 		}
 
 		if ok, err := regexp.MatchString("^net[0-9]+$", k); ok {
-			idxStrKey := "net"
-			idxStr := strings.TrimPrefix(k, idxStrKey)
-			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
-			if err != nil {
-				return fmt.Errorf("Could not decode %s as (%s index): %w", k, idxStrKey, err)
-			}
 			if t.Nets == nil {
-				arr := make(Nets, 0)
-				t.Nets = &arr
-			}
-			for len(*t.Nets) < idx+1 {
-				*t.Nets = append(*t.Nets, nil)
+				set := make(Nets)
+				t.Nets = &set
 			}
 			var newVal Net
 			err = json.Unmarshal(v, &newVal)
 			if err != nil {
 				return err
 			}
-			(*t.Nets)[idx] = &newVal
+			(*t.Nets)[k] = &newVal
 		} else if err != nil {
 			return err
 		}
 
 		if ok, err := regexp.MatchString("^unused[0-9]+$", k); ok {
-			idxStrKey := "unused"
-			idxStr := strings.TrimPrefix(k, idxStrKey)
-			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
-			if err != nil {
-				return fmt.Errorf("Could not decode %s as (%s index): %w", k, idxStrKey, err)
-			}
 			if t.Unuseds == nil {
-				arr := make(Unuseds, 0)
-				t.Unuseds = &arr
-			}
-			for len(*t.Unuseds) < idx+1 {
-				*t.Unuseds = append(*t.Unuseds, nil)
+				set := make(Unuseds)
+				t.Unuseds = &set
 			}
 			var newVal Unused
 			err = json.Unmarshal(v, &newVal)
 			if err != nil {
 				return err
 			}
-			(*t.Unuseds)[idx] = &newVal
+			(*t.Unuseds)[k] = &newVal
 		} else if err != nil {
 			return err
 		}
@@ -2248,73 +2220,46 @@ func (t *VmConfigResponse) UnmarshalJSON(d []byte) error {
 	for k, v := range rest {
 
 		if ok, err := regexp.MatchString("^mp[0-9]+$", k); ok {
-			idxStrKey := "mp"
-			idxStr := strings.TrimPrefix(k, idxStrKey)
-			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
-			if err != nil {
-				return fmt.Errorf("Could not decode %s as (%s index): %w", k, idxStrKey, err)
-			}
 			if t.Mps == nil {
-				arr := make(Mps, 0)
-				t.Mps = &arr
-			}
-			for len(*t.Mps) < idx+1 {
-				*t.Mps = append(*t.Mps, nil)
+				set := make(Mps)
+				t.Mps = &set
 			}
 			var newVal Mp
 			err = json.Unmarshal(v, &newVal)
 			if err != nil {
 				return err
 			}
-			(*t.Mps)[idx] = &newVal
+			(*t.Mps)[k] = &newVal
 		} else if err != nil {
 			return err
 		}
 
 		if ok, err := regexp.MatchString("^net[0-9]+$", k); ok {
-			idxStrKey := "net"
-			idxStr := strings.TrimPrefix(k, idxStrKey)
-			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
-			if err != nil {
-				return fmt.Errorf("Could not decode %s as (%s index): %w", k, idxStrKey, err)
-			}
 			if t.Nets == nil {
-				arr := make(Nets, 0)
-				t.Nets = &arr
-			}
-			for len(*t.Nets) < idx+1 {
-				*t.Nets = append(*t.Nets, nil)
+				set := make(Nets)
+				t.Nets = &set
 			}
 			var newVal Net
 			err = json.Unmarshal(v, &newVal)
 			if err != nil {
 				return err
 			}
-			(*t.Nets)[idx] = &newVal
+			(*t.Nets)[k] = &newVal
 		} else if err != nil {
 			return err
 		}
 
 		if ok, err := regexp.MatchString("^unused[0-9]+$", k); ok {
-			idxStrKey := "unused"
-			idxStr := strings.TrimPrefix(k, idxStrKey)
-			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
-			if err != nil {
-				return fmt.Errorf("Could not decode %s as (%s index): %w", k, idxStrKey, err)
-			}
 			if t.Unuseds == nil {
-				arr := make(Unuseds, 0)
-				t.Unuseds = &arr
-			}
-			for len(*t.Unuseds) < idx+1 {
-				*t.Unuseds = append(*t.Unuseds, nil)
+				set := make(Unuseds)
+				t.Unuseds = &set
 			}
 			var newVal Unused
 			err = json.Unmarshal(v, &newVal)
 			if err != nil {
 				return err
 			}
-			(*t.Unuseds)[idx] = &newVal
+			(*t.Unuseds)[k] = &newVal
 		} else if err != nil {
 			return err
 		}
@@ -2378,73 +2323,46 @@ func (t *UpdateVmConfigRequest) UnmarshalJSON(d []byte) error {
 	for k, v := range rest {
 
 		if ok, err := regexp.MatchString("^mp[0-9]+$", k); ok {
-			idxStrKey := "mp"
-			idxStr := strings.TrimPrefix(k, idxStrKey)
-			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
-			if err != nil {
-				return fmt.Errorf("Could not decode %s as (%s index): %w", k, idxStrKey, err)
-			}
 			if t.Mps == nil {
-				arr := make(Mps, 0)
-				t.Mps = &arr
-			}
-			for len(*t.Mps) < idx+1 {
-				*t.Mps = append(*t.Mps, nil)
+				set := make(Mps)
+				t.Mps = &set
 			}
 			var newVal Mp
 			err = json.Unmarshal(v, &newVal)
 			if err != nil {
 				return err
 			}
-			(*t.Mps)[idx] = &newVal
+			(*t.Mps)[k] = &newVal
 		} else if err != nil {
 			return err
 		}
 
 		if ok, err := regexp.MatchString("^net[0-9]+$", k); ok {
-			idxStrKey := "net"
-			idxStr := strings.TrimPrefix(k, idxStrKey)
-			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
-			if err != nil {
-				return fmt.Errorf("Could not decode %s as (%s index): %w", k, idxStrKey, err)
-			}
 			if t.Nets == nil {
-				arr := make(Nets, 0)
-				t.Nets = &arr
-			}
-			for len(*t.Nets) < idx+1 {
-				*t.Nets = append(*t.Nets, nil)
+				set := make(Nets)
+				t.Nets = &set
 			}
 			var newVal Net
 			err = json.Unmarshal(v, &newVal)
 			if err != nil {
 				return err
 			}
-			(*t.Nets)[idx] = &newVal
+			(*t.Nets)[k] = &newVal
 		} else if err != nil {
 			return err
 		}
 
 		if ok, err := regexp.MatchString("^unused[0-9]+$", k); ok {
-			idxStrKey := "unused"
-			idxStr := strings.TrimPrefix(k, idxStrKey)
-			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
-			if err != nil {
-				return fmt.Errorf("Could not decode %s as (%s index): %w", k, idxStrKey, err)
-			}
 			if t.Unuseds == nil {
-				arr := make(Unuseds, 0)
-				t.Unuseds = &arr
-			}
-			for len(*t.Unuseds) < idx+1 {
-				*t.Unuseds = append(*t.Unuseds, nil)
+				set := make(Unuseds)
+				t.Unuseds = &set
 			}
 			var newVal Unused
 			err = json.Unmarshal(v, &newVal)
 			if err != nil {
 				return err
 			}
-			(*t.Unuseds)[idx] = &newVal
+			(*t.Unuseds)[k] = &newVal
 		} else if err != nil {
 			return err
 		}

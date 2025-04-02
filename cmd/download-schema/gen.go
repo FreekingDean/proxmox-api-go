@@ -399,5 +399,5 @@ func TrimN(s string) string {
 }
 
 func TrimPrefArr(s string) string {
-	return strings.TrimPrefix(s, "[]*")
+	return strings.TrimPrefix(s, "map[string]*")
 }

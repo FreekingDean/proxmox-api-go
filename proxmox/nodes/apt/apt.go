@@ -80,26 +80,6 @@ type RepositoriesRequest struct {
 }
 type _RepositoriesRequest RepositoriesRequest
 
-type Infos struct {
-	Index   string `url:"index" json:"index"`     // Index of the associated repository within the file.
-	Kind    string `url:"kind" json:"kind"`       // Kind of the information (e.g. warning).
-	Message string `url:"message" json:"message"` // Information message.
-	Path    string `url:"path" json:"path"`       // Path to the associated file.
-
-	// The following parameters are optional
-	Property *string `url:"property,omitempty" json:"property,omitempty"` // Property from which the info originates.
-}
-type _Infos Infos
-
-type StandardRepos struct {
-	Handle string `url:"handle" json:"handle"` // Handle to identify the repository.
-	Name   string `url:"name" json:"name"`     // Full name of the repository.
-
-	// The following parameters are optional
-	Status *util.PVEBool `url:"status,omitempty" json:"status,omitempty"` // Indicating enabled/disabled status, if the repository is configured.
-}
-type _StandardRepos StandardRepos
-
 type Errors struct {
 	Error string `url:"error" json:"error"` // The error message
 	Path  string `url:"path" json:"path"`   // Path to the problematic file.
@@ -135,6 +115,26 @@ type Files struct {
 
 }
 type _Files Files
+
+type Infos struct {
+	Index   string `url:"index" json:"index"`     // Index of the associated repository within the file.
+	Kind    string `url:"kind" json:"kind"`       // Kind of the information (e.g. warning).
+	Message string `url:"message" json:"message"` // Information message.
+	Path    string `url:"path" json:"path"`       // Path to the associated file.
+
+	// The following parameters are optional
+	Property *string `url:"property,omitempty" json:"property,omitempty"` // Property from which the info originates.
+}
+type _Infos Infos
+
+type StandardRepos struct {
+	Handle string `url:"handle" json:"handle"` // Handle to identify the repository.
+	Name   string `url:"name" json:"name"`     // Full name of the repository.
+
+	// The following parameters are optional
+	Status *util.PVEBool `url:"status,omitempty" json:"status,omitempty"` // Indicating enabled/disabled status, if the repository is configured.
+}
+type _StandardRepos StandardRepos
 
 // Result from parsing the APT repository files in /etc/apt/.
 type RepositoriesResponse struct {

@@ -10,7 +10,6 @@ import (
 	"net/url"
 	"strings"
   {{- if .Strconv }}
-	"strconv"
 	"regexp"
   {{ end }}
 
@@ -109,25 +108,16 @@ func (t *{{ $t.Name }}) UnmarshalJSON(d []byte) error {
 	for k, v := range rest {
 		{{ range $_, $ft := $t.FormatArrayTypes }}
 		if ok, err := regexp.MatchString("^{{ $ft.JSONName | TrimN }}[0-9]+$", k); ok {
-			idxStrKey := "{{ $ft.JSONName | TrimN }}"
-			idxStr := strings.TrimPrefix(k, idxStrKey)
-			idx, err := strconv.Atoi(strings.TrimSpace(idxStr))
-			if err != nil {
-				return fmt.Errorf("Could not decode %s as (%s index): %w", k, idxStrKey, err)
-			}
 			if t.{{ $ft.Name }} == nil {
-				arr := make({{ $ft.Type }}, 0)
-				t.{{ $ft.Name }} = {{ if $ft.Optional }}&{{ end }}arr
-			}
-			for len({{ if $ft.Optional }}*{{ end }}t.{{ $ft.Name }}) < idx+1 {
-				{{ if $ft.Optional }}*{{end}}t.{{ $ft.Name }} = append({{ if $ft.Optional }}*{{ end }}t.{{ $ft.Name }}, nil)
+				set := make({{ $ft.Type }})
+				t.{{ $ft.Name }} = {{ if $ft.Optional }}&{{ end }}set
 			}
 			var newVal {{ $ft.ElemType.Type | TrimPrefArr }}
 			err = json.Unmarshal(v, &newVal)
 			if err != nil {
 				return err
 			}
-			({{ if $ft.Optional }}*{{ end }}t.{{ $ft.Name }})[idx] = &newVal
+			({{ if $ft.Optional }}*{{ end }}t.{{ $ft.Name }})[k] = &newVal
 		} else if err != nil {
 			return err
 		}

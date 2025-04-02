@@ -17,13 +17,13 @@ func TestEncodeArray(t *testing.T) {
 		{
 			"slice of strings",
 			map[string]string{"somekey0": "1", "somekey1": "2"},
-			func() interface{} { return []string{"1", "2"} },
+			func() interface{} { return map[string]string{"somekey0": "1", "somekey1": "2"} },
 		},
 		{
 			"ptr of slice of strings",
 			map[string]string{"somekey0": "1", "somekey1": "2"},
 			func() interface{} {
-				arr := []string{"1", "2"}
+				arr := map[string]string{"somekey0": "1", "somekey1": "2"}
 				return &arr
 			},
 		},
@@ -33,7 +33,7 @@ func TestEncodeArray(t *testing.T) {
 			func() interface{} {
 				one := "1"
 				two := "2"
-				arr := []*string{&one, &two}
+				arr := map[string]*string{"somekey0": &one, "somekey1": &two}
 				return &arr
 			},
 		},
@@ -41,12 +41,12 @@ func TestEncodeArray(t *testing.T) {
 			"struct",
 			map[string]string{"somekey0": "{foo1 1}", "somekey1": "{foo2 2}"},
 			func() interface{} {
-				return []struct {
+				return map[string]struct {
 					Foo string `url:"foo"`
 					Bar int    `url:"bar"`
 				}{
-					{"foo1", 1},
-					{"foo2", 2},
+					"somekey0": {"foo1", 1},
+					"somekey1": {"foo2", 2},
 				}
 			},
 		},

@@ -33,15 +33,19 @@ func EncodeArray(key string, v *url.Values, array interface{}) error {
 	switch reflect.TypeOf(array).Kind() {
 	case reflect.Ptr:
 		return EncodeArray(key, v, reflect.Indirect(reflect.ValueOf(array)).Interface())
-	case reflect.Slice:
+	case reflect.Map:
 		s := reflect.ValueOf(array)
+		iter := s.MapRange()
 
-		for i := 0; i < s.Len(); i++ {
-			derefed := s.Index(i).Interface()
+		for iter.Next() {
+			if iter.Key().Type().Kind() != reflect.String {
+				return fmt.Errorf("bad map key type %T", iter.Key())
+			}
+			derefed := iter.Value().Interface()
 			if derefed != nil {
-				if s.Index(i).Type().Kind() == reflect.Ptr {
-					if !s.Index(i).IsNil() {
-						derefed = s.Index(i).Elem().Interface()
+				if iter.Value().Type().Kind() == reflect.Ptr {
+					if !iter.Value().IsNil() {
+						derefed = iter.Value().Elem().Interface()
 					} else {
 						continue
 					}
@@ -63,7 +67,7 @@ func EncodeArray(key string, v *url.Values, array interface{}) error {
 			if err != nil {
 				return err
 			}
-			v.Set(fmt.Sprintf("%s%d", key, i), d.Get("item"))
+			v.Set(iter.Key().String(), d.Get("item"))
 		}
 	default:
 		return fmt.Errorf("bad slice type %T", array)
