@@ -41,6 +41,10 @@ func EncodeArray(key string, v *url.Values, array interface{}) error {
 			if iter.Key().Type().Kind() != reflect.String {
 				return fmt.Errorf("bad map key type %T", iter.Key())
 			}
+			if !strings.HasPrefix(iter.Key().String(), key) {
+				return fmt.Errorf("bad map key format '%s' expecting '%s'", iter.Key(), key)
+			}
+
 			derefed := iter.Value().Interface()
 			if derefed != nil {
 				if iter.Value().Type().Kind() == reflect.Ptr {
