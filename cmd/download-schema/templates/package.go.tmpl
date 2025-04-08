@@ -167,6 +167,8 @@ func (t *{{ $t.Name }}) UnmarshalJSON(d []byte) error {
         values[kv[0]] = kv[1]
       }
     }
+    {{- else }}
+    values[kv[0]] = kv[1]
     {{- end }}
 	}
 	{{ range $_, $p := $t.Properties }}

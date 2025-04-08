@@ -56,6 +56,7 @@ func (t *Link) UnmarshalJSON(d []byte) error {
 			values["address"] = kv[0]
 			continue
 		}
+		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["address"]; ok {

@@ -1274,6 +1274,7 @@ func (t *Agent) UnmarshalJSON(d []byte) error {
 			values["enabled"] = kv[0]
 			continue
 		}
+		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["enabled"]; ok {
@@ -1342,6 +1343,7 @@ func (t *Audio0) UnmarshalJSON(d []byte) error {
 			values[""] = kv[0]
 			continue
 		}
+		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["device"]; ok {
@@ -1996,6 +1998,7 @@ func (t *Ivshmem) UnmarshalJSON(d []byte) error {
 			values[""] = kv[0]
 			continue
 		}
+		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["size"]; ok {
@@ -2210,6 +2213,7 @@ func (t *Numa) UnmarshalJSON(d []byte) error {
 			values[""] = kv[0]
 			continue
 		}
+		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["cpus"]; ok {
@@ -2299,6 +2303,7 @@ func (t *Rng0) UnmarshalJSON(d []byte) error {
 			values["source"] = kv[0]
 			continue
 		}
+		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["source"]; ok {
@@ -3337,6 +3342,7 @@ func (t *SpiceEnhancements) UnmarshalJSON(d []byte) error {
 			values[""] = kv[0]
 			continue
 		}
+		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["foldersharing"]; ok {
@@ -3537,6 +3543,7 @@ func (t *Usb) UnmarshalJSON(d []byte) error {
 			values["host"] = kv[0]
 			continue
 		}
+		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["host"]; ok {
@@ -3597,6 +3604,7 @@ func (t *Vga) UnmarshalJSON(d []byte) error {
 			values["type"] = kv[0]
 			continue
 		}
+		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["memory"]; ok {

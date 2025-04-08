@@ -1472,6 +1472,7 @@ func (t *Features) UnmarshalJSON(d []byte) error {
 			values[""] = kv[0]
 			continue
 		}
+		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["force_rw_sys"]; ok {
@@ -1564,6 +1565,7 @@ func (t *Mp) UnmarshalJSON(d []byte) error {
 			values["volume"] = kv[0]
 			continue
 		}
+		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["mp"]; ok {
@@ -1706,6 +1708,7 @@ func (t *Net) UnmarshalJSON(d []byte) error {
 			values[""] = kv[0]
 			continue
 		}
+		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["name"]; ok {
@@ -1884,6 +1887,7 @@ func (t *Rootfs) UnmarshalJSON(d []byte) error {
 			values["volume"] = kv[0]
 			continue
 		}
+		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["volume"]; ok {
@@ -1986,6 +1990,7 @@ func (t *Unused) UnmarshalJSON(d []byte) error {
 			values["volume"] = kv[0]
 			continue
 		}
+		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["volume"]; ok {
