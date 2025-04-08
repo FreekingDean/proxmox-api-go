@@ -249,7 +249,6 @@ func (t *Bwlimit) UnmarshalJSON(d []byte) error {
 			values[""] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["clone"]; ok {
@@ -324,7 +323,6 @@ func (t *Crs) UnmarshalJSON(d []byte) error {
 			values[""] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["ha"]; ok {
@@ -375,7 +373,6 @@ func (t *Ha) UnmarshalJSON(d []byte) error {
 			values[""] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["shutdown_policy"]; ok {
@@ -418,7 +415,6 @@ func (t *Migration) UnmarshalJSON(d []byte) error {
 			values["type"] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["type"]; ok {
@@ -471,7 +467,6 @@ func (t *NextId) UnmarshalJSON(d []byte) error {
 			values[""] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["lower"]; ok {
@@ -520,7 +515,6 @@ func (t *Notify) UnmarshalJSON(d []byte) error {
 			values[""] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["package-updates"]; ok {
@@ -565,7 +559,6 @@ func (t *TagStyle) UnmarshalJSON(d []byte) error {
 			values[""] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["case-sensitive"]; ok {
@@ -638,7 +631,6 @@ func (t *U2f) UnmarshalJSON(d []byte) error {
 			values[""] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["appid"]; ok {
@@ -693,7 +685,6 @@ func (t *UserTagAccess) UnmarshalJSON(d []byte) error {
 			values[""] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["user-allow"]; ok {
@@ -750,7 +741,6 @@ func (t *Webauthn) UnmarshalJSON(d []byte) error {
 			values[""] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["allow-subdomains"]; ok {

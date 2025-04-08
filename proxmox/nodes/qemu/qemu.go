@@ -1274,7 +1274,6 @@ func (t *Agent) UnmarshalJSON(d []byte) error {
 			values["enabled"] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["enabled"]; ok {
@@ -1343,7 +1342,6 @@ func (t *Audio0) UnmarshalJSON(d []byte) error {
 			values[""] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["device"]; ok {
@@ -1391,6 +1389,9 @@ func (t *Efidisk0) UnmarshalJSON(d []byte) error {
 	cleaned := string(d)[1 : len(d)-1]
 	parts := strings.Split(cleaned, ",")
 	values := map[string]string{}
+	aliases := map[string]string{}
+
+	aliases["volume"] = "file"
 	for _, p := range parts {
 		kv := strings.Split(p, "=")
 		if len(kv) > 2 {
@@ -1400,7 +1401,14 @@ func (t *Efidisk0) UnmarshalJSON(d []byte) error {
 			values["file"] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
+		if len(kv) == 2 {
+			if alias, ok := aliases[kv[0]]; ok {
+				values[alias] = kv[1]
+				values["file"] = fmt.Sprintf(`"%s"`, kv[0])
+			} else {
+				values[kv[0]] = kv[1]
+			}
+		}
 	}
 
 	if v, ok := values["file"]; ok {
@@ -1534,6 +1542,13 @@ func (t *Ide) UnmarshalJSON(d []byte) error {
 	cleaned := string(d)[1 : len(d)-1]
 	parts := strings.Split(cleaned, ",")
 	values := map[string]string{}
+	aliases := map[string]string{}
+
+	aliases["bps_rd_length"] = "bps_rd_max_length"
+	aliases["bps_wr_length"] = "bps_wr_max_length"
+	aliases["iops_rd_length"] = "iops_rd_max_length"
+	aliases["iops_wr_length"] = "iops_wr_max_length"
+	aliases["volume"] = "file"
 	for _, p := range parts {
 		kv := strings.Split(p, "=")
 		if len(kv) > 2 {
@@ -1543,7 +1558,14 @@ func (t *Ide) UnmarshalJSON(d []byte) error {
 			values["file"] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
+		if len(kv) == 2 {
+			if alias, ok := aliases[kv[0]]; ok {
+				values[alias] = kv[1]
+				values["file"] = fmt.Sprintf(`"%s"`, kv[0])
+			} else {
+				values[kv[0]] = kv[1]
+			}
+		}
 	}
 
 	if v, ok := values["file"]; ok {
@@ -1974,7 +1996,6 @@ func (t *Ivshmem) UnmarshalJSON(d []byte) error {
 			values[""] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["size"]; ok {
@@ -2026,6 +2047,22 @@ func (t *Net) UnmarshalJSON(d []byte) error {
 	cleaned := string(d)[1 : len(d)-1]
 	parts := strings.Split(cleaned, ",")
 	values := map[string]string{}
+	aliases := map[string]string{}
+
+	aliases["e1000"] = "macaddr"
+	aliases["e1000-82540em"] = "macaddr"
+	aliases["e1000-82544gc"] = "macaddr"
+	aliases["e1000-82545em"] = "macaddr"
+	aliases["e1000e"] = "macaddr"
+	aliases["i82551"] = "macaddr"
+	aliases["i82557b"] = "macaddr"
+	aliases["i82559er"] = "macaddr"
+	aliases["ne2k_isa"] = "macaddr"
+	aliases["ne2k_pci"] = "macaddr"
+	aliases["pcnet"] = "macaddr"
+	aliases["rtl8139"] = "macaddr"
+	aliases["virtio"] = "macaddr"
+	aliases["vmxnet3"] = "macaddr"
 	for _, p := range parts {
 		kv := strings.Split(p, "=")
 		if len(kv) > 2 {
@@ -2035,7 +2072,14 @@ func (t *Net) UnmarshalJSON(d []byte) error {
 			values["model"] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
+		if len(kv) == 2 {
+			if alias, ok := aliases[kv[0]]; ok {
+				values[alias] = kv[1]
+				values["model"] = fmt.Sprintf(`"%s"`, kv[0])
+			} else {
+				values[kv[0]] = kv[1]
+			}
+		}
 	}
 
 	if v, ok := values["model"]; ok {
@@ -2166,7 +2210,6 @@ func (t *Numa) UnmarshalJSON(d []byte) error {
 			values[""] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["cpus"]; ok {
@@ -2256,7 +2299,6 @@ func (t *Rng0) UnmarshalJSON(d []byte) error {
 			values["source"] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["source"]; ok {
@@ -2347,6 +2389,13 @@ func (t *Sata) UnmarshalJSON(d []byte) error {
 	cleaned := string(d)[1 : len(d)-1]
 	parts := strings.Split(cleaned, ",")
 	values := map[string]string{}
+	aliases := map[string]string{}
+
+	aliases["bps_rd_length"] = "bps_rd_max_length"
+	aliases["bps_wr_length"] = "bps_wr_max_length"
+	aliases["iops_rd_length"] = "iops_rd_max_length"
+	aliases["iops_wr_length"] = "iops_wr_max_length"
+	aliases["volume"] = "file"
 	for _, p := range parts {
 		kv := strings.Split(p, "=")
 		if len(kv) > 2 {
@@ -2356,7 +2405,14 @@ func (t *Sata) UnmarshalJSON(d []byte) error {
 			values["file"] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
+		if len(kv) == 2 {
+			if alias, ok := aliases[kv[0]]; ok {
+				values[alias] = kv[1]
+				values["file"] = fmt.Sprintf(`"%s"`, kv[0])
+			} else {
+				values[kv[0]] = kv[1]
+			}
+		}
 	}
 
 	if v, ok := values["file"]; ok {
@@ -2805,6 +2861,13 @@ func (t *Scsi) UnmarshalJSON(d []byte) error {
 	cleaned := string(d)[1 : len(d)-1]
 	parts := strings.Split(cleaned, ",")
 	values := map[string]string{}
+	aliases := map[string]string{}
+
+	aliases["bps_rd_length"] = "bps_rd_max_length"
+	aliases["bps_wr_length"] = "bps_wr_max_length"
+	aliases["iops_rd_length"] = "iops_rd_max_length"
+	aliases["iops_wr_length"] = "iops_wr_max_length"
+	aliases["volume"] = "file"
 	for _, p := range parts {
 		kv := strings.Split(p, "=")
 		if len(kv) > 2 {
@@ -2814,7 +2877,14 @@ func (t *Scsi) UnmarshalJSON(d []byte) error {
 			values["file"] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
+		if len(kv) == 2 {
+			if alias, ok := aliases[kv[0]]; ok {
+				values[alias] = kv[1]
+				values["file"] = fmt.Sprintf(`"%s"`, kv[0])
+			} else {
+				values[kv[0]] = kv[1]
+			}
+		}
 	}
 
 	if v, ok := values["file"]; ok {
@@ -3267,7 +3337,6 @@ func (t *SpiceEnhancements) UnmarshalJSON(d []byte) error {
 			values[""] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["foldersharing"]; ok {
@@ -3313,6 +3382,9 @@ func (t *Tpmstate0) UnmarshalJSON(d []byte) error {
 	cleaned := string(d)[1 : len(d)-1]
 	parts := strings.Split(cleaned, ",")
 	values := map[string]string{}
+	aliases := map[string]string{}
+
+	aliases["volume"] = "file"
 	for _, p := range parts {
 		kv := strings.Split(p, "=")
 		if len(kv) > 2 {
@@ -3322,7 +3394,14 @@ func (t *Tpmstate0) UnmarshalJSON(d []byte) error {
 			values["file"] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
+		if len(kv) == 2 {
+			if alias, ok := aliases[kv[0]]; ok {
+				values[alias] = kv[1]
+				values["file"] = fmt.Sprintf(`"%s"`, kv[0])
+			} else {
+				values[kv[0]] = kv[1]
+			}
+		}
 	}
 
 	if v, ok := values["file"]; ok {
@@ -3386,6 +3465,9 @@ func (t *Unused) UnmarshalJSON(d []byte) error {
 	cleaned := string(d)[1 : len(d)-1]
 	parts := strings.Split(cleaned, ",")
 	values := map[string]string{}
+	aliases := map[string]string{}
+
+	aliases["volume"] = "file"
 	for _, p := range parts {
 		kv := strings.Split(p, "=")
 		if len(kv) > 2 {
@@ -3395,7 +3477,14 @@ func (t *Unused) UnmarshalJSON(d []byte) error {
 			values["file"] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
+		if len(kv) == 2 {
+			if alias, ok := aliases[kv[0]]; ok {
+				values[alias] = kv[1]
+				values["file"] = fmt.Sprintf(`"%s"`, kv[0])
+			} else {
+				values[kv[0]] = kv[1]
+			}
+		}
 	}
 
 	if v, ok := values["file"]; ok {
@@ -3448,7 +3537,6 @@ func (t *Usb) UnmarshalJSON(d []byte) error {
 			values["host"] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["host"]; ok {
@@ -3509,7 +3597,6 @@ func (t *Vga) UnmarshalJSON(d []byte) error {
 			values["type"] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
 	}
 
 	if v, ok := values["memory"]; ok {
@@ -3594,6 +3681,13 @@ func (t *Virtio) UnmarshalJSON(d []byte) error {
 	cleaned := string(d)[1 : len(d)-1]
 	parts := strings.Split(cleaned, ",")
 	values := map[string]string{}
+	aliases := map[string]string{}
+
+	aliases["bps_rd_length"] = "bps_rd_max_length"
+	aliases["bps_wr_length"] = "bps_wr_max_length"
+	aliases["iops_rd_length"] = "iops_rd_max_length"
+	aliases["iops_wr_length"] = "iops_wr_max_length"
+	aliases["volume"] = "file"
 	for _, p := range parts {
 		kv := strings.Split(p, "=")
 		if len(kv) > 2 {
@@ -3603,7 +3697,14 @@ func (t *Virtio) UnmarshalJSON(d []byte) error {
 			values["file"] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
+		if len(kv) == 2 {
+			if alias, ok := aliases[kv[0]]; ok {
+				values[alias] = kv[1]
+				values["file"] = fmt.Sprintf(`"%s"`, kv[0])
+			} else {
+				values[kv[0]] = kv[1]
+			}
+		}
 	}
 
 	if v, ok := values["file"]; ok {

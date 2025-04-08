@@ -37,6 +37,8 @@ type JSONSchema struct {
 	TypeText             string                 `json:"typeText"`
 	Format               *StringOrMap           `json:"format"`
 	Enum                 []string               `json:"enum"`
+	Alias                string                 `json:"alias"`
+	KeyAlias             string                 `json:"keyAlias"`
 }
 
 type Link struct {

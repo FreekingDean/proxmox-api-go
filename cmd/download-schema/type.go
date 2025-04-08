@@ -22,6 +22,14 @@ type Type struct {
 	Format             string
 	Enum               []string
 	DefaultKey         string
+	Aliases            []Alias
+	KeyAlias           string
+}
+
+type Alias struct {
+	Name     string
+	Alias    string
+	KeyAlias string
 }
 
 func (p *Package) defineType(name string, jsonName string, schema *jsonschema.JSONSchema) *Type {
@@ -125,6 +133,16 @@ func (p *Package) defineStruct(name, description string, properties map[string]*
 		param := properties[name]
 		pt := p.defineType(Nameify(name), name, param)
 		if pt == nil {
+			if param.Alias != "" {
+				if t.Aliases == nil {
+					t.Aliases = make([]Alias, 0)
+				}
+				t.Aliases = append(t.Aliases, Alias{
+					Name:     name,
+					Alias:    param.Alias,
+					KeyAlias: param.KeyAlias,
+				})
+			}
 			continue
 		}
 		if strings.HasSuffix(name, "[n]") {
