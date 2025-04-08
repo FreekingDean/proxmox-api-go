@@ -143,20 +143,33 @@ func (t *{{ $t.Name }}) UnmarshalJSON(d []byte) error {
 	cleaned := string(d)[1:len(d)-1]
 	parts := strings.Split(cleaned, ",")
 	values := map[string]string{}
+  {{- if gt (len $t.Aliases)  0 }}
+  aliases := map[string]string{}
+  {{ range $_, $alias := $t.Aliases }}
+  aliases["{{ $alias.Name }}"] = "{{ $alias.Alias }}"
+  {{- end }}
+  {{- end }}
 	for _, p := range parts {
 		kv := strings.Split(p, "=")
 		if len(kv) > 2 {
 			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
 		}
 		if len(kv) == 1 {
-		{{ if $t.Properties }}
-			values["{{(index $t.Properties 0).JSONName}}"] = kv[0]
-		{{ else }}
-			values["{{(index $t.OptionalProperties 0).JSONName}}"] = kv[0]
-		{{ end }}
+			values["{{ $t.DefaultKey }}"] = kv[0]
 			continue
 		}
-		values[kv[0]] = kv[1]
+    {{- if gt (len $t.Aliases) 0 }}
+    if len(kv) == 2 {
+      if alias, ok := aliases[kv[0]]; ok {
+        values[alias] = kv[1]
+        values["{{ $t.DefaultKey }}"] = fmt.Sprintf(`"%s"`, kv[0])
+      } else {
+        values[kv[0]] = kv[1]
+      }
+    }
+    {{- else }}
+    values[kv[0]] = kv[1]
+    {{- end }}
 	}
 	{{ range $_, $p := $t.Properties }}
 	if v, ok := values["{{$p.JSONName}}"]; ok {

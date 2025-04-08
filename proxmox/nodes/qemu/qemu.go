@@ -1243,6 +1243,945 @@ type IndexResponse struct {
 }
 type _IndexResponse IndexResponse
 
+// Enable/disable communication with the QEMU Guest Agent and its properties.
+type Agent struct {
+	Enabled util.PVEBool `url:"enabled" json:"enabled"` // Enable/disable communication with a QEMU Guest Agent (QGA) running in the VM.
+
+	// The following parameters are optional
+	FreezeFsOnBackup  *util.PVEBool `url:"freeze-fs-on-backup,omitempty" json:"freeze-fs-on-backup,omitempty"` // Freeze/thaw guest filesystems on backup for consistency.
+	FstrimClonedDisks *util.PVEBool `url:"fstrim_cloned_disks,omitempty" json:"fstrim_cloned_disks,omitempty"` // Run fstrim after moving a disk or migrating the VM.
+	Type              *AgentType    `url:"type,omitempty" json:"type,omitempty"`                               // Select the agent type
+}
+type _Agent Agent
+
+func (t Agent) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[enabled=]<1|0> [,freeze-fs-on-backup=<1|0>] [,fstrim_cloned_disks=<1|0>] [,type=<virtio|isa>]`)
+}
+
+func (t *Agent) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+			values["enabled"] = kv[0]
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["enabled"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Enabled)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["freeze-fs-on-backup"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.FreezeFsOnBackup)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["fstrim_cloned_disks"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.FstrimClonedDisks)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["type"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Type)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Configure a audio device, useful in combination with QXL/Spice.
+type Audio0 struct {
+	Device Audio0Device `url:"device" json:"device"` // Configure an audio device.
+
+	// The following parameters are optional
+	Driver *Audio0Driver `url:"driver,omitempty" json:"driver,omitempty"` // Driver backend for the audio device.
+}
+type _Audio0 Audio0
+
+func (t Audio0) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `device=<ich9-intel-hda|intel-hda|AC97> [,driver=<spice|none>]`)
+}
+
+func (t *Audio0) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+			values[""] = kv[0]
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["device"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Device)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["driver"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Driver)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Configure a disk for storing EFI vars. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Note that SIZE_IN_GiB is ignored here and that the default EFI vars are copied to the volume instead. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+type Efidisk0 struct {
+	File string `url:"file" json:"file"` // The drive's backing volume.
+
+	// The following parameters are optional
+	Efitype         *Efidisk0Efitype `url:"efitype,omitempty" json:"efitype,omitempty"`                     // Size and type of the OVMF EFI vars. '4m' is newer and recommended, and required for Secure Boot. For backwards compatibility, '2m' is used if not otherwise specified. Ignored for VMs with arch=aarc64 (ARM).
+	Format          *Efidisk0Format  `url:"format,omitempty" json:"format,omitempty"`                       // The drive's backing file's data format.
+	ImportFrom      *string          `url:"import-from,omitempty" json:"import-from,omitempty"`             // Create a new disk, importing from this source (volume ID or absolute path). When an absolute path is specified, it's up to you to ensure that the source is not actively used by another process during the import!
+	PreEnrolledKeys *util.PVEBool    `url:"pre-enrolled-keys,omitempty" json:"pre-enrolled-keys,omitempty"` // Use am EFI vars template with distribution-specific and Microsoft Standard keys enrolled, if used with 'efitype=4m'. Note that this will enable Secure Boot by default, though it can still be turned off from within the VM.
+	Size            *string          `url:"size,omitempty" json:"size,omitempty"`                           // Disk size. This is purely informational and has no effect.
+}
+type _Efidisk0 Efidisk0
+
+func (t Efidisk0) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[file=]<volume> [,efitype=<2m|4m>] [,format=<enum>] [,import-from=<source volume>] [,pre-enrolled-keys=<1|0>] [,size=<DiskSize>]`)
+}
+
+func (t *Efidisk0) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	aliases := map[string]string{}
+
+	aliases["volume"] = "file"
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+			values["file"] = kv[0]
+			continue
+		}
+		if len(kv) == 2 {
+			if alias, ok := aliases[kv[0]]; ok {
+				values[alias] = kv[1]
+				values["file"] = fmt.Sprintf(`"%s"`, kv[0])
+			} else {
+				values[kv[0]] = kv[1]
+			}
+		}
+	}
+
+	if v, ok := values["file"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.File)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["efitype"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Efitype)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["format"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Format)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["import-from"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.ImportFrom)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["pre-enrolled-keys"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.PreEnrolledKeys)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["size"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Size)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Set of Hostpci
+type Hostpcis map[string]*string
+type _Hostpcis Hostpcis
+
+func (t Hostpcis) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// Use volume as IDE hard disk or CD-ROM (n is 0 to 3). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+type Ide struct {
+	File string `url:"file" json:"file"` // The drive's backing volume.
+
+	// The following parameters are optional
+	Aio             *IdeAio       `url:"aio,omitempty" json:"aio,omitempty"`                               // AIO type to use.
+	Backup          *util.PVEBool `url:"backup,omitempty" json:"backup,omitempty"`                         // Whether the drive should be included when making backups.
+	Bps             *int          `url:"bps,omitempty" json:"bps,omitempty"`                               // Maximum r/w speed in bytes per second.
+	BpsMaxLength    *int          `url:"bps_max_length,omitempty" json:"bps_max_length,omitempty"`         // Maximum length of I/O bursts in seconds.
+	BpsRd           *int          `url:"bps_rd,omitempty" json:"bps_rd,omitempty"`                         // Maximum read speed in bytes per second.
+	BpsRdMaxLength  *int          `url:"bps_rd_max_length,omitempty" json:"bps_rd_max_length,omitempty"`   // Maximum length of read I/O bursts in seconds.
+	BpsWr           *int          `url:"bps_wr,omitempty" json:"bps_wr,omitempty"`                         // Maximum write speed in bytes per second.
+	BpsWrMaxLength  *int          `url:"bps_wr_max_length,omitempty" json:"bps_wr_max_length,omitempty"`   // Maximum length of write I/O bursts in seconds.
+	Cache           *IdeCache     `url:"cache,omitempty" json:"cache,omitempty"`                           // The drive's cache mode
+	Cyls            *int          `url:"cyls,omitempty" json:"cyls,omitempty"`                             // Force the drive's physical geometry to have a specific cylinder count.
+	DetectZeroes    *util.PVEBool `url:"detect_zeroes,omitempty" json:"detect_zeroes,omitempty"`           // Controls whether to detect and try to optimize writes of zeroes.
+	Discard         *IdeDiscard   `url:"discard,omitempty" json:"discard,omitempty"`                       // Controls whether to pass discard/trim requests to the underlying storage.
+	Format          *IdeFormat    `url:"format,omitempty" json:"format,omitempty"`                         // The drive's backing file's data format.
+	Heads           *int          `url:"heads,omitempty" json:"heads,omitempty"`                           // Force the drive's physical geometry to have a specific head count.
+	ImportFrom      *string       `url:"import-from,omitempty" json:"import-from,omitempty"`               // Create a new disk, importing from this source (volume ID or absolute path). When an absolute path is specified, it's up to you to ensure that the source is not actively used by another process during the import!
+	Iops            *int          `url:"iops,omitempty" json:"iops,omitempty"`                             // Maximum r/w I/O in operations per second.
+	IopsMax         *int          `url:"iops_max,omitempty" json:"iops_max,omitempty"`                     // Maximum unthrottled r/w I/O pool in operations per second.
+	IopsMaxLength   *int          `url:"iops_max_length,omitempty" json:"iops_max_length,omitempty"`       // Maximum length of I/O bursts in seconds.
+	IopsRd          *int          `url:"iops_rd,omitempty" json:"iops_rd,omitempty"`                       // Maximum read I/O in operations per second.
+	IopsRdMax       *int          `url:"iops_rd_max,omitempty" json:"iops_rd_max,omitempty"`               // Maximum unthrottled read I/O pool in operations per second.
+	IopsRdMaxLength *int          `url:"iops_rd_max_length,omitempty" json:"iops_rd_max_length,omitempty"` // Maximum length of read I/O bursts in seconds.
+	IopsWr          *int          `url:"iops_wr,omitempty" json:"iops_wr,omitempty"`                       // Maximum write I/O in operations per second.
+	IopsWrMax       *int          `url:"iops_wr_max,omitempty" json:"iops_wr_max,omitempty"`               // Maximum unthrottled write I/O pool in operations per second.
+	IopsWrMaxLength *int          `url:"iops_wr_max_length,omitempty" json:"iops_wr_max_length,omitempty"` // Maximum length of write I/O bursts in seconds.
+	Mbps            *float64      `url:"mbps,omitempty" json:"mbps,omitempty"`                             // Maximum r/w speed in megabytes per second.
+	MbpsMax         *float64      `url:"mbps_max,omitempty" json:"mbps_max,omitempty"`                     // Maximum unthrottled r/w pool in megabytes per second.
+	MbpsRd          *float64      `url:"mbps_rd,omitempty" json:"mbps_rd,omitempty"`                       // Maximum read speed in megabytes per second.
+	MbpsRdMax       *float64      `url:"mbps_rd_max,omitempty" json:"mbps_rd_max,omitempty"`               // Maximum unthrottled read pool in megabytes per second.
+	MbpsWr          *float64      `url:"mbps_wr,omitempty" json:"mbps_wr,omitempty"`                       // Maximum write speed in megabytes per second.
+	MbpsWrMax       *float64      `url:"mbps_wr_max,omitempty" json:"mbps_wr_max,omitempty"`               // Maximum unthrottled write pool in megabytes per second.
+	Media           *IdeMedia     `url:"media,omitempty" json:"media,omitempty"`                           // The drive's media type.
+	Model           *string       `url:"model,omitempty" json:"model,omitempty"`                           // The drive's reported model name, url-encoded, up to 40 bytes long.
+	Replicate       *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`                   // Whether the drive should considered for replication jobs.
+	Rerror          *IdeRerror    `url:"rerror,omitempty" json:"rerror,omitempty"`                         // Read error action.
+	Secs            *int          `url:"secs,omitempty" json:"secs,omitempty"`                             // Force the drive's physical geometry to have a specific sector count.
+	Serial          *string       `url:"serial,omitempty" json:"serial,omitempty"`                         // The drive's reported serial number, url-encoded, up to 20 bytes long.
+	Shared          *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`                         // Mark this locally-managed volume as available on all nodes
+	Size            *string       `url:"size,omitempty" json:"size,omitempty"`                             // Disk size. This is purely informational and has no effect.
+	Snapshot        *util.PVEBool `url:"snapshot,omitempty" json:"snapshot,omitempty"`                     // Controls qemu's snapshot mode feature. If activated, changes made to the disk are temporary and will be discarded when the VM is shutdown.
+	Ssd             *util.PVEBool `url:"ssd,omitempty" json:"ssd,omitempty"`                               // Whether to expose this drive as an SSD, rather than a rotational hard disk.
+	Trans           *IdeTrans     `url:"trans,omitempty" json:"trans,omitempty"`                           // Force disk geometry bios translation mode.
+	Werror          *IdeWerror    `url:"werror,omitempty" json:"werror,omitempty"`                         // Write error action.
+	Wwn             *string       `url:"wwn,omitempty" json:"wwn,omitempty"`                               // The drive's worldwide name, encoded as 16 bytes hex string, prefixed by '0x'.
+}
+type _Ide Ide
+
+func (t Ide) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[file=]<volume> [,aio=<native|threads|io_uring>] [,backup=<1|0>] [,bps=<bps>] [,bps_max_length=<seconds>] [,bps_rd=<bps>] [,bps_rd_max_length=<seconds>] [,bps_wr=<bps>] [,bps_wr_max_length=<seconds>] [,cache=<enum>] [,cyls=<integer>] [,detect_zeroes=<1|0>] [,discard=<ignore|on>] [,format=<enum>] [,heads=<integer>] [,import-from=<source volume>] [,iops=<iops>] [,iops_max=<iops>] [,iops_max_length=<seconds>] [,iops_rd=<iops>] [,iops_rd_max=<iops>] [,iops_rd_max_length=<seconds>] [,iops_wr=<iops>] [,iops_wr_max=<iops>] [,iops_wr_max_length=<seconds>] [,mbps=<mbps>] [,mbps_max=<mbps>] [,mbps_rd=<mbps>] [,mbps_rd_max=<mbps>] [,mbps_wr=<mbps>] [,mbps_wr_max=<mbps>] [,media=<cdrom|disk>] [,model=<model>] [,replicate=<1|0>] [,rerror=<ignore|report|stop>] [,secs=<integer>] [,serial=<serial>] [,shared=<1|0>] [,size=<DiskSize>] [,snapshot=<1|0>] [,ssd=<1|0>] [,trans=<none|lba|auto>] [,werror=<enum>] [,wwn=<wwn>]`)
+}
+
+func (t *Ide) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	aliases := map[string]string{}
+
+	aliases["bps_rd_length"] = "bps_rd_max_length"
+	aliases["bps_wr_length"] = "bps_wr_max_length"
+	aliases["iops_rd_length"] = "iops_rd_max_length"
+	aliases["iops_wr_length"] = "iops_wr_max_length"
+	aliases["volume"] = "file"
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+			values["file"] = kv[0]
+			continue
+		}
+		if len(kv) == 2 {
+			if alias, ok := aliases[kv[0]]; ok {
+				values[alias] = kv[1]
+				values["file"] = fmt.Sprintf(`"%s"`, kv[0])
+			} else {
+				values[kv[0]] = kv[1]
+			}
+		}
+	}
+
+	if v, ok := values["file"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.File)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["aio"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Aio)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["backup"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Backup)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["bps"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Bps)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["bps_max_length"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.BpsMaxLength)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["bps_rd"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.BpsRd)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["bps_rd_max_length"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.BpsRdMaxLength)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["bps_wr"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.BpsWr)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["bps_wr_max_length"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.BpsWrMaxLength)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["cache"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Cache)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["cyls"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Cyls)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["detect_zeroes"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.DetectZeroes)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["discard"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Discard)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["format"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Format)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["heads"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Heads)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["import-from"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.ImportFrom)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["iops"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Iops)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["iops_max"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.IopsMax)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["iops_max_length"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.IopsMaxLength)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["iops_rd"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.IopsRd)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["iops_rd_max"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.IopsRdMax)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["iops_rd_max_length"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.IopsRdMaxLength)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["iops_wr"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.IopsWr)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["iops_wr_max"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.IopsWrMax)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["iops_wr_max_length"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.IopsWrMaxLength)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mbps"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Mbps)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mbps_max"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.MbpsMax)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mbps_rd"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.MbpsRd)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mbps_rd_max"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.MbpsRdMax)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mbps_wr"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.MbpsWr)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mbps_wr_max"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.MbpsWrMax)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["media"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Media)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["model"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Model)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["replicate"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Replicate)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["rerror"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Rerror)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["secs"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Secs)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["serial"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Serial)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["shared"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Shared)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["size"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Size)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["snapshot"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Snapshot)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["ssd"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Ssd)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["trans"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Trans)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["werror"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Werror)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["wwn"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Wwn)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Set of Ide
+type Ides map[string]*Ide
+type _Ides Ides
+
+func (t Ides) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// Set of Ipconfig
+type Ipconfigs map[string]*string
+type _Ipconfigs Ipconfigs
+
+func (t Ipconfigs) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// Inter-VM shared memory. Useful for direct communication between VMs, or to the host.
+type Ivshmem struct {
+	Size int `url:"size" json:"size"` // The size of the file in MB.
+
+	// The following parameters are optional
+	Name *string `url:"name,omitempty" json:"name,omitempty"` // The name of the file. Will be prefixed with 'pve-shm-'. Default is the VMID. Will be deleted when the VM is stopped.
+}
+type _Ivshmem Ivshmem
+
+func (t Ivshmem) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `size=<integer> [,name=<string>]`)
+}
+
+func (t *Ivshmem) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+			values[""] = kv[0]
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["size"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Size)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["name"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Name)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Specify network devices.
+type Net struct {
+	Model NetModel `url:"model" json:"model"` // Network Card Model. The 'virtio' model provides the best performance with very low CPU overhead. If your guest does not support this driver, it is usually best to use 'e1000'.
+
+	// The following parameters are optional
+	Bridge   *string       `url:"bridge,omitempty" json:"bridge,omitempty"`       // Bridge to attach the network device to. The Proxmox VE standard bridge is called 'vmbr0'. If you do not specify a bridge, we create a kvm user (NATed) network device, which provides DHCP and DNS services. The following addresses are used:  10.0.2.2  Gateway 10.0.2.3  DNS Server 10.0.2.4  SMB Server The DHCP server assign addresses to the guest starting from 10.0.2.15.
+	Firewall *util.PVEBool `url:"firewall,omitempty" json:"firewall,omitempty"`   // Whether this interface should be protected by the firewall.
+	LinkDown *util.PVEBool `url:"link_down,omitempty" json:"link_down,omitempty"` // Whether this interface should be disconnected (like pulling the plug).
+	Macaddr  *string       `url:"macaddr,omitempty" json:"macaddr,omitempty"`     // MAC address. That address must be unique withing your network. This is automatically generated if not specified.
+	Mtu      *int          `url:"mtu,omitempty" json:"mtu,omitempty"`             // Force MTU, for VirtIO only. Set to '1' to use the bridge MTU
+	Queues   *int          `url:"queues,omitempty" json:"queues,omitempty"`       // Number of packet queues to be used on the device.
+	Rate     *float64      `url:"rate,omitempty" json:"rate,omitempty"`           // Rate limit in mbps (megabytes per second) as floating point number.
+	Tag      *int          `url:"tag,omitempty" json:"tag,omitempty"`             // VLAN tag to apply to packets on this interface.
+	Trunks   *string       `url:"trunks,omitempty" json:"trunks,omitempty"`       // VLAN trunks to pass through this interface.
+}
+type _Net Net
+
+func (t Net) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[model=]<enum> [,bridge=<bridge>] [,firewall=<1|0>] [,link_down=<1|0>] [,macaddr=<XX:XX:XX:XX:XX:XX>] [,mtu=<integer>] [,queues=<integer>] [,rate=<number>] [,tag=<integer>] [,trunks=<vlanid[;vlanid...]>] [,<model>=<macaddr>]`)
+}
+
+func (t *Net) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	aliases := map[string]string{}
+
+	aliases["e1000"] = "macaddr"
+	aliases["e1000-82540em"] = "macaddr"
+	aliases["e1000-82544gc"] = "macaddr"
+	aliases["e1000-82545em"] = "macaddr"
+	aliases["e1000e"] = "macaddr"
+	aliases["i82551"] = "macaddr"
+	aliases["i82557b"] = "macaddr"
+	aliases["i82559er"] = "macaddr"
+	aliases["ne2k_isa"] = "macaddr"
+	aliases["ne2k_pci"] = "macaddr"
+	aliases["pcnet"] = "macaddr"
+	aliases["rtl8139"] = "macaddr"
+	aliases["virtio"] = "macaddr"
+	aliases["vmxnet3"] = "macaddr"
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+			values["model"] = kv[0]
+			continue
+		}
+		if len(kv) == 2 {
+			if alias, ok := aliases[kv[0]]; ok {
+				values[alias] = kv[1]
+				values["model"] = fmt.Sprintf(`"%s"`, kv[0])
+			} else {
+				values[kv[0]] = kv[1]
+			}
+		}
+	}
+
+	if v, ok := values["model"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Model)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["bridge"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Bridge)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["firewall"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Firewall)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["link_down"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.LinkDown)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["macaddr"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Macaddr)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mtu"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Mtu)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["queues"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Queues)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["rate"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Rate)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["tag"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Tag)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["trunks"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Trunks)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Set of Net
+type Nets map[string]*Net
+type _Nets Nets
+
+func (t Nets) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
 // NUMA topology.
 type Numa struct {
 	Cpus string `url:"cpus" json:"cpus"` // CPUs accessing this NUMA node.
@@ -1271,9 +2210,7 @@ func (t *Numa) UnmarshalJSON(d []byte) error {
 			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
 		}
 		if len(kv) == 1 {
-
-			values["cpus"] = kv[0]
-
+			values[""] = kv[0]
 			continue
 		}
 		values[kv[0]] = kv[1]
@@ -1328,6 +2265,14 @@ func (t Numas) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeArray(key, v, t)
 }
 
+// Set of Parallel
+type Parallels map[string]*string
+type _Parallels Parallels
+
+func (t Parallels) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
 // Configure a VirtIO-based Random Number Generator.
 type Rng0 struct {
 	Source Rng0Source `url:"source" json:"source"` // The file on the host to gather entropy from. In most cases '/dev/urandom' should be preferred over '/dev/random' to avoid entropy-starvation issues on the host. Using urandom does *not* decrease security in any meaningful way, as it's still seeded from real entropy, and the bytes provided will most likely be mixed with real entropy on the guest as well. '/dev/hwrng' can be used to pass through a hardware RNG from the host.
@@ -1355,9 +2300,7 @@ func (t *Rng0) UnmarshalJSON(d []byte) error {
 			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
 		}
 		if len(kv) == 1 {
-
 			values["source"] = kv[0]
-
 			continue
 		}
 		values[kv[0]] = kv[1]
@@ -1388,6 +2331,474 @@ func (t *Rng0) UnmarshalJSON(d []byte) error {
 	}
 
 	return nil
+}
+
+// Use volume as SATA hard disk or CD-ROM (n is 0 to 5). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+type Sata struct {
+	File string `url:"file" json:"file"` // The drive's backing volume.
+
+	// The following parameters are optional
+	Aio             *SataAio      `url:"aio,omitempty" json:"aio,omitempty"`                               // AIO type to use.
+	Backup          *util.PVEBool `url:"backup,omitempty" json:"backup,omitempty"`                         // Whether the drive should be included when making backups.
+	Bps             *int          `url:"bps,omitempty" json:"bps,omitempty"`                               // Maximum r/w speed in bytes per second.
+	BpsMaxLength    *int          `url:"bps_max_length,omitempty" json:"bps_max_length,omitempty"`         // Maximum length of I/O bursts in seconds.
+	BpsRd           *int          `url:"bps_rd,omitempty" json:"bps_rd,omitempty"`                         // Maximum read speed in bytes per second.
+	BpsRdMaxLength  *int          `url:"bps_rd_max_length,omitempty" json:"bps_rd_max_length,omitempty"`   // Maximum length of read I/O bursts in seconds.
+	BpsWr           *int          `url:"bps_wr,omitempty" json:"bps_wr,omitempty"`                         // Maximum write speed in bytes per second.
+	BpsWrMaxLength  *int          `url:"bps_wr_max_length,omitempty" json:"bps_wr_max_length,omitempty"`   // Maximum length of write I/O bursts in seconds.
+	Cache           *SataCache    `url:"cache,omitempty" json:"cache,omitempty"`                           // The drive's cache mode
+	Cyls            *int          `url:"cyls,omitempty" json:"cyls,omitempty"`                             // Force the drive's physical geometry to have a specific cylinder count.
+	DetectZeroes    *util.PVEBool `url:"detect_zeroes,omitempty" json:"detect_zeroes,omitempty"`           // Controls whether to detect and try to optimize writes of zeroes.
+	Discard         *SataDiscard  `url:"discard,omitempty" json:"discard,omitempty"`                       // Controls whether to pass discard/trim requests to the underlying storage.
+	Format          *SataFormat   `url:"format,omitempty" json:"format,omitempty"`                         // The drive's backing file's data format.
+	Heads           *int          `url:"heads,omitempty" json:"heads,omitempty"`                           // Force the drive's physical geometry to have a specific head count.
+	ImportFrom      *string       `url:"import-from,omitempty" json:"import-from,omitempty"`               // Create a new disk, importing from this source (volume ID or absolute path). When an absolute path is specified, it's up to you to ensure that the source is not actively used by another process during the import!
+	Iops            *int          `url:"iops,omitempty" json:"iops,omitempty"`                             // Maximum r/w I/O in operations per second.
+	IopsMax         *int          `url:"iops_max,omitempty" json:"iops_max,omitempty"`                     // Maximum unthrottled r/w I/O pool in operations per second.
+	IopsMaxLength   *int          `url:"iops_max_length,omitempty" json:"iops_max_length,omitempty"`       // Maximum length of I/O bursts in seconds.
+	IopsRd          *int          `url:"iops_rd,omitempty" json:"iops_rd,omitempty"`                       // Maximum read I/O in operations per second.
+	IopsRdMax       *int          `url:"iops_rd_max,omitempty" json:"iops_rd_max,omitempty"`               // Maximum unthrottled read I/O pool in operations per second.
+	IopsRdMaxLength *int          `url:"iops_rd_max_length,omitempty" json:"iops_rd_max_length,omitempty"` // Maximum length of read I/O bursts in seconds.
+	IopsWr          *int          `url:"iops_wr,omitempty" json:"iops_wr,omitempty"`                       // Maximum write I/O in operations per second.
+	IopsWrMax       *int          `url:"iops_wr_max,omitempty" json:"iops_wr_max,omitempty"`               // Maximum unthrottled write I/O pool in operations per second.
+	IopsWrMaxLength *int          `url:"iops_wr_max_length,omitempty" json:"iops_wr_max_length,omitempty"` // Maximum length of write I/O bursts in seconds.
+	Mbps            *float64      `url:"mbps,omitempty" json:"mbps,omitempty"`                             // Maximum r/w speed in megabytes per second.
+	MbpsMax         *float64      `url:"mbps_max,omitempty" json:"mbps_max,omitempty"`                     // Maximum unthrottled r/w pool in megabytes per second.
+	MbpsRd          *float64      `url:"mbps_rd,omitempty" json:"mbps_rd,omitempty"`                       // Maximum read speed in megabytes per second.
+	MbpsRdMax       *float64      `url:"mbps_rd_max,omitempty" json:"mbps_rd_max,omitempty"`               // Maximum unthrottled read pool in megabytes per second.
+	MbpsWr          *float64      `url:"mbps_wr,omitempty" json:"mbps_wr,omitempty"`                       // Maximum write speed in megabytes per second.
+	MbpsWrMax       *float64      `url:"mbps_wr_max,omitempty" json:"mbps_wr_max,omitempty"`               // Maximum unthrottled write pool in megabytes per second.
+	Media           *SataMedia    `url:"media,omitempty" json:"media,omitempty"`                           // The drive's media type.
+	Replicate       *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`                   // Whether the drive should considered for replication jobs.
+	Rerror          *SataRerror   `url:"rerror,omitempty" json:"rerror,omitempty"`                         // Read error action.
+	Secs            *int          `url:"secs,omitempty" json:"secs,omitempty"`                             // Force the drive's physical geometry to have a specific sector count.
+	Serial          *string       `url:"serial,omitempty" json:"serial,omitempty"`                         // The drive's reported serial number, url-encoded, up to 20 bytes long.
+	Shared          *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`                         // Mark this locally-managed volume as available on all nodes
+	Size            *string       `url:"size,omitempty" json:"size,omitempty"`                             // Disk size. This is purely informational and has no effect.
+	Snapshot        *util.PVEBool `url:"snapshot,omitempty" json:"snapshot,omitempty"`                     // Controls qemu's snapshot mode feature. If activated, changes made to the disk are temporary and will be discarded when the VM is shutdown.
+	Ssd             *util.PVEBool `url:"ssd,omitempty" json:"ssd,omitempty"`                               // Whether to expose this drive as an SSD, rather than a rotational hard disk.
+	Trans           *SataTrans    `url:"trans,omitempty" json:"trans,omitempty"`                           // Force disk geometry bios translation mode.
+	Werror          *SataWerror   `url:"werror,omitempty" json:"werror,omitempty"`                         // Write error action.
+	Wwn             *string       `url:"wwn,omitempty" json:"wwn,omitempty"`                               // The drive's worldwide name, encoded as 16 bytes hex string, prefixed by '0x'.
+}
+type _Sata Sata
+
+func (t Sata) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[file=]<volume> [,aio=<native|threads|io_uring>] [,backup=<1|0>] [,bps=<bps>] [,bps_max_length=<seconds>] [,bps_rd=<bps>] [,bps_rd_max_length=<seconds>] [,bps_wr=<bps>] [,bps_wr_max_length=<seconds>] [,cache=<enum>] [,cyls=<integer>] [,detect_zeroes=<1|0>] [,discard=<ignore|on>] [,format=<enum>] [,heads=<integer>] [,import-from=<source volume>] [,iops=<iops>] [,iops_max=<iops>] [,iops_max_length=<seconds>] [,iops_rd=<iops>] [,iops_rd_max=<iops>] [,iops_rd_max_length=<seconds>] [,iops_wr=<iops>] [,iops_wr_max=<iops>] [,iops_wr_max_length=<seconds>] [,mbps=<mbps>] [,mbps_max=<mbps>] [,mbps_rd=<mbps>] [,mbps_rd_max=<mbps>] [,mbps_wr=<mbps>] [,mbps_wr_max=<mbps>] [,media=<cdrom|disk>] [,replicate=<1|0>] [,rerror=<ignore|report|stop>] [,secs=<integer>] [,serial=<serial>] [,shared=<1|0>] [,size=<DiskSize>] [,snapshot=<1|0>] [,ssd=<1|0>] [,trans=<none|lba|auto>] [,werror=<enum>] [,wwn=<wwn>]`)
+}
+
+func (t *Sata) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	aliases := map[string]string{}
+
+	aliases["bps_rd_length"] = "bps_rd_max_length"
+	aliases["bps_wr_length"] = "bps_wr_max_length"
+	aliases["iops_rd_length"] = "iops_rd_max_length"
+	aliases["iops_wr_length"] = "iops_wr_max_length"
+	aliases["volume"] = "file"
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+			values["file"] = kv[0]
+			continue
+		}
+		if len(kv) == 2 {
+			if alias, ok := aliases[kv[0]]; ok {
+				values[alias] = kv[1]
+				values["file"] = fmt.Sprintf(`"%s"`, kv[0])
+			} else {
+				values[kv[0]] = kv[1]
+			}
+		}
+	}
+
+	if v, ok := values["file"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.File)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["aio"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Aio)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["backup"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Backup)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["bps"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Bps)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["bps_max_length"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.BpsMaxLength)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["bps_rd"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.BpsRd)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["bps_rd_max_length"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.BpsRdMaxLength)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["bps_wr"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.BpsWr)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["bps_wr_max_length"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.BpsWrMaxLength)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["cache"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Cache)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["cyls"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Cyls)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["detect_zeroes"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.DetectZeroes)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["discard"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Discard)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["format"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Format)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["heads"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Heads)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["import-from"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.ImportFrom)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["iops"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Iops)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["iops_max"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.IopsMax)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["iops_max_length"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.IopsMaxLength)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["iops_rd"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.IopsRd)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["iops_rd_max"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.IopsRdMax)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["iops_rd_max_length"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.IopsRdMaxLength)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["iops_wr"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.IopsWr)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["iops_wr_max"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.IopsWrMax)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["iops_wr_max_length"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.IopsWrMaxLength)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mbps"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Mbps)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mbps_max"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.MbpsMax)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mbps_rd"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.MbpsRd)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mbps_rd_max"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.MbpsRdMax)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mbps_wr"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.MbpsWr)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mbps_wr_max"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.MbpsWrMax)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["media"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Media)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["replicate"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Replicate)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["rerror"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Rerror)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["secs"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Secs)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["serial"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Serial)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["shared"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Shared)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["size"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Size)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["snapshot"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Snapshot)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["ssd"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Ssd)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["trans"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Trans)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["werror"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Werror)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["wwn"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Wwn)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Set of Sata
+type Satas map[string]*Sata
+type _Satas Satas
+
+func (t Satas) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
 }
 
 // Use volume as SCSI hard disk or CD-ROM (n is 0 to 30). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
@@ -1455,18 +2866,30 @@ func (t *Scsi) UnmarshalJSON(d []byte) error {
 	cleaned := string(d)[1 : len(d)-1]
 	parts := strings.Split(cleaned, ",")
 	values := map[string]string{}
+	aliases := map[string]string{}
+
+	aliases["bps_rd_length"] = "bps_rd_max_length"
+	aliases["bps_wr_length"] = "bps_wr_max_length"
+	aliases["iops_rd_length"] = "iops_rd_max_length"
+	aliases["iops_wr_length"] = "iops_wr_max_length"
+	aliases["volume"] = "file"
 	for _, p := range parts {
 		kv := strings.Split(p, "=")
 		if len(kv) > 2 {
 			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
 		}
 		if len(kv) == 1 {
-
 			values["file"] = kv[0]
-
 			continue
 		}
-		values[kv[0]] = kv[1]
+		if len(kv) == 2 {
+			if alias, ok := aliases[kv[0]]; ok {
+				values[alias] = kv[1]
+				values["file"] = fmt.Sprintf(`"%s"`, kv[0])
+			} else {
+				values[kv[0]] = kv[1]
+			}
+		}
 	}
 
 	if v, ok := values["file"]; ok {
@@ -1882,6 +3305,14 @@ func (t Scsis) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeArray(key, v, t)
 }
 
+// Set of Serial
+type Serials map[string]*string
+type _Serials Serials
+
+func (t Serials) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
 // Configure additional enhancements for SPICE.
 type SpiceEnhancements struct {
 
@@ -1908,9 +3339,7 @@ func (t *SpiceEnhancements) UnmarshalJSON(d []byte) error {
 			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
 		}
 		if len(kv) == 1 {
-
-			values["foldersharing"] = kv[0]
-
+			values[""] = kv[0]
 			continue
 		}
 		values[kv[0]] = kv[1]
@@ -1929,6 +3358,268 @@ func (t *SpiceEnhancements) UnmarshalJSON(d []byte) error {
 		v = fmt.Sprintf("\"%s\"", v)
 
 		err := json.Unmarshal([]byte(v), &t.Videostreaming)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Configure a Disk for storing TPM state. The format is fixed to 'raw'. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Note that SIZE_IN_GiB is ignored here and 4 MiB will be used instead. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
+type Tpmstate0 struct {
+	File string `url:"file" json:"file"` // The drive's backing volume.
+
+	// The following parameters are optional
+	ImportFrom *string           `url:"import-from,omitempty" json:"import-from,omitempty"` // Create a new disk, importing from this source (volume ID or absolute path). When an absolute path is specified, it's up to you to ensure that the source is not actively used by another process during the import!
+	Size       *string           `url:"size,omitempty" json:"size,omitempty"`               // Disk size. This is purely informational and has no effect.
+	Version    *Tpmstate0Version `url:"version,omitempty" json:"version,omitempty"`         // The TPM interface version. v2.0 is newer and should be preferred. Note that this cannot be changed later on.
+}
+type _Tpmstate0 Tpmstate0
+
+func (t Tpmstate0) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[file=]<volume> [,import-from=<source volume>] [,size=<DiskSize>] [,version=<v1.2|v2.0>]`)
+}
+
+func (t *Tpmstate0) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	aliases := map[string]string{}
+
+	aliases["volume"] = "file"
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+			values["file"] = kv[0]
+			continue
+		}
+		if len(kv) == 2 {
+			if alias, ok := aliases[kv[0]]; ok {
+				values[alias] = kv[1]
+				values["file"] = fmt.Sprintf(`"%s"`, kv[0])
+			} else {
+				values[kv[0]] = kv[1]
+			}
+		}
+	}
+
+	if v, ok := values["file"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.File)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["import-from"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.ImportFrom)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["size"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Size)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["version"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Version)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Reference to unused volumes. This is used internally, and should not be modified manually.
+type Unused struct {
+	File string `url:"file" json:"file"` // The drive's backing volume.
+
+}
+type _Unused Unused
+
+func (t Unused) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[file=]<volume>`)
+}
+
+func (t *Unused) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	aliases := map[string]string{}
+
+	aliases["volume"] = "file"
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+			values["file"] = kv[0]
+			continue
+		}
+		if len(kv) == 2 {
+			if alias, ok := aliases[kv[0]]; ok {
+				values[alias] = kv[1]
+				values["file"] = fmt.Sprintf(`"%s"`, kv[0])
+			} else {
+				values[kv[0]] = kv[1]
+			}
+		}
+	}
+
+	if v, ok := values["file"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.File)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Set of Unused
+type Unuseds map[string]*Unused
+type _Unuseds Unuseds
+
+func (t Unuseds) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// Configure an USB device (n is 0 to 4, for machine version >= 7.1 and ostype l26 or windows > 7, n can be up to 14).
+type Usb struct {
+	Host string `url:"host" json:"host"` // The Host USB device or port or the value 'spice'. HOSTUSBDEVICE syntax is:  'bus-port(.port)*' (decimal numbers) or 'vendor_id:product_id' (hexadeciaml numbers) or 'spice' You can use the 'lsusb -t' command to list existing usb devices. NOTE: This option allows direct access to host hardware. So it is no longer possible to migrate such machines - use with special care. The value 'spice' can be used to add a usb redirection devices for spice.
+
+	// The following parameters are optional
+	Usb3 *util.PVEBool `url:"usb3,omitempty" json:"usb3,omitempty"` // Specifies whether if given host option is a USB3 device or port. For modern guests (machine version >= 7.1 and ostype l26 and windows > 7), this flag is irrelevant (all devices are plugged into a xhci controller).
+}
+type _Usb Usb
+
+func (t Usb) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[host=]<HOSTUSBDEVICE|spice> [,usb3=<1|0>]`)
+}
+
+func (t *Usb) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+			values["host"] = kv[0]
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["host"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Host)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["usb3"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Usb3)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Set of Usb
+type Usbs map[string]*Usb
+type _Usbs Usbs
+
+func (t Usbs) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeArray(key, v, t)
+}
+
+// Configure the VGA hardware.
+type Vga struct {
+
+	// The following parameters are optional
+	Memory *int     `url:"memory,omitempty" json:"memory,omitempty"` // Sets the VGA memory (in MiB). Has no effect with serial display.
+	Type   *VgaType `url:"type,omitempty" json:"type,omitempty"`     // Select the VGA type.
+}
+type _Vga Vga
+
+func (t Vga) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[[type=]<enum>] [,memory=<integer>]`)
+}
+
+func (t *Vga) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+			values["type"] = kv[0]
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["memory"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Memory)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["type"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Type)
 		if err != nil {
 			return err
 		}
@@ -1998,18 +3689,30 @@ func (t *Virtio) UnmarshalJSON(d []byte) error {
 	cleaned := string(d)[1 : len(d)-1]
 	parts := strings.Split(cleaned, ",")
 	values := map[string]string{}
+	aliases := map[string]string{}
+
+	aliases["bps_rd_length"] = "bps_rd_max_length"
+	aliases["bps_wr_length"] = "bps_wr_max_length"
+	aliases["iops_rd_length"] = "iops_rd_max_length"
+	aliases["iops_wr_length"] = "iops_wr_max_length"
+	aliases["volume"] = "file"
 	for _, p := range parts {
 		kv := strings.Split(p, "=")
 		if len(kv) > 2 {
 			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
 		}
 		if len(kv) == 1 {
-
 			values["file"] = kv[0]
-
 			continue
 		}
-		values[kv[0]] = kv[1]
+		if len(kv) == 2 {
+			if alias, ok := aliases[kv[0]]; ok {
+				values[alias] = kv[1]
+				values["file"] = fmt.Sprintf(`"%s"`, kv[0])
+			} else {
+				values[kv[0]] = kv[1]
+			}
+		}
 	}
 
 	if v, ok := values["file"]; ok {
@@ -2391,1632 +4094,6 @@ func (t Virtios) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeArray(key, v, t)
 }
 
-// Set of Serial
-type Serials map[string]*string
-type _Serials Serials
-
-func (t Serials) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Configure a audio device, useful in combination with QXL/Spice.
-type Audio0 struct {
-	Device Audio0Device `url:"device" json:"device"` // Configure an audio device.
-
-	// The following parameters are optional
-	Driver *Audio0Driver `url:"driver,omitempty" json:"driver,omitempty"` // Driver backend for the audio device.
-}
-type _Audio0 Audio0
-
-func (t Audio0) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `device=<ich9-intel-hda|intel-hda|AC97> [,driver=<spice|none>]`)
-}
-
-func (t *Audio0) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["device"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["device"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Device)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["driver"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Driver)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Use volume as IDE hard disk or CD-ROM (n is 0 to 3). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
-type Ide struct {
-	File string `url:"file" json:"file"` // The drive's backing volume.
-
-	// The following parameters are optional
-	Aio             *IdeAio       `url:"aio,omitempty" json:"aio,omitempty"`                               // AIO type to use.
-	Backup          *util.PVEBool `url:"backup,omitempty" json:"backup,omitempty"`                         // Whether the drive should be included when making backups.
-	Bps             *int          `url:"bps,omitempty" json:"bps,omitempty"`                               // Maximum r/w speed in bytes per second.
-	BpsMaxLength    *int          `url:"bps_max_length,omitempty" json:"bps_max_length,omitempty"`         // Maximum length of I/O bursts in seconds.
-	BpsRd           *int          `url:"bps_rd,omitempty" json:"bps_rd,omitempty"`                         // Maximum read speed in bytes per second.
-	BpsRdMaxLength  *int          `url:"bps_rd_max_length,omitempty" json:"bps_rd_max_length,omitempty"`   // Maximum length of read I/O bursts in seconds.
-	BpsWr           *int          `url:"bps_wr,omitempty" json:"bps_wr,omitempty"`                         // Maximum write speed in bytes per second.
-	BpsWrMaxLength  *int          `url:"bps_wr_max_length,omitempty" json:"bps_wr_max_length,omitempty"`   // Maximum length of write I/O bursts in seconds.
-	Cache           *IdeCache     `url:"cache,omitempty" json:"cache,omitempty"`                           // The drive's cache mode
-	Cyls            *int          `url:"cyls,omitempty" json:"cyls,omitempty"`                             // Force the drive's physical geometry to have a specific cylinder count.
-	DetectZeroes    *util.PVEBool `url:"detect_zeroes,omitempty" json:"detect_zeroes,omitempty"`           // Controls whether to detect and try to optimize writes of zeroes.
-	Discard         *IdeDiscard   `url:"discard,omitempty" json:"discard,omitempty"`                       // Controls whether to pass discard/trim requests to the underlying storage.
-	Format          *IdeFormat    `url:"format,omitempty" json:"format,omitempty"`                         // The drive's backing file's data format.
-	Heads           *int          `url:"heads,omitempty" json:"heads,omitempty"`                           // Force the drive's physical geometry to have a specific head count.
-	ImportFrom      *string       `url:"import-from,omitempty" json:"import-from,omitempty"`               // Create a new disk, importing from this source (volume ID or absolute path). When an absolute path is specified, it's up to you to ensure that the source is not actively used by another process during the import!
-	Iops            *int          `url:"iops,omitempty" json:"iops,omitempty"`                             // Maximum r/w I/O in operations per second.
-	IopsMax         *int          `url:"iops_max,omitempty" json:"iops_max,omitempty"`                     // Maximum unthrottled r/w I/O pool in operations per second.
-	IopsMaxLength   *int          `url:"iops_max_length,omitempty" json:"iops_max_length,omitempty"`       // Maximum length of I/O bursts in seconds.
-	IopsRd          *int          `url:"iops_rd,omitempty" json:"iops_rd,omitempty"`                       // Maximum read I/O in operations per second.
-	IopsRdMax       *int          `url:"iops_rd_max,omitempty" json:"iops_rd_max,omitempty"`               // Maximum unthrottled read I/O pool in operations per second.
-	IopsRdMaxLength *int          `url:"iops_rd_max_length,omitempty" json:"iops_rd_max_length,omitempty"` // Maximum length of read I/O bursts in seconds.
-	IopsWr          *int          `url:"iops_wr,omitempty" json:"iops_wr,omitempty"`                       // Maximum write I/O in operations per second.
-	IopsWrMax       *int          `url:"iops_wr_max,omitempty" json:"iops_wr_max,omitempty"`               // Maximum unthrottled write I/O pool in operations per second.
-	IopsWrMaxLength *int          `url:"iops_wr_max_length,omitempty" json:"iops_wr_max_length,omitempty"` // Maximum length of write I/O bursts in seconds.
-	Mbps            *float64      `url:"mbps,omitempty" json:"mbps,omitempty"`                             // Maximum r/w speed in megabytes per second.
-	MbpsMax         *float64      `url:"mbps_max,omitempty" json:"mbps_max,omitempty"`                     // Maximum unthrottled r/w pool in megabytes per second.
-	MbpsRd          *float64      `url:"mbps_rd,omitempty" json:"mbps_rd,omitempty"`                       // Maximum read speed in megabytes per second.
-	MbpsRdMax       *float64      `url:"mbps_rd_max,omitempty" json:"mbps_rd_max,omitempty"`               // Maximum unthrottled read pool in megabytes per second.
-	MbpsWr          *float64      `url:"mbps_wr,omitempty" json:"mbps_wr,omitempty"`                       // Maximum write speed in megabytes per second.
-	MbpsWrMax       *float64      `url:"mbps_wr_max,omitempty" json:"mbps_wr_max,omitempty"`               // Maximum unthrottled write pool in megabytes per second.
-	Media           *IdeMedia     `url:"media,omitempty" json:"media,omitempty"`                           // The drive's media type.
-	Model           *string       `url:"model,omitempty" json:"model,omitempty"`                           // The drive's reported model name, url-encoded, up to 40 bytes long.
-	Replicate       *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`                   // Whether the drive should considered for replication jobs.
-	Rerror          *IdeRerror    `url:"rerror,omitempty" json:"rerror,omitempty"`                         // Read error action.
-	Secs            *int          `url:"secs,omitempty" json:"secs,omitempty"`                             // Force the drive's physical geometry to have a specific sector count.
-	Serial          *string       `url:"serial,omitempty" json:"serial,omitempty"`                         // The drive's reported serial number, url-encoded, up to 20 bytes long.
-	Shared          *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`                         // Mark this locally-managed volume as available on all nodes
-	Size            *string       `url:"size,omitempty" json:"size,omitempty"`                             // Disk size. This is purely informational and has no effect.
-	Snapshot        *util.PVEBool `url:"snapshot,omitempty" json:"snapshot,omitempty"`                     // Controls qemu's snapshot mode feature. If activated, changes made to the disk are temporary and will be discarded when the VM is shutdown.
-	Ssd             *util.PVEBool `url:"ssd,omitempty" json:"ssd,omitempty"`                               // Whether to expose this drive as an SSD, rather than a rotational hard disk.
-	Trans           *IdeTrans     `url:"trans,omitempty" json:"trans,omitempty"`                           // Force disk geometry bios translation mode.
-	Werror          *IdeWerror    `url:"werror,omitempty" json:"werror,omitempty"`                         // Write error action.
-	Wwn             *string       `url:"wwn,omitempty" json:"wwn,omitempty"`                               // The drive's worldwide name, encoded as 16 bytes hex string, prefixed by '0x'.
-}
-type _Ide Ide
-
-func (t Ide) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[file=]<volume> [,aio=<native|threads|io_uring>] [,backup=<1|0>] [,bps=<bps>] [,bps_max_length=<seconds>] [,bps_rd=<bps>] [,bps_rd_max_length=<seconds>] [,bps_wr=<bps>] [,bps_wr_max_length=<seconds>] [,cache=<enum>] [,cyls=<integer>] [,detect_zeroes=<1|0>] [,discard=<ignore|on>] [,format=<enum>] [,heads=<integer>] [,import-from=<source volume>] [,iops=<iops>] [,iops_max=<iops>] [,iops_max_length=<seconds>] [,iops_rd=<iops>] [,iops_rd_max=<iops>] [,iops_rd_max_length=<seconds>] [,iops_wr=<iops>] [,iops_wr_max=<iops>] [,iops_wr_max_length=<seconds>] [,mbps=<mbps>] [,mbps_max=<mbps>] [,mbps_rd=<mbps>] [,mbps_rd_max=<mbps>] [,mbps_wr=<mbps>] [,mbps_wr_max=<mbps>] [,media=<cdrom|disk>] [,model=<model>] [,replicate=<1|0>] [,rerror=<ignore|report|stop>] [,secs=<integer>] [,serial=<serial>] [,shared=<1|0>] [,size=<DiskSize>] [,snapshot=<1|0>] [,ssd=<1|0>] [,trans=<none|lba|auto>] [,werror=<enum>] [,wwn=<wwn>]`)
-}
-
-func (t *Ide) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["file"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["file"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.File)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["aio"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Aio)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["backup"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Backup)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["bps"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Bps)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["bps_max_length"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.BpsMaxLength)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["bps_rd"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.BpsRd)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["bps_rd_max_length"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.BpsRdMaxLength)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["bps_wr"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.BpsWr)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["bps_wr_max_length"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.BpsWrMaxLength)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["cache"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Cache)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["cyls"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Cyls)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["detect_zeroes"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.DetectZeroes)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["discard"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Discard)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["format"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Format)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["heads"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Heads)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["import-from"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.ImportFrom)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["iops"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Iops)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["iops_max"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.IopsMax)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["iops_max_length"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.IopsMaxLength)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["iops_rd"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.IopsRd)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["iops_rd_max"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.IopsRdMax)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["iops_rd_max_length"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.IopsRdMaxLength)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["iops_wr"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.IopsWr)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["iops_wr_max"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.IopsWrMax)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["iops_wr_max_length"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.IopsWrMaxLength)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["mbps"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Mbps)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["mbps_max"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.MbpsMax)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["mbps_rd"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.MbpsRd)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["mbps_rd_max"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.MbpsRdMax)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["mbps_wr"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.MbpsWr)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["mbps_wr_max"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.MbpsWrMax)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["media"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Media)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["model"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Model)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["replicate"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Replicate)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["rerror"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Rerror)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["secs"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Secs)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["serial"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Serial)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["shared"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Shared)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["size"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Size)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["snapshot"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Snapshot)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["ssd"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Ssd)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["trans"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Trans)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["werror"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Werror)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["wwn"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Wwn)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Set of Ide
-type Ides map[string]*Ide
-type _Ides Ides
-
-func (t Ides) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Configure a disk for storing EFI vars. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Note that SIZE_IN_GiB is ignored here and that the default EFI vars are copied to the volume instead. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
-type Efidisk0 struct {
-	File string `url:"file" json:"file"` // The drive's backing volume.
-
-	// The following parameters are optional
-	Efitype         *Efidisk0Efitype `url:"efitype,omitempty" json:"efitype,omitempty"`                     // Size and type of the OVMF EFI vars. '4m' is newer and recommended, and required for Secure Boot. For backwards compatibility, '2m' is used if not otherwise specified. Ignored for VMs with arch=aarc64 (ARM).
-	Format          *Efidisk0Format  `url:"format,omitempty" json:"format,omitempty"`                       // The drive's backing file's data format.
-	ImportFrom      *string          `url:"import-from,omitempty" json:"import-from,omitempty"`             // Create a new disk, importing from this source (volume ID or absolute path). When an absolute path is specified, it's up to you to ensure that the source is not actively used by another process during the import!
-	PreEnrolledKeys *util.PVEBool    `url:"pre-enrolled-keys,omitempty" json:"pre-enrolled-keys,omitempty"` // Use am EFI vars template with distribution-specific and Microsoft Standard keys enrolled, if used with 'efitype=4m'. Note that this will enable Secure Boot by default, though it can still be turned off from within the VM.
-	Size            *string          `url:"size,omitempty" json:"size,omitempty"`                           // Disk size. This is purely informational and has no effect.
-}
-type _Efidisk0 Efidisk0
-
-func (t Efidisk0) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[file=]<volume> [,efitype=<2m|4m>] [,format=<enum>] [,import-from=<source volume>] [,pre-enrolled-keys=<1|0>] [,size=<DiskSize>]`)
-}
-
-func (t *Efidisk0) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["file"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["file"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.File)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["efitype"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Efitype)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["format"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Format)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["import-from"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.ImportFrom)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["pre-enrolled-keys"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.PreEnrolledKeys)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["size"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Size)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Enable/disable communication with the QEMU Guest Agent and its properties.
-type Agent struct {
-	Enabled util.PVEBool `url:"enabled" json:"enabled"` // Enable/disable communication with a QEMU Guest Agent (QGA) running in the VM.
-
-	// The following parameters are optional
-	FreezeFsOnBackup  *util.PVEBool `url:"freeze-fs-on-backup,omitempty" json:"freeze-fs-on-backup,omitempty"` // Freeze/thaw guest filesystems on backup for consistency.
-	FstrimClonedDisks *util.PVEBool `url:"fstrim_cloned_disks,omitempty" json:"fstrim_cloned_disks,omitempty"` // Run fstrim after moving a disk or migrating the VM.
-	Type              *AgentType    `url:"type,omitempty" json:"type,omitempty"`                               // Select the agent type
-}
-type _Agent Agent
-
-func (t Agent) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[enabled=]<1|0> [,freeze-fs-on-backup=<1|0>] [,fstrim_cloned_disks=<1|0>] [,type=<virtio|isa>]`)
-}
-
-func (t *Agent) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["enabled"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["enabled"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Enabled)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["freeze-fs-on-backup"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.FreezeFsOnBackup)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["fstrim_cloned_disks"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.FstrimClonedDisks)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["type"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Type)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Configure a Disk for storing TPM state. The format is fixed to 'raw'. Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Note that SIZE_IN_GiB is ignored here and 4 MiB will be used instead. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
-type Tpmstate0 struct {
-	File string `url:"file" json:"file"` // The drive's backing volume.
-
-	// The following parameters are optional
-	ImportFrom *string           `url:"import-from,omitempty" json:"import-from,omitempty"` // Create a new disk, importing from this source (volume ID or absolute path). When an absolute path is specified, it's up to you to ensure that the source is not actively used by another process during the import!
-	Size       *string           `url:"size,omitempty" json:"size,omitempty"`               // Disk size. This is purely informational and has no effect.
-	Version    *Tpmstate0Version `url:"version,omitempty" json:"version,omitempty"`         // The TPM interface version. v2.0 is newer and should be preferred. Note that this cannot be changed later on.
-}
-type _Tpmstate0 Tpmstate0
-
-func (t Tpmstate0) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[file=]<volume> [,import-from=<source volume>] [,size=<DiskSize>] [,version=<v1.2|v2.0>]`)
-}
-
-func (t *Tpmstate0) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["file"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["file"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.File)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["import-from"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.ImportFrom)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["size"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Size)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["version"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Version)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Configure an USB device (n is 0 to 4, for machine version >= 7.1 and ostype l26 or windows > 7, n can be up to 14).
-type Usb struct {
-	Host string `url:"host" json:"host"` // The Host USB device or port or the value 'spice'. HOSTUSBDEVICE syntax is:  'bus-port(.port)*' (decimal numbers) or 'vendor_id:product_id' (hexadeciaml numbers) or 'spice' You can use the 'lsusb -t' command to list existing usb devices. NOTE: This option allows direct access to host hardware. So it is no longer possible to migrate such machines - use with special care. The value 'spice' can be used to add a usb redirection devices for spice.
-
-	// The following parameters are optional
-	Usb3 *util.PVEBool `url:"usb3,omitempty" json:"usb3,omitempty"` // Specifies whether if given host option is a USB3 device or port. For modern guests (machine version >= 7.1 and ostype l26 and windows > 7), this flag is irrelevant (all devices are plugged into a xhci controller).
-}
-type _Usb Usb
-
-func (t Usb) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[host=]<HOSTUSBDEVICE|spice> [,usb3=<1|0>]`)
-}
-
-func (t *Usb) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["host"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["host"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Host)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["usb3"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Usb3)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Set of Usb
-type Usbs map[string]*Usb
-type _Usbs Usbs
-
-func (t Usbs) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Set of Ipconfig
-type Ipconfigs map[string]*string
-type _Ipconfigs Ipconfigs
-
-func (t Ipconfigs) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Inter-VM shared memory. Useful for direct communication between VMs, or to the host.
-type Ivshmem struct {
-	Size int `url:"size" json:"size"` // The size of the file in MB.
-
-	// The following parameters are optional
-	Name *string `url:"name,omitempty" json:"name,omitempty"` // The name of the file. Will be prefixed with 'pve-shm-'. Default is the VMID. Will be deleted when the VM is stopped.
-}
-type _Ivshmem Ivshmem
-
-func (t Ivshmem) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `size=<integer> [,name=<string>]`)
-}
-
-func (t *Ivshmem) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["size"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["size"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Size)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["name"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Name)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Specify network devices.
-type Net struct {
-	Model NetModel `url:"model" json:"model"` // Network Card Model. The 'virtio' model provides the best performance with very low CPU overhead. If your guest does not support this driver, it is usually best to use 'e1000'.
-
-	// The following parameters are optional
-	Bridge   *string       `url:"bridge,omitempty" json:"bridge,omitempty"`       // Bridge to attach the network device to. The Proxmox VE standard bridge is called 'vmbr0'. If you do not specify a bridge, we create a kvm user (NATed) network device, which provides DHCP and DNS services. The following addresses are used:  10.0.2.2  Gateway 10.0.2.3  DNS Server 10.0.2.4  SMB Server The DHCP server assign addresses to the guest starting from 10.0.2.15.
-	Firewall *util.PVEBool `url:"firewall,omitempty" json:"firewall,omitempty"`   // Whether this interface should be protected by the firewall.
-	LinkDown *util.PVEBool `url:"link_down,omitempty" json:"link_down,omitempty"` // Whether this interface should be disconnected (like pulling the plug).
-	Macaddr  *string       `url:"macaddr,omitempty" json:"macaddr,omitempty"`     // MAC address. That address must be unique withing your network. This is automatically generated if not specified.
-	Mtu      *int          `url:"mtu,omitempty" json:"mtu,omitempty"`             // Force MTU, for VirtIO only. Set to '1' to use the bridge MTU
-	Queues   *int          `url:"queues,omitempty" json:"queues,omitempty"`       // Number of packet queues to be used on the device.
-	Rate     *float64      `url:"rate,omitempty" json:"rate,omitempty"`           // Rate limit in mbps (megabytes per second) as floating point number.
-	Tag      *int          `url:"tag,omitempty" json:"tag,omitempty"`             // VLAN tag to apply to packets on this interface.
-	Trunks   *string       `url:"trunks,omitempty" json:"trunks,omitempty"`       // VLAN trunks to pass through this interface.
-}
-type _Net Net
-
-func (t Net) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[model=]<enum> [,bridge=<bridge>] [,firewall=<1|0>] [,link_down=<1|0>] [,macaddr=<XX:XX:XX:XX:XX:XX>] [,mtu=<integer>] [,queues=<integer>] [,rate=<number>] [,tag=<integer>] [,trunks=<vlanid[;vlanid...]>] [,<model>=<macaddr>]`)
-}
-
-func (t *Net) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["model"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["model"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Model)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["bridge"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Bridge)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["firewall"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Firewall)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["link_down"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.LinkDown)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["macaddr"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Macaddr)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["mtu"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Mtu)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["queues"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Queues)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["rate"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Rate)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["tag"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Tag)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["trunks"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Trunks)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Set of Net
-type Nets map[string]*Net
-type _Nets Nets
-
-func (t Nets) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Set of Parallel
-type Parallels map[string]*string
-type _Parallels Parallels
-
-func (t Parallels) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Reference to unused volumes. This is used internally, and should not be modified manually.
-type Unused struct {
-	File string `url:"file" json:"file"` // The drive's backing volume.
-
-}
-type _Unused Unused
-
-func (t Unused) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[file=]<volume>`)
-}
-
-func (t *Unused) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["file"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["file"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.File)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Set of Unused
-type Unuseds map[string]*Unused
-type _Unuseds Unuseds
-
-func (t Unuseds) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Configure the VGA hardware.
-type Vga struct {
-
-	// The following parameters are optional
-	Memory *int     `url:"memory,omitempty" json:"memory,omitempty"` // Sets the VGA memory (in MiB). Has no effect with serial display.
-	Type   *VgaType `url:"type,omitempty" json:"type,omitempty"`     // Select the VGA type.
-}
-type _Vga Vga
-
-func (t Vga) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[[type=]<enum>] [,memory=<integer>]`)
-}
-
-func (t *Vga) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["memory"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["memory"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Memory)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["type"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Type)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Use volume as SATA hard disk or CD-ROM (n is 0 to 5). Use the special syntax STORAGE_ID:SIZE_IN_GiB to allocate a new volume. Use STORAGE_ID:0 and the 'import-from' parameter to import from an existing volume.
-type Sata struct {
-	File string `url:"file" json:"file"` // The drive's backing volume.
-
-	// The following parameters are optional
-	Aio             *SataAio      `url:"aio,omitempty" json:"aio,omitempty"`                               // AIO type to use.
-	Backup          *util.PVEBool `url:"backup,omitempty" json:"backup,omitempty"`                         // Whether the drive should be included when making backups.
-	Bps             *int          `url:"bps,omitempty" json:"bps,omitempty"`                               // Maximum r/w speed in bytes per second.
-	BpsMaxLength    *int          `url:"bps_max_length,omitempty" json:"bps_max_length,omitempty"`         // Maximum length of I/O bursts in seconds.
-	BpsRd           *int          `url:"bps_rd,omitempty" json:"bps_rd,omitempty"`                         // Maximum read speed in bytes per second.
-	BpsRdMaxLength  *int          `url:"bps_rd_max_length,omitempty" json:"bps_rd_max_length,omitempty"`   // Maximum length of read I/O bursts in seconds.
-	BpsWr           *int          `url:"bps_wr,omitempty" json:"bps_wr,omitempty"`                         // Maximum write speed in bytes per second.
-	BpsWrMaxLength  *int          `url:"bps_wr_max_length,omitempty" json:"bps_wr_max_length,omitempty"`   // Maximum length of write I/O bursts in seconds.
-	Cache           *SataCache    `url:"cache,omitempty" json:"cache,omitempty"`                           // The drive's cache mode
-	Cyls            *int          `url:"cyls,omitempty" json:"cyls,omitempty"`                             // Force the drive's physical geometry to have a specific cylinder count.
-	DetectZeroes    *util.PVEBool `url:"detect_zeroes,omitempty" json:"detect_zeroes,omitempty"`           // Controls whether to detect and try to optimize writes of zeroes.
-	Discard         *SataDiscard  `url:"discard,omitempty" json:"discard,omitempty"`                       // Controls whether to pass discard/trim requests to the underlying storage.
-	Format          *SataFormat   `url:"format,omitempty" json:"format,omitempty"`                         // The drive's backing file's data format.
-	Heads           *int          `url:"heads,omitempty" json:"heads,omitempty"`                           // Force the drive's physical geometry to have a specific head count.
-	ImportFrom      *string       `url:"import-from,omitempty" json:"import-from,omitempty"`               // Create a new disk, importing from this source (volume ID or absolute path). When an absolute path is specified, it's up to you to ensure that the source is not actively used by another process during the import!
-	Iops            *int          `url:"iops,omitempty" json:"iops,omitempty"`                             // Maximum r/w I/O in operations per second.
-	IopsMax         *int          `url:"iops_max,omitempty" json:"iops_max,omitempty"`                     // Maximum unthrottled r/w I/O pool in operations per second.
-	IopsMaxLength   *int          `url:"iops_max_length,omitempty" json:"iops_max_length,omitempty"`       // Maximum length of I/O bursts in seconds.
-	IopsRd          *int          `url:"iops_rd,omitempty" json:"iops_rd,omitempty"`                       // Maximum read I/O in operations per second.
-	IopsRdMax       *int          `url:"iops_rd_max,omitempty" json:"iops_rd_max,omitempty"`               // Maximum unthrottled read I/O pool in operations per second.
-	IopsRdMaxLength *int          `url:"iops_rd_max_length,omitempty" json:"iops_rd_max_length,omitempty"` // Maximum length of read I/O bursts in seconds.
-	IopsWr          *int          `url:"iops_wr,omitempty" json:"iops_wr,omitempty"`                       // Maximum write I/O in operations per second.
-	IopsWrMax       *int          `url:"iops_wr_max,omitempty" json:"iops_wr_max,omitempty"`               // Maximum unthrottled write I/O pool in operations per second.
-	IopsWrMaxLength *int          `url:"iops_wr_max_length,omitempty" json:"iops_wr_max_length,omitempty"` // Maximum length of write I/O bursts in seconds.
-	Mbps            *float64      `url:"mbps,omitempty" json:"mbps,omitempty"`                             // Maximum r/w speed in megabytes per second.
-	MbpsMax         *float64      `url:"mbps_max,omitempty" json:"mbps_max,omitempty"`                     // Maximum unthrottled r/w pool in megabytes per second.
-	MbpsRd          *float64      `url:"mbps_rd,omitempty" json:"mbps_rd,omitempty"`                       // Maximum read speed in megabytes per second.
-	MbpsRdMax       *float64      `url:"mbps_rd_max,omitempty" json:"mbps_rd_max,omitempty"`               // Maximum unthrottled read pool in megabytes per second.
-	MbpsWr          *float64      `url:"mbps_wr,omitempty" json:"mbps_wr,omitempty"`                       // Maximum write speed in megabytes per second.
-	MbpsWrMax       *float64      `url:"mbps_wr_max,omitempty" json:"mbps_wr_max,omitempty"`               // Maximum unthrottled write pool in megabytes per second.
-	Media           *SataMedia    `url:"media,omitempty" json:"media,omitempty"`                           // The drive's media type.
-	Replicate       *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`                   // Whether the drive should considered for replication jobs.
-	Rerror          *SataRerror   `url:"rerror,omitempty" json:"rerror,omitempty"`                         // Read error action.
-	Secs            *int          `url:"secs,omitempty" json:"secs,omitempty"`                             // Force the drive's physical geometry to have a specific sector count.
-	Serial          *string       `url:"serial,omitempty" json:"serial,omitempty"`                         // The drive's reported serial number, url-encoded, up to 20 bytes long.
-	Shared          *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`                         // Mark this locally-managed volume as available on all nodes
-	Size            *string       `url:"size,omitempty" json:"size,omitempty"`                             // Disk size. This is purely informational and has no effect.
-	Snapshot        *util.PVEBool `url:"snapshot,omitempty" json:"snapshot,omitempty"`                     // Controls qemu's snapshot mode feature. If activated, changes made to the disk are temporary and will be discarded when the VM is shutdown.
-	Ssd             *util.PVEBool `url:"ssd,omitempty" json:"ssd,omitempty"`                               // Whether to expose this drive as an SSD, rather than a rotational hard disk.
-	Trans           *SataTrans    `url:"trans,omitempty" json:"trans,omitempty"`                           // Force disk geometry bios translation mode.
-	Werror          *SataWerror   `url:"werror,omitempty" json:"werror,omitempty"`                         // Write error action.
-	Wwn             *string       `url:"wwn,omitempty" json:"wwn,omitempty"`                               // The drive's worldwide name, encoded as 16 bytes hex string, prefixed by '0x'.
-}
-type _Sata Sata
-
-func (t Sata) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[file=]<volume> [,aio=<native|threads|io_uring>] [,backup=<1|0>] [,bps=<bps>] [,bps_max_length=<seconds>] [,bps_rd=<bps>] [,bps_rd_max_length=<seconds>] [,bps_wr=<bps>] [,bps_wr_max_length=<seconds>] [,cache=<enum>] [,cyls=<integer>] [,detect_zeroes=<1|0>] [,discard=<ignore|on>] [,format=<enum>] [,heads=<integer>] [,import-from=<source volume>] [,iops=<iops>] [,iops_max=<iops>] [,iops_max_length=<seconds>] [,iops_rd=<iops>] [,iops_rd_max=<iops>] [,iops_rd_max_length=<seconds>] [,iops_wr=<iops>] [,iops_wr_max=<iops>] [,iops_wr_max_length=<seconds>] [,mbps=<mbps>] [,mbps_max=<mbps>] [,mbps_rd=<mbps>] [,mbps_rd_max=<mbps>] [,mbps_wr=<mbps>] [,mbps_wr_max=<mbps>] [,media=<cdrom|disk>] [,replicate=<1|0>] [,rerror=<ignore|report|stop>] [,secs=<integer>] [,serial=<serial>] [,shared=<1|0>] [,size=<DiskSize>] [,snapshot=<1|0>] [,ssd=<1|0>] [,trans=<none|lba|auto>] [,werror=<enum>] [,wwn=<wwn>]`)
-}
-
-func (t *Sata) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["file"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["file"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.File)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["aio"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Aio)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["backup"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Backup)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["bps"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Bps)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["bps_max_length"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.BpsMaxLength)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["bps_rd"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.BpsRd)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["bps_rd_max_length"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.BpsRdMaxLength)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["bps_wr"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.BpsWr)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["bps_wr_max_length"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.BpsWrMaxLength)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["cache"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Cache)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["cyls"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Cyls)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["detect_zeroes"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.DetectZeroes)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["discard"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Discard)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["format"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Format)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["heads"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Heads)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["import-from"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.ImportFrom)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["iops"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Iops)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["iops_max"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.IopsMax)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["iops_max_length"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.IopsMaxLength)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["iops_rd"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.IopsRd)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["iops_rd_max"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.IopsRdMax)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["iops_rd_max_length"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.IopsRdMaxLength)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["iops_wr"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.IopsWr)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["iops_wr_max"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.IopsWrMax)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["iops_wr_max_length"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.IopsWrMaxLength)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["mbps"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Mbps)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["mbps_max"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.MbpsMax)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["mbps_rd"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.MbpsRd)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["mbps_rd_max"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.MbpsRdMax)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["mbps_wr"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.MbpsWr)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["mbps_wr_max"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.MbpsWrMax)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["media"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Media)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["replicate"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Replicate)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["rerror"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Rerror)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["secs"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Secs)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["serial"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Serial)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["shared"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Shared)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["size"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Size)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["snapshot"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Snapshot)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["ssd"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Ssd)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["trans"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Trans)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["werror"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Werror)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["wwn"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Wwn)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Set of Sata
-type Satas map[string]*Sata
-type _Satas Satas
-
-func (t Satas) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
-// Set of Hostpci
-type Hostpcis map[string]*string
-type _Hostpcis Hostpcis
-
-func (t Hostpcis) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeArray(key, v, t)
-}
-
 type CreateRequest struct {
 	Node string `url:"node" json:"node"` // The cluster node name.
 	Vmid int    `url:"vmid" json:"vmid"` // The (unique) ID of the VM.
@@ -4378,65 +4455,6 @@ type SubEfidisk0 struct {
 }
 type _SubEfidisk0 SubEfidisk0
 
-// Use volume as SATA hard disk or CD-ROM (n is 0 to 5).
-type SubSata struct {
-	File string `url:"file" json:"file"` // The drive's backing volume.
-
-	// The following parameters are optional
-	Aio             *SataAio      `url:"aio,omitempty" json:"aio,omitempty"`                               // AIO type to use.
-	Backup          *util.PVEBool `url:"backup,omitempty" json:"backup,omitempty"`                         // Whether the drive should be included when making backups.
-	Bps             *int          `url:"bps,omitempty" json:"bps,omitempty"`                               // Maximum r/w speed in bytes per second.
-	BpsMaxLength    *int          `url:"bps_max_length,omitempty" json:"bps_max_length,omitempty"`         // Maximum length of I/O bursts in seconds.
-	BpsRd           *int          `url:"bps_rd,omitempty" json:"bps_rd,omitempty"`                         // Maximum read speed in bytes per second.
-	BpsRdMaxLength  *int          `url:"bps_rd_max_length,omitempty" json:"bps_rd_max_length,omitempty"`   // Maximum length of read I/O bursts in seconds.
-	BpsWr           *int          `url:"bps_wr,omitempty" json:"bps_wr,omitempty"`                         // Maximum write speed in bytes per second.
-	BpsWrMaxLength  *int          `url:"bps_wr_max_length,omitempty" json:"bps_wr_max_length,omitempty"`   // Maximum length of write I/O bursts in seconds.
-	Cache           *SataCache    `url:"cache,omitempty" json:"cache,omitempty"`                           // The drive's cache mode
-	Cyls            *int          `url:"cyls,omitempty" json:"cyls,omitempty"`                             // Force the drive's physical geometry to have a specific cylinder count.
-	DetectZeroes    *util.PVEBool `url:"detect_zeroes,omitempty" json:"detect_zeroes,omitempty"`           // Controls whether to detect and try to optimize writes of zeroes.
-	Discard         *SataDiscard  `url:"discard,omitempty" json:"discard,omitempty"`                       // Controls whether to pass discard/trim requests to the underlying storage.
-	Format          *SataFormat   `url:"format,omitempty" json:"format,omitempty"`                         // The drive's backing file's data format.
-	Heads           *int          `url:"heads,omitempty" json:"heads,omitempty"`                           // Force the drive's physical geometry to have a specific head count.
-	Iops            *int          `url:"iops,omitempty" json:"iops,omitempty"`                             // Maximum r/w I/O in operations per second.
-	IopsMax         *int          `url:"iops_max,omitempty" json:"iops_max,omitempty"`                     // Maximum unthrottled r/w I/O pool in operations per second.
-	IopsMaxLength   *int          `url:"iops_max_length,omitempty" json:"iops_max_length,omitempty"`       // Maximum length of I/O bursts in seconds.
-	IopsRd          *int          `url:"iops_rd,omitempty" json:"iops_rd,omitempty"`                       // Maximum read I/O in operations per second.
-	IopsRdMax       *int          `url:"iops_rd_max,omitempty" json:"iops_rd_max,omitempty"`               // Maximum unthrottled read I/O pool in operations per second.
-	IopsRdMaxLength *int          `url:"iops_rd_max_length,omitempty" json:"iops_rd_max_length,omitempty"` // Maximum length of read I/O bursts in seconds.
-	IopsWr          *int          `url:"iops_wr,omitempty" json:"iops_wr,omitempty"`                       // Maximum write I/O in operations per second.
-	IopsWrMax       *int          `url:"iops_wr_max,omitempty" json:"iops_wr_max,omitempty"`               // Maximum unthrottled write I/O pool in operations per second.
-	IopsWrMaxLength *int          `url:"iops_wr_max_length,omitempty" json:"iops_wr_max_length,omitempty"` // Maximum length of write I/O bursts in seconds.
-	Mbps            *float64      `url:"mbps,omitempty" json:"mbps,omitempty"`                             // Maximum r/w speed in megabytes per second.
-	MbpsMax         *float64      `url:"mbps_max,omitempty" json:"mbps_max,omitempty"`                     // Maximum unthrottled r/w pool in megabytes per second.
-	MbpsRd          *float64      `url:"mbps_rd,omitempty" json:"mbps_rd,omitempty"`                       // Maximum read speed in megabytes per second.
-	MbpsRdMax       *float64      `url:"mbps_rd_max,omitempty" json:"mbps_rd_max,omitempty"`               // Maximum unthrottled read pool in megabytes per second.
-	MbpsWr          *float64      `url:"mbps_wr,omitempty" json:"mbps_wr,omitempty"`                       // Maximum write speed in megabytes per second.
-	MbpsWrMax       *float64      `url:"mbps_wr_max,omitempty" json:"mbps_wr_max,omitempty"`               // Maximum unthrottled write pool in megabytes per second.
-	Media           *SataMedia    `url:"media,omitempty" json:"media,omitempty"`                           // The drive's media type.
-	Replicate       *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`                   // Whether the drive should considered for replication jobs.
-	Rerror          *SataRerror   `url:"rerror,omitempty" json:"rerror,omitempty"`                         // Read error action.
-	Secs            *int          `url:"secs,omitempty" json:"secs,omitempty"`                             // Force the drive's physical geometry to have a specific sector count.
-	Serial          *string       `url:"serial,omitempty" json:"serial,omitempty"`                         // The drive's reported serial number, url-encoded, up to 20 bytes long.
-	Shared          *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`                         // Mark this locally-managed volume as available on all nodes
-	Size            *string       `url:"size,omitempty" json:"size,omitempty"`                             // Disk size. This is purely informational and has no effect.
-	Snapshot        *util.PVEBool `url:"snapshot,omitempty" json:"snapshot,omitempty"`                     // Controls qemu's snapshot mode feature. If activated, changes made to the disk are temporary and will be discarded when the VM is shutdown.
-	Ssd             *util.PVEBool `url:"ssd,omitempty" json:"ssd,omitempty"`                               // Whether to expose this drive as an SSD, rather than a rotational hard disk.
-	Trans           *SataTrans    `url:"trans,omitempty" json:"trans,omitempty"`                           // Force disk geometry bios translation mode.
-	Werror          *SataWerror   `url:"werror,omitempty" json:"werror,omitempty"`                         // Write error action.
-	Wwn             *string       `url:"wwn,omitempty" json:"wwn,omitempty"`                               // The drive's worldwide name, encoded as 16 bytes hex string, prefixed by '0x'.
-}
-type _SubSata SubSata
-
-// Configure a Disk for storing TPM state. The format is fixed to 'raw'.
-type SubTpmstate0 struct {
-	File string `url:"file" json:"file"` // The drive's backing volume.
-
-	// The following parameters are optional
-	Size    *string           `url:"size,omitempty" json:"size,omitempty"`       // Disk size. This is purely informational and has no effect.
-	Version *Tpmstate0Version `url:"version,omitempty" json:"version,omitempty"` // The TPM interface version. v2.0 is newer and should be preferred. Note that this cannot be changed later on.
-}
-type _SubTpmstate0 SubTpmstate0
-
 // Use volume as IDE hard disk or CD-ROM (n is 0 to 3).
 type SubIde struct {
 	File string `url:"file" json:"file"` // The drive's backing volume.
@@ -4486,6 +4504,55 @@ type SubIde struct {
 	Wwn             *string       `url:"wwn,omitempty" json:"wwn,omitempty"`                               // The drive's worldwide name, encoded as 16 bytes hex string, prefixed by '0x'.
 }
 type _SubIde SubIde
+
+// Use volume as SATA hard disk or CD-ROM (n is 0 to 5).
+type SubSata struct {
+	File string `url:"file" json:"file"` // The drive's backing volume.
+
+	// The following parameters are optional
+	Aio             *SataAio      `url:"aio,omitempty" json:"aio,omitempty"`                               // AIO type to use.
+	Backup          *util.PVEBool `url:"backup,omitempty" json:"backup,omitempty"`                         // Whether the drive should be included when making backups.
+	Bps             *int          `url:"bps,omitempty" json:"bps,omitempty"`                               // Maximum r/w speed in bytes per second.
+	BpsMaxLength    *int          `url:"bps_max_length,omitempty" json:"bps_max_length,omitempty"`         // Maximum length of I/O bursts in seconds.
+	BpsRd           *int          `url:"bps_rd,omitempty" json:"bps_rd,omitempty"`                         // Maximum read speed in bytes per second.
+	BpsRdMaxLength  *int          `url:"bps_rd_max_length,omitempty" json:"bps_rd_max_length,omitempty"`   // Maximum length of read I/O bursts in seconds.
+	BpsWr           *int          `url:"bps_wr,omitempty" json:"bps_wr,omitempty"`                         // Maximum write speed in bytes per second.
+	BpsWrMaxLength  *int          `url:"bps_wr_max_length,omitempty" json:"bps_wr_max_length,omitempty"`   // Maximum length of write I/O bursts in seconds.
+	Cache           *SataCache    `url:"cache,omitempty" json:"cache,omitempty"`                           // The drive's cache mode
+	Cyls            *int          `url:"cyls,omitempty" json:"cyls,omitempty"`                             // Force the drive's physical geometry to have a specific cylinder count.
+	DetectZeroes    *util.PVEBool `url:"detect_zeroes,omitempty" json:"detect_zeroes,omitempty"`           // Controls whether to detect and try to optimize writes of zeroes.
+	Discard         *SataDiscard  `url:"discard,omitempty" json:"discard,omitempty"`                       // Controls whether to pass discard/trim requests to the underlying storage.
+	Format          *SataFormat   `url:"format,omitempty" json:"format,omitempty"`                         // The drive's backing file's data format.
+	Heads           *int          `url:"heads,omitempty" json:"heads,omitempty"`                           // Force the drive's physical geometry to have a specific head count.
+	Iops            *int          `url:"iops,omitempty" json:"iops,omitempty"`                             // Maximum r/w I/O in operations per second.
+	IopsMax         *int          `url:"iops_max,omitempty" json:"iops_max,omitempty"`                     // Maximum unthrottled r/w I/O pool in operations per second.
+	IopsMaxLength   *int          `url:"iops_max_length,omitempty" json:"iops_max_length,omitempty"`       // Maximum length of I/O bursts in seconds.
+	IopsRd          *int          `url:"iops_rd,omitempty" json:"iops_rd,omitempty"`                       // Maximum read I/O in operations per second.
+	IopsRdMax       *int          `url:"iops_rd_max,omitempty" json:"iops_rd_max,omitempty"`               // Maximum unthrottled read I/O pool in operations per second.
+	IopsRdMaxLength *int          `url:"iops_rd_max_length,omitempty" json:"iops_rd_max_length,omitempty"` // Maximum length of read I/O bursts in seconds.
+	IopsWr          *int          `url:"iops_wr,omitempty" json:"iops_wr,omitempty"`                       // Maximum write I/O in operations per second.
+	IopsWrMax       *int          `url:"iops_wr_max,omitempty" json:"iops_wr_max,omitempty"`               // Maximum unthrottled write I/O pool in operations per second.
+	IopsWrMaxLength *int          `url:"iops_wr_max_length,omitempty" json:"iops_wr_max_length,omitempty"` // Maximum length of write I/O bursts in seconds.
+	Mbps            *float64      `url:"mbps,omitempty" json:"mbps,omitempty"`                             // Maximum r/w speed in megabytes per second.
+	MbpsMax         *float64      `url:"mbps_max,omitempty" json:"mbps_max,omitempty"`                     // Maximum unthrottled r/w pool in megabytes per second.
+	MbpsRd          *float64      `url:"mbps_rd,omitempty" json:"mbps_rd,omitempty"`                       // Maximum read speed in megabytes per second.
+	MbpsRdMax       *float64      `url:"mbps_rd_max,omitempty" json:"mbps_rd_max,omitempty"`               // Maximum unthrottled read pool in megabytes per second.
+	MbpsWr          *float64      `url:"mbps_wr,omitempty" json:"mbps_wr,omitempty"`                       // Maximum write speed in megabytes per second.
+	MbpsWrMax       *float64      `url:"mbps_wr_max,omitempty" json:"mbps_wr_max,omitempty"`               // Maximum unthrottled write pool in megabytes per second.
+	Media           *SataMedia    `url:"media,omitempty" json:"media,omitempty"`                           // The drive's media type.
+	Replicate       *util.PVEBool `url:"replicate,omitempty" json:"replicate,omitempty"`                   // Whether the drive should considered for replication jobs.
+	Rerror          *SataRerror   `url:"rerror,omitempty" json:"rerror,omitempty"`                         // Read error action.
+	Secs            *int          `url:"secs,omitempty" json:"secs,omitempty"`                             // Force the drive's physical geometry to have a specific sector count.
+	Serial          *string       `url:"serial,omitempty" json:"serial,omitempty"`                         // The drive's reported serial number, url-encoded, up to 20 bytes long.
+	Shared          *util.PVEBool `url:"shared,omitempty" json:"shared,omitempty"`                         // Mark this locally-managed volume as available on all nodes
+	Size            *string       `url:"size,omitempty" json:"size,omitempty"`                             // Disk size. This is purely informational and has no effect.
+	Snapshot        *util.PVEBool `url:"snapshot,omitempty" json:"snapshot,omitempty"`                     // Controls qemu's snapshot mode feature. If activated, changes made to the disk are temporary and will be discarded when the VM is shutdown.
+	Ssd             *util.PVEBool `url:"ssd,omitempty" json:"ssd,omitempty"`                               // Whether to expose this drive as an SSD, rather than a rotational hard disk.
+	Trans           *SataTrans    `url:"trans,omitempty" json:"trans,omitempty"`                           // Force disk geometry bios translation mode.
+	Werror          *SataWerror   `url:"werror,omitempty" json:"werror,omitempty"`                         // Write error action.
+	Wwn             *string       `url:"wwn,omitempty" json:"wwn,omitempty"`                               // The drive's worldwide name, encoded as 16 bytes hex string, prefixed by '0x'.
+}
+type _SubSata SubSata
 
 // Use volume as SCSI hard disk or CD-ROM (n is 0 to 30).
 type SubScsi struct {
@@ -4539,6 +4606,16 @@ type SubScsi struct {
 	Wwn             *string       `url:"wwn,omitempty" json:"wwn,omitempty"`                               // The drive's worldwide name, encoded as 16 bytes hex string, prefixed by '0x'.
 }
 type _SubScsi SubScsi
+
+// Configure a Disk for storing TPM state. The format is fixed to 'raw'.
+type SubTpmstate0 struct {
+	File string `url:"file" json:"file"` // The drive's backing volume.
+
+	// The following parameters are optional
+	Size    *string           `url:"size,omitempty" json:"size,omitempty"`       // Disk size. This is purely informational and has no effect.
+	Version *Tpmstate0Version `url:"version,omitempty" json:"version,omitempty"` // The TPM interface version. v2.0 is newer and should be preferred. Note that this cannot be changed later on.
+}
+type _SubTpmstate0 SubTpmstate0
 
 // Use volume as VIRTIO hard disk (n is 0 to 15).
 type SubVirtio struct {

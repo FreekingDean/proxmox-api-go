@@ -29,6 +29,7 @@ type JSONSchema struct {
 	Description          string                 `json:"description"`
 	Properties           map[string]*JSONSchema `json:"properties"`
 	Default              interface{}            `json:"default"`
+	IsDefaultKey         SpecialBool            `json:"default_key"`
 	Type                 *SchemaOrString        `json:"type"`
 	Items                *JSONSchema            `json:"items"`
 	Links                []*Link                `json:"links"`
@@ -36,6 +37,8 @@ type JSONSchema struct {
 	TypeText             string                 `json:"typeText"`
 	Format               *StringOrMap           `json:"format"`
 	Enum                 []string               `json:"enum"`
+	Alias                string                 `json:"alias"`
+	KeyAlias             string                 `json:"keyAlias"`
 }
 
 type Link struct {

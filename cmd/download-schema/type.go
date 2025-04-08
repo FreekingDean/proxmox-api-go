@@ -21,6 +21,15 @@ type Type struct {
 	Description        string
 	Format             string
 	Enum               []string
+	DefaultKey         string
+	Aliases            []Alias
+	KeyAlias           string
+}
+
+type Alias struct {
+	Name     string
+	Alias    string
+	KeyAlias string
 }
 
 func (p *Package) defineType(name string, jsonName string, schema *jsonschema.JSONSchema) *Type {
@@ -119,9 +128,21 @@ func (p *Package) defineStruct(name, description string, properties map[string]*
 		Description:        removeNewline(description),
 		FormatArrayTypes:   make([]*Type, 0),
 	}
-	for name, param := range properties {
+
+	for _, name := range sortKeys(properties) {
+		param := properties[name]
 		pt := p.defineType(Nameify(name), name, param)
 		if pt == nil {
+			if param.Alias != "" {
+				if t.Aliases == nil {
+					t.Aliases = make([]Alias, 0)
+				}
+				t.Aliases = append(t.Aliases, Alias{
+					Name:     name,
+					Alias:    param.Alias,
+					KeyAlias: param.KeyAlias,
+				})
+			}
 			continue
 		}
 		if strings.HasSuffix(name, "[n]") {
@@ -130,6 +151,9 @@ func (p *Package) defineStruct(name, description string, properties map[string]*
 				t.FormatArrayTypes,
 				pt,
 			)
+		}
+		if param.IsDefaultKey {
+			t.DefaultKey = pt.JSONName
 		}
 		if param.Optional {
 			t.OptionalProperties = append(t.OptionalProperties, pt)
@@ -151,4 +175,14 @@ func (p *Package) defineStruct(name, description string, properties map[string]*
 	sort.Sort(&TypeSorter{t.FormatArrayTypes})
 	t.Name = strings.TrimSuffix(t.Name, "[N]")
 	return t
+}
+
+func sortKeys(m map[string]*jsonschema.JSONSchema) []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+
+	sort.Strings(keys)
+	return keys
 }

@@ -96,9 +96,7 @@ func (t *DraidConfig) UnmarshalJSON(d []byte) error {
 			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
 		}
 		if len(kv) == 1 {
-
-			values["data"] = kv[0]
-
+			values[""] = kv[0]
 			continue
 		}
 		values[kv[0]] = kv[1]

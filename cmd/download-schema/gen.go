@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"go/format"
-	"go/parser"
-	"go/token"
 	"io"
 	"log"
 	"os"
@@ -336,13 +334,13 @@ func (p *Package) StrType(schemaType *jsonschema.SchemaOrString) string {
 }
 
 func Format(w io.Writer, source string) error {
-	fset := token.NewFileSet()
-	node, err := parser.ParseFile(fset, "", source, parser.ParseComments)
+	formatted, err := format.Source([]byte(source))
 	if err != nil {
 		return err
 	}
 
-	return format.Node(w, fset, node)
+	_, err = w.Write(formatted)
+	return err
 }
 
 type TypeSorter struct {
