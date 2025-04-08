@@ -24,7 +24,7 @@ func TestVmConfig(t *testing.T) {
 
 		assert.Equal(t, "PVEAuthCookie=fake-cookie", r.Header.Get("Authorization"))
 		assert.Equal(t, "/nodes/some-node/qemu/101/config", r.URL.Path)
-		fmt.Fprintf(w, `{"data":{"memory":1024,"scsi0": "testfile,aio=native,ssd=1,size=1024K"}}`)
+		fmt.Fprintf(w, `{"data":{"memory":1024,"scsi0": "testfile,aio=native,ssd=1,size=1024K","agent":"enabled=true"}}`)
 	}))
 	c := proxmox.NewClient(testServer.URL)
 	c.SetCookie("fake-cookie")
@@ -48,6 +48,9 @@ func TestVmConfig(t *testing.T) {
 			}
 			if assert.NotNil(t, (*resp.Scsis)["scsi0"].Size) {
 				assert.Equal(t, "1024K", *(*resp.Scsis)["scsi0"].Size)
+			}
+			if assert.NotNil(t, (*resp.Agent)) {
+				assert.True(t, bool((*resp.Agent).Enabled))
 			}
 		}
 	}

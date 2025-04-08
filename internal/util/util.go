@@ -17,7 +17,7 @@ func (b *PVEBool) EncodeValues(key string, v *url.Values) error {
 }
 
 func (b *PVEBool) UnmarshalJSON(i []byte) error {
-	*b = string(i) == "1"
+	*b = string(i) == "1" || string(i) == "true"
 	return nil
 }
 
