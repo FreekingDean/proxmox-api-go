@@ -29,6 +29,7 @@ type JSONSchema struct {
 	Description          string                 `json:"description"`
 	Properties           map[string]*JSONSchema `json:"properties"`
 	Default              interface{}            `json:"default"`
+	IsDefaultKey         SpecialBool            `json:"default_key"`
 	Type                 *SchemaOrString        `json:"type"`
 	Items                *JSONSchema            `json:"items"`
 	Links                []*Link                `json:"links"`

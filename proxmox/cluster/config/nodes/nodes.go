@@ -58,9 +58,7 @@ func (t *Link) UnmarshalJSON(d []byte) error {
 			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
 		}
 		if len(kv) == 1 {
-
 			values["address"] = kv[0]
-
 			continue
 		}
 		values[kv[0]] = kv[1]

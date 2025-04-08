@@ -142,6 +142,61 @@ type GetConfigRequest struct {
 }
 type _GetConfigRequest GetConfigRequest
 
+// Node specific ACME settings.
+type Acme struct {
+
+	// The following parameters are optional
+	Account *string `url:"account,omitempty" json:"account,omitempty"` // ACME account config file name.
+	Domains *string `url:"domains,omitempty" json:"domains,omitempty"` // List of domains for this node's ACME certificate
+}
+type _Acme Acme
+
+func (t Acme) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[account=<name>] [,domains=<domain[;domain;...]>]`)
+}
+
+func (t *Acme) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+			values[""] = kv[0]
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["account"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Account)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["domains"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Domains)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ACME domain and validation plugin
 type Acmedomain struct {
 	Domain string `url:"domain" json:"domain"` // domain for this node's ACME certificate
@@ -169,9 +224,7 @@ func (t *Acmedomain) UnmarshalJSON(d []byte) error {
 			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
 		}
 		if len(kv) == 1 {
-
 			values["domain"] = kv[0]
-
 			continue
 		}
 		values[kv[0]] = kv[1]
@@ -216,63 +269,6 @@ type _Acmedomains Acmedomains
 
 func (t Acmedomains) EncodeValues(key string, v *url.Values) error {
 	return util.EncodeArray(key, v, t)
-}
-
-// Node specific ACME settings.
-type Acme struct {
-
-	// The following parameters are optional
-	Account *string `url:"account,omitempty" json:"account,omitempty"` // ACME account config file name.
-	Domains *string `url:"domains,omitempty" json:"domains,omitempty"` // List of domains for this node's ACME certificate
-}
-type _Acme Acme
-
-func (t Acme) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[account=<name>] [,domains=<domain[;domain;...]>]`)
-}
-
-func (t *Acme) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["account"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["account"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Account)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["domains"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Domains)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 type GetConfigResponse struct {

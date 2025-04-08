@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/dop251/goja v0.0.0-20221224150820-cc4634e76e9a
 	github.com/google/go-querystring v1.1.0
+	github.com/iancoleman/orderedmap v0.3.0
 	github.com/stretchr/testify v1.8.1
 	golang.org/x/text v0.4.0
 )

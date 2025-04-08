@@ -149,11 +149,7 @@ func (t *{{ $t.Name }}) UnmarshalJSON(d []byte) error {
 			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
 		}
 		if len(kv) == 1 {
-		{{ if $t.Properties }}
-			values["{{(index $t.Properties 0).JSONName}}"] = kv[0]
-		{{ else }}
-			values["{{(index $t.OptionalProperties 0).JSONName}}"] = kv[0]
-		{{ end }}
+			values["{{ $t.DefaultKey }}"] = kv[0]
 			continue
 		}
 		values[kv[0]] = kv[1]

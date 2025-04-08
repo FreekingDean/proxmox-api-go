@@ -1439,6 +1439,95 @@ type IndexResponse struct {
 }
 type _IndexResponse IndexResponse
 
+// Allow containers access to advanced features.
+type Features struct {
+
+	// The following parameters are optional
+	ForceRwSys *util.PVEBool `url:"force_rw_sys,omitempty" json:"force_rw_sys,omitempty"` // Mount /sys in unprivileged containers as `rw` instead of `mixed`. This can break networking under newer (>= v245) systemd-network use.
+	Fuse       *util.PVEBool `url:"fuse,omitempty" json:"fuse,omitempty"`                 // Allow using 'fuse' file systems in a container. Note that interactions between fuse and the freezer cgroup can potentially cause I/O deadlocks.
+	Keyctl     *util.PVEBool `url:"keyctl,omitempty" json:"keyctl,omitempty"`             // For unprivileged containers only: Allow the use of the keyctl() system call. This is required to use docker inside a container. By default unprivileged containers will see this system call as non-existent. This is mostly a workaround for systemd-networkd, as it will treat it as a fatal error when some keyctl() operations are denied by the kernel due to lacking permissions. Essentially, you can choose between running systemd-networkd or docker.
+	Mknod      *util.PVEBool `url:"mknod,omitempty" json:"mknod,omitempty"`               // Allow unprivileged containers to use mknod() to add certain device nodes. This requires a kernel with seccomp trap to user space support (5.3 or newer). This is experimental.
+	Mount      *string       `url:"mount,omitempty" json:"mount,omitempty"`               // Allow mounting file systems of specific types. This should be a list of file system types as used with the mount command. Note that this can have negative effects on the container's security. With access to a loop device, mounting a file can circumvent the mknod permission of the devices cgroup, mounting an NFS file system can block the host's I/O completely and prevent it from rebooting, etc.
+	Nesting    *util.PVEBool `url:"nesting,omitempty" json:"nesting,omitempty"`           // Allow nesting. Best used with unprivileged containers with additional id mapping. Note that this will expose procfs and sysfs contents of the host to the guest.
+}
+type _Features Features
+
+func (t Features) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[force_rw_sys=<1|0>] [,fuse=<1|0>] [,keyctl=<1|0>] [,mknod=<1|0>] [,mount=<fstype;fstype;...>] [,nesting=<1|0>]`)
+}
+
+func (t *Features) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+			values[""] = kv[0]
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["force_rw_sys"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.ForceRwSys)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["fuse"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Fuse)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["keyctl"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Keyctl)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mknod"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Mknod)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["mount"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Mount)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["nesting"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.Nesting)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // Reference to unused volumes. This is used internally, and should not be modified manually.
 type Unused struct {
 	Volume string `url:"volume" json:"volume"` // The volume that is not used currently.
@@ -1463,9 +1552,7 @@ func (t *Unused) UnmarshalJSON(d []byte) error {
 			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
 		}
 		if len(kv) == 1 {
-
 			values["volume"] = kv[0]
-
 			continue
 		}
 		values[kv[0]] = kv[1]
@@ -1526,9 +1613,7 @@ func (t *Mp) UnmarshalJSON(d []byte) error {
 			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
 		}
 		if len(kv) == 1 {
-
-			values["mp"] = kv[0]
-
+			values["volume"] = kv[0]
 			continue
 		}
 		values[kv[0]] = kv[1]
@@ -1665,9 +1750,7 @@ func (t *Rootfs) UnmarshalJSON(d []byte) error {
 			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
 		}
 		if len(kv) == 1 {
-
 			values["volume"] = kv[0]
-
 			continue
 		}
 		values[kv[0]] = kv[1]
@@ -1746,97 +1829,6 @@ func (t *Rootfs) UnmarshalJSON(d []byte) error {
 	return nil
 }
 
-// Allow containers access to advanced features.
-type Features struct {
-
-	// The following parameters are optional
-	ForceRwSys *util.PVEBool `url:"force_rw_sys,omitempty" json:"force_rw_sys,omitempty"` // Mount /sys in unprivileged containers as `rw` instead of `mixed`. This can break networking under newer (>= v245) systemd-network use.
-	Fuse       *util.PVEBool `url:"fuse,omitempty" json:"fuse,omitempty"`                 // Allow using 'fuse' file systems in a container. Note that interactions between fuse and the freezer cgroup can potentially cause I/O deadlocks.
-	Keyctl     *util.PVEBool `url:"keyctl,omitempty" json:"keyctl,omitempty"`             // For unprivileged containers only: Allow the use of the keyctl() system call. This is required to use docker inside a container. By default unprivileged containers will see this system call as non-existent. This is mostly a workaround for systemd-networkd, as it will treat it as a fatal error when some keyctl() operations are denied by the kernel due to lacking permissions. Essentially, you can choose between running systemd-networkd or docker.
-	Mknod      *util.PVEBool `url:"mknod,omitempty" json:"mknod,omitempty"`               // Allow unprivileged containers to use mknod() to add certain device nodes. This requires a kernel with seccomp trap to user space support (5.3 or newer). This is experimental.
-	Mount      *string       `url:"mount,omitempty" json:"mount,omitempty"`               // Allow mounting file systems of specific types. This should be a list of file system types as used with the mount command. Note that this can have negative effects on the container's security. With access to a loop device, mounting a file can circumvent the mknod permission of the devices cgroup, mounting an NFS file system can block the host's I/O completely and prevent it from rebooting, etc.
-	Nesting    *util.PVEBool `url:"nesting,omitempty" json:"nesting,omitempty"`           // Allow nesting. Best used with unprivileged containers with additional id mapping. Note that this will expose procfs and sysfs contents of the host to the guest.
-}
-type _Features Features
-
-func (t Features) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[force_rw_sys=<1|0>] [,fuse=<1|0>] [,keyctl=<1|0>] [,mknod=<1|0>] [,mount=<fstype;fstype;...>] [,nesting=<1|0>]`)
-}
-
-func (t *Features) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-
-			values["force_rw_sys"] = kv[0]
-
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["force_rw_sys"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.ForceRwSys)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["fuse"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Fuse)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["keyctl"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Keyctl)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["mknod"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Mknod)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["mount"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Mount)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["nesting"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.Nesting)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 // Specifies network interfaces for the container.
 type Net struct {
 	Name string `url:"name" json:"name"` // Name of the network device as seen from inside the container. (lxc.network.name)
@@ -1875,9 +1867,7 @@ func (t *Net) UnmarshalJSON(d []byte) error {
 			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
 		}
 		if len(kv) == 1 {
-
-			values["name"] = kv[0]
-
+			values[""] = kv[0]
 			continue
 		}
 		values[kv[0]] = kv[1]

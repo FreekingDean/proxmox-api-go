@@ -38,6 +38,27 @@ type MetadataRequest struct {
 }
 type _MetadataRequest MetadataRequest
 
+// Version info.
+type Version struct {
+	Parts []map[string]interface{} `url:"parts" json:"parts"` // major, minor & patch
+	Str   string                   `url:"str" json:"str"`     // Version as single string.
+
+}
+type _Version Version
+
+type Node struct {
+	Buildcommit string  `url:"buildcommit" json:"buildcommit"` // GIT commit used for the build.
+	Version     Version `url:"version" json:"version"`         // Version info.
+
+}
+type _Node Node
+
+// Ceph version installed on the nodes.
+type SubNode struct {
+	Node Node `url:"{node}" json:"{node}"`
+}
+type _SubNode SubNode
+
 // Useful properties are listed, but not the full list.
 type Id struct {
 	Addr             string `url:"addr" json:"addr"`                             // Bind addresses and ports.
@@ -100,27 +121,6 @@ type Mon struct {
 
 }
 type _Mon Mon
-
-// Version info.
-type Version struct {
-	Parts []map[string]interface{} `url:"parts" json:"parts"` // major, minor & patch
-	Str   string                   `url:"str" json:"str"`     // Version as single string.
-
-}
-type _Version Version
-
-type Node struct {
-	Buildcommit string  `url:"buildcommit" json:"buildcommit"` // GIT commit used for the build.
-	Version     Version `url:"version" json:"version"`         // Version info.
-
-}
-type _Node Node
-
-// Ceph version installed on the nodes.
-type SubNode struct {
-	Node Node `url:"{node}" json:"{node}"`
-}
-type _SubNode SubNode
 
 // Items for each type of service containing objects for each instance.
 type MetadataResponse struct {

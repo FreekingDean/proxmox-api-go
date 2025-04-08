@@ -21,6 +21,7 @@ type Type struct {
 	Description        string
 	Format             string
 	Enum               []string
+	DefaultKey         string
 }
 
 func (p *Package) defineType(name string, jsonName string, schema *jsonschema.JSONSchema) *Type {
@@ -130,6 +131,9 @@ func (p *Package) defineStruct(name, description string, properties map[string]*
 				t.FormatArrayTypes,
 				pt,
 			)
+		}
+		if param.IsDefaultKey {
+			t.DefaultKey = pt.JSONName
 		}
 		if param.Optional {
 			t.OptionalProperties = append(t.OptionalProperties, pt)
