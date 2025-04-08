@@ -295,20 +295,20 @@ func (t *Bwlimit) UnmarshalJSON(d []byte) error {
 	return nil
 }
 
-// u2f
-type U2f struct {
+// Cluster resource scheduling settings.
+type Crs struct {
 
 	// The following parameters are optional
-	Appid  *string `url:"appid,omitempty" json:"appid,omitempty"`   // U2F AppId URL override. Defaults to the origin.
-	Origin *string `url:"origin,omitempty" json:"origin,omitempty"` // U2F Origin override. Mostly useful for single nodes with a single URL.
+	Ha                 *CrsHa        `url:"ha,omitempty" json:"ha,omitempty"`                                       // Use this resource scheduler mode for HA.
+	HaRebalanceOnStart *util.PVEBool `url:"ha-rebalance-on-start,omitempty" json:"ha-rebalance-on-start,omitempty"` // Set to use CRS for selecting a suited node when a HA services request-state changes from stop to start.
 }
-type _U2f U2f
+type _Crs Crs
 
-func (t U2f) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[appid=<APPID>] [,origin=<URL>]`)
+func (t Crs) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[ha=<basic|static>] [,ha-rebalance-on-start=<1|0>]`)
 }
 
-func (t *U2f) UnmarshalJSON(d []byte) error {
+func (t *Crs) UnmarshalJSON(d []byte) error {
 	if len(d) == 0 || string(d) == `""` {
 		return nil
 	}
@@ -327,21 +327,19 @@ func (t *U2f) UnmarshalJSON(d []byte) error {
 		values[kv[0]] = kv[1]
 	}
 
-	if v, ok := values["appid"]; ok {
+	if v, ok := values["ha"]; ok {
 
 		v = fmt.Sprintf("\"%s\"", v)
 
-		err := json.Unmarshal([]byte(v), &t.Appid)
+		err := json.Unmarshal([]byte(v), &t.Ha)
 		if err != nil {
 			return err
 		}
 	}
 
-	if v, ok := values["origin"]; ok {
+	if v, ok := values["ha-rebalance-on-start"]; ok {
 
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Origin)
+		err := json.Unmarshal([]byte(v), &t.HaRebalanceOnStart)
 		if err != nil {
 			return err
 		}
@@ -350,22 +348,18 @@ func (t *U2f) UnmarshalJSON(d []byte) error {
 	return nil
 }
 
-// webauthn configuration
-type Webauthn struct {
+// Cluster wide HA settings.
+type Ha struct {
+	ShutdownPolicy HaShutdownPolicy `url:"shutdown_policy" json:"shutdown_policy"` // The policy for HA services on node shutdown. 'freeze' disables auto-recovery, 'failover' ensures recovery, 'conditional' recovers on poweroff and freezes on reboot. 'migrate' will migrate running services to other nodes, if possible. With 'freeze' or 'failover', HA Services will always get stopped first on shutdown.
 
-	// The following parameters are optional
-	AllowSubdomains *util.PVEBool `url:"allow-subdomains,omitempty" json:"allow-subdomains,omitempty"` // Whether to allow the origin to be a subdomain, rather than the exact URL.
-	Id              *string       `url:"id,omitempty" json:"id,omitempty"`                             // Relying party ID. Must be the domain name without protocol, port or location. Changing this *will* break existing credentials.
-	Origin          *string       `url:"origin,omitempty" json:"origin,omitempty"`                     // Site origin. Must be a `https://` URL (or `http://localhost`). Should contain the address users type in their browsers to access the web interface. Changing this *may* break existing credentials.
-	Rp              *string       `url:"rp,omitempty" json:"rp,omitempty"`                             // Relying party name. Any text identifier. Changing this *may* break existing credentials.
 }
-type _Webauthn Webauthn
+type _Ha Ha
 
-func (t Webauthn) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[allow-subdomains=<1|0>] [,id=<DOMAINNAME>] [,origin=<URL>] [,rp=<RELYING_PARTY>]`)
+func (t Ha) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `shutdown_policy=<enum>`)
 }
 
-func (t *Webauthn) UnmarshalJSON(d []byte) error {
+func (t *Ha) UnmarshalJSON(d []byte) error {
 	if len(d) == 0 || string(d) == `""` {
 		return nil
 	}
@@ -384,39 +378,9 @@ func (t *Webauthn) UnmarshalJSON(d []byte) error {
 		values[kv[0]] = kv[1]
 	}
 
-	if v, ok := values["allow-subdomains"]; ok {
+	if v, ok := values["shutdown_policy"]; ok {
 
-		err := json.Unmarshal([]byte(v), &t.AllowSubdomains)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["id"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Id)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["origin"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Origin)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["rp"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Rp)
+		err := json.Unmarshal([]byte(v), &t.ShutdownPolicy)
 		if err != nil {
 			return err
 		}
@@ -529,18 +493,18 @@ func (t *NextId) UnmarshalJSON(d []byte) error {
 	return nil
 }
 
-// Cluster wide HA settings.
-type Ha struct {
-	ShutdownPolicy HaShutdownPolicy `url:"shutdown_policy" json:"shutdown_policy"` // The policy for HA services on node shutdown. 'freeze' disables auto-recovery, 'failover' ensures recovery, 'conditional' recovers on poweroff and freezes on reboot. 'migrate' will migrate running services to other nodes, if possible. With 'freeze' or 'failover', HA Services will always get stopped first on shutdown.
+// Cluster-wide notification settings.
+type Notify struct {
+	PackageUpdates NotifyPackageUpdates `url:"package-updates" json:"package-updates"` // Control when the daily update job should send out notification mails.
 
 }
-type _Ha Ha
+type _Notify Notify
 
-func (t Ha) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `shutdown_policy=<enum>`)
+func (t Notify) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `package-updates=<auto|always|never>`)
 }
 
-func (t *Ha) UnmarshalJSON(d []byte) error {
+func (t *Notify) UnmarshalJSON(d []byte) error {
 	if len(d) == 0 || string(d) == `""` {
 		return nil
 	}
@@ -559,62 +523,9 @@ func (t *Ha) UnmarshalJSON(d []byte) error {
 		values[kv[0]] = kv[1]
 	}
 
-	if v, ok := values["shutdown_policy"]; ok {
+	if v, ok := values["package-updates"]; ok {
 
-		err := json.Unmarshal([]byte(v), &t.ShutdownPolicy)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Cluster resource scheduling settings.
-type Crs struct {
-
-	// The following parameters are optional
-	Ha                 *CrsHa        `url:"ha,omitempty" json:"ha,omitempty"`                                       // Use this resource scheduler mode for HA.
-	HaRebalanceOnStart *util.PVEBool `url:"ha-rebalance-on-start,omitempty" json:"ha-rebalance-on-start,omitempty"` // Set to use CRS for selecting a suited node when a HA services request-state changes from stop to start.
-}
-type _Crs Crs
-
-func (t Crs) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `[ha=<basic|static>] [,ha-rebalance-on-start=<1|0>]`)
-}
-
-func (t *Crs) UnmarshalJSON(d []byte) error {
-	if len(d) == 0 || string(d) == `""` {
-		return nil
-	}
-	cleaned := string(d)[1 : len(d)-1]
-	parts := strings.Split(cleaned, ",")
-	values := map[string]string{}
-	for _, p := range parts {
-		kv := strings.Split(p, "=")
-		if len(kv) > 2 {
-			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
-		}
-		if len(kv) == 1 {
-			values[""] = kv[0]
-			continue
-		}
-		values[kv[0]] = kv[1]
-	}
-
-	if v, ok := values["ha"]; ok {
-
-		v = fmt.Sprintf("\"%s\"", v)
-
-		err := json.Unmarshal([]byte(v), &t.Ha)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v, ok := values["ha-rebalance-on-start"]; ok {
-
-		err := json.Unmarshal([]byte(v), &t.HaRebalanceOnStart)
+		err := json.Unmarshal([]byte(v), &t.PackageUpdates)
 		if err != nil {
 			return err
 		}
@@ -698,18 +609,20 @@ func (t *TagStyle) UnmarshalJSON(d []byte) error {
 	return nil
 }
 
-// Cluster-wide notification settings.
-type Notify struct {
-	PackageUpdates NotifyPackageUpdates `url:"package-updates" json:"package-updates"` // Control when the daily update job should send out notification mails.
+// u2f
+type U2f struct {
 
+	// The following parameters are optional
+	Appid  *string `url:"appid,omitempty" json:"appid,omitempty"`   // U2F AppId URL override. Defaults to the origin.
+	Origin *string `url:"origin,omitempty" json:"origin,omitempty"` // U2F Origin override. Mostly useful for single nodes with a single URL.
 }
-type _Notify Notify
+type _U2f U2f
 
-func (t Notify) EncodeValues(key string, v *url.Values) error {
-	return util.EncodeString(key, v, t, `package-updates=<auto|always|never>`)
+func (t U2f) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[appid=<APPID>] [,origin=<URL>]`)
 }
 
-func (t *Notify) UnmarshalJSON(d []byte) error {
+func (t *U2f) UnmarshalJSON(d []byte) error {
 	if len(d) == 0 || string(d) == `""` {
 		return nil
 	}
@@ -728,9 +641,21 @@ func (t *Notify) UnmarshalJSON(d []byte) error {
 		values[kv[0]] = kv[1]
 	}
 
-	if v, ok := values["package-updates"]; ok {
+	if v, ok := values["appid"]; ok {
 
-		err := json.Unmarshal([]byte(v), &t.PackageUpdates)
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Appid)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["origin"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Origin)
 		if err != nil {
 			return err
 		}
@@ -786,6 +711,81 @@ func (t *UserTagAccess) UnmarshalJSON(d []byte) error {
 		v = fmt.Sprintf("\"%s\"", v)
 
 		err := json.Unmarshal([]byte(v), &t.UserAllowList)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// webauthn configuration
+type Webauthn struct {
+
+	// The following parameters are optional
+	AllowSubdomains *util.PVEBool `url:"allow-subdomains,omitempty" json:"allow-subdomains,omitempty"` // Whether to allow the origin to be a subdomain, rather than the exact URL.
+	Id              *string       `url:"id,omitempty" json:"id,omitempty"`                             // Relying party ID. Must be the domain name without protocol, port or location. Changing this *will* break existing credentials.
+	Origin          *string       `url:"origin,omitempty" json:"origin,omitempty"`                     // Site origin. Must be a `https://` URL (or `http://localhost`). Should contain the address users type in their browsers to access the web interface. Changing this *may* break existing credentials.
+	Rp              *string       `url:"rp,omitempty" json:"rp,omitempty"`                             // Relying party name. Any text identifier. Changing this *may* break existing credentials.
+}
+type _Webauthn Webauthn
+
+func (t Webauthn) EncodeValues(key string, v *url.Values) error {
+	return util.EncodeString(key, v, t, `[allow-subdomains=<1|0>] [,id=<DOMAINNAME>] [,origin=<URL>] [,rp=<RELYING_PARTY>]`)
+}
+
+func (t *Webauthn) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || string(d) == `""` {
+		return nil
+	}
+	cleaned := string(d)[1 : len(d)-1]
+	parts := strings.Split(cleaned, ",")
+	values := map[string]string{}
+	for _, p := range parts {
+		kv := strings.Split(p, "=")
+		if len(kv) > 2 {
+			return fmt.Errorf("Wrong number of parts for kv pair '%s'", p)
+		}
+		if len(kv) == 1 {
+			values[""] = kv[0]
+			continue
+		}
+		values[kv[0]] = kv[1]
+	}
+
+	if v, ok := values["allow-subdomains"]; ok {
+
+		err := json.Unmarshal([]byte(v), &t.AllowSubdomains)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["id"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Id)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["origin"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Origin)
+		if err != nil {
+			return err
+		}
+	}
+
+	if v, ok := values["rp"]; ok {
+
+		v = fmt.Sprintf("\"%s\"", v)
+
+		err := json.Unmarshal([]byte(v), &t.Rp)
 		if err != nil {
 			return err
 		}

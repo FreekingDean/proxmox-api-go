@@ -120,7 +120,9 @@ func (p *Package) defineStruct(name, description string, properties map[string]*
 		Description:        removeNewline(description),
 		FormatArrayTypes:   make([]*Type, 0),
 	}
-	for name, param := range properties {
+
+	for _, name := range sortKeys(properties) {
+		param := properties[name]
 		pt := p.defineType(Nameify(name), name, param)
 		if pt == nil {
 			continue
@@ -155,4 +157,14 @@ func (p *Package) defineStruct(name, description string, properties map[string]*
 	sort.Sort(&TypeSorter{t.FormatArrayTypes})
 	t.Name = strings.TrimSuffix(t.Name, "[N]")
 	return t
+}
+
+func sortKeys(m map[string]*jsonschema.JSONSchema) []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+
+	sort.Strings(keys)
+	return keys
 }
